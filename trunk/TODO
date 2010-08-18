@@ -1,0 +1,74 @@
+[UTF-8]
+General:
+	geoip
+	баны
+	статистика по игроку в конце игры (фраги, смерти, аккуратность. украденые флаги, возвращенные флаги)
+	irc-бот
+	persist
+
+Server events:
+	onconnect [cn]
+	ondisconnect [cn]
+	onmapstart
+	onimission
+	onteamkill [cn]
+	onteamswitch [cn]
+	ontext [cn] [msg]	
+	onsayteam [cn] [msg]
+	onswitchname [cn]
+	onswitchmodel [cn]
+	onswitchteam [cn] 	
+	onmapvote [cn] [map]
+	onmastermode [cn] [mode]
+	onclearbans [cn]
+	onkick [cn] [victim]
+	onspectator [cn] [1|0] if 0 - unspec, if 1 became spec
+	onsetteam [cn]
+	onrecorddemo [cn]
+	onstopdemo [cn]
+	oncleardemos [cn]
+	onlistdemos [cn]
+	ongetdemo [cn]
+	onsetmaster [cn] [pass]
+	onaddbot [cn] [skill]
+	ondelbot [cn]
+	onbotlimit [cn] [limit]
+	onbotbalance [cn] [balance]
+	onauth [cn] [name]
+    onpausegame [cn] [pause] if pause>0 game paused
+
+	#coopedit
+	ongetmap [cn]
+	onnewmap [cn]
+
+Cube script:
+	getmap (curent_map_name)
+	getmode (curent_game_mode)
+	getip [cn] (client_ip)
+	getcountry [ip] (ip_country)
+	getfrags [cn] (client_frags)
+	getdeaths [cn] (client_deaths)
+	getteamkills [cn] (client_teamkills)
+	getaccuracy [cn] (client_acuracy)
+	getflags [cn] (client_scored_flags)
+	getretflags	[cn] (client_returned_flags)
+	ismaster [cn] (1|0)
+	isspectator [cn] (1|0)
+	version (sv_ver build_date)		
+
+IRC бот:
+	возможность кика/бана
+	перекидывание игрока в другую команду
+	spect/unspec
+	изменение режима игры и карты
+	общение
+	предупреждение
+
+#commands:
+	persist [0|1] (is_persist)
+	specall [0|1]
+	mute [cn] [0|1] 
+	ban <cn> <time> reason
+	restart
+	stat  (cn)
+
