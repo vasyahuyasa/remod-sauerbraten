@@ -1,8 +1,8 @@
 # depslib dependency file v1.0
-1278386422 source:c:\projs\remod_justice\enet\callbacks.c
+1282162007 source:c:\projs\remod_justice\enet\callbacks.c
 	"enet/enet.h"
 
-1278386418 c:\projs\remod_justice\enet\include\enet\enet.h
+1282162005 c:\projs\remod_justice\enet\include\enet\enet.h
 	<stdlib.h>
 	"enet/win32.h"
 	"enet/unix.h"
@@ -11,60 +11,60 @@
 	"enet/list.h"
 	"enet/callbacks.h"
 
-1267058420 c:\projs\remod_justice\enet\include\enet\win32.h
+1282162005 c:\projs\remod_justice\enet\include\enet\win32.h
 	<stdlib.h>
 	<winsock2.h>
 
-1267058420 c:\projs\remod_justice\enet\include\enet\unix.h
+1282162005 c:\projs\remod_justice\enet\include\enet\unix.h
 	<stdlib.h>
 	<sys/time.h>
 	<sys/types.h>
 	<netinet/in.h>
 	<unistd.h>
 
-1267058420 c:\projs\remod_justice\enet\include\enet\types.h
+1282162005 c:\projs\remod_justice\enet\include\enet\types.h
 
-1278386418 c:\projs\remod_justice\enet\include\enet\protocol.h
+1282162005 c:\projs\remod_justice\enet\include\enet\protocol.h
 	"enet/types.h"
 
-1278386418 c:\projs\remod_justice\enet\include\enet\list.h
+1282162005 c:\projs\remod_justice\enet\include\enet\list.h
 	<stdlib.h>
 
-1278386418 c:\projs\remod_justice\enet\include\enet\callbacks.h
+1282162005 c:\projs\remod_justice\enet\include\enet\callbacks.h
 	<stdlib.h>
 
-1278386422 source:c:\projs\remod_justice\enet\compress.c
+1282162007 source:c:\projs\remod_justice\enet\compress.c
 	<string.h>
 	"enet/enet.h"
 
-1278386422 source:c:\projs\remod_justice\enet\host.c
+1282162007 source:c:\projs\remod_justice\enet\host.c
 	<string.h>
 	<time.h>
 	"enet/enet.h"
 
-1278386422 source:c:\projs\remod_justice\enet\list.c
+1282162007 source:c:\projs\remod_justice\enet\list.c
 	"enet/list.h"
 
-1278386422 source:c:\projs\remod_justice\enet\packet.c
+1282162007 source:c:\projs\remod_justice\enet\packet.c
 	<string.h>
 	"enet/enet.h"
 
-1278386422 source:c:\projs\remod_justice\enet\peer.c
+1282162007 source:c:\projs\remod_justice\enet\peer.c
 	<string.h>
 	"enet/enet.h"
 
-1278386422 source:c:\projs\remod_justice\enet\protocol.c
+1282162007 source:c:\projs\remod_justice\enet\protocol.c
 	<stdio.h>
 	<string.h>
 	"enet/utility.h"
 	"enet/time.h"
 	"enet/enet.h"
 
-1267058420 c:\projs\remod_justice\enet\include\enet\utility.h
+1282162005 c:\projs\remod_justice\enet\include\enet\utility.h
 
-1267058420 c:\projs\remod_justice\enet\include\enet\time.h
+1282162005 c:\projs\remod_justice\enet\include\enet\time.h
 
-1267058422 source:c:\projs\remod_justice\enet\unix.c
+1282162007 source:c:\projs\remod_justice\enet\unix.c
 	<sys/types.h>
 	<sys/socket.h>
 	<sys/ioctl.h>
@@ -79,14 +79,14 @@
 	<fcntl.h>
 	<sys/poll.h>
 
-1267058422 source:c:\projs\remod_justice\enet\win32.c
+1282162007 source:c:\projs\remod_justice\enet\win32.c
 	<time.h>
 	"enet/enet.h"
 
-1279583540 source:c:\projs\remod_justice\engine\command.cpp
+1282162003 source:c:\projs\remod_justice\engine\command.cpp
 	"engine.h"
 
-1279583540 c:\projs\remod_justice\engine\engine.h
+1282162003 c:\projs\remod_justice\engine\engine.h
 	"cube.h"
 	"world.h"
 	"octa.h"
@@ -96,7 +96,7 @@
 	"model.h"
 	"varray.h"
 
-1278386416 c:\projs\remod_justice\shared\cube.h
+1282162003 c:\projs\remod_justice\shared\cube.h
 	<math.h>
 	<string.h>
 	<stdio.h>
@@ -124,32 +124,32 @@
 	"iengine.h"
 	"igame.h"
 
-1267058404 c:\projs\remod_justice\include\zlib.h
+1282162002 c:\projs\remod_justice\include\zlib.h
 	"zconf.h"
 
-1267058404 c:\projs\remod_justice\include\zconf.h
+1282162002 c:\projs\remod_justice\include\zconf.h
 	<windows.h>
 	<sys/types.h>
 	<unistd.h>
 	<unixio.h>
 
-1278386416 c:\projs\remod_justice\shared\tools.h
+1282162003 c:\projs\remod_justice\shared\tools.h
 	<crtdbg.h>
 
-1278386416 c:\projs\remod_justice\shared\geom.h
+1282162003 c:\projs\remod_justice\shared\geom.h
 
-1278386416 c:\projs\remod_justice\shared\ents.h
+1282162003 c:\projs\remod_justice\shared\ents.h
 
-1278386416 c:\projs\remod_justice\shared\command.h
+1282162003 c:\projs\remod_justice\shared\command.h
 
-1278899456 c:\projs\remod_justice\shared\iengine.h
+1282162003 c:\projs\remod_justice\shared\iengine.h
 
-1278386416 c:\projs\remod_justice\shared\igame.h
+1282162003 c:\projs\remod_justice\shared\igame.h
 
-1278386414 source:c:\projs\remod_justice\engine\server.cpp
+1282162003 source:c:\projs\remod_justice\engine\server.cpp
 	"engine.h"
 
-1282141292 source:c:\projs\remod_justice\fpsgame\server.cpp
+1282162002 source:c:\projs\remod_justice\fpsgame\server.cpp
 	"game.h"
 	"fpsgame.h"
 	"capture.h"
@@ -159,32 +159,36 @@
 	"extinfo.h"
 	"aiman.h"
 
-1278386404 c:\projs\remod_justice\fpsgame\game.h
+1282162002 c:\projs\remod_justice\fpsgame\game.h
 	"cube.h"
 	"ai.h"
 
-1279583538 c:\projs\remod_justice\fpsgame\ai.h
+1282162002 c:\projs\remod_justice\fpsgame\ai.h
 
-1278386404 c:\projs\remod_justice\fpsgame\capture.h
+1282162002 c:\projs\remod_justice\fpsgame\capture.h
 
-1279589334 c:\projs\remod_justice\fpsgame\ctf.h
+1282162002 c:\projs\remod_justice\fpsgame\ctf.h
 
-1278386404 c:\projs\remod_justice\fpsgame\extinfo.h
+1282162002 c:\projs\remod_justice\fpsgame\extinfo.h
 
-1271393224 c:\projs\remod_justice\fpsgame\aiman.h
+1282162002 c:\projs\remod_justice\fpsgame\aiman.h
 
-1267058416 source:c:\projs\remod_justice\shared\crypto.cpp
+1282162003 source:c:\projs\remod_justice\shared\crypto.cpp
 	"cube.h"
 
-1278386416 source:c:\projs\remod_justice\shared\stream.cpp
+1282162003 source:c:\projs\remod_justice\shared\stream.cpp
 	"cube.h"
 	<unistd.h>
 	<sys/stat.h>
 	<sys/types.h>
 	<dirent.h>
 
-1267058416 source:c:\projs\remod_justice\shared\tools.cpp
+1282162003 source:c:\projs\remod_justice\shared\tools.cpp
 	"cube.h"
 
-1282140839 c:\projs\remod_justice\fpsgame\fpsgame.h
+1282167191 c:\projs\remod_justice\fpsgame\fpsgame.h
+	"game.h"
+
+1282231260 source:c:\projs\remod_justice\mod\serverctrl.cpp
+	"fpsgame.h"
 

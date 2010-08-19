@@ -42,19 +42,22 @@ Server events:
 	onnewmap [cn]
 
 Cube script:
-	getmap (curent_map_name)
-	getmode (curent_game_mode)
-	getip [cn] (client_ip)
+	getmap (curent_map_name) +
+	getmode (curent_game_mode) +
+	getip [cn] (client_ip) +
 	getcountry [ip] (ip_country)
-	getfrags [cn] (client_frags)
-	getdeaths [cn] (client_deaths)
-	getteamkills [cn] (client_teamkills)
-	getaccuracy [cn] (client_acuracy)
-	getflags [cn] (client_scored_flags)
-	getretflags	[cn] (client_returned_flags)
-	ismaster [cn] (1|0)
-	isspectator [cn] (1|0)
-	version (sv_ver build_date)		
+	getfrags [cn] (client_frags) +
+	getdeaths [cn] (client_deaths) +
+	getteamkills [cn] (client_teamkills) +
+	getaccuracy [cn] (client_acuracy) +
+	getflags [cn] (client_scored_flags) +
+	getretflags	[cn] (client_returned_flags) -
+    getmastermode (mm)+
+	getmastermodename [mm] (txt) +
+	ismaster [cn] (1|0) +
+	isadmin [cn] (1|0) +
+	isspectator [cn] (1|0)+
+	version (sv_ver build_date)	+	
 
 IRC бот:
 	возможность кика/бана
