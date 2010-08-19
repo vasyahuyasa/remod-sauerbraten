@@ -1,6 +1,8 @@
 #ifndef __FPSGAME_H__
 #define __FPSGAME_H__
 
+#include "game.h"
+
 namespace server
 {
 
@@ -406,6 +408,7 @@ namespace server
 
     extern servmode *smode;
 
+    clientinfo *getinfo(int n);
     void sendservmsg(const char *s);
     int numclients(int exclude , bool nospec, bool noai, bool priv);
 
