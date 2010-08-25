@@ -57,7 +57,18 @@ Cube script:
 	ismaster [cn] (1|0) +
 	isadmin [cn] (1|0) +
 	isspectator [cn] (1|0)+
-	version (sv_ver build_date)	+	
+	version (txt)	+
+
+	getteam [cn] +
+	disconnect [cn] + (reason "normal") +
+	kick [cn] +
+	spectator [1|0] [cn] +
+	map [s] +
+	mapmode [s] [n] +
+	soucide [cn] +
+	addbot [skill] +
+	delbot +
+		
 
 IRC бот:
 	возможность кика/бана
@@ -68,10 +79,11 @@ IRC бот:
 	предупреждение
 
 #commands:
-	persist [0|1] (is_persist)
+	persist [0|1]
 	specall [0|1]
 	mute [cn] [0|1] 
 	ban <cn> <time> reason
+	kick [cn] [time mins.] [reason]
 	restart
-	stat  (cn)
+	stats  (cn)
 

@@ -82,7 +82,6 @@
 		<Unit filename="include\zconf.h" />
 		<Unit filename="include\zlib.h" />
 		<Unit filename="mod\serverctrl.cpp" />
-		<Unit filename="mod\serverctrl.h" />
 		<Unit filename="shared\command.h" />
 		<Unit filename="shared\crypto.cpp" />
 		<Unit filename="shared\cube.h" />

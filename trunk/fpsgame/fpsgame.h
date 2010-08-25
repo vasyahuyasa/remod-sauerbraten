@@ -337,6 +337,10 @@ namespace server
 
     namespace aiman
     {
+        //Remod
+        extern bool addai(int skill, int limit);
+        extern bool deleteai();
+
         extern void removeai(clientinfo *ci);
         extern void clearai();
         extern void checkai();
@@ -409,6 +413,9 @@ namespace server
     extern servmode *smode;
 
     clientinfo *getinfo(int n);
+    void changemap(const char *s, int mode);
+    void suicide(clientinfo *ci);
+    void checkmaps(int req);
     void sendservmsg(const char *s);
     int numclients(int exclude , bool nospec, bool noai, bool priv);
 
