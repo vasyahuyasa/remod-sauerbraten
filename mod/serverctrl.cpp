@@ -1,5 +1,4 @@
 #include "fpsgame.h"
-#include "serverctrl.h"
 
 //Remod
 namespace remod
@@ -109,6 +108,93 @@ namespace remod
         result(txt);
     }
 
+    void getteam(int *cn)
+    {
+        clientinfo *ci = (clientinfo *)getinfo((int)*cn);
+        if(ci)
+        {
+            result(ci->team);
+        }
+    }
+
+    void disconnect(int *cn)
+    {
+        disconnect_client((int)*cn, DISC_NONE);
+    }
+
+    void kick(int *cn)
+    {
+        ban &b = bannedips.add();
+        b.time = totalmillis;
+        b.ip = getclientip((int)*cn);
+        allowedips.removeobj(b.ip);
+        disconnect_client((int)*cn, DISC_KICK);
+    }
+
+    void spectator(int *val, int *cn)
+    {
+        clientinfo *spinfo = (clientinfo *)getclientinfo((int)*cn); // no bots
+        if(!spinfo || (spinfo->state.state==CS_SPECTATOR ? (int)*val : !(int)*val)) return;
+
+        if(spinfo->state.state!=CS_SPECTATOR && (int)*val)
+        {
+            if(spinfo->state.state==CS_ALIVE) suicide(spinfo);
+            if(smode) smode->leavegame(spinfo);
+            spinfo->state.state = CS_SPECTATOR;
+            spinfo->state.timeplayed += lastmillis - spinfo->state.lasttimeplayed;
+            if(!spinfo->local && !spinfo->privilege) aiman::removeai(spinfo);
+        }
+        else if(spinfo->state.state==CS_SPECTATOR && !(int)*val)
+        {
+            spinfo->state.state = CS_DEAD;
+            spinfo->state.respawn();
+            spinfo->state.lasttimeplayed = lastmillis;
+            aiman::addclient(spinfo);
+            if(spinfo->clientmap[0] || spinfo->mapcrc) checkmaps(-1);
+            sendf(-1, 1, "ri", N_MAPRELOAD);
+        }
+        sendf(-1, 1, "ri3", N_SPECTATOR, spectator, (int)*val);
+        if(!(int)*val && mapreload && !spinfo->privilege && !spinfo->local) sendf((int)*cn, 1, "ri", N_MAPRELOAD);
+    }
+
+    void map(char *name)
+    {
+        sendf(-1, 1, "risii", N_MAPCHANGE, name, gamemode, 1);
+        changemap(name, gamemode);
+    }
+
+    void mapmode(char *name, int *mode)
+    {
+        sendf(-1, 1, "risii", N_MAPCHANGE, name, mode, 1);
+        changemap(name, (int)*mode);
+    }
+
+    void _suicide(int *cn)
+    {
+        clientinfo *ci = (clientinfo *)getinfo((int)*cn);
+        if(ci)
+        {
+            suicide(ci);
+        }
+    }
+
+    void addbot(int *s)
+    {
+        if(!aiman::addai((int)*s, 0))
+        {
+            //Couldn't add bot
+        }
+    }
+
+    void delbot()
+    {
+        if(!aiman::deleteai())
+        {
+            //Can't delete any bot
+        }
+    }
+
+    //Cube script binds
     COMMAND(getmap, "");
 	COMMAND(getmode, "");
 	COMMAND(getip, "i");
@@ -125,5 +211,16 @@ namespace remod
 	ICOMMAND(isadmin, "i", (int *cn), intret(isadmin((int*)cn) ? 1 : 0));
 	ICOMMAND(isspectator, "i", (int *cn), intret(isspectator((int*)cn) ? 1 : 0));
 	COMMAND(version, "");
+
+	COMMAND(getteam,"i");
+	COMMAND(disconnect, "i");
+	COMMAND(kick, "i");
+	COMMAND(spectator, "ii");
+	COMMAND(map, "s");
+	COMMAND(mapmode, "si");
+	COMMANDN(suicide, _suicide, "i");
+	COMMAND(addbot, "i");
+	COMMAND(delbot, "");
+
 
 }

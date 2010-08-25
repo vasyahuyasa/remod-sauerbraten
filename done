@@ -1,2 +1,4 @@
 1. Вынесены некоторые функции из server.cpp в хидер fpsgame.h
 2. Добавлен checksleep(int millis) в fpsgame/server.cpp
+3. Добавлен bool addai(int skill, int limit) в fpsgame/fpsgame.h
+   Добавлен bool deleteai() в fpsgame/fpsgame.h
