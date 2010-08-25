@@ -5,7 +5,6 @@ namespace remod
 {
     using namespace server;
 
-
     //Additional cubescript functions
     void getmap()
     {
@@ -198,7 +197,6 @@ namespace remod
     COMMAND(getmap, "");
 	COMMAND(getmode, "");
 	COMMAND(getip, "i");
-	//COMMAND(getcountry, "s"); unimplemented
 	COMMAND(getfrags, "i");
 	COMMAND(getdeaths, "i");
 	COMMAND(getteamkills, "i");
@@ -221,6 +219,5 @@ namespace remod
 	COMMANDN(suicide, _suicide, "i");
 	COMMAND(addbot, "i");
 	COMMAND(delbot, "");
-
 
 }

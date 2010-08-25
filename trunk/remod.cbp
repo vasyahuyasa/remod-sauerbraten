@@ -18,6 +18,7 @@
 					<Add directory="shared" />
 					<Add directory="include" />
 					<Add directory="fpsgame" />
+					<Add directory="libGeoIP" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -81,6 +82,11 @@
 		<Unit filename="include\wincompat.h" />
 		<Unit filename="include\zconf.h" />
 		<Unit filename="include\zlib.h" />
+		<Unit filename="libGeoIP\GeoIP.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="libGeoIP\GeoIP.h" />
+		<Unit filename="mod\geoi.cpp" />
 		<Unit filename="mod\serverctrl.cpp" />
 		<Unit filename="shared\command.h" />
 		<Unit filename="shared\crypto.cpp" />
