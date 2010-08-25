@@ -45,7 +45,7 @@ Cube script:
 	getmap (curent_map_name) +
 	getmode (curent_game_mode) +
 	getip [cn] (client_ip) +
-	getcountry [ip] (ip_country)
+	getcountry [ip] (ip_country) +
 	getfrags [cn] (client_frags) +
 	getdeaths [cn] (client_deaths) +
 	getteamkills [cn] (client_teamkills) +
