@@ -1,8 +1,8 @@
 [UTF-8]
 General:
-	geoip
+	geoip +
 	баны
-	статистика по игроку в конце игры (фраги, смерти, аккуратность. украденые флаги, возвращенные флаги)
+	статистика по игроку в конце игры (фраги, смерти, аккуратность. украденые флаги -, возвращенные флаги - ) +
 	irc-бот
 	persist
 
@@ -60,7 +60,7 @@ Cube script:
 	version (txt)	+
 
 	getteam [cn] +
-	disconnect [cn] + (reason "normal") +
+	disconnect [cn] + reason "normal"
 	kick [cn] +
 	spectator [1|0] [cn] +
 	map [s] +
@@ -68,7 +68,22 @@ Cube script:
 	soucide [cn] +
 	addbot [skill] +
 	delbot +
-		
+
+	say [txt] +          send message to everyone
+	pm [cn] [txt] +      send private message to cn
+	saytonormal [txt] +    send message to normal clients
+    saytomaster [txt] +    send message to master
+	saytoadmin  [txt] +    send message to admin
+	$uptime +	   
+	mastermode [n] +
+	$persist [1|0] +
+	$gamemillis +
+	$gamelimit +
+	$setroundtime +
+	$pause [1|0] +
+	
+Rcon: +
+	индивидуальная сессия каждого подключения -
 
 IRC бот:
 	возможность кика/бана
@@ -86,4 +101,3 @@ IRC бот:
 	kick [cn] [time mins.] [reason]
 	restart
 	stats  (cn)
-

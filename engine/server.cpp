@@ -2,15 +2,16 @@
 // runs dedicated or as client coroutine
 
 #include "engine.h"
+#include "rconmod.h"
 
 #ifdef STANDALONE
-void fatal(const char *s, ...) 
-{ 
+void fatal(const char *s, ...)
+{
     void cleanupserver();
-    cleanupserver(); 
+    cleanupserver();
     defvformatstring(msg,s,s);
-    printf("servererror: %s\n", msg); 
-    exit(EXIT_FAILURE); 
+    printf("servererror: %s\n", msg);
+    exit(EXIT_FAILURE);
 }
 
 void conoutfv(int type, const char *fmt, va_list args)
@@ -19,6 +20,7 @@ void conoutfv(int type, const char *fmt, va_list args)
     vformatstring(sf, fmt, args);
     filtertext(sp, sf);
     puts(sp);
+    remod::rcon::sendmsg(sp);
 }
 
 void conoutf(const char *fmt, ...)
@@ -55,7 +57,7 @@ int getint(ucharbuf &p)
 {
     int c = (char)p.get();
     if(c==-128) { int n = p.get(); n |= char(p.get())<<8; return n; }
-    else if(c==-127) { int n = p.get(); n |= p.get()<<8; n |= p.get()<<16; return n|(p.get()<<24); } 
+    else if(c==-127) { int n = p.get(); n |= p.get()<<8; n |= p.get()<<16; return n|(p.get()<<24); }
     else return c;
 }
 
@@ -76,11 +78,11 @@ static inline void putuint_(T &p, int n)
         p.put(0x80 | (n & 0x7F));
         p.put(n >> 7);
     }
-    else 
-    { 
-        p.put(0x80 | (n & 0x7F)); 
+    else
+    {
+        p.put(0x80 | (n & 0x7F));
         p.put(0x80 | ((n >> 7) & 0x7F));
-        p.put(n >> 14); 
+        p.put(n >> 14);
     }
 }
 void putuint(ucharbuf &p, int n) { putuint_(p, n); }
@@ -133,7 +135,7 @@ void getstring(char *text, ucharbuf &p, int len)
     do
     {
         if(t>=&text[len]) { text[len-1] = 0; return; }
-        if(!p.remaining()) { *t = 0; return; } 
+        if(!p.remaining()) { *t = 0; return; }
         *t = getint(p);
     }
     while(*t++);
@@ -170,7 +172,7 @@ struct client                   // server side version of "dynent" type
 vector<client *> clients;
 
 ENetHost *serverhost = NULL;
-int laststatus = 0; 
+int laststatus = 0;
 ENetSocket pongsock = ENET_SOCKET_NULL, lansock = ENET_SOCKET_NULL;
 
 void cleanupserver()
@@ -237,7 +239,7 @@ void sendf(int cn, int chan, const char *format, ...)
             break;
         }
 
-        case 'i': 
+        case 'i':
         {
             int n = isdigit(*format) ? *format++-'0' : 1;
             loopi(n) putint(p, va_arg(args, int));
@@ -413,14 +415,14 @@ ENetSocket connectmaster()
         enet_socket_destroy(sock);
         sock = ENET_SOCKET_NULL;
     }
-    if(sock == ENET_SOCKET_NULL || connectwithtimeout(sock, mastername, masteraddress) < 0) 
+    if(sock == ENET_SOCKET_NULL || connectwithtimeout(sock, mastername, masteraddress) < 0)
     {
 #ifdef STANDALONE
-        printf(sock==ENET_SOCKET_NULL ? "could not open socket\n" : "could not connect\n"); 
+        printf(sock==ENET_SOCKET_NULL ? "could not open socket\n" : "could not connect\n");
 #endif
         return ENET_SOCKET_NULL;
     }
-    
+
     enet_socket_set_option(sock, ENET_SOCKOPT_NONBLOCK, 1);
     return sock;
 }
@@ -466,7 +468,7 @@ void processmasterinput()
         masterinpos = end - masterin.getbuf();
         input = end;
         end = (char *)memchr(input, '\n', masterin.length() - masterinpos);
-    } 
+    }
 
     if(masterinpos >= masterin.length())
     {
@@ -567,7 +569,8 @@ SVAR(serverip, "");
 VARF(serverport, 0, server::serverport(), 0xFFFF, { if(!serverport) serverport = server::serverport(); });
 
 #ifdef STANDALONE
-int curtime = 0, lastmillis = 0, totalmillis = 0;
+int curtime = 0, lastmillis = 0;
+_VAR(uptime, totalmillis, 0, 0, INT_MAX, IDF_READONLY);
 #endif
 
 void updatemasterserver()
@@ -585,16 +588,16 @@ void serverslice(bool dedicated, uint timeout)   // main server update, called f
         case ST_TCPIP: nonlocalclients++; break;
     }
 
-    if(!serverhost) 
+    if(!serverhost)
     {
         server::serverupdate();
         server::sendpackets();
         return;
     }
-       
+
     // below is network only
 
-    if(dedicated) 
+    if(dedicated)
     {
         int millis = (int)enet_time_get();
         curtime = server::ispaused() ? 0 : millis - totalmillis;
@@ -608,10 +611,10 @@ void serverslice(bool dedicated, uint timeout)   // main server update, called f
 
     if(!lastupdatemaster || totalmillis-lastupdatemaster>60*60*1000)       // send alive signal to masterserver every hour of uptime
         updatemasterserver();
-    
+
     if(totalmillis-laststatus>60*1000)   // display bandwidth stats, useful for server ops
     {
-        laststatus = totalmillis;     
+        laststatus = totalmillis;
         if(nonlocalclients || serverhost->totalSentData || serverhost->totalReceivedData) printf("status: %d remote clients, %.1f send, %.1f rec (K/sec)\n", nonlocalclients, serverhost->totalSentData/60.0f/1024, serverhost->totalReceivedData/60.0f/1024);
         serverhost->totalSentData = serverhost->totalReceivedData = 0;
     }
@@ -648,7 +651,7 @@ void serverslice(bool dedicated, uint timeout)   // main server update, called f
                 if(event.packet->referenceCount==0) enet_packet_destroy(event.packet);
                 break;
             }
-            case ENET_EVENT_TYPE_DISCONNECT: 
+            case ENET_EVENT_TYPE_DISCONNECT:
             {
                 client *c = (client *)event.peer->data;
                 if(!c) break;
@@ -677,7 +680,7 @@ void flushserver(bool force)
 void localdisconnect(bool cleanup)
 {
     bool disconnected = false;
-    loopv(clients) if(clients[i]->type==ST_LOCAL) 
+    loopv(clients) if(clients[i]->type==ST_LOCAL)
     {
         server::localdisconnect(i);
         localclients--;
@@ -708,7 +711,12 @@ void rundedicatedserver()
     SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
     #endif
     printf("dedicated server started, waiting for clients...\nCtrl-C to exit\n\n");
-    for(;;) serverslice(true, 5);
+    //Remod
+    for(;;)
+    {
+        serverslice(true, 5);
+        remod::rcon::update();
+    }
 }
 
 bool servererror(bool dedicated, const char *desc)
@@ -724,7 +732,7 @@ bool servererror(bool dedicated, const char *desc)
         fatal(desc);
     return false;
 }
-  
+
 bool setuplistenserver(bool dedicated)
 {
     ENetAddress address = { ENET_HOST_ANY, serverport <= 0 ? server::serverport() : serverport };
@@ -756,12 +764,17 @@ bool setuplistenserver(bool dedicated)
     else enet_socket_set_option(lansock, ENET_SOCKOPT_NONBLOCK, 1);
     return true;
 }
+//Remod
+VAR(rconport, 0, 27070, 65535);
 
 void initserver(bool listen, bool dedicated)
 {
     if(dedicated) execfile("server-init.cfg", false);
 
     if(listen) setuplistenserver(dedicated);
+
+    //Remod
+    remod::rcon::init(rconport);
 
     server::serverinit();
 
@@ -781,12 +794,12 @@ void startlistenserver(int *usemaster)
     if(serverhost) { conoutf(CON_ERROR, "listen server is already running"); return; }
 
     allowupdatemaster = *usemaster>0 ? 1 : 0;
- 
+
     if(!setuplistenserver(false)) return;
-    
+
     updatemasterserver();
-   
-    conoutf("listen server started for %d clients%s", maxclients, allowupdatemaster ? " and listed with master server" : ""); 
+
+    conoutf("listen server started for %d clients%s", maxclients, allowupdatemaster ? " and listed with master server" : "");
 }
 COMMAND(startlistenserver, "i");
 
@@ -810,7 +823,7 @@ bool serveroption(char *opt)
         case 'u': setvar("serveruprate", atoi(opt+2)); return true;
         case 'c': setvar("maxclients", atoi(opt+2)); return true;
         case 'i': setsvar("serverip", opt+2); return true;
-        case 'j': setvar("serverport", atoi(opt+2)); return true; 
+        case 'j': setvar("serverport", atoi(opt+2)); return true;
         case 'm': setsvar("mastername", opt+2); setvar("updatemaster", mastername[0] ? 1 : 0); return true;
 #ifdef STANDALONE
         case 'q': printf("Using home directory: %s\n", opt+2); sethomedir(opt+2); return true;
@@ -824,7 +837,7 @@ vector<const char *> gameargs;
 
 #ifdef STANDALONE
 int main(int argc, char* argv[])
-{   
+{
     if(enet_initialize()<0) fatal("Unable to initialise network module");
     atexit(enet_deinitialize);
     enet_time_set(0);

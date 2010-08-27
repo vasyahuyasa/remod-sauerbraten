@@ -358,6 +358,8 @@ namespace server
     #define MM_PRIVSERV (MM_MODE | MM_AUTOAPPROVE)
     #define MM_PUBSERV ((1<<MM_OPEN) | (1<<MM_VETO))
     #define MM_COOPSERV (MM_AUTOAPPROVE | MM_PUBSERV | (1<<MM_LOCKED))
+    //Remod
+    #define MM_CLANSERV ((1<<MM_OPEN) | (1<<MM_VETO) | (1<<MM_LOCKED))
 
     struct demofile
     {
@@ -413,6 +415,7 @@ namespace server
     extern servmode *smode;
 
     clientinfo *getinfo(int n);
+    void pausegame(bool val);
     void changemap(const char *s, int mode);
     void suicide(clientinfo *ci);
     void checkmaps(int req);

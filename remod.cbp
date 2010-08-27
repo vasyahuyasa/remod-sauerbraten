@@ -19,9 +19,11 @@
 					<Add directory="include" />
 					<Add directory="fpsgame" />
 					<Add directory="libGeoIP" />
+					<Add directory="mod" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
+					<Add library="wsock32" />
 					<Add library="ws2_32" />
 					<Add library="winmm" />
 					<Add library="zdll" />
@@ -86,7 +88,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="libGeoIP\GeoIP.h" />
-		<Unit filename="mod\geoi.cpp" />
+		<Unit filename="mod\geoipmod.cpp" />
+		<Unit filename="mod\rconmod.cpp" />
+		<Unit filename="mod\rconmod.h" />
 		<Unit filename="mod\serverctrl.cpp" />
 		<Unit filename="shared\command.h" />
 		<Unit filename="shared\crypto.cpp" />
