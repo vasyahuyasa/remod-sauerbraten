@@ -8,7 +8,8 @@
   * *cn* - client number
 
 ==General commands==
-  * *`getmap (s)`* - return name of current map on server
+  * *`getmap (s)`*
+  return name of current map on server
   * *`getmode (n)`* - return number of game mode
   * *`getip [cn] (s)`* - return ip addres of client
   * *`getfrags [cn] (n)`* - return frags of player
