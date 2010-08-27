@@ -2,3 +2,8 @@
 2. Добавлен checksleep(int millis) в fpsgame/server.cpp
 3. Добавлен bool addai(int skill, int limit) в fpsgame/fpsgame.h
    Добавлен bool deleteai() в fpsgame/fpsgame.h
+4. Созданны cubescript переменные из внутренних  _VAR(gamemillis), _VAR(gamelimit), VAR(roundtime), VARF(setroundtime) в fpsgame/server.cpp и _VAR(totalmillis) в engine/server.cpp
+5. Добавлен режим 3 (мастер только через auth и разрешен mastermode 2) для переменной publicserver в server.cpp и fpsgame.h
+6. Добавлена VAR(persist) в fpsgame/server.cpp и её проверка в void changemap()
+7. Вывод из conoutfv() копируется в rcon::sendmsg(sp) в engine/server.cpp
+8. VAR(rconport)и rcon::init(rconport) в initserver(), rcon::init() и rcon::update() в rundedicatedserver() в engine/server.cpp

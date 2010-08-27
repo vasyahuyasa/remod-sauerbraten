@@ -23,7 +23,7 @@ namespace server
 
     bool notgotitems = true;        // true when map has changed and waiting for clients to send item
     int gamemode = 0;
-    int gamemillis = 0, gamelimit = 0, nextexceeded = 0;
+    int nextexceeded = 0;
     bool gamepaused = false;
 
     string smapname = "";
@@ -33,6 +33,22 @@ namespace server
     int mastermode = MM_OPEN, mastermask = MM_PRIVSERV;
     int currentmaster = -1;
     stream *mapdata = NULL;
+
+    //Remod
+    //Server mod
+    _VAR(gamemillis, gamemillis, 0, 0, INT_MAX, IDF_READONLY);  //round time in millis
+    _VAR(gamelimit, gamelimit, 0, 0, INT_MAX, IDF_READONLY);    //round limit in millis
+    //Update round time in game
+    VAR(roundtime, 0, 0, INT_MAX);
+    VARF(setroundtime, 0, 0, INT_MAX,
+         {
+            if(setroundtime>0)
+            {
+                if(m_timed && smapname[0]) sendf(-1, 1, "ri2", N_TIMEUP, gamemillis < setroundtime && !interm ? max((setroundtime - gamemillis)/1000, 1) : 0);
+                gamelimit = setroundtime;
+            }
+        }
+    );
 
     vector<uint> allowedips;
     vector<ban> bannedips;
@@ -52,12 +68,13 @@ namespace server
     SVAR(serverdesc, "");
     SVAR(serverpass, "");
     SVAR(adminpass, "");
-    VARF(publicserver, 0, 0, 2, {
+    VARF(publicserver, 0, 0, 3, {
 		switch(publicserver)
 		{
 			case 0: default: mastermask = MM_PRIVSERV; break;
 			case 1: mastermask = MM_PUBSERV; break;
 			case 2: mastermask = MM_COOPSERV; break;
+			case 3: mastermask = MM_CLANSERV; break;
 		}
 	});
     SVAR(servermotd, "");
@@ -981,6 +998,9 @@ namespace server
         sendpacket(-1, 1, p.finalize(), ci->clientnum);
     }
 
+    //Remod
+    VAR(persist, 0, 0, 1);
+
     void changemap(const char *s, int mode)
     {
         stopdemo();
@@ -991,7 +1011,7 @@ namespace server
         mapreload = false;
         gamemode = mode;
         gamemillis = 0;
-        gamelimit = (m_overtime ? 15 : 10)*60000;
+        gamelimit = (roundtime>0) ? roundtime : (m_overtime ? 15 : 10)*60000;
         interm = 0;
         nextexceeded = 0;
         copystring(smapname, s);
@@ -1006,7 +1026,8 @@ namespace server
 
         if(!m_mp(gamemode)) kicknonlocalclients(DISC_PRIVATE);
 
-        if(m_teammode) autoteam();
+        //Remod
+        if(m_teammode && !persist) autoteam();
 
         if(m_capture) smode = &capturemode;
         else if(m_ctf) smode = &ctfmode;

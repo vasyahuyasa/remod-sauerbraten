@@ -12,8 +12,8 @@ class GeoIPtool
     GeoIPtool()
     {
          gi = GeoIP_open("GeoIP.dat", GEOIP_STANDARD);
-         if (gi == NULL) conoutf(CON_ERROR, "Cannot inizialize GeoIp\n");
-            else conoutf("GeoIP initialized (Using GeoIP.dat)\n");
+         if (gi == NULL) conoutf(CON_ERROR, "Geoip: cannot inizialize\n");
+            else conoutf("Geoip: initialized with 'GeoIP.dat'\n");
     }
 
     ~GeoIPtool()
