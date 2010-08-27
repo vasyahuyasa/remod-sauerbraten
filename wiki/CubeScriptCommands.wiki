@@ -26,7 +26,7 @@
   * *`getteam [cn] (s)`* - return name of player team
   * *`disconnect [cn]`* - disconnect player with reason "normal"
   * *`kick [cn]`* - kick player
-  * *`spectator [1|0] [cn]`* make player spectator [1] or unspectate him [0]
+  * *`spectator [1|0] [cn]`* make player spectator `[1]` or unspectate him `[0]`
   * *`mapmode [s] [n]`* - change server map to s and mode to n
   * *`soucide [cn]`* - force suicide player
   * *`addbot [n]`* - addbot with skill n
