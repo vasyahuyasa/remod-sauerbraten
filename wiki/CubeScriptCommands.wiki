@@ -8,12 +8,11 @@
   * *cn* - client number
 
 ==General commands==
-{{{
   * getmap (s) - return name of current map on server
   * getmode (n) - return number of game mode
-  * getip [cn] (s) - return ip addres of client
-  * getfrags [cn] (n) - return frags of player
-  * getdeaths [cn] (n) - return deaths of player
+  * getip `[cn]` (s) - return ip addres of client
+  * getfrags `[cn]` (n) - return frags of player
+  * getdeaths `[cn]` (n) - return deaths of player
   * getteamkills [cn] (n) - return teamkills of player
   * getaccuracy [cn] (n) - return accuracy of player
   * getflags [cn] (n) - return scored flags of player
@@ -46,7 +45,6 @@
   * $gamelimit - read and write, set limit of next rounds in millis, if 0 server will use default time for each mode
   * $setroundtime - read and write, set length of current round in millis
   * $pause [1|0] - read and write, pause game
-}}}
 
 ==GeoIP commands==
   * getcountry [s] (s) - convert ip addres in input to countre name
