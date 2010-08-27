@@ -31,7 +31,6 @@
   * *`soucide [cn]`* - force suicide player
   * *`addbot [n]`* - addbot with skill n
   * *`delbot`* - delete bot
-
   * *`say [s]`* - show message s on server
   * *`pm [cn] [s]`* - show message s to specified player
   * *`saytonormal [s]`* - show message to users with no privilege, masters and admins cannot see that
