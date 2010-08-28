@@ -10,14 +10,14 @@
 ==General commands==
   * *`getmap (s)`* - return name of current map on server
   * *`getmode (n)`* - return number of game mode
-  * *`getip [cn] (s)`* - return ip addres of client
+  * *`getip [cn] (s)`* - return ip address of client
   * *`getfrags [cn] (n)`* - return frags of player
   * *`getdeaths [cn] (n)`* - return deaths of player
   * *`getteamkills [cn] (n)`* - return teamkills of player
   * *`getaccuracy [cn] (n)`* - return accuracy of player
   * *`getflags [cn] (n)`* - return scored flags of player
   * *`getretflags [cn] (n)`* - return frags of player
-  * *`getmastermode (n)`* - return number of returned flags, curently unimplemented
+  * *`getmastermode (n)`* - return number of returned flags, currently unimplemented
   * *`getmastermodename [n] (s)`* - convert mastermode number to text name
   * *`ismaster [cn] (1|0)`* - return status of player
   * *`isadmin [cn] (1|0)`* - return status of player
@@ -45,7 +45,7 @@
   * *`$pause [1|0]`* - read and write, pause game
 
 ==GeoIP commands==
-  * *`getcountry [s] (s)`* - convert ip addres in input to countre name
+  * *`getcountry [s] (s)`* - convert ip address in input to country name
 
 ==Rcon commands==
   * *`rconpass [s]`* - set password for access to remote control of server cube script
