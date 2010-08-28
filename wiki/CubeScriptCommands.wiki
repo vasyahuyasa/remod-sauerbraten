@@ -8,8 +8,7 @@
   * *cn* - client number
 
 ==General commands==
-  * *`getmap (s)`* - return name of current map on server
-  * *`getmode (n)`* - return number of game mode
+===Player control===
   * *`getip [cn] (s)`* - return ip address of client
   * *`getfrags [cn] (n)`* - return frags of player
   * *`getdeaths [cn] (n)`* - return deaths of player
@@ -17,27 +16,32 @@
   * *`getaccuracy [cn] (n)`* - return accuracy of player
   * *`getflags [cn] (n)`* - return scored flags of player
   * *`getretflags [cn] (n)`* - return frags of player
-  * *`getmastermode (n)`* - return number of returned flags, currently unimplemented
-  * *`getmastermodename [n] (s)`* - convert mastermode number to text name
+  * *`kick [cn]`* - kick player
+  * *`disconnect [cn]`* - disconnect player with reason "normal"
+  * *`spectator [1|0] [cn]`* make player spectator `[1]` or unspectate him `[0]` 
   * *`ismaster [cn] (1|0)`* - return status of player
   * *`isadmin [cn] (1|0)`* - return status of player
   * *`isspectator [cn] (1|0)`* - return status of player
-  * *`version (s)`*	- return information about build time and SVN revision
-  * *`getteam [cn] (s)`* - return name of player team
-  * *`disconnect [cn]`* - disconnect player with reason "normal"
-  * *`kick [cn]`* - kick player
-  * *`spectator [1|0] [cn]`* make player spectator `[1]` or unspectate him `[0]`
-  * *`mapmode [s] [n]`* - change server map to s and mode to n
   * *`soucide [cn]`* - force suicide player
   * *`addbot [n]`* - addbot with skill n
   * *`delbot`* - delete bot
-  * *`say [s]`* - show message s on server
+
+===Server control===
+  * *`getmap (s)`* - return name of current map on server
+  * *`getmode (n)`* - return number of game mode
+  * *`getteam [cn] (s)`* - return name of player team
+  * *`mastermode [n]`* - change server mastermode to n
+  * *`getmastermode (n)`* - return server mastermode
+  * *`getmastermodename [n] (s)`* - convert mastermode number to text name
+  * *`version (s)`* - return information about build time and SVN revision
+  * *`map [s]`* - change map on server to s
+  * *`mapmode [s] [n]`* - change server map to s and mode to n
   * *`pm [cn] [s]`* - show message s to specified player
+  * *`say [s]`* - show message s to all players
   * *`saytonormal [s]`* - show message to users with no privilege, masters and admins cannot see that
   * *`saytomaster [s]`* - show message to masters, normal players and admins cannot see that
   * *`saytoadmin  [s]`* - show message to admins , normal players and masters cannot see that
   * *`$uptime`* - read-inly, return server uptime in milliseconds	   
-  * *`mastermode [n]`* - change server mastermode to n
   * *`$persist [1|0]`* - read and write, make teams on server persist
   * *`$gamemillis`* - read-only, return round time in millis
   * *`$gamelimit`* - read and write, set limit of next rounds in millis, if 0 server will use default time for each mode
