@@ -48,4 +48,4 @@
   * *`getcountry [s] (s)`* - convert ip addres in input to countre name
 
 ==Rcon commands==
-  * *`rconpass [s]`* - set password for remote control of server cube script
+  * *`rconpass [s]`* - set password for access to remote control of server cube script
