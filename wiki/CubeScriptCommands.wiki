@@ -41,12 +41,13 @@
   * *`saytonormal [s]`* - show message to users with no privilege, masters and admins cannot see that
   * *`saytomaster [s]`* - show message to masters, normal players and admins cannot see that
   * *`saytoadmin  [s]`* - show message to admins , normal players and masters cannot see that
-  * *`$uptime`* - read-inly, return server uptime in milliseconds	   
-  * *`$persist [1|0]`* - read and write, make teams on server persist
-  * *`$gamemillis`* - read-only, return round time in millis
-  * *`$gamelimit`* - read and write, set limit of next rounds in millis, if 0 server will use default time for each mode
-  * *`$setroundtime`* - read and write, set length of current round in millis
   * *`$pause [1|0]`* - read and write, pause game
+  * *`$persist [1|0]`* - read and write, make persist teams on server
+  * *`$totalmillis`* - read-inly, return server uptime in milliseconds	 
+  * *`$gamelimit`* - read-only, set limit of next rounds in millis, if 0 server will use default time for each mode  
+  * *`$gamemillis`* - read-only, return played round time in millis
+  * *`$roundtime`* - read and write, redefined time of every round, if 0 server will set default time
+  * *`$setroundtime`* - read and write, set length of current round in millis
 
 ==GeoIP commands==
   * *`getcountry [s] (s)`* - convert ip address in input to country name
