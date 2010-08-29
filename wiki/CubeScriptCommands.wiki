@@ -7,7 +7,7 @@
   * *n* - number value
   * *cn* - client number
 
-#sidebar TableOfContents
+#sidebar CubeScriptCommands
 
 ==General commands==
 ===Player control===
