@@ -1,3 +1,0 @@
-﻿1. Вынесены некоторые функции из server.cpp в хидер fpsgame.h
-2. Добавлен checksleep(int millis) в fpsgame/server.cpp
-3. Создана директория mod и модули с доп. функциями

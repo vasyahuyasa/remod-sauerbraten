@@ -3,7 +3,9 @@
 
 #include "engine.h"
 #include "rconmod.h"
-
+#ifdef IRC
+    #include "irc.h"
+#endif
 #ifdef STANDALONE
 void fatal(const char *s, ...)
 {
@@ -716,6 +718,9 @@ void rundedicatedserver()
     {
         serverslice(true, 5);
         remod::rcon::update();
+        #ifdef IRC
+        ircslice();
+        #endif
     }
 }
 
