@@ -570,7 +570,7 @@ VARF(serverport, 0, server::serverport(), 0xFFFF, { if(!serverport) serverport =
 
 #ifdef STANDALONE
 int curtime = 0, lastmillis = 0;
-_VAR(uptime, totalmillis, 0, 0, INT_MAX, IDF_READONLY);
+_VAR(totalmillis, totalmillis, 0, 0, INT_MAX, IDF_READONLY);
 #endif
 
 void updatemasterserver()

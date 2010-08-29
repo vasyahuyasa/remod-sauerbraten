@@ -36,7 +36,7 @@ namespace server
 
     //Remod
     //Server mod
-    _VAR(gamemillis, gamemillis, 0, 0, INT_MAX, IDF_READONLY);  //round time in millis
+    _VAR(gamemillis, gamemillis, 0, 0, INT_MAX, IDF_READONLY);  //current round time in millis
     _VAR(gamelimit, gamelimit, 0, 0, INT_MAX, IDF_READONLY);    //round limit in millis
     //Update round time in game
     VAR(roundtime, 0, 0, INT_MAX);
@@ -1141,13 +1141,15 @@ namespace server
         }
     }
 
+    //Remod
+    VAR(intermissontime, 0, 10000, INT_MAX);
     void checkintermission()
     {
         if(gamemillis >= gamelimit && !interm)
         {
             sendf(-1, 1, "ri2", N_TIMEUP, 0);
             if(smode) smode->intermission();
-            interm = gamemillis + 10000;
+            interm = gamemillis + intermissontime;
         }
     }
 
