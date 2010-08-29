@@ -93,6 +93,24 @@ Cube script:
 	$ircchan
 	ircsay
 	ircsayto
+
+	verbose
+	ircfilter
+	ircaddclient
+	ircaddrelay
+	ircserv
+	ircport
+	ircnick
+	ircbind
+	ircpass
+	ircauth
+	ircconnect
+	ircaddchan
+	ircjoinchan
+	ircpasschan
+	ircrelaychan
+	ircfriendlychan
+	ircconns
 	
 Rcon: +
 	индивидуальная сессия каждого подключения -

@@ -8,3 +8,4 @@
 7. Вывод из conoutfv() копируется в rcon::sendmsg(sp) в engine/server.cpp
 8. VAR(rconport)и rcon::init(rconport) в initserver(), rcon::init() и rcon::update() в rundedicatedserver() в engine/server.cpp
 9. VAR(imissontime) в void checkintermission() в fpsgame/server.cpp
+10. irc.cpp, irc.h с некоторыми функциями импортированы из Red Eclipse и доведены до компилируемого вида
