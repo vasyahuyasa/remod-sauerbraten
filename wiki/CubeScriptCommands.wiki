@@ -7,8 +7,6 @@
   * *n* - number value
   * *cn* - client number
 
-#sidebar CubeScriptCommands
-
 ==General commands==
 ===Player control===
   * *`getip [cn] (s)`* - return ip address of client
