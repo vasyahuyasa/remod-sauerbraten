@@ -4,7 +4,7 @@ General:
 	баны
 	статистика по игроку в конце игры (фраги, смерти, аккуратность. украденые флаги -, возвращенные флаги - ) +
 	irc-бот
-	persist
+	persist +
 
 Server events:
 	onconnect [cn]
@@ -74,13 +74,25 @@ Cube script:
 	saytonormal [txt] +    send message to normal clients
     saytomaster [txt] +    send message to master
 	saytoadmin  [txt] +    send message to admin
-	$uptime +	   
+	$totalmillis +	   
 	mastermode [n] +
 	$persist [1|0] +
 	$gamemillis +
-	$gamelimit +
-	$setroundtime +
+	$gamelimit +     time limit for current round
+	$roundtime +     predefined time of every round, if 0 server will set default time
+	$setroundtime +     set limit of current round
 	$pause [1|0] +
+
+	$imissiontime +     intermisson time in millis (default 10000)
+
+	IRC:
+	$ircserver
+	$ircport
+	$ircname
+	$ircpass
+	$ircchan
+	ircsay
+	ircsayto
 	
 Rcon: +
 	индивидуальная сессия каждого подключения -

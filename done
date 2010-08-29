@@ -7,3 +7,4 @@
 6. Добавлена VAR(persist) в fpsgame/server.cpp и её проверка в void changemap()
 7. Вывод из conoutfv() копируется в rcon::sendmsg(sp) в engine/server.cpp
 8. VAR(rconport)и rcon::init(rconport) в initserver(), rcon::init() и rcon::update() в rundedicatedserver() в engine/server.cpp
+9. VAR(imissontime) в void checkintermission() в fpsgame/server.cpp
