@@ -23,7 +23,7 @@
   * *`isadmin [cn] (1|0)`* - return status of player
   * *`isspectator [cn] (1|0)`* - return status of player
   * *`soucide [cn]`* - force suicide player
-  * *`addbot [n]`* - addbot with skill n
+  * *`addbot [n]`* - add bot with skill n
   * *`delbot`* - delete bot
 
 ===Server control===
@@ -48,6 +48,7 @@
   * *`$gamemillis`* - read-only, return played round time in millis
   * *`$roundtime`* - read and write, redefined time of every round, if 0 server will set default time
   * *`$setroundtime`* - read and write, set length of current round in millis
+  * *`$imissiontime`* - read and write, set intermisson time in millis (default 10000)
 
 ==GeoIP commands==
   * *`getcountry [s] (s)`* - convert ip address in input to country name
