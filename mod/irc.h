@@ -16,6 +16,9 @@
 #endif
 #define ENG_DEVEL           true
 
+enum { CON_MESG, CON_SELF, CON_GAMESPECIFIC };
+enum { CON_EVENT, CON_MAX, CON_LO, CON_HI, CON_IMPORTANT };
+
 enum { IRCC_NONE = 0, IRCC_JOINING, IRCC_JOINED, IRCC_KICKED, IRCC_BANNED };
 enum { IRCCT_NONE = 0, IRCCT_AUTO };
 struct ircchan

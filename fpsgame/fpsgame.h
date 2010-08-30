@@ -420,6 +420,7 @@ namespace server
     void suicide(clientinfo *ci);
     void checkmaps(int req);
     void sendservmsg(const char *s);
+    void srvmsgf(int cn, const char *s, ...);
     int numclients(int exclude , bool nospec, bool noai, bool priv);
 
 }
