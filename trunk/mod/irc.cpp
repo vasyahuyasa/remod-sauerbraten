@@ -373,8 +373,8 @@ void ircprintf(ircnet *n, int relay, const char *target, const char *msg, ...)
             formatstring(s)("\fs\fa[%s:%s]\fS", n->name, c->name);
 
             //Remod
-            //if(n->type == IRCT_RELAY && c->relay >= relay)
-                //server::srvmsgf(relay > 1 ? -2 : -3, "\fs\fa[%s]\fS %s", c->friendly, str);
+            if(n->type == IRCT_RELAY && c->relay >= relay)
+                server::srvmsgf(relay > 1 ? -2 : -3, "\fs\fa[%s]\fS %s", c->friendly, str);
         }
         else
         {
@@ -385,7 +385,7 @@ void ircprintf(ircnet *n, int relay, const char *target, const char *msg, ...)
     {
         formatstring(s)("\fs\fa[%s]\fS", n->name);
     }
-   // console(0, "%s %s", s, str); // console is not used to relay
+    console(0, "%s %s", s, str); // console is not used to relay
 }
 
 void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
@@ -743,7 +743,6 @@ void ircslice()
 }
 
 ICOMMAND(ircconns, "", (void), { int num = 0; loopv(ircnets) if(ircnets[i]->state >= IRC_ATTEMPT) num++; intret(num); });
-#else
-//ICOMMAND(0, ircgui, "s", (char *s), intret(0));
-//ICOMMAND(0, ircconns, "", (void), intret(0));
+ICOMMAND(ircsay, "s", (const char *msg ), { ircoutf(0, msg); });
+
 #endif

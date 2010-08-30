@@ -14,6 +14,7 @@
 				<Compiler>
 					<Add option="-O2" />
 					<Add option="-DSTANDALONE" />
+					<Add option="-DIRC" />
 					<Add directory="enet\include" />
 					<Add directory="shared" />
 					<Add directory="include" />
@@ -89,6 +90,8 @@
 		</Unit>
 		<Unit filename="libGeoIP\GeoIP.h" />
 		<Unit filename="mod\geoipmod.cpp" />
+		<Unit filename="mod\irc.cpp" />
+		<Unit filename="mod\irc.h" />
 		<Unit filename="mod\rconmod.cpp" />
 		<Unit filename="mod\rconmod.h" />
 		<Unit filename="mod\serverctrl.cpp" />

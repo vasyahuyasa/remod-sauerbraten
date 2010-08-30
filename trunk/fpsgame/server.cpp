@@ -125,6 +125,14 @@ namespace server
     }
 
     void sendservmsg(const char *s) { sendf(-1, 1, "ris", N_SERVMSG, s); }
+    void srvmsgf(int cn, const char *s, ...)
+    {
+        if(cn < 0 || allowbroadcast(cn))
+        {
+            defvformatstring(str, s, s);
+            sendf(cn, 1, "ris", N_SERVMSG, str);
+        }
+    }
 
     void resetitems()
     {
