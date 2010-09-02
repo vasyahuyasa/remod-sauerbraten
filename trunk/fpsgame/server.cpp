@@ -1,5 +1,8 @@
 #include "game.h"
 #include "fpsgame.h"
+
+#include "commandev.h"
+
 namespace game
 {
     void parseoptions(vector<const char *> &args)
@@ -1062,6 +1065,8 @@ namespace server
             demonextmatch = false;
             setupdemorecord();
         }
+        //Remod
+        remod::onevent("onmapstart", "");
     }
 
     struct votecount
@@ -1158,6 +1163,8 @@ namespace server
             sendf(-1, 1, "ri2", N_TIMEUP, 0);
             if(smode) smode->intermission();
             interm = gamemillis + intermissontime;
+            //Remod
+            remod::onevent("onimission", "");
         }
     }
 
@@ -1538,6 +1545,7 @@ namespace server
             sendf(-1, 1, "ri2", N_CDIS, n);
             clients.removeobj(ci);
             aiman::removeai(ci);
+            remod::onevent("ondisconnect", "i", n);
             if(!numclients(-1, false, true)) noclients(); // bans clear when server empties
         }
         else connects.removeobj(ci);
@@ -1761,6 +1769,9 @@ namespace server
                 aiman::addclient(ci);
 
                 if(m_demo) setupdemoplayback();
+
+                //Remod
+                remod::onevent("onconnect", "i", ci->clientnum);
 
                 if(servermotd[0]) sendf(sender, 1, "ris", N_SERVMSG, servermotd);
             }
@@ -2028,6 +2039,8 @@ namespace server
                 QUEUE_MSG;
                 getstring(text, p);
                 filtertext(text, text);
+                //Remod
+                if(remod::onevent("ontext", "is", sender, text)) break;
                 QUEUE_STR(text);
                 break;
             }
@@ -2036,6 +2049,8 @@ namespace server
             {
                 getstring(text, p);
                 if(!ci || !cq || (ci->state.state==CS_SPECTATOR && !ci->local && !ci->privilege) || !m_teammode || !cq->team[0]) break;
+                //Remod
+                if(remod::onevent("ontext", "is", sender, text)) break;
                 loopv(clients)
                 {
                     clientinfo *t = clients[i];
@@ -2049,6 +2064,8 @@ namespace server
             {
                 QUEUE_MSG;
                 getstring(text, p);
+                //Remod
+                if(remod::onevent("onswitchname", "is", sender, text)) break;
                 filtertext(ci->name, text, false, MAXNAMELEN);
                 if(!ci->name[0]) copystring(ci->name, "unnamed");
                 QUEUE_STR(ci->name);
@@ -2058,6 +2075,8 @@ namespace server
             case N_SWITCHMODEL:
             {
                 ci->playermodel = getint(p);
+                //Remod
+                remod::onevent("onswitchmodel", "ii", sender, ci->playermodel);
                 QUEUE_MSG;
                 break;
             }
@@ -2068,6 +2087,8 @@ namespace server
                 filtertext(text, text, false, MAXTEAMLEN);
                 if(strcmp(ci->team, text) && m_teammode && (!smode || smode->canchangeteam(ci, ci->team, text)))
                 {
+                    //Remod
+                    if(ci->state.state!=CS_SPECTATOR && remod::onevent("onswitchteam", "is", sender, text)) break;
                     if(ci->state.state==CS_ALIVE) suicide(ci);
                     copystring(ci->team, text);
                     aiman::changeteam(ci);
@@ -2166,6 +2187,8 @@ namespace server
                 {
                     if((ci->privilege>=PRIV_ADMIN || ci->local) || (mastermask&(1<<mm)))
                     {
+                        //Remod
+                        if(remod::onevent("onmastermode", "ii", sender, mm)) break;
                         mastermode = mm;
                         allowedips.shrink(0);
                         if(mm>=MM_PRIVATE)

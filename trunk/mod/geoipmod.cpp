@@ -1,3 +1,4 @@
+#ifdef GEOIP
 #include "fpsgame.h"
 #include "GeoIP.h"
 
@@ -12,8 +13,8 @@ class GeoIPtool
     GeoIPtool()
     {
          gi = GeoIP_open("GeoIP.dat", GEOIP_STANDARD);
-         if (gi == NULL) conoutf(CON_ERROR, "Geoip: cannot inizialize\n");
-            else conoutf("Geoip: initialized with 'GeoIP.dat'\n");
+         if (gi == NULL) conoutf(CON_ERROR, "Geoip: cannot inizialize");
+            else conoutf("Geoip: initialized with 'GeoIP.dat'");
     }
 
     ~GeoIPtool()
@@ -45,3 +46,4 @@ void getcountry(char *ip)
 COMMAND(getcountry,"s");
 
 }
+#endif

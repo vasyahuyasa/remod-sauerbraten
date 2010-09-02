@@ -3,23 +3,23 @@ General:
 	geoip +
 	баны
 	статистика по игроку в конце игры (фраги, смерти, аккуратность. украденые флаги -, возвращенные флаги - ) +
-	irc-бот
+	irc-бот +
 	persist +
 
-Server events:
-	onconnect [cn]
-	ondisconnect [cn]
-	onmapstart
-	onimission
+Server events: +
+	onconnect [cn] +
+	ondisconnect [cn] +
+	onmapstart +
+	onimission +
 	onteamkill [cn]
 	onteamswitch [cn]
-	ontext [cn] [msg]	
-	onsayteam [cn] [msg]
-	onswitchname [cn]
-	onswitchmodel [cn]
-	onswitchteam [cn] 	
+	@ontext [cn] [msg] +	
+	@onsayteam [cn] [msg] +
+	@onswitchname [cn] [newname] +
+	onswitchmodel [cn] [mdl] +
+	@onswitchteam [cn] [newteam] +	
 	onmapvote [cn] [map]
-	onmastermode [cn] [mode]
+	@onmastermode [cn] [mode]
 	onclearbans [cn]
 	onkick [cn] [victim]
 	onspectator [cn] [1|0] if 0 - unspec, if 1 became spec
@@ -83,16 +83,13 @@ Cube script:
 	$setroundtime +     set limit of current round
 	$pause [1|0] +
 
-	$imissiontime +     intermisson time in millis (default 10000)
+	$imissiontime +     intermisson time in millis (default 10000) 
+	
+	getname [cn] [txt] +
 
-	IRC:
-	$ircserver
-	$ircport
-	$ircname
-	$ircpass
-	$ircchan
-	ircsay
-	ircsayto
+	IRC: +
+	ircsay +
+	ircsayto -
 
 	verbose
 	ircfilter
@@ -115,7 +112,7 @@ Cube script:
 Rcon: +
 	индивидуальная сессия каждого подключения -
 
-IRC бот:
+IRC бот: +
 	возможность кика/бана
 	перекидывание игрока в другую команду
 	spect/unspec
