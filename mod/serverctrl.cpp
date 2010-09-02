@@ -10,6 +10,15 @@ namespace remod
 using namespace server;
 
 //Additional cubescript functions
+void getname(int *cn)
+{
+    clientinfo *ci = (clientinfo *)getinfo((int)*cn);
+    if(ci)
+    {
+        result(ci->name);
+    }
+}
+
 void getmap()
 {
     result(smapname);
@@ -258,6 +267,7 @@ void _mastermode(int *mm)
 }
 
 //Cube script binds
+COMMAND(getname, "i");
 COMMAND(getmap, "");
 COMMAND(getmode, "");
 COMMAND(getip, "i");
