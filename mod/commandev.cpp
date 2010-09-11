@@ -100,7 +100,6 @@ bool onevent(const char *evt_type, const char *fmt, ...)
         //Check params
         if(paramcount>0)
         {
-            string str; //Temp string
             va_list vl;
             va_start(vl, fmt);
 
@@ -111,7 +110,7 @@ bool onevent(const char *evt_type, const char *fmt, ...)
                 switch(fmt[i])
                 {
                 case 'i':
-                    strcat(evparams, itoa(va_arg(vl, int), str, 10));
+                    strcat(evparams, intstr(va_arg(vl, int)));
                     break;
                 case 's':
                     strcat(evparams, "\"");
@@ -119,7 +118,7 @@ bool onevent(const char *evt_type, const char *fmt, ...)
                     strcat(evparams, "\"");
                     break;
                 case 'd':
-                    strcat(evparams, gcvt(va_arg(vl, double), 5, str));
+                    strcat(evparams, floatstr(va_arg(vl, double)));
                     break;
                 default:
                     //Read and forgot
