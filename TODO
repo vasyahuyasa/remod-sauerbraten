@@ -11,35 +11,34 @@ Server events: +
 	ondisconnect [cn] +
 	onmapstart +
 	onimission +
-	onteamkill [cn]
-	onteamswitch [cn]
+	onteamkill [cn] +
 	@ontext [cn] [msg] +	
 	@onsayteam [cn] [msg] +
 	@onswitchname [cn] [newname] +
 	onswitchmodel [cn] [mdl] +
 	@onswitchteam [cn] [newteam] +	
-	onmapvote [cn] [map]
-	@onmastermode [cn] [mode]
-	onclearbans [cn]
-	onkick [cn] [victim]
-	onspectator [cn] [1|0] if 0 - unspec, if 1 became spec
-	onsetteam [cn]
-	onrecorddemo [cn]
-	onstopdemo [cn]
-	oncleardemos [cn]
-	onlistdemos [cn]
-	ongetdemo [cn]
-	onsetmaster [cn] [pass]
-	onaddbot [cn] [skill]
-	ondelbot [cn]
-	onbotlimit [cn] [limit]
+	onmapvote [cn] [map] [mode] +
+	@onmastermode [cn] [mode] +
+	@onclearbans [cn] +
+	@onkick [cn] [victim] +
+	onspectator [cn] [1|0] + if 0 - unspec, if 1 became spec
+	@onsetteam [cn] [newteam] +
+	@onrecorddemo +
+	onstopdemo +
+	@oncleardemos [demonum] +
+	@onlistdemos [cn] +
+	@ongetdemo [cn] [demonum] +
+	onsetmaster [cn] [1|0] [passhash] [authname] +
+	@onaddbot [skill] +
+	@ondelbot +
+	onbotlimit [cn] [limit] +
 	onbotbalance [cn] [balance]
-	onauth [cn] [name]
-    onpausegame [cn] [pause] if pause>0 game paused
+	//onauth [cn] [name] = onsetmaster
+    @onpausegame [1|0] +
 
 	#coopedit
-	ongetmap [cn]
-	onnewmap [cn]
+	@ongetmap [cn] +
+	@onnewmap [cn] +
 
 Cube script:
 	getmap (curent_map_name) +
@@ -85,29 +84,35 @@ Cube script:
 
 	$imissiontime +     intermisson time in millis (default 10000) 
 	
-	getname [cn] [txt] +
+	getname [cn] [txt] +         
+	clearbans +
+	addgban [ip] -     add global ban     
+	setteam [cn] [team] +           
+	clearhandlers +       
+	delhandler [evt] [cmd] +
 
 	IRC: +
 	ircsay +
 	ircsayto -
 
-	verbose
-	ircfilter
-	ircaddclient
-	ircaddrelay
-	ircserv
-	ircport
-	ircnick
-	ircbind
-	ircpass
-	ircauth
-	ircconnect
-	ircaddchan
-	ircjoinchan
-	ircpasschan
-	ircrelaychan
-	ircfriendlychan
-	ircconns
+	$verbose +
+	ircfilter +
+	ircaddclient +
+	ircaddrelay +
+	ircserv +
+	ircport +
+	ircnick +
+	ircbind +
+	ircpass +
+	ircauth +
+	ircconnect +
+	ircaddchan +
+	ircjoinchan +
+	ircpasschan +
+	ircrelaychan +
+	ircfriendlychan +
+	ircconns +
+	$ircflooddelay +
 	
 Rcon: +
 	индивидуальная сессия каждого подключения -
@@ -120,7 +125,7 @@ IRC бот: +
 	общение
 	предупреждение
 
-#commands:
+#commands: -
 	persist [0|1]
 	specall [0|1]
 	mute [cn] [0|1] 
