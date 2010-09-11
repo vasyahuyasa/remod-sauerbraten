@@ -4,7 +4,7 @@ override CXXFLAGS+= -Wall -fsigned-char
 PLATFORM= $(shell uname -s)
 PLATFORM_PREFIX= native
 
-INCLUDES= -Ishared -Iengine -Ifpsgame -Ienet/include
+INCLUDES= -Ishared -Iengine -Ifpsgame -Ienet/include -Imod -IlibGeoIP
 
 STRIP=
 ifeq (,$(findstring -g,$(CXXFLAGS)))
@@ -15,15 +15,18 @@ endif
 
 MV=mv
 
-ifneq (,$(findstring MINGW,$(PLATFORM)))
-WINDRES= windres
+SERVER_INCLUDES+= -DGEOIP -DIRC
 
 ifneq (,$(findstring MINGW,$(PLATFORM)))
-SERVER_INCLUDES= -DSTANDALONE $(INCLUDES) -Iinclude
+WINDRES= windres
+endif
+
+ifneq (,$(findstring MINGW,$(PLATFORM)))
+SERVER_INCLUDES+= -DSTANDALONE $(INCLUDES) -Iinclude
 SERVER_LIBS= -Llib -lzdll -lenet -lws2_32 -lwinmm
 else
-SERVER_INCLUDES= -DSTANDALONE $(INCLUDES)
-SERVER_LIBS= -Lenet/.libs -lenet -lz
+SERVER_INCLUDES+= -DSTANDALONE $(INCLUDES)
+SERVER_LIBS= -Lenet/.libs -L/usr/local/lib -lenet -lz -lGeoIP
 endif
 SERVER_OBJS= \
 	shared/crypto-standalone.o \
@@ -31,7 +34,12 @@ SERVER_OBJS= \
 	shared/tools-standalone.o \
 	engine/command-standalone.o \
 	engine/server-standalone.o \
-	fpsgame/server-standalone.o
+	fpsgame/server-standalone.o \
+	mod/commandev-standalone.o \
+	mod/geoipmod-standalone.o \
+	mod/irc-standalone.o \
+	mod/rconmod-standalone.o \
+	mod/serverctrl-standalone.o	
 
 ifeq ($(PLATFORM),SunOS)
 CLIENT_LIBS+= -lsocket -lnsl -lX11
@@ -40,7 +48,7 @@ endif
 
 default: all
 
-all: client server
+all: server
 
 enet/Makefile:
 	cd enet; ./configure --enable-shared=no --enable-static=yes
