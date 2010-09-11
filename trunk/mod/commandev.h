@@ -11,6 +11,7 @@ namespace remod
         string evt_cmd;
     };
 
+    bool iseat(const char *evt_type);
     bool onevent(const char *evt_type, const char *fmt, ...);
 }
 #endif

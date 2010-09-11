@@ -30,7 +30,7 @@
 					<Add library="ws2_32" />
 					<Add library="winmm" />
 					<Add library="zdll" />
-					<Add directory="C:\projs\remod_justice\lib" />
+					<Add directory="lib" />
 				</Linker>
 			</Target>
 			<Target title="Release_freebsd">

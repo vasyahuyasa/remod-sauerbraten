@@ -38,10 +38,23 @@ bool iseat(const char *evt_type)
 //Add script callback to event
 void addhandler(const char *evt_type, const char *callbackcmd)
 {
-    evt_handler eh;
-    strcpy(eh.evt_type, evt_type);
-    strcpy(eh.evt_cmd, callbackcmd);
-    evt_handlers.add(eh);
+    if(evt_type[0] && callbackcmd[0])
+    {
+        evt_handler eh;
+        strcpy(eh.evt_type, evt_type);
+        strcpy(eh.evt_cmd, callbackcmd);
+        evt_handlers.add(eh);
+    }
+
+}
+
+void delhandler(const char* evt_type, const char *cmd)
+{
+    for(int i=0; i<evt_handlers.length(); i++)
+    {
+        if((strcmp(evt_handlers[i].evt_type, evt_type) == 0) && (strcmp(evt_handlers[i].evt_cmd, cmd) == 0))
+            evt_handlers.remove(i);
+    }
 }
 
 bool ishandle(const char *evt_type)
@@ -56,7 +69,7 @@ bool ishandle(const char *evt_type)
     return false;
 }
 
-#if 0
+#if 1
 //Debug
 void dumphandlers()
 {
@@ -67,6 +80,11 @@ void dumphandlers()
 }
 COMMAND(dumphandlers, "");
 #endif
+
+void clearhandlers()
+{
+    evt_handlers.shrink(0);
+}
 
 //Return true - eat server handler, false allow server to handle
 bool onevent(const char *evt_type, const char *fmt, ...)
@@ -139,5 +157,7 @@ bool onevent(const char *evt_type, const char *fmt, ...)
 COMMAND(addeat, "i");
 COMMAND(deleat, "i");
 COMMAND(addhandler, "ss");
+COMMAND(delhandler, "ss");
+COMMAND(clearhandlers, "");
 
 }

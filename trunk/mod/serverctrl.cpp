@@ -1,4 +1,5 @@
 #include "fpsgame.h"
+#include "commandev.h"
 
 #ifndef WIN32
 #include <arpa/inet.h>
@@ -141,6 +142,7 @@ void kick(int *cn)
     b.ip = getclientip((int)*cn);
     allowedips.removeobj(b.ip);
     disconnect_client((int)*cn, DISC_KICK);
+    remod::onevent("onkick", "ii", -1, (int)*cn);
 }
 
 void spectator(int *st, int *cn)
@@ -259,11 +261,33 @@ void saytoadmin(char *msg)
 void _mastermode(int *mm)
 {
     mastermode = (int)*mm;
+    remod::onevent("onmastermode", "ii", -1, mastermode);
     if((int)*mm>=MM_PRIVATE)
     {
         loopv(clients) allowedips.add(getclientip(clients[i]->clientnum));
     }
     sendf(-1, 1, "rii", N_MASTERMODE, mastermode);
+}
+
+void clearbans()
+{
+    remod::onevent("onclearbans", "");
+    bannedips.shrink(0);
+    sendservmsg("cleared all bans");
+}
+
+void setteam(int *cn, const char *team)
+{
+    clientinfo *ci = (clientinfo *)getinfo((int)*cn);
+    if(!ci && !strcmp(ci->team, team)) return;
+    remod::onevent("onsetteam", "is", cn, team);
+    if(!smode || smode->canchangeteam(ci, ci->team, team))
+    {
+        if(ci->state.state==CS_ALIVE) suicide(ci);
+        copystring(ci->team, team, MAXTEAMLEN+1);
+    }
+    aiman::changeteam(ci);
+    sendf(-1, 1, "riisi", N_SETTEAM, (int)*cn, ci->team, 1);
 }
 
 //Cube script binds
@@ -301,5 +325,7 @@ COMMAND(saytomaster, "s");
 COMMAND(saytoadmin, "s");
 COMMANDN(mastermode, _mastermode, "i");
 VARF(pause, 0, 0, 1, server::pausegame(pause));
+COMMAND(clearbans, "");
+COMMAND(setteam, "is");
 
 }

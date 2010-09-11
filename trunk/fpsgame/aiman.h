@@ -87,6 +87,8 @@ namespace aiman
 
 	bool addai(int skill, int limit)
 	{
+	    //Remod
+	    if(remod::onevent("onaddbot", "i", skill)) return false;
 		int numai = 0, cn = -1, maxai = limit >= 0 ? min(limit, MAXBOTS) : MAXBOTS;
 		loopv(bots)
         {
@@ -132,6 +134,8 @@ namespace aiman
 
 	void deleteai(clientinfo *ci)
 	{
+	    //Remod
+	    if(remod::onevent("ondelbot", "")) return;
         int cn = ci->clientnum - MAXCLIENTS;
         if(!bots.inrange(cn)) return;
         if(smode) smode->leavegame(ci, true);
@@ -244,6 +248,8 @@ namespace aiman
     void setbotlimit(clientinfo *ci, int limit)
     {
         if(ci && !ci->local && ci->privilege < PRIV_ADMIN) return;
+        //Remod
+        if(remod::onevent("onbotlimit", "ii", ci->clientnum, clamp(limit, 0, MAXBOTS))) return;
         botlimit = clamp(limit, 0, MAXBOTS);
         dorefresh = true;
         defformatstring(msg)("bot limit is now %d", botlimit);

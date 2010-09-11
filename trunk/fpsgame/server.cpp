@@ -366,6 +366,9 @@ namespace server
 
         if(!demotmp) return;
 
+        //Remod
+        remod::onevent("onstopdemo", "");
+
         int len = demotmp->size();
         if(demos.length()>=MAXDEMOS)
         {
@@ -393,6 +396,9 @@ namespace server
     {
         if(!m_mp(gamemode) || m_edit) return;
 
+        //Remod
+        if(remod::onevent("onrecorddemo", "")) return;
+
         demotmp = opentempfile("demorecord", "w+b");
         if(!demotmp) return;
 
@@ -417,6 +423,8 @@ namespace server
 
     void listdemos(int cn)
     {
+        //Remod
+        if(remod::onevent("onlistdemos", "i", cn)) return;
         packetbuf p(MAXTRANS, ENET_PACKET_FLAG_RELIABLE);
         putint(p, N_SENDDEMOLIST);
         putint(p, demos.length());
@@ -426,6 +434,8 @@ namespace server
 
     void cleardemos(int n)
     {
+        //Remod
+        if(remod::onevent("oncleardemos", "i", n)) return;
         if(!n)
         {
             loopv(demos) delete[] demos[i].data;
@@ -443,6 +453,8 @@ namespace server
 
     void senddemo(int cn, int num)
     {
+        //Remod
+        if(remod::onevent("ongetdemo", "ii", cn, num)) return;
         if(!num) num = demos.length();
         if(!demos.inrange(num-1)) return;
         demofile &d = demos[num-1];
@@ -541,6 +553,10 @@ namespace server
     void pausegame(bool val)
     {
         if(gamepaused==val) return;
+
+        //Remod
+        if(remod::onevent("onpasegame", "i", val ? 1 : 0)) return;
+
         gamepaused = val;
         sendf(-1, 1, "rii", N_PAUSEGAME, gamepaused ? 1 : 0);
     }
@@ -612,6 +628,8 @@ namespace server
         if(val && authname) formatstring(msg)("%s claimed %s as '\fs\f5%s\fr'", colorname(ci), name, authname);
         else formatstring(msg)("%s %s %s", colorname(ci), val ? "claimed" : "relinquished", name);
         sendservmsg(msg);
+        //Remod
+        remod::onevent("onsetmaster", "iiss", ci->clientnum, val ? 1:0, pass, authname ? authname:"");
         currentmaster = val ? ci->clientnum : -1;
         sendf(-1, 1, "ri4", N_CURRENTMASTER, currentmaster, currentmaster >= 0 ? ci->privilege : 0, mastermode);
         if(gamepaused)
@@ -1134,7 +1152,10 @@ namespace server
         if(!ci || (ci->state.state==CS_SPECTATOR && !ci->privilege && !ci->local) || (!ci->local && !m_mp(reqmode))) return;
         copystring(ci->mapvote, map);
         ci->modevote = reqmode;
+
         if(!ci->mapvote[0]) return;
+        //Remod
+        remod::onevent("onmapvote", "isi", sender, map, reqmode);
         if(ci->local || mapreload || (ci->privilege && mastermode>=MM_VETO))
         {
             if(demorecord) enddemorecord();
@@ -1186,7 +1207,11 @@ namespace server
         if(ts.health<=0)
         {
             target->state.deaths++;
-            if(actor!=target && isteam(actor->team, target->team)) actor->state.teamkills++;
+            if(actor!=target && isteam(actor->team, target->team)) //Remod
+            {
+                actor->state.teamkills++;
+                remod::onevent("onteamkill", "i", actor->clientnum);
+            }
             int fragvalue = smode ? smode->fragvalue(target, actor) : (target==actor || isteam(target->team, actor->team) ? -1 : 1);
             actor->state.frags += fragvalue;
             if(fragvalue>0)
@@ -2212,6 +2237,8 @@ namespace server
             {
                 if(ci->privilege || ci->local)
                 {
+                    //Remod
+                    if(remod::onevent("onclearbans", "i", sender)) break;
                     bannedips.shrink(0);
                     sendservmsg("cleared all bans");
                 }
@@ -2223,6 +2250,8 @@ namespace server
                 int victim = getint(p);
                 if((ci->privilege || ci->local) && ci->clientnum!=victim && getclientinfo(victim)) // no bots
                 {
+                    //Remod
+                    if(remod::onevent("onkick", "ii", sender, victim)) break;
                     ban &b = bannedips.add();
                     b.time = totalmillis;
                     b.ip = getclientip(victim);
@@ -2256,6 +2285,8 @@ namespace server
                     if(spinfo->clientmap[0] || spinfo->mapcrc) checkmaps();
                     sendf(-1, 1, "ri", N_MAPRELOAD);
                 }
+                //Remod
+                remod::onevent("onspectator", "ii", spectator, val ? 1 : 0);
                 sendf(-1, 1, "ri3", N_SPECTATOR, spectator, val);
                 if(!val && mapreload && !spinfo->privilege && !spinfo->local) sendf(spectator, 1, "ri", N_MAPRELOAD);
                 break;
@@ -2269,6 +2300,8 @@ namespace server
                 if(!ci->privilege && !ci->local) break;
                 clientinfo *wi = getinfo(who);
                 if(!wi || !strcmp(wi->team, text)) break;
+                //Remod
+                if(remod::onevent("onsetteam", "is", who, text)) break;
                 if(!smode || smode->canchangeteam(wi, wi->team, text))
                 {
                     if(wi->state.state==CS_ALIVE) suicide(wi);
@@ -2324,6 +2357,8 @@ namespace server
             case N_GETMAP:
                 if(mapdata)
                 {
+                    //Remod
+                    if(remod::onevent("ongetmap", "i", sender)) break;
                     sendf(sender, 1, "ris", N_SERVMSG, "server sending map...");
                     sendfile(sender, 2, mapdata, "ri", N_SENDMAP);
                     ci->needclipboard = totalmillis;
@@ -2335,6 +2370,8 @@ namespace server
             {
                 int size = getint(p);
                 if(!ci->privilege && !ci->local && ci->state.state==CS_SPECTATOR) break;
+                //Remod
+                if(remod::onevent("onnewmap", "i", ci->clientnum)) break;
                 if(size>=0)
                 {
                     smapname[0] = '\0';
