@@ -35,7 +35,7 @@ Server events: +
 	onbotbalance [cn] [balance]
 	//onauth [cn] [name] = onsetmaster
     @onpausegame [1|0] +   
-    onmodmap [cn] -
+    onmodmap [cn] +
 
 	#coopedit
 	@ongetmap [cn] +
@@ -91,7 +91,7 @@ Cube script:
 	setteam [cn] [team] +           
 	clearhandlers +       
 	delhandler [evt] [cmd] +  
-	getping [cn] -
+	getping [cn] +
 
 	IRC: +
 	ircsay +
@@ -132,6 +132,6 @@ IRC бот: +
 	specall [0|1]
 	mute [cn] [0|1] 
 	ban <cn> <time> reason
-	kick [cn] [time mins.] [reason]
+	kick [cn] [time mins] [reason]
 	restart
 	stats  (cn)

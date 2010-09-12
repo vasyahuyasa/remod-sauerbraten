@@ -290,6 +290,16 @@ void setteam(int *cn, const char *team)
     sendf(-1, 1, "riisi", N_SETTEAM, (int)*cn, ci->team, 1);
 }
 
+
+void getping(int*cn)
+{
+    clientinfo *ci = (clientinfo *)getinfo((int)cn);
+    if(ci)
+    {
+        intret(ci->ping);
+    }
+}
+
 //Cube script binds
 COMMAND(getname, "i");
 COMMAND(getmap, "");
@@ -327,5 +337,6 @@ COMMANDN(mastermode, _mastermode, "i");
 VARF(pause, 0, 0, 1, server::pausegame(pause));
 COMMAND(clearbans, "");
 COMMAND(setteam, "is");
+COMMAND(getping, "i");
 
 }
