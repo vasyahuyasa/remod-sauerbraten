@@ -34,7 +34,8 @@ Server events: +
 	onbotlimit [cn] [limit] +
 	onbotbalance [cn] [balance]
 	//onauth [cn] [name] = onsetmaster
-    @onpausegame [1|0] +
+    @onpausegame [1|0] +   
+    onmodmap [cn] -
 
 	#coopedit
 	@ongetmap [cn] +
@@ -89,7 +90,8 @@ Cube script:
 	addgban [ip] -     add global ban     
 	setteam [cn] [team] +           
 	clearhandlers +       
-	delhandler [evt] [cmd] +
+	delhandler [evt] [cmd] +  
+	getping [cn] -
 
 	IRC: +
 	ircsay +

@@ -2065,7 +2065,23 @@ namespace server
                 getstring(text, p);
                 filtertext(text, text);
                 //Remod
-                if(remod::onevent("ontext", "is", sender, text)) break;
+                char ftext[MAXTRANS];
+
+                //Replace duble quotes with single
+                loopi(strlen(text))
+                {
+                    if(text[i] == '\"')
+                    {
+                        ftext[i] = '\'';
+                    }
+                    else
+                    {
+                        ftext[i] = text[i];
+                    }
+                }
+                ftext[strlen(ftext)] = '\0';
+
+                if(remod::onevent("ontext", "is", sender, ftext)) break;
                 QUEUE_STR(text);
                 break;
             }
