@@ -38,7 +38,6 @@ namespace server
     stream *mapdata = NULL;
 
     //Remod
-    //Server mod
     _VAR(gamemillis, gamemillis, 0, 0, INT_MAX, IDF_READONLY);  //current round time in millis
     _VAR(gamelimit, gamelimit, 0, 0, INT_MAX, IDF_READONLY);    //round limit in millis
     //Update round time in game
@@ -82,6 +81,9 @@ namespace server
 	});
     SVAR(servermotd, "");
 
+    //Remod
+    SVAR(commandchar, "#"); //Command character
+
     void *newclientinfo() { return new clientinfo; }
     void deleteclientinfo(void *ci) { delete (clientinfo *)ci; }
 
@@ -94,6 +96,17 @@ namespace server
 
     vector<server_entity> sents;
     vector<savedscore> scores;
+
+    //Remod
+    void filtercstext(char *dst, const char *src)
+    {
+        for(int c = *src; c; c = *++src)
+        {
+            if(c == '\"') { c = '\''; }
+            *dst++ = c;
+        }
+        *dst = '\0';
+    }
 
     int msgsizelookup(int msg)
     {
@@ -2074,20 +2087,16 @@ namespace server
                 filtertext(text, text);
                 //Remod
                 char ftext[MAXTRANS];
+                filtercstext(ftext, text);
 
-                //Replace duble quotes with single
-                loopi(strlen(text))
+                //Check for commandchar
+                if(strlen(ftext)>strlen(commandchar) && (strncmp(commandchar, ftext, strlen(commandchar)) == 0))
                 {
-                    if(text[i] == '\"')
-                    {
-                        ftext[i] = '\'';
-                    }
-                    else
-                    {
-                        ftext[i] = text[i];
-                    }
+                    strncpy(ftext, &ftext[strlen(commandchar)], strlen(ftext)-strlen(commandchar));
+                    ftext[strlen(ftext)-strlen(commandchar)] = '\0';
+                    remod::onevent("oncommand", "is", sender, ftext);
+                    break;
                 }
-                ftext[strlen(ftext)] = '\0';
 
                 if(remod::onevent("ontext", "is", sender, ftext)) break;
                 QUEUE_STR(text);

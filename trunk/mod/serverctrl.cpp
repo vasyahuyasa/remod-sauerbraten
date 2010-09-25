@@ -300,6 +300,47 @@ void getping(int*cn)
     }
 }
 
+void getonline(int*cn)
+{
+    clientinfo *ci = (clientinfo *)getinfo((int)*cn);
+    if(ci)
+    {
+        intret(ci->connectmillis);
+    }
+}
+
+void _getteamscore(char *team)
+{
+    if(smode && smode->hidefrags())
+    {
+        intret(smode->getteamscore(team));
+    }
+    else
+    {
+        int teamfrags = 0;
+        loopv(clients) if(clients[i]->team[0])
+        {
+            clientinfo *ci = clients[i];
+            if(ci && (strcmp(team, ci->team) == 0)) teamfrags+=ci->state.frags;
+        }
+        intret(teamfrags);
+    }
+
+}
+
+void getrank(int *cn)
+{
+    int rank = 0, bestfrags = 0;
+    loopv(clients)
+    {
+        clientinfo *ci = clients[i];
+        if(ci && (ci->state.frags>bestfrags))
+        {
+
+        }
+    }
+}
+
 //Cube script binds
 COMMAND(getname, "i");
 COMMAND(getmap, "");
@@ -328,15 +369,18 @@ COMMANDN(suicide, _suicide, "i");
 COMMAND(addbot, "i");
 COMMAND(delbot, "");
 
-COMMAND(say, "s");
+COMMAND(say, "C");
 COMMAND(pm, "is");
-COMMAND(saytonormal, "s");
-COMMAND(saytomaster, "s");
-COMMAND(saytoadmin, "s");
+COMMAND(saytonormal, "C");
+COMMAND(saytomaster, "C");
+COMMAND(saytoadmin, "C");
 COMMANDN(mastermode, _mastermode, "i");
 VARF(pause, 0, 0, 1, server::pausegame(pause));
 COMMAND(clearbans, "");
 COMMAND(setteam, "is");
 COMMAND(getping, "i");
+COMMAND(getonline, "i");
+COMMANDN(getteamscore, _getteamscore, "s");
+//COMMAND(getrank, "i");
 
 }
