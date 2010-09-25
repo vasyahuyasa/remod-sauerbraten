@@ -91,7 +91,10 @@ Cube script:
 	setteam [cn] [team] +           
 	clearhandlers +       
 	delhandler [evt] [cmd] +  
-	getping [cn] +
+	getping [cn] +    
+	getonline [cn] +    online time     
+	getteamscores [team] (scores) +
+	getrank [cn] (rank) -    return player rank    
 
 	IRC: +
 	ircsay +
