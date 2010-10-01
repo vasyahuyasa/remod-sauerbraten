@@ -328,17 +328,49 @@ void _getteamscore(char *team)
 
 }
 
+clientinfo* findbest(vector<clientinfo *> &a)
+{
+    int bestfrags = a[0]->state.frags;
+    int bfrager = 0;
+    loopv(a)
+    {
+        if(a[i]->state.frags > bestfrags)
+        {
+            bestfrags = a[i]->state.frags;
+            bfrager = i;
+        }
+    }
+
+    clientinfo *ci = a.remove(bfrager);
+    return ci;
+}
+
 void getrank(int *cn)
 {
-    int rank = 0, bestfrags = 0;
+    vector<clientinfo *> uplayers, splayers; //unsorted sorted
+
     loopv(clients)
     {
         clientinfo *ci = clients[i];
-        if(ci && (ci->state.frags>bestfrags))
-        {
+        if(ci->state.state != CS_SPECTATOR) uplayers.add(ci);
+        conoutf("%i %s[%i] %i frags", i, ci->name, ci->clientnum, ci->state.frags);
+    }
 
+    while(uplayers.length()>0)
+    {
+        clientinfo *ci = findbest(uplayers);
+        splayers.add(ci);
+    }
+
+    loopv(splayers)
+    {
+        if(splayers[i]->clientnum == (int)*cn)
+        {
+            intret(i+1);
+            return;
         }
     }
+    intret(-1);
 }
 
 //Cube script binds
@@ -381,6 +413,6 @@ COMMAND(setteam, "is");
 COMMAND(getping, "i");
 COMMAND(getonline, "i");
 COMMANDN(getteamscore, _getteamscore, "s");
-//COMMAND(getrank, "i");
+COMMAND(getrank, "i");
 
 }
