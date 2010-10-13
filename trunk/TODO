@@ -21,7 +21,7 @@ Server events: +
 	@onmastermode [cn] [mode] +
 	@onclearbans [cn] +
 	@onkick [cn] [victim] +
-	onspectator [cn] [1|0] + if 0 - unspec, if 1 became spec
+	onspectator [cn] [1|0] +    if 0 - unspec, if 1 became spec
 	@onsetteam [cn] [newteam] +
 	@onrecorddemo +
 	onstopdemo +
@@ -60,7 +60,7 @@ Cube script:
 	version (txt)	+
 
 	getteam [cn] +
-	disconnect [cn] + reason "normal"
+	disconnect [cn] +    reason "normal"
 	kick [cn] +
 	spectator [1|0] [cn] +
 	map [s] +
@@ -94,7 +94,9 @@ Cube script:
 	getping [cn] +    
 	getonline [cn] +    online time     
 	getteamscores [team] (scores) +
-	getrank [cn] (rank) -    return player rank    
+	getrank [cn] (rank) +    return player rank   
+	cleargbans + 
+	numclients +
 
 	IRC: +
 	ircsay +
@@ -137,4 +139,4 @@ IRC бот: +
 	ban <cn> <time> reason
 	kick [cn] [time mins] [reason]
 	restart
-	stats  (cn)
+	stats (cn)
