@@ -373,6 +373,21 @@ void getrank(int *cn)
     intret(-1);
 }
 
+void _addgban(const char *name)
+{
+    addgban(name);
+}
+
+void _cleargbans()
+{
+    cleargbans();
+}
+
+void _numclients()
+{
+    intret(numclients(-1, false, true, false));
+}
+
 //Cube script binds
 COMMAND(getname, "i");
 COMMAND(getmap, "");
@@ -414,5 +429,8 @@ COMMAND(getping, "i");
 COMMAND(getonline, "i");
 COMMANDN(getteamscore, _getteamscore, "s");
 COMMAND(getrank, "i");
+COMMANDN(addgban, _addgban, "s");
+COMMANDN(cleargbans, _cleargbans, "");
+COMMANDN(numclients, _numclients, "");
 
 }

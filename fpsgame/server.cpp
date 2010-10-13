@@ -2095,6 +2095,7 @@ namespace server
                     strncpy(ftext, &ftext[strlen(commandchar)], strlen(ftext)-strlen(commandchar));
                     ftext[strlen(ftext)-strlen(commandchar)] = '\0';
                     remod::onevent("oncommand", "is", sender, ftext);
+                    conoutf(ftext);
                     break;
                 }
 
@@ -2108,7 +2109,7 @@ namespace server
                 getstring(text, p);
                 if(!ci || !cq || (ci->state.state==CS_SPECTATOR && !ci->local && !ci->privilege) || !m_teammode || !cq->team[0]) break;
                 //Remod
-                if(remod::onevent("ontext", "is", sender, text)) break;
+                if(remod::onevent("onsayteam", "is", sender, text)) break;
                 loopv(clients)
                 {
                     clientinfo *t = clients[i];
