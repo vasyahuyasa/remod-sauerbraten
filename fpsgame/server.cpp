@@ -2095,7 +2095,7 @@ namespace server
                     strncpy(ftext, &ftext[strlen(commandchar)], strlen(ftext)-strlen(commandchar));
                     ftext[strlen(ftext)-strlen(commandchar)] = '\0';
                     remod::onevent("oncommand", "is", sender, ftext);
-                    conoutf(ftext);
+                    //conoutf(ftextchf);
                     break;
                 }
 
