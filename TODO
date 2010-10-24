@@ -139,4 +139,4 @@ IRC бот: +
 	ban <cn> <time> reason
 	kick [cn] [time mins] [reason]
 	restart
-	stats (cn)
+	stats (cn) +   stats -1 - for all
