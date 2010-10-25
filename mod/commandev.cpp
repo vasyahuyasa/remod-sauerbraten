@@ -75,7 +75,7 @@ void dumphandlers()
 {
     for(int i=0; i<evt_handlers.length(); i++)
     {
-        printf("Handler %s = %s\n", evt_handlers[i].evt_type, evt_handlers[i].evt_cmd);
+        conoutf("Handler %s = %s\n", evt_handlers[i].evt_type, evt_handlers[i].evt_cmd);
     }
 }
 COMMAND(dumphandlers, "");
@@ -153,8 +153,8 @@ bool onevent(const char *evt_type, const char *fmt, ...)
 
 }
 
-COMMAND(addeat, "i");
-COMMAND(deleat, "i");
+COMMAND(addeat, "s");
+COMMAND(deleat, "s");
 COMMAND(addhandler, "ss");
 COMMAND(delhandler, "ss");
 COMMAND(clearhandlers, "");

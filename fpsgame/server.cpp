@@ -2081,8 +2081,6 @@ namespace server
 
             case N_TEXT:
             {
-                QUEUE_AI;
-                QUEUE_MSG;
                 getstring(text, p);
                 filtertext(text, text);
                 //Remod
@@ -2100,7 +2098,11 @@ namespace server
                 }
 
                 if(remod::onevent("ontext", "is", sender, ftext)) break;
+
+                QUEUE_AI;
+                QUEUE_INT(N_TEXT);
                 QUEUE_STR(text);
+
                 break;
             }
 

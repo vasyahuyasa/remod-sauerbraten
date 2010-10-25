@@ -81,7 +81,7 @@ Cube script:
 	$gamelimit +     time limit for current round
 	$roundtime +     predefined time of every round, if 0 server will set default time
 	$setroundtime +     set limit of current round
-	$pause [1|0] +
+	$pause [1|0] +  
 
 	$imissiontime +     intermisson time in millis (default 10000) 
 	
@@ -96,7 +96,8 @@ Cube script:
 	getteamscores [team] (scores) +
 	getrank [cn] (rank) +    return player rank   
 	cleargbans + 
-	numclients +
+	numclients + 
+	playerexists [cn] +
 
 	IRC: +
 	ircsay +
