@@ -11,3 +11,4 @@
 10. irc.cpp, irc.h с некоторыми функциями импортированы из Red Eclipse и доведены до компилируемого вида
 11. Добавлена server::srvmsgf() в fpsgame/server.cpp
 12. Добавлена void filtercstext() в fpsgame/server.cpp
+13. В fpsserver/server.cpp после case N_TEXT: QUEUE_MSG заменен на QUEUE_INT(N_TEXT) который исправляет пустые сообщения на сервере

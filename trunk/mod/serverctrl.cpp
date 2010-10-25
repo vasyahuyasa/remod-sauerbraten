@@ -388,6 +388,20 @@ void _numclients()
     intret(numclients(-1, false, true, false));
 }
 
+void playerexists(int *cn)
+{
+    loopv(clients)
+    {
+        clientinfo *ci = clients[i];
+        if(ci->clientnum==(int)*cn)
+        {
+            intret(1);
+            return;
+        }
+    }
+    intret(0);
+}
+
 //Cube script binds
 COMMAND(getname, "i");
 COMMAND(getmap, "");
@@ -432,5 +446,5 @@ COMMAND(getrank, "i");
 COMMANDN(addgban, _addgban, "s");
 COMMANDN(cleargbans, _cleargbans, "");
 COMMANDN(numclients, _numclients, "");
-
+COMMAND(playerexists, "i");
 }
