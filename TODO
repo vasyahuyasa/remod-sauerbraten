@@ -97,7 +97,9 @@ Cube script:
 	getrank [cn] (rank) +    return player rank   
 	cleargbans + 
 	numclients + 
-	playerexists [cn] +
+	playerexists [cn] +  
+	addeat [event] +    add event for ignore execution of default server handler      
+	deleat [event] +    delete even from ignore
 
 	IRC: +
 	ircsay +
