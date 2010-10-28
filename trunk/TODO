@@ -2,7 +2,8 @@
 General:
 	geoip +
 	баны
-	статистика по игроку в конце игры (фраги, смерти, аккуратность. украденые флаги -, возвращенные флаги - ) +
+	статистика по игроку в конце игры (фраги, смерти, аккуратность) +
+		 украденые флаги, возвращенные флаги - 
 	irc-бот +
 	persist +
 
@@ -136,10 +137,12 @@ IRC бот: +
 	предупреждение
 
 #commands: -
-	persist [0|1]
-	specall [0|1]
-	mute [cn] [0|1] 
-	ban <cn> <time> reason
-	kick [cn] [time mins] [reason]
-	restart
-	stats (cn) +   stats -1 - for all
+	persist [0|1] +
+	specall [0|1] +
+	mute [cn] [0|1] - 
+	ban <cn> <time> reason -
+	kick [cn] [time mins] [reason] -
+	restart +
+	stats (cn) | stats -1 - for all  +-
+	getip (cn) +
+	version +-  //из svn'a тянуть ревизию
