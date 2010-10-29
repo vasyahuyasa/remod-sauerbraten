@@ -3,7 +3,7 @@ General:
 	geoip +
 	баны
 	статистика по игроку в конце игры (фраги, смерти, аккуратность) +
-		 украденые флаги, возвращенные флаги - 
+	украденые флаги, возвращенные флаги - 
 	irc-бот +
 	persist +
 
@@ -93,7 +93,7 @@ Cube script:
 	clearhandlers +       
 	delhandler [evt] [cmd] +  
 	getping [cn] +    
-	getonline [cn] +    online time     
+	getonline [cn] +   player connect time     
 	getteamscores [team] (scores) +
 	getrank [cn] (rank) +    return player rank   
 	cleargbans + 
@@ -101,6 +101,9 @@ Cube script:
 	playerexists [cn] +  
 	addeat [event] +    add event for ignore execution of default server handler      
 	deleat [event] +    delete even from ignore
+	mute [cn] [val] +    mute specified player (after reconnect mute still exists)    
+	ismuted [cn] (val) +    return player's mute status
+	
 
 	IRC: +
 	ircsay +
@@ -129,12 +132,12 @@ Rcon: +
 	индивидуальная сессия каждого подключения -
 
 IRC бот: +
-	возможность кика/бана
-	перекидывание игрока в другую команду
-	spect/unspec
-	изменение режима игры и карты
-	общение
-	предупреждение
+	возможность кика/бана -
+	перекидывание игрока в другую команду -
+	spect/unspec -
+	изменение режима игры и карты -
+	общение -
+	предупреждение -
 
 #commands: -
 	persist [0|1] +
@@ -145,4 +148,7 @@ IRC бот: +
 	restart +
 	stats (cn) | stats -1 - for all  +-
 	getip (cn) +
-	version +-  //из svn'a тянуть ревизию
+	version +-  //из svn'a тянуть ревизию //показывает последнюю ревизию serverctrl.cpp       
+	time [min] -  // set remaining time for current round
+	gtime [min] -  // set time for every round  
+	

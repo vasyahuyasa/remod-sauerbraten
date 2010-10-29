@@ -2082,7 +2082,11 @@ namespace server
             case N_TEXT:
             {
                 getstring(text, p);
+
+                if(ci->state.muted) break;
+
                 filtertext(text, text);
+
                 //Remod
                 char ftext[MAXTRANS];
                 filtercstext(ftext, text);

@@ -79,7 +79,7 @@ void getaccuracy(int *cn)
 
 void getflags(int *cn)
 {
-    clientinfo *ci = (clientinfo *)getinfo((int)cn);
+    clientinfo *ci = (clientinfo *)getinfo((int)*cn);
     if(ci)
     {
         intret(ci->state.flags);
@@ -290,10 +290,9 @@ void setteam(int *cn, const char *team)
     sendf(-1, 1, "riisi", N_SETTEAM, (int)*cn, ci->team, 1);
 }
 
-
 void getping(int*cn)
 {
-    clientinfo *ci = (clientinfo *)getinfo((int)cn);
+    clientinfo *ci = (clientinfo *)getinfo((int)*cn);
     if(ci)
     {
         intret(ci->ping);
@@ -353,7 +352,7 @@ void getrank(int *cn)
     {
         clientinfo *ci = clients[i];
         if(ci->state.state != CS_SPECTATOR) uplayers.add(ci);
-        conoutf("%i %s[%i] %i frags", i, ci->name, ci->clientnum, ci->state.frags);
+        //conoutf("%i %s[%i] %i frags", i, ci->name, ci->clientnum, ci->state.frags);
     }
 
     while(uplayers.length()>0)
@@ -402,6 +401,26 @@ void playerexists(int *cn)
     intret(0);
 }
 
+void mute(int *cn, char *val)
+{
+    if(val[0]) //if player specified
+    {
+        int i = atoi(val);
+        clientinfo *ci = (clientinfo *)getinfo((int)*cn);
+        if(ci)
+        {
+            ci->state.muted=i;
+            remod::onevent("onmute", "ii", cn, i ? 1 : 0);
+        }
+    }
+}
+
+void ismuted(int *cn)
+{
+    clientinfo *ci = (clientinfo *)getinfo((int)*cn);
+    intret(ci && ci->state.muted);
+}
+
 //Cube script binds
 COMMAND(getname, "i");
 COMMAND(getmap, "");
@@ -447,4 +466,6 @@ COMMANDN(addgban, _addgban, "s");
 COMMANDN(cleargbans, _cleargbans, "");
 COMMANDN(numclients, _numclients, "");
 COMMAND(playerexists, "i");
+COMMAND(mute, "is");
+COMMAND(ismuted, "i");
 }
