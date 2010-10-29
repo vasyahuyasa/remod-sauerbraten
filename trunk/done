@@ -12,3 +12,4 @@
 11. Добавлена server::srvmsgf() в fpsgame/server.cpp
 12. Добавлена void filtercstext() в fpsgame/server.cpp
 13. В fpsserver/server.cpp после case N_TEXT: QUEUE_MSG заменен на QUEUE_INT(N_TEXT) который исправляет пустые сообщения на сервере
+14. В fpsgame/fpsgame.h в struct gamestate:fpsstate добавлена bool mute, в gamestate:fpsstate:save() reset(), struct savedscore:save() restore() добавлена bool muted

@@ -111,6 +111,8 @@ namespace server
         int frags, flags, deaths, teamkills, shotdamage, damage;
         int lasttimeplayed, timeplayed;
         float effectiveness;
+        //remod
+        bool muted;
 
         gamestate() : state(CS_DEAD), editstate(CS_DEAD) {}
 
@@ -133,6 +135,10 @@ namespace server
 
             timeplayed = 0;
             effectiveness = 0;
+
+            //remod
+            muted = false;
+
             frags = flags = deaths = teamkills = shotdamage = damage = 0;
 
             respawn();
@@ -163,6 +169,9 @@ namespace server
         int timeplayed;
         float effectiveness;
 
+        //remod
+        bool muted;
+
         void save(gamestate &gs)
         {
             maxhealth = gs.maxhealth;
@@ -174,6 +183,9 @@ namespace server
             damage = gs.damage;
             timeplayed = gs.timeplayed;
             effectiveness = gs.effectiveness;
+
+            //remod
+            muted = gs.muted;
         }
 
         void restore(gamestate &gs)
@@ -188,6 +200,9 @@ namespace server
             gs.damage = damage;
             gs.timeplayed = timeplayed;
             gs.effectiveness = effectiveness;
+
+            //remod
+            gs.muted = muted;
         }
     };
 
