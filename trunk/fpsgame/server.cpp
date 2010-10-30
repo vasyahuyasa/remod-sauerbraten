@@ -2082,9 +2082,6 @@ namespace server
             case N_TEXT:
             {
                 getstring(text, p);
-
-                if(ci->state.muted) break;
-
                 filtertext(text, text);
 
                 //Remod
@@ -2100,6 +2097,8 @@ namespace server
                     //conoutf(ftextchf);
                     break;
                 }
+
+                if(ci->state.muted) break;
 
                 if(remod::onevent("ontext", "is", sender, ftext)) break;
 
