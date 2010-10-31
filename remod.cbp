@@ -120,6 +120,8 @@
 		<Unit filename="mod\irc.h" />
 		<Unit filename="mod\rconmod.cpp" />
 		<Unit filename="mod\rconmod.h" />
+		<Unit filename="mod\remod.cpp" />
+		<Unit filename="mod\remod.h" />
 		<Unit filename="mod\serverctrl.cpp" />
 		<Unit filename="shared\command.h" />
 		<Unit filename="shared\crypto.cpp" />

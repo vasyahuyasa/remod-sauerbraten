@@ -1,5 +1,6 @@
 #include "fpsgame.h"
 #include "commandev.h"
+#include "remod.h"
 
 #ifndef WIN32
 #include <arpa/inet.h>
@@ -30,56 +31,62 @@ void getmode()
     intret(gamemode);
 }
 
-void getip(int *cn)
+void getip(char *name)
 {
-    if((int)*cn<(getnumclients()) && (int)*cn>=0)
+    int cn = parseplayer(name);
+    if(cn<(getnumclients()) && cn>=0)
     {
         in_addr addr;
-        addr.s_addr = getclientip((int)*cn);
+        addr.s_addr = getclientip(cn);
         char *ip = inet_ntoa(addr);
         result(ip);
     }
 }
 
-void getfrags(int *cn)
+void getfrags(char *name)
 {
-    clientinfo *ci = (clientinfo *)getinfo((int)*cn);
+    int cn = parseplayer(name);
+    clientinfo *ci = (clientinfo *)getinfo(cn);
     if(ci)
     {
         intret(ci->state.frags);
     }
 }
 
-void getdeaths(int *cn)
+void getdeaths(char *name)
 {
-    clientinfo *ci = (clientinfo *)getinfo((int)*cn);
+    int cn = parseplayer(name);
+    clientinfo *ci = (clientinfo *)getinfo(cn);
     if(ci)
     {
         intret(ci->state.deaths);
     }
 }
 
-void getteamkills(int *cn)
+void getteamkills(char *name)
 {
-    clientinfo *ci = (clientinfo *)getinfo((int)*cn);
+    int cn = parseplayer(name);
+    clientinfo *ci = (clientinfo *)getinfo(cn);
     if(ci)
     {
         intret(ci->state.teamkills);
     }
 }
 
-void getaccuracy(int *cn)
+void getaccuracy(char *name)
 {
-    clientinfo *ci = (clientinfo *)getinfo((int)*cn);
+    int cn = parseplayer(name);
+    clientinfo *ci = (clientinfo *)getinfo(cn);
     if(ci)
     {
         intret(ci->state.damage*100/max(ci->state.shotdamage,1));
     }
 }
 
-void getflags(int *cn)
+void getflags(char *name)
 {
-    clientinfo *ci = (clientinfo *)getinfo((int)*cn);
+    int cn = parseplayer(name);
+    clientinfo *ci = (clientinfo *)getinfo(cn);
     if(ci)
     {
         intret(ci->state.flags);
@@ -96,24 +103,6 @@ void getmastermodename(int *mm)
     result(mastermodename((int)*mm, "unknown"));
 }
 
-bool ismaster(int *cn)
-{
-    clientinfo *ci = (clientinfo *)getinfo((int)*cn);
-    return (ci && ci->privilege >= PRIV_MASTER);
-}
-
-bool isadmin(int *cn)
-{
-    clientinfo *ci = (clientinfo *)getinfo((int)*cn);
-    return (ci && ci->privilege >= PRIV_ADMIN);
-}
-
-bool isspectator(int *cn)
-{
-    clientinfo *ci = (clientinfo *)getinfo((int)*cn);
-    return (ci && ci->state.state==CS_SPECTATOR);
-}
-
 void version()
 {
     string txt;
@@ -121,9 +110,10 @@ void version()
     result(txt);
 }
 
-void getteam(int *cn)
+void getteam(char *name)
 {
-    clientinfo *ci = (clientinfo *)getinfo((int)*cn);
+    int cn = parseplayer(name);
+    clientinfo *ci = (clientinfo *)getinfo(cn);
     if(ci)
     {
         result(ci->team);
@@ -135,19 +125,20 @@ void disconnect(int *cn)
     disconnect_client((int)*cn, DISC_NONE);
 }
 
-void kick(int *cn)
+void kick(char *name)
 {
+    int cn = parseplayer(name);
     ban &b = bannedips.add();
     b.time = totalmillis;
-    b.ip = getclientip((int)*cn);
+    b.ip = getclientip(cn);
     allowedips.removeobj(b.ip);
-    disconnect_client((int)*cn, DISC_KICK);
-    remod::onevent("onkick", "ii", -1, (int)*cn);
+    disconnect_client(cn, DISC_KICK);
+    remod::onevent("onkick", "ii", -1, cn);
 }
 
-void spectator(int *st, int *cn)
+void spectator(int *st, char *name)
 {
-    int spectator = (int)*cn;
+    int spectator = parseplayer(name);;
     int val = (int)*st;
     clientinfo *spinfo = (clientinfo *)getclientinfo(spectator); // no bots
     if(!spinfo || (spinfo->state.state==CS_SPECTATOR ? val : !val)) return;
@@ -184,9 +175,10 @@ void mapmode(char *name, int *mode)
     changemap(name, (int)*mode);
 }
 
-void _suicide(int *cn)
+void _suicide(char *name)
 {
-    clientinfo *ci = (clientinfo *)getinfo((int)*cn);
+    int cn = parseplayer(name);
+    clientinfo *ci = (clientinfo *)getinfo(cn);
     if(ci)
     {
         suicide(ci);
@@ -276,9 +268,10 @@ void clearbans()
     sendservmsg("cleared all bans");
 }
 
-void setteam(int *cn, const char *team)
+void setteam(char *name, const char *team)
 {
-    clientinfo *ci = (clientinfo *)getinfo((int)*cn);
+    int cn = parseplayer(name);
+    clientinfo *ci = (clientinfo *)getinfo(cn);
     if(!ci && !strcmp(ci->team, team)) return;
     remod::onevent("onsetteam", "is", cn, team);
     if(!smode || smode->canchangeteam(ci, ci->team, team))
@@ -287,21 +280,23 @@ void setteam(int *cn, const char *team)
         copystring(ci->team, team, MAXTEAMLEN+1);
     }
     aiman::changeteam(ci);
-    sendf(-1, 1, "riisi", N_SETTEAM, (int)*cn, ci->team, 1);
+    sendf(-1, 1, "riisi", N_SETTEAM, cn, ci->team, 1);
 }
 
-void getping(int*cn)
+void getping(char *name)
 {
-    clientinfo *ci = (clientinfo *)getinfo((int)*cn);
+    int cn = parseplayer(name);
+    clientinfo *ci = (clientinfo *)getinfo(cn);
     if(ci)
     {
         intret(ci->ping);
     }
 }
 
-void getonline(int*cn)
+void getonline(int *pcn)
 {
-    clientinfo *ci = (clientinfo *)getinfo((int)*cn);
+    int cn = (int)*pcn;
+    clientinfo *ci = (clientinfo *)getinfo(cn);
     if(ci)
     {
         intret(totalmillis-ci->connectmillis);
@@ -327,25 +322,9 @@ void _getteamscore(char *team)
 
 }
 
-clientinfo* findbest(vector<clientinfo *> &a)
+void getrank(char *name)
 {
-    int bestfrags = a[0]->state.frags;
-    int bfrager = 0;
-    loopv(a)
-    {
-        if(a[i]->state.frags > bestfrags)
-        {
-            bestfrags = a[i]->state.frags;
-            bfrager = i;
-        }
-    }
-
-    clientinfo *ci = a.remove(bfrager);
-    return ci;
-}
-
-void getrank(int *cn)
-{
+    int cn = parseplayer(name);
     vector<clientinfo *> uplayers, splayers; //unsorted sorted
 
     loopv(clients)
@@ -363,7 +342,7 @@ void getrank(int *cn)
 
     loopv(splayers)
     {
-        if(splayers[i]->clientnum == (int)*cn)
+        if(splayers[i]->clientnum == cn)
         {
             intret(i+1);
             return;
@@ -387,12 +366,13 @@ void _numclients()
     intret(numclients(-1, false, true, false));
 }
 
-void playerexists(int *cn)
+void playerexists(char *name)
 {
+    int cn = parseplayer(name);
     loopv(clients)
     {
         clientinfo *ci = clients[i];
-        if(ci->clientnum==(int)*cn)
+        if(ci->clientnum==cn)
         {
             intret(1);
             return;
@@ -401,12 +381,13 @@ void playerexists(int *cn)
     intret(0);
 }
 
-void mute(int *cn, char *val)
+void mute(char *name, char *val)
 {
+    int cn = parseplayer(name);
     if(val[0]) //if player specified
     {
         int i = atoi(val);
-        clientinfo *ci = (clientinfo *)getinfo((int)*cn);
+        clientinfo *ci = (clientinfo *)getinfo(cn);
         if(ci)
         {
             ci->state.muted=i;
@@ -415,9 +396,10 @@ void mute(int *cn, char *val)
     }
 }
 
-void ismuted(int *cn)
+void ismuted(int *icn)
 {
-    clientinfo *ci = (clientinfo *)getinfo((int)*cn);
+    int cn = (int)*icn;
+    clientinfo *ci = (clientinfo *)getinfo(cn);
     intret(ci && ci->state.muted);
 }
 
@@ -476,31 +458,37 @@ void formatmillis(char *fmt, int *millis)
     result(s.getbuf());
 }
 
+void getcn(char *name)
+{
+    int cn = parseplayer(name);
+    intret(cn);
+}
+
 //Cube script binds
 COMMAND(getname, "i");
 COMMAND(getmap, "");
 COMMAND(getmode, "");
-COMMAND(getip, "i");
-COMMAND(getfrags, "i");
-COMMAND(getdeaths, "i");
-COMMAND(getteamkills, "i");
-COMMAND(getaccuracy, "i");
-COMMAND(getflags, "i");
+COMMAND(getip, "s");
+COMMAND(getfrags, "s");
+COMMAND(getdeaths, "s");
+COMMAND(getteamkills, "s");
+COMMAND(getaccuracy, "s");
+COMMAND(getflags, "s");
 //COMMAND(getretflags, "i"); unimplemented
 COMMAND(getmastermode, "");
 COMMAND(getmastermodename, "i");
-ICOMMAND(ismaster, "i", (int *cn), intret(ismaster(cn) ? 1 : 0));
+ICOMMAND(ismaster, "i", (int*cn), intret(ismaster(cn) ? 1 : 0));
 ICOMMAND(isadmin, "i", (int *cn), intret(isadmin(cn) ? 1 : 0));
 ICOMMAND(isspectator, "i", (int *cn), intret(isspectator(cn) ? 1 : 0));
 COMMAND(version, "");
 
-COMMAND(getteam,"i");
+COMMAND(getteam,"s");
 COMMAND(disconnect, "i");
-COMMAND(kick, "i");
-COMMAND(spectator, "ii");
+COMMAND(kick, "s");
+COMMAND(spectator, "is");
 COMMAND(map, "s");
 COMMAND(mapmode, "si");
-COMMANDN(suicide, _suicide, "i");
+COMMANDN(suicide, _suicide, "s");
 COMMAND(addbot, "i");
 COMMAND(delbot, "");
 
@@ -512,16 +500,17 @@ COMMAND(saytoadmin, "C");
 COMMANDN(mastermode, _mastermode, "i");
 VARF(pause, 0, 0, 1, server::pausegame(pause));
 COMMAND(clearbans, "");
-COMMAND(setteam, "is");
-COMMAND(getping, "i");
+COMMAND(setteam, "ss");
+COMMAND(getping, "s");
 COMMAND(getonline, "i");
 COMMANDN(getteamscore, _getteamscore, "s");
-COMMAND(getrank, "i");
+COMMAND(getrank, "s");
 COMMANDN(addgban, _addgban, "s");
 COMMANDN(cleargbans, _cleargbans, "");
 COMMANDN(numclients, _numclients, "");
-COMMAND(playerexists, "i");
-COMMAND(mute, "is");
+COMMAND(playerexists, "s");
+COMMAND(mute, "ss");
 COMMAND(ismuted, "i");
 COMMAND(formatmillis, "si");
+COMMAND(getcn, "s");
 }
