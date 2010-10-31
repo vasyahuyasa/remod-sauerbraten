@@ -304,7 +304,7 @@ void getonline(int*cn)
     clientinfo *ci = (clientinfo *)getinfo((int)*cn);
     if(ci)
     {
-        intret(ci->connectmillis);
+        intret(totalmillis-ci->connectmillis);
     }
 }
 
@@ -421,6 +421,61 @@ void ismuted(int *cn)
     intret(ci && ci->state.muted);
 }
 
+void formatmillis(char *fmt, int *millis)
+{
+    // %s - seconds, %m - minutes, %h - hours, %d - days
+    int seconds, minutes, hours, days;
+    vector<char> s;
+
+    days = (int)*millis/(1000*60*60*24);
+    hours = ((int)*millis/(1000*60*60))-(days*24);
+    minutes = ((int)*millis/(1000*60))-(days*24*60+hours*60);
+    seconds = ((int)*millis/1000)-(days*24*60*60+hours*60*60+minutes*60);
+
+    while(*fmt)
+    {
+        int c = *fmt++;
+        if(c == '%')
+        {
+            int i = *fmt++;
+            switch(i)
+            {
+                case 's':
+                {
+                    const char *sseconds = intstr(seconds);
+                    while(*sseconds) s.add(*sseconds++);
+                    break;
+                }
+
+                case 'm':
+                {
+                    const char *sminutes = intstr(minutes);
+                    while(*sminutes) s.add(*sminutes++);
+                    break;
+                }
+
+                case 'h':
+                {
+                    const char *shours = intstr(hours);
+                    while(*shours) s.add(*shours++);
+                    break;
+                }
+
+                case 'd':
+                {
+                    const char *sdays = intstr(days);
+                    while(*sdays) s.add(*sdays++);
+                    break;
+                }
+
+                default: s.add(i);
+            }
+        } else s.add(c);
+    }
+    s.add('\0');
+    result(s.getbuf());
+}
+
 //Cube script binds
 COMMAND(getname, "i");
 COMMAND(getmap, "");
@@ -468,4 +523,5 @@ COMMANDN(numclients, _numclients, "");
 COMMAND(playerexists, "i");
 COMMAND(mute, "is");
 COMMAND(ismuted, "i");
+COMMAND(formatmillis, "si");
 }

@@ -22,7 +22,7 @@ Server events: +
 	@onmastermode [cn] [mode] +
 	@onclearbans [cn] +
 	@onkick [cn] [victim] +
-	onspectator [cn] [1|0] +    if 0 - unspec, if 1 became spec
+	onspectator [cn] [1|0] +	if 0 - unspec, if 1 became spec
 	@onsetteam [cn] [newteam] +
 	@onrecorddemo +
 	onstopdemo +
@@ -61,7 +61,7 @@ Cube script:
 	version (txt)	+
 
 	getteam [cn] +
-	disconnect [cn] +    reason "normal"
+	disconnect [cn] +	reason "normal"
 	kick [cn] +
 	spectator [1|0] [cn] +
 	map [s] +
@@ -70,39 +70,40 @@ Cube script:
 	addbot [skill] +
 	delbot +
 
-	say [txt] +          send message to everyone
-	pm [cn] [txt] +      send private message to cn
-	saytonormal [txt] +    send message to normal clients
-    saytomaster [txt] +    send message to master
-	saytoadmin  [txt] +    send message to admin
+	say [txt] +	send message to everyone
+	pm [cn] [txt] +	send private message to cn
+	saytonormal [txt] +	send message to normal clients
+    saytomaster [txt] +	send message to master
+	saytoadmin  [txt] +	send message to admin
 	$totalmillis +	   
 	mastermode [n] +
 	$persist [1|0] +
 	$gamemillis +
-	$gamelimit +     time limit for current round
-	$roundtime +     predefined time of every round, if 0 server will set default time
-	$setroundtime +     set limit of current round
+	$gamelimit +	time limit for current round
+	$roundtime +	predefined time of every round, if 0 server will set default time
+	$setroundtime +	set limit of current round
 	$pause [1|0] +  
 
-	$imissiontime +     intermisson time in millis (default 10000) 
+	$imissiontime +	intermisson time in millis (default 10000) 
 	
 	getname [cn] [txt] +         
 	clearbans +
-	addgban [ip] -     add global ban     
+	addgban [ip] -	add global ban     
 	setteam [cn] [team] +           
 	clearhandlers +       
 	delhandler [evt] [cmd] +  
 	getping [cn] +    
-	getonline [cn] +   player connect time     
+	getonline [cn] +	player connect time     
 	getteamscores [team] (scores) +
-	getrank [cn] (rank) +    return player rank   
+	getrank [cn] (rank) +	return player rank   
 	cleargbans + 
 	numclients + 
 	playerexists [cn] +  
-	addeat [event] +    add event for ignore execution of default server handler      
-	deleat [event] +    delete even from ignore
-	mute [cn] [val] +    mute specified player (after reconnect mute still exists)    
-	ismuted [cn] (val) +    return player's mute status
+	addeat [event] +	add event for ignore execution of default server handler      
+	deleat [event] +	delete even from ignore
+	mute [cn] [val] +	mute specified player (after reconnect mute still exists)    
+	ismuted [cn] (val) +	return player's mute status     
+	formatmillis [fmt] [millis] (str) +	convert millis to string (%d - days, %h - hours, %m - minutes, %s - seconds)	
 	
 
 	IRC: +
