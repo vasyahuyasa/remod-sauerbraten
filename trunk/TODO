@@ -45,14 +45,14 @@ Server events: +
 Cube script:
 	getmap (curent_map_name) +
 	getmode (curent_game_mode) +
-	getip [cn] (client_ip) +
+	getip [name] (client_ip) +
 	getcountry [ip] (ip_country) +
-	getfrags [cn] (client_frags) +
-	getdeaths [cn] (client_deaths) +
-	getteamkills [cn] (client_teamkills) +
-	getaccuracy [cn] (client_acuracy) +
-	getflags [cn] (client_scored_flags) +
-	getretflags	[cn] (client_returned_flags) -
+	getfrags [name] (client_frags) +
+	getdeaths [name] (client_deaths) +
+	getteamkills [name] (client_teamkills) +
+	getaccuracy [name] (client_acuracy) +
+	getflags [name] (client_scored_flags) +
+	getretflags	[name] (client_returned_flags) -
     getmastermode (mm)+
 	getmastermodename [mm] (txt) +
 	ismaster [cn] (1|0) +
@@ -60,13 +60,13 @@ Cube script:
 	isspectator [cn] (1|0)+
 	version (txt)	+
 
-	getteam [cn] +
+	getteam [name] +
 	disconnect [cn] +	reason "normal"
-	kick [cn] +
-	spectator [1|0] [cn] +
+	kick [name] +
+	spectator [1|0] [name] +
 	map [s] +
 	mapmode [s] [n] +
-	soucide [cn] +
+	soucide [name] +
 	addbot [skill] +
 	delbot +
 
@@ -89,22 +89,22 @@ Cube script:
 	getname [cn] [txt] +         
 	clearbans +
 	addgban [ip] -	add global ban     
-	setteam [cn] [team] +           
+	setteam [name] [team] +           
 	clearhandlers +       
 	delhandler [evt] [cmd] +  
-	getping [cn] +    
+	getping [name] +    
 	getonline [cn] +	player connect time     
 	getteamscores [team] (scores) +
-	getrank [cn] (rank) +	return player rank   
+	getrank [name] (rank) +	return player rank   
 	cleargbans + 
 	numclients + 
-	playerexists [cn] +  
+	playerexists [name] +  
 	addeat [event] +	add event for ignore execution of default server handler      
 	deleat [event] +	delete even from ignore
-	mute [cn] [val] +	mute specified player (after reconnect mute still exists)    
+	mute [name] [val] +	mute specified player (after reconnect mute still exists)    
 	ismuted [cn] (val) +	return player's mute status     
-	formatmillis [fmt] [millis] (str) +	convert millis to string (%d - days, %h - hours, %m - minutes, %s - seconds)	
-	
+	formatmillis [fmt] [millis] (str) +	convert millis to string (%d - days, %h - hours, %m - minutes, %s - seconds)
+	getcn [name] +	return cn of player	
 
 	IRC: +
 	ircsay +

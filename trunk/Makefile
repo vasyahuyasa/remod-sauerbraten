@@ -39,7 +39,8 @@ SERVER_OBJS= \
 	mod/geoipmod-standalone.o \
 	mod/irc-standalone.o \
 	mod/rconmod-standalone.o \
-	mod/serverctrl-standalone.o	
+	mod/serverctrl-standalone.o	\
+	mod/remod-standalone.o
 
 ifeq ($(PLATFORM),SunOS)
 CLIENT_LIBS+= -lsocket -lnsl -lX11
