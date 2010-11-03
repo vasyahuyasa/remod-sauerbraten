@@ -3,55 +3,97 @@
 *legend:*
   * *[ ]* - accept parameters
   * *( )* - returned value
-  * *s* - text value
-  * *n* - number value
   * *cn* - client number
-
+  * *name* - client name also can be *cn*
+  
 ==General commands==
 ===Player control===
-  * *`getip [cn] (s)`* - return ip address of client
-  * *`getfrags [cn] (n)`* - return frags of player
-  * *`getdeaths [cn] (n)`* - return deaths of player
-  * *`getteamkills [cn] (n)`* - return teamkills of player
-  * *`getaccuracy [cn] (n)`* - return accuracy of player
-  * *`getflags [cn] (n)`* - return scored flags of player
-  * *`getretflags [cn] (n)`* - return frags of player
-  * *`kick [cn]`* - kick player
-  * *`disconnect [cn]`* - disconnect player with reason "normal"
-  * *`spectator [1|0] [cn]`* make player spectator `[1]` or unspectate him `[0]` 
-  * *`ismaster [cn] (1|0)`* - return status of player
-  * *`isadmin [cn] (1|0)`* - return status of player
-  * *`isspectator [cn] (1|0)`* - return status of player
-  * *`soucide [cn]`* - force suicide player
-  * *`addbot [n]`* - add bot with skill n
-  * *`delbot`* - delete bot
+|| *command* || *description * ||
+|| getname [cn] (s) || return name of player ||
+|| getip [name] (s)|| return ip address of player ||
+|| getfrags [name] (n) || return frags of client ||
+|| getdeaths [name] (n) || return deaths of player ||
+|| getteamkills [name] (n) || return teamkills of player ||
+|| getaccuracy [name] (n) || return accuracy of player ||
+|| getflags [name] (n) || return scored flags of player ||
+|| getretflags [cn] (n) || *unimplemented* return frags of player ||
+|| kick [name] || kick player ||
+|| disconnect [cn] || disconnect player with reason "normal" ||
+|| spectator [1|0] [name] || spectate player `[1]` or unspectate `[0]` || 
+|| ismaster [cn] (1|0) || return status of player ||
+|| isadmin [cn] (1|0) || return status of player ||
+|| isspectator [cn] (1|0) || return status of player ||
+|| soucide [name] || force suicide player ||
+|| addbot [skill] || add bot with specified skill ||
+|| delbot || delete one bot ||
+|| getteam [cn] (s) || return name of player team ||
+|| setteam [name] [team] || force move player to specified team ||
+|| getping [name] (ping) || return player ping ||
+|| getonline [cn] (millis) || return player time on server ||
+|| getteamscores [team] (scores) || return scores of team in team modes ||
+|| getrank [name] (rank) || get player rank by frags ||
+|| playerexists [name] (1|0) || return 1 if player exists ||
+|| mute [name] [1|0] || mute [1] or unmute [0] player ||
+|| ismuted [cn] (1|0) || return 1 if player muted ||
+|| getcn [name] (cn) || return cn of player ||
 
 ===Server control===
-  * *`getmap (s)`* - return name of current map on server
-  * *`getmode (n)`* - return number of game mode
-  * *`getteam [cn] (s)`* - return name of player team
-  * *`mastermode [n]`* - change server mastermode to n
-  * *`getmastermode (n)`* - return server mastermode
-  * *`getmastermodename [n] (s)`* - convert mastermode number to text name
-  * *`version (s)`* - return information about build time and SVN revision
-  * *`map [s]`* - change map on server to s
-  * *`mapmode [s] [n]`* - change server map to s and mode to n
-  * *`pm [cn] [s]`* - show message s to specified player
-  * *`say [s]`* - show message s to all players
-  * *`saytonormal [s]`* - show message to users with no privilege, masters and admins cannot see that
-  * *`saytomaster [s]`* - show message to masters, normal players and admins cannot see that
-  * *`saytoadmin  [s]`* - show message to admins , normal players and masters cannot see that
-  * *`$pause [1|0]`* - read and write, pause game
-  * *`$persist [1|0]`* - read and write, make persist teams on server
-  * *`$totalmillis`* - read-inly, return server uptime in milliseconds	 
-  * *`$gamelimit`* - read-only, set limit of next rounds in millis, if 0 server will use default time for each mode  
-  * *`$gamemillis`* - read-only, return played round time in millis
-  * *`$roundtime`* - read and write, redefined time of every round, if 0 server will set default time
-  * *`$setroundtime`* - read and write, set length of current round in millis
-  * *`$imissiontime`* - read and write, set intermisson time in millis (default 10000)
+|| getmap (s) || return name of current map on server ||
+|| getmode (n) || return game mode ||
+|| mastermode [n] || change server mastermode to n ||
+|| getmastermode (n) || return server mastermode ||
+|| getmastermodename [n] (s) || convert mastermode number to text name ||
+|| version (s) || return information about build time and SVN revision ||
+|| map [s] || change map on server to s ||
+|| mapmode [map] [mode] || change server map and mode ||
+|| pm [cn] [txt] || show message s to specified player ||
+|| say [txt] || show message s to all players ||
+|| saytonormal [txt] || show message to users with no privilege, masters and admins cannot see that ||
+|| saytomaster [txt] || show message to masters, normal players and admins cannot see that ||
+|| saytoadmin  [txt] || show message to admins , normal players and masters cannot see that ||
+|| addgban [ip] || add permanent ban to global ban list ||
+|| clearbans || clear server ban list ||
+|| cleargbans || clear list of permanent bans ||
+|| numclients (n) || return number of player on server ||
+|| formatmillis [format] [millis] (str) || return formated time string (%d - days, %h - hours, %m - minutes, %s - seconds) ||
 
-==GeoIP commands==
-  * *`getcountry [s] (s)`* - convert ip address in input to country name
 
-==Rcon commands==
-  * *`rconpass [s]`* - set password for access to remote control of server cube script
+===Server variables===
+*legend:*
+  * *R* - read only parameters
+  * *RW* - read write parameters
+|| $pause [1|0] || *RW* pause game ||
+|| $persist [1|0] || *RW* disable shuffle teams ||
+|| $totalmillis || *R* return server uptime in milliseconds ||	 
+|| $gamelimit || *R* return round time limit ||  
+|| $gamemillis || *R* return played round time in millis ||
+|| $roundtime || *RW* redefined time of every next round, if 0 server will use default time ||
+|| $setroundtime || *RW* set time limit of current round in millis ||
+|| $imissiontime || *RW* set intermisson time in millis (default 10000) ||
+
+==GeoIP==
+|| getcountry [ip] (s) || return country by ip ||
+
+==Rcon==
+|| rconpass [s] || password for rcon ||
+
+==IRC bot==
+|| ircsay || undocumented yet ||
+|| $verbose || undocumented yet ||
+|| ircfilter || undocumented yet ||
+|| ircaddclient || undocumented yet ||
+|| ircaddrelay || undocumented yet ||
+|| ircserv || undocumented yet ||
+|| ircport || undocumented yet ||
+|| ircnick || undocumented yet ||
+|| ircbind || undocumented yet ||
+|| ircpass || undocumented yet ||
+|| ircauth || undocumented yet ||
+|| ircconnect || undocumented yet ||
+|| ircaddchan || undocumented yet ||
+|| ircjoinchan || undocumented yet ||
+|| ircpasschan || undocumented yet ||
+|| ircrelaychan || undocumented yet ||
+|| ircfriendlychan || undocumented yet ||
+|| ircconns || undocumented yet ||
+|| $ircflooddelay || undocumented yet ||

@@ -1,0 +1,21 @@
+#labels remod,cubescript,commands,player
+=Player commands=
+*legend:*
+  * *perm* - permission: 1 - all players, 2 - masters, 3 admins only
+  * *[ ]* - required parameter
+  * *( )* - not required parameter  
+  
+|| Command || Perm || Description ||
+|| #help (cmd) || 1 || Shows info about command or list of server commands ||
+|| #pm [cn] [txt] || 1 || Sends private message to player ||
+|| #persist [1|0] || 2 || Dont shufle teams ||
+|| #specall [1|0] || 2 || Spectate or unspectate all players ||
+|| #restart || 2 || Restart map ||
+|| #getip [cn] || 2 || Show player ip ||
+|| #version || 1 || Show software version ||
+|| #mute [cn] [0|1] || 2 || Mute player ||
+|| #time [min] || 2 || Set time limit for current round ||
+|| #gtime (min) || 3 || Set time limit for every next round ||
+|| #uptime || 1 || Show server uptime ||
+|| #disc [cn] || 3 || Disconenct player with readson "normal" ||
+|| #unmute [cn] || 3 || Unmute player ||

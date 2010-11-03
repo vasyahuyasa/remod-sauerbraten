@@ -1,0 +1,48 @@
+#labels remod,cubescript,events
+=Cube script events=
+*legend:*
+  * *@* - event can be eaten (disable server default handler)
+
+==Cube script commands for control events==
+|| Command || Description ||
+|| addhandler [event] [cmd] || Bind command for event ||
+|| delhandler [event] [cmd] || Remove specified command from bind to event ||
+|| clearhandlers || Clear all event binds ||
+|| dumphandlers || Show all binded commands to events in debug build ||
+|| addeat [event] || Do not allow server process that events ||
+|| deleat [event] || Remove even from ignore list ||
+
+==Player events==
+|| Event || Description ||
+|| onconnect [cn] || Raise after player connect ||
+|| ondisconnect [cn] || Raise before player disconnect ||
+|| onteamkill [cn] || Raise on player teamkill ||
+|| @ontext [cn] [msg] || Raise when someone send chat messages ||	
+|| @onsayteam [cn] [msg] || Raise on teamchat messages ||
+|| @onswitchname [cn] [newname] || Raise before player reaname ||
+|| onswitchmodel [cn] [mdl] || Raise when player change player model ||
+|| @onswitchteam [cn] [newteam] || Raise before player switch team ||	
+|| onmapvote [cn] [map] [mode] || Raise on map vote ||
+|| @onkick [cn] [victim] || Raise before kick player ||
+|| onspectator [cn] [1|0] || Raise when player became spectator/unspeced ||
+|| @onsetteam [cn] [newteam] || Raise before setteam action ||
+|| @onlistdemos [cn] || Rise brfore request of list demos ||
+|| @ongetdemo [cn] [demonum] || Raise before player getdemo ||
+|| onsetmaster [cn] [1|0] [pass] [authname] || Raise when player player claimed master or admin ||
+|| onbotlimit [cn] [limit] || Raise on change bot limit ||
+        
+==Coopedit events==
+|| @ongetmap [cn] || Raise before getmap ||
+|| @onnewmap [cn] || Raise before newmap ||   
+	
+==Server events==
+|| @onpausegame [1|0] || Raise on pause/unpause game ||
+|| onmapstart || Raise after map changed ||
+|| onimission || Raise after intermission started ||        
+|| @onmastermode [cn] [mode] || Raise when change mastermode ||
+|| @onclearbans [cn] || Raise on clearbans ||
+|| @onrecorddemo || Raise before record demo ||
+|| onstopdemo || Raise before stop demo ||
+|| @oncleardemos [demonum] || Raise on cleardemos ||   
+|| @onaddbot [skill] || Raise on addbot || 
+|| @ondelbot || Raise on delete bot ||
