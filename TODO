@@ -40,7 +40,12 @@ Server events: +
 
 	#coopedit
 	@ongetmap [cn] +
-	@onnewmap [cn] +
+	@onnewmap [cn] +   
+	
+	#IRC bot
+	irc_onmsg [nick] [txt] +	"sender" "p a r a m s"   
+	irc_onprivmsg [nick] [txt] +
+	irc_oncommand [nick] [txt] +
 
 Cube script:
 	getmap (curent_map_name) +
@@ -127,7 +132,11 @@ Cube script:
 	ircrelaychan +
 	ircfriendlychan +
 	ircconns +
-	$ircflooddelay +
+	$ircflooddelay +          
+	
+	ircsayto [nick/chan] [msg] +	send private message or to channel
+	ircisop [nick] [0|1] +	return 1 if nick is OP       
+	ircisvoice [nick] [0|1] +	return 1 if nick have voice
 	
 Rcon: +
 	индивидуальная сессия каждого подключения -

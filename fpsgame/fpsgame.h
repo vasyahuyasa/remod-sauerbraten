@@ -429,6 +429,9 @@ namespace server
 
     extern servmode *smode;
 
+    //Remod
+    void filtercstext(char *dst, const char *src);
+
     clientinfo *getinfo(int n);
     void pausegame(bool val);
     void changemap(const char *s, int mode);
