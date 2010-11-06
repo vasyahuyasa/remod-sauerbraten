@@ -1,4 +1,5 @@
 #include "fpsgame.h"
+#include "commandev.h"
 
 //Remod import
 #define mkstring(d) string d; d[0] = 0;
@@ -21,10 +22,14 @@ enum { CON_EVENT, CON_MAX, CON_LO, CON_HI, CON_IMPORTANT };
 
 enum { IRCC_NONE = 0, IRCC_JOINING, IRCC_JOINED, IRCC_KICKED, IRCC_BANNED };
 enum { IRCCT_NONE = 0, IRCCT_AUTO };
+
 struct ircchan
 {
     int state, type, relay, lastjoin;
     string name, friendly, passkey;
+
+    vector<const char *> nicks;
+
 #ifndef STANDALONE
     vector<char *> lines;
 #endif

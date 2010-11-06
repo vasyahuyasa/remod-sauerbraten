@@ -429,13 +429,51 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
             }
             else if(ismsg)
             {
+                //Remod
+                char ftext[MAXTRANS]; // command buffer
+
                 if(n->type == IRCT_RELAY && g && strcasecmp(w[g+1], n->nick) && !strncasecmp(w[g+2], n->nick, strlen(n->nick)))
                 {
                     const char *p = &w[g+2][strlen(n->nick)];
                     while(p && (*p == ':' || *p == ';' || *p == ',' || *p == '.' || *p == ' ' || *p == '\t')) p++;
-                    if(p && *p) ircprintf(n, 0, w[g+1], "\fa<\fw%s\fa>\fw %s", user[0], p);
+                    if(p && *p)
+                    {
+                        // hightlighted message to bot
+                        // user[0]='degrave'
+                        // user[1]='~ezhi'
+                        // user[2]='degry.lamer.gamesurge'
+                        // p='qqq'
+                        ircprintf(n, 0, w[g+1], "\fa<\fw%s\fa>\fw %s", user[0], p);
+
+                        //irc_oncommand "sender" "p a r a m s"
+                        server::filtercstext(ftext, p);
+                        remod::onevent("irc_oncommand", "ss", user[0], ftext);
+                    }
                 }
-                else ircprintf(n, 1, g ? w[g+1] : NULL, "\fa<\fw%s\fa>\fw %s", user[0], w[g+2]);
+                else
+                {
+                    // normal and private message
+                    // in private w[2]==n->nick
+                    // user[0]='degrave'
+                    // user[1]='~ezhi'
+                    // user[2]='degry.lamer.gamesurge'
+                    // w[0]='degrave!~ezhi@degry.lamer.gamesurge'
+                    // w[1]='PRIVMSG'
+                    // w[2]='#rb-servers'
+                    // w[3]='a'
+
+                    ircprintf(n, 1, g ? w[g+1] : NULL, "\fa<\fw%s\fa>\fw %s", user[0], w[g+2]);
+                    //Remod
+                    server::filtercstext(ftext, w[g+2]);
+                    if(strcasecmp(w[g+1], n->nick)) // normal msg
+                    {
+                        remod::onevent("irc_onmsg", "ss", user[0], ftext);
+                    }
+                    else
+                    {
+                        remod::onevent("irc_onprivmsg", "ss", user[0], ftext);
+                    }
+                }
             }
             else ircprintf(n, 2, g ? w[g+1] : NULL, "\fo-%s- %s", user[0], w[g+2]);
         }
@@ -554,6 +592,37 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
                 }
                 break;
             }
+
+            //Remod
+            case 353:
+            {
+                // char *s - list of nicks
+                char nick[255];
+                const char *pnick;
+                int chpos=0;
+
+                ircchan *c = ircfindchan(n, w[g+3]);
+
+                for(int i=0; i<strlen(s); i++)
+                {
+                    char chr = s[i];
+                    if(chr != ' ') { nick[chpos++] = chr; }
+                    else
+                    {
+                        nick[chpos] = '\0';
+                        chpos = 0;
+                        pnick=newstring(nick);
+                        c->nicks.add(pnick);
+                    }
+                }
+
+                // Add last name
+                pnick=newstring(nick);
+                c->nicks.add(pnick);
+
+                break;
+            }
+
             case 433:
             {
                 if(n->state == IRC_CONN)
@@ -742,7 +811,84 @@ void ircslice()
     }
 }
 
+void ircisop(char *name)
+{
+    char *s = newstring("@");
+    strcat(s, name);
+
+    loopv(ircnets)
+    {
+        loopvj(ircnets[i]->channels)
+        {
+            loopvk(ircnets[i]->channels[j].nicks)
+            {
+                if(!strcasecmp(s, ircnets[i]->channels[j].nicks[k]))
+                {
+                    intret(1);
+                    return;
+                }
+            }
+        }
+    }
+    intret(0);
+}
+
+void ircisvoice(char *name)
+{
+    char *s = newstring("+");
+    char *s2 = newstring("@");
+
+    strcat(s, name);
+    strcat(s2, name);
+
+    loopv(ircnets)
+    {
+        loopvj(ircnets[i]->channels)
+        {
+            loopvk(ircnets[i]->channels[j].nicks)
+            {
+                if(!strcasecmp(s, ircnets[i]->channels[j].nicks[k]) || !strcasecmp(s2, ircnets[i]->channels[j].nicks[k]))
+                {
+                    intret(1);
+                    return;
+                }
+            }
+        }
+    }
+    intret(0);
+}
+
+void ircsayto(char *to, char *msg)
+{
+
+    loopv(ircnets)
+    {
+        ircnet *in = ircnets[i];
+        ircsend(in, "PRIVMSG %s :%s", to, msg);
+    }
+}
+
+#if 0
+void irc_dumpnicks()
+{
+    loopv(ircnets)
+    {
+        loopvj(ircnets[i]->channels)
+        {
+            loopvk(ircnets[i]->channels[j].nicks)
+            {
+                printf("ircnets[%i]->channels[%i].nicks[%i]=%s\n", i, j, k, ircnets[i]->channels[j].nicks[k]);
+            }
+        }
+    }
+}
+COMMAND(irc_dumpnicks, "");
+#endif
+
+COMMAND(ircisop, "s");
+COMMAND(ircisvoice, "s");
 ICOMMAND(ircconns, "", (void), { int num = 0; loopv(ircnets) if(ircnets[i]->state >= IRC_ATTEMPT) num++; intret(num); });
 ICOMMAND(ircsay, "s", (const char *msg ), { ircoutf(0, msg); });
+COMMAND(ircsayto, "ss");
 
 #endif
