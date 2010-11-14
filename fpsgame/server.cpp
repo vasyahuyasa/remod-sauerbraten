@@ -51,6 +51,8 @@ namespace server
             }
         }
     );
+    VAR(autodemo, 0, 0, 1 );
+    SVAR(demodir, "");
 
     vector<uint> allowedips;
     vector<ban> bannedips;
@@ -400,6 +402,26 @@ namespace server
         demotmp->seek(0, SEEK_SET);
         demotmp->read(d.data, len);
         DELETEP(demotmp);
+
+        //Remod
+        // from screenshot(char *filename)
+        static string buf;
+        copystring(buf, demodir);
+        if(demodir[0])
+        {
+            int slen = strlen(buf);
+            if(buf[slen] != '/' && buf[slen] != '\\' && slen+1 < (int)sizeof(buf)) { buf[slen] = '/'; buf[slen+1] = '\0'; }
+        }
+        defformatstring(demoname)("%s%d.dmo", buf, t);
+        stream *fsdemo = openfile(demoname, "wb");
+        if(fsdemo)
+        {
+            fsdemo->write(d.data, len);
+            fsdemo->close();
+            DELETEP(demotmp);
+            conoutf("demo \"%s\" saved", demoname);
+        } else conoutf("could not save demo to \"%s\"", demoname);
+
     }
 
     int welcomepacket(packetbuf &p, clientinfo *ci);
@@ -1096,7 +1118,9 @@ namespace server
             demonextmatch = false;
             setupdemorecord();
         }
+
         //Remod
+        if(autodemo) demonextmatch = true;
         remod::onevent("onmapstart", "");
     }
 
