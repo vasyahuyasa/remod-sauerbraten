@@ -109,7 +109,9 @@ Cube script:
 	mute [name] [val] +	mute specified player (after reconnect mute still exists)    
 	ismuted [cn] (val) +	return player's mute status     
 	formatmillis [fmt] [millis] (str) +	convert millis to string (%d - days, %h - hours, %m - minutes, %s - seconds)
-	getcn [name] +	return cn of player	
+	getcn [name] +	return cn of player	  
+	$autodemo [1|0] +	automatycaly record demo on every next match 
+	$demodir [str] + 	folder for saved demos
 
 	IRC: +
 	ircsay +
