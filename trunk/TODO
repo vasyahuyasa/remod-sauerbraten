@@ -112,6 +112,7 @@ Cube script:
 	getcn [name] +	return cn of player	  
 	$autodemo [1|0] +	automatycaly record demo on every next match 
 	$demodir [str] + 	folder for saved demos
+	$savedemo [1|0] +	allow save demos to disk
 
 	IRC: +
 	ircsay +
@@ -163,5 +164,11 @@ IRC бот: +
 	getip (cn) +
 	version +   //показывает последнюю ревизию serverctrl.cpp       
 	time [min] -  // set remaining time for current round
-	gtime [min] -  // set time for every round  
+	gtime [min] -  // set time for every round      
+	uptime - server uptime
+	disc [cn] - disconnect player
+	unmute [cn] - unmute player
+	autodemo [0|1] - automatically record demo after every match
+	
+	
 	

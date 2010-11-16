@@ -51,6 +51,8 @@ namespace server
             }
         }
     );
+
+    VAR(savedemo, 0, 0, 1);
     VAR(autodemo, 0, 0, 1 );
     SVAR(demodir, "");
 
@@ -405,6 +407,8 @@ namespace server
 
         //Remod
         // from screenshot(char *filename)
+        if(!savedemo) return;
+
         static string buf;
         copystring(buf, demodir);
         if(demodir[0])
