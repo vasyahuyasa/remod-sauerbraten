@@ -132,8 +132,8 @@ void kick(char *name)
     b.time = totalmillis;
     b.ip = getclientip(cn);
     allowedips.removeobj(b.ip);
-    disconnect_client(cn, DISC_KICK);
     remod::onevent("onkick", "ii", -1, cn);
+    disconnect_client(cn, DISC_KICK);
 }
 
 void spectator(int *st, char *name)
@@ -503,7 +503,7 @@ COMMAND(clearbans, "");
 COMMAND(setteam, "ss");
 COMMAND(getping, "s");
 COMMAND(getonline, "i");
-COMMANDN(getteamscore, _getteamscore, "s");
+COMMANDN(getteamscores, _getteamscore, "s");
 COMMAND(getrank, "s");
 COMMANDN(addgban, _addgban, "s");
 COMMANDN(cleargbans, _cleargbans, "");
