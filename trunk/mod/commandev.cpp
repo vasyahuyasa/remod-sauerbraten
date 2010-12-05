@@ -1,5 +1,5 @@
 #include "commandev.h"
-
+#include "commandhandler.h"
 namespace remod
 {
 vector<const char *> eat; //Do not allow server process that events
@@ -92,11 +92,77 @@ bool onevent(const char *evt_type, const char *fmt, ...)
     string evcmd = "";
     string evparams = "";
 
-    //If handler defined
-    if(ishandle(evt_type))
+    //if oncommand
+    if (strcmp(evt_type, "oncommand") == 0)
     {
-        int paramcount = strlen(fmt);
+    	//getting cn
+    	va_list vl;
+		va_start(vl, 2);
+		int cn = va_arg(vl, int);
+		string command_str;
+		strcpy(command_str, va_arg(vl, const char *));
+		va_end(vl);
 
+		//splitting command_string to command_name and command_params
+		string command_name, command_params;
+
+		char* spacepos = strstr(command_str, " ");
+		if (spacepos == 0) {
+			strcpy(command_name, command_str);
+			strcpy(command_params, "");
+		} else {
+			strcpy(command_params, spacepos+1);
+			strcpy(spacepos, "");
+			strcpy(command_name, command_str);
+		}
+		//calling server command
+		remod::oncommand(cn, command_name, command_params);
+
+    	//eat it!
+    	return true;
+
+    } //if irc_oncommand
+    else if (strcmp(evt_type, "irc_oncommand") == 0)
+    {
+    	//getting username
+    	va_list vl;
+		va_start(vl, 2);
+		string user;
+		strcpy(user, va_arg(vl, const char *));
+
+		//escaping ^ character in nickname - ^o_o^
+//		char *ch;
+//		while (ch = strchr(user, '^')) {
+//			strncpy(ch, "x", 1);
+//			//ch += 2;
+//		}
+		string command_str;
+		strcpy(command_str, va_arg(vl, const char *));
+		va_end(vl);
+
+		//splitting command_string to command_name and command_params
+		string command_name, command_params;
+
+		char* spacepos = strstr(command_str, " ");
+		if (spacepos == 0) {
+			strcpy(command_name, command_str);
+			strcpy(command_params, "");
+		} else {
+			strcpy(command_params, spacepos+1);
+			strcpy(spacepos, "");
+			strcpy(command_name, command_str);
+		}
+
+		//calling irc command
+		remod::irc_oncommand(user, command_name, command_params);
+
+    	//eat it!
+    	return true;
+
+    } //If handler defined
+    else if (ishandle(evt_type))
+    {
+    	int paramcount = strlen(fmt);
         //Check params
         if(paramcount>0)
         {

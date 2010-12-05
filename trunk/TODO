@@ -46,6 +46,16 @@ Server events: +
 	irc_onmsg [nick] [txt] +	"sender" "p a r a m s"   
 	irc_onprivmsg [nick] [txt] +
 	irc_oncommand [nick] [txt] +
+	
+	
+	#Commands engine
+	oncommandpermerror [cn] [command] //player has no permissions to do command
+	oncommandusageerror [cn] [command] //command usage error
+	oncommandunknown [cn] [command]  //command not found
+	
+	irc_oncommandpermerror [nick] [command] //user has no permissions to do command
+	irc_oncommandusageerror [nick] [command] //command usage error
+	irc_oncommandunknown [nick] [command]  //command not found
 
 Cube script:
 	getmap (curent_map_name) +
@@ -140,6 +150,31 @@ Cube script:
 	ircsayto [nick/chan] [msg] +	send private message or to channel
 	ircisop [nick] [0|1] +	return 1 if nick is OP       
 	ircisvoice [nick] [0|1] +	return 1 if nick have voice
+	
+	#commands engine
+	registercommand [command_name] [command_function] [permissions] [command_parameters_description] [help_string]
+	# command_name - name of command without command char (help for #help)
+	# command_function - cubescript function to process command. first arg is always cn of player entered this command
+	# permissions - 1 - any player can enter command, 2 - admins & masters, 3 - masters only
+	# command_parameters_description - list of types of parameters passing to command; 
+	#   c - valid cn or player name; command gets cn
+	#   i - valid integer
+	#   f - valid float
+	#   p - valid cn or player name or -1; command gets cn or -1
+	#   b - 1|0, y|n, true|false - bool
+	#   t - time value in seconds or  mm:ss; command gets number of seconds
+	#   s - string (must be last at parameters list)
+	#   | - delimiter between required and not rewuired parameters
+	# help_string  -  help string for command
+	
+	unregistercommand [command_name]
+	commandslist [permissions]  -  returns list of commands available for player with specified permissions
+	commandhelp [command_name]  -  returns help string for command
+	
+	irc_registercommand [command_name] [command_function] [permissions] [command_parameters_description] [help_string]
+	irc_unregistercommand [command_name]
+	irc_commandslist [permissions] 
+	irc_commandhelp [command_name] 
 	
 Rcon: +
 	индивидуальная сессия каждого подключения -

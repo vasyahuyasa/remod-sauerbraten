@@ -811,7 +811,7 @@ void ircslice()
     }
 }
 
-void ircisop(char *name)
+bool irc_user_is_op(char *name)
 {
     char *s = newstring("@");
     strcat(s, name);
@@ -824,16 +824,20 @@ void ircisop(char *name)
             {
                 if(!strcasecmp(s, ircnets[i]->channels[j].nicks[k]))
                 {
-                    intret(1);
-                    return;
+                    return true;
                 }
             }
         }
     }
-    intret(0);
+    return false;
 }
 
-void ircisvoice(char *name)
+void ircisop(char *name)
+{
+    intret(irc_user_is_op(name));
+}
+
+bool irc_user_has_voice(char *name)
 {
     char *s = newstring("+");
     char *s2 = newstring("@");
@@ -849,13 +853,17 @@ void ircisvoice(char *name)
             {
                 if(!strcasecmp(s, ircnets[i]->channels[j].nicks[k]) || !strcasecmp(s2, ircnets[i]->channels[j].nicks[k]))
                 {
-                    intret(1);
-                    return;
+                    return true;
                 }
             }
         }
     }
-    intret(0);
+    return false;
+}
+
+void ircisvoice(char *name)
+{
+    intret(irc_user_has_voice(name));
 }
 
 void ircsayto(char *to, char *msg)

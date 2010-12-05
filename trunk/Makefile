@@ -36,6 +36,7 @@ SERVER_OBJS= \
 	engine/server-standalone.o \
 	fpsgame/server-standalone.o \
 	mod/commandev-standalone.o \
+	mod/commandhandler-standalone.o \
 	mod/geoipmod-standalone.o \
 	mod/irc-standalone.o \
 	mod/rconmod-standalone.o \

@@ -83,6 +83,9 @@ extern bool resolverwait(const char *name, ENetAddress *address);
 
 extern vector<ircnet *> ircnets;
 
+extern bool irc_user_is_op(char *name);
+extern bool irc_user_has_voice(char *name);
+
 extern ircnet *ircfind(const char *name);
 extern void ircestablish(ircnet *n);
 extern void ircsend(ircnet *n, const char *msg, ...);
