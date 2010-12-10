@@ -361,8 +361,8 @@ void irc_oncommand(const char* user, const char* cmd_name, const char* cmd_param
 	string usr;
 	strcpy(usr, user);
 	if (
-			(handler.cmd_permissions == 1 && !irc_user_has_voice(usr)) ||
-			(handler.cmd_permissions == 2 && !irc_user_is_op(usr))
+			(handler.cmd_permissions == 1 && !irc_user_state(usr, VOICE)) ||
+			(handler.cmd_permissions == 2 && !irc_user_state(usr, OP))
 			//(handler.cmd_permissions == 3 && special permissions
 		)
 	{

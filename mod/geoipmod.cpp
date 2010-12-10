@@ -1,38 +1,34 @@
+/*
+* remod:    geoip.cpp
+* date:     2007
+* author:   degrave
+*
+* GEOIP staff
+*/
+
+
+
 #ifdef GEOIP
-#include "fpsgame.h"
-#include "GeoIP.h"
+
+#include "geoipmod.h"
 
 namespace remod
 {
 
-class GeoIPtool
+GeoIPtool *GIt;
+
+void loadgeoip(char *dbname)
 {
-    private:
-    GeoIP *gi;
-    public:
-    GeoIPtool()
+    GIt = new GeoIPtool(dbname);
+    if(GIt->loaded())
     {
-         gi = GeoIP_open("GeoIP.dat", GEOIP_STANDARD);
-         if (gi == NULL) conoutf(CON_ERROR, "Geoip: cannot inizialize");
-            else conoutf("Geoip: initialized with 'GeoIP.dat'");
+        conoutf(CON_ERROR, "Geoip: loaded (db: '%s')", dbname);
     }
-
-    ~GeoIPtool()
+    else
     {
-        GeoIP_delete(gi);
+        conoutf(CON_ERROR, "Geoip: can not load (db: '%s')", dbname);
     }
-
-    char *getcountry(char *host)
-    {
-        if(gi)
-        {
-            const  char *returncountryname = GeoIP_country_name_by_addr(gi,host);
-            return (char*)returncountryname;
-        } else return NULL;
-    }
-};
-
-GeoIPtool *GIt = new GeoIPtool;
+}
 
 void getcountry(char *ip)
 {
@@ -42,8 +38,9 @@ void getcountry(char *ip)
     result(country);
 }
 
-//Remod cubescript bindings
 COMMAND(getcountry,"s");
+COMMANDN(geodb, loadgeoip, "s");
+ICOMMAND(isgeoip, "", (), intret(GIt->loaded()));
 
 }
 #endif

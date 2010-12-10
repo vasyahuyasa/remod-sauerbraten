@@ -23,12 +23,28 @@ enum { CON_EVENT, CON_MAX, CON_LO, CON_HI, CON_IMPORTANT };
 enum { IRCC_NONE = 0, IRCC_JOINING, IRCC_JOINED, IRCC_KICKED, IRCC_BANNED };
 enum { IRCCT_NONE = 0, IRCCT_AUTO };
 
+// remod
+enum usermode {
+        OP = 1 << 1,
+        HALFOP = 1 << 2,
+        VOICE = 1 << 3,
+        ADMIN = 1 << 4,
+        OWNER = 1 << 5,
+        NONE = 1 << 6
+    };
+
+struct user
+{
+    string nick;
+    usermode state;
+};
+
 struct ircchan
 {
     int state, type, relay, lastjoin;
     string name, friendly, passkey;
 
-    vector<const char *> nicks;
+    vector<user> users;
 
 #ifndef STANDALONE
     vector<char *> lines;
@@ -47,6 +63,37 @@ struct ircchan
         loopv(lines) DELETEA(lines[i]);
         lines.shrink(0);
 #endif
+        loopv(users) delete(&users[i]);
+        users.shrink(0);
+    }
+
+    void adduser(char *nick, usermode state)
+    {
+        user &u = users.add();
+        strcpy(u.nick, nick);
+        u.state=state;
+    }
+
+    void deluser(char *nick)
+    {
+        loopv(users)
+        {
+            if(strcmp(users[i].nick, nick)==0) users.remove(i);
+        }
+    }
+
+    void setusermode(char *nick, usermode state)
+    {
+        loopv(users)
+        {
+            if(strcmp(users[i].nick, nick)==0) users[i].state = state;
+        }
+    }
+
+    void resetusers()
+    {
+        loopv(users) delete(&users[i]);
+        users.shrink(0);
     }
 };
 enum { IRCT_NONE = 0, IRCT_CLIENT, IRCT_RELAY, IRCT_MAX };
@@ -83,8 +130,7 @@ extern bool resolverwait(const char *name, ENetAddress *address);
 
 extern vector<ircnet *> ircnets;
 
-extern bool irc_user_is_op(char *name);
-extern bool irc_user_has_voice(char *name);
+extern bool irc_user_state(char *nick, usermode state);
 
 extern ircnet *ircfind(const char *name);
 extern void ircestablish(ircnet *n);

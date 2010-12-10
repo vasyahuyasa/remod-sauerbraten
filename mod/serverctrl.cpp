@@ -1,3 +1,12 @@
+/*
+* remod:    serverctrl.cpp
+* date:     2007
+* author:   degrave
+*
+* additional cubescript functions
+*/
+
+
 #include "fpsgame.h"
 #include "commandev.h"
 #include "remod.h"
@@ -11,7 +20,7 @@ namespace remod
 {
 using namespace server;
 
-//Additional cubescript functions
+
 void getname(int *cn)
 {
     clientinfo *ci = (clientinfo *)getinfo((int)*cn);
@@ -429,28 +438,32 @@ void formatmillis(char *fmt, int *millis)
             {
                 case 's':
                 {
-                    const char *sseconds = intstr(seconds);
+                    const char *sseconds = newstring(2);
+                    sprintf((char*)sseconds, "%02d", seconds);
                     while(*sseconds) s.add(*sseconds++);
                     break;
                 }
 
                 case 'm':
                 {
-                    const char *sminutes = intstr(minutes);
+                    const char *sminutes = newstring(2);
+                    sprintf((char*)sminutes, "%02d", minutes);
                     while(*sminutes) s.add(*sminutes++);
                     break;
                 }
 
                 case 'h':
                 {
-                    const char *shours = intstr(hours);
+                    const char *shours = newstring(2);
+                    sprintf((char*)shours, "%02d", hours);
                     while(*shours) s.add(*shours++);
                     break;
                 }
 
                 case 'd':
                 {
-                    const char *sdays = intstr(days);
+                    const char *sdays;
+                    sdays = intstr(days);
                     while(*sdays) s.add(*sdays++);
                     break;
                 }
@@ -467,6 +480,12 @@ void getcn(char *name)
 {
     int cn = parseplayer(name);
     intret(cn);
+}
+
+void halt()
+{
+    // normal exit
+    exit(0);
 }
 
 //Cube script binds
@@ -518,4 +537,5 @@ COMMAND(mute, "is");
 COMMAND(ismuted, "i");
 COMMAND(formatmillis, "si");
 COMMAND(getcn, "i");
+COMMAND(halt, "");
 }

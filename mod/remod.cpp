@@ -1,3 +1,12 @@
+/*
+* remod:    remod.cpp
+* date:     2007
+*
+* some routines
+*/
+
+
+
 #include "remod.h"
 
 namespace remod

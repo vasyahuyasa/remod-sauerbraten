@@ -115,7 +115,10 @@
 		<Unit filename="libGeoIP\GeoIP.h" />
 		<Unit filename="mod\commandev.cpp" />
 		<Unit filename="mod\commandev.h" />
+		<Unit filename="mod\commandhandler.cpp" />
+		<Unit filename="mod\commandhandler.h" />
 		<Unit filename="mod\geoipmod.cpp" />
+		<Unit filename="mod\geoipmod.h" />
 		<Unit filename="mod\irc.cpp" />
 		<Unit filename="mod\irc.h" />
 		<Unit filename="mod\rconmod.cpp" />

@@ -1,3 +1,12 @@
+/*
+* remod:    commandev.cpp
+* date:     2007
+* author:   degrave, stormchild
+*
+* events and events handlers
+*/
+
+
 #include "commandev.h"
 #include "commandhandler.h"
 namespace remod
