@@ -124,11 +124,12 @@ Cube script:
 	$demodir [str] + 	folder for saved demos
 	$savedemo [1|0] +	allow save demos to disk  
 	halt +	stop server   
-	geodb [filename] +	load GEOIP database
+	geodb [filename] +	load GEOIP database      
+	isgeoip (1|0) +	return status of geoip
 
 	IRC: +
 	ircsay +
-	ircsayto -
+	ircsayto +
 
 	$verbose +
 	ircfilter +
@@ -182,30 +183,30 @@ Rcon: +
 	индивидуальная сессия каждого подключения -
 
 IRC бот: +
-	возможность кика/бана -
+	возможность кика/бана +
 	перекидывание игрока в другую команду -
-	spect/unspec -
+	spect/unspec +
 	изменение режима игры и карты -
-	общение -
+	общение +
 	предупреждение -
 
 #commands: -
 	persist [0|1] +
 	specall [0|1] +
 	mute [cn] [0|1] + 
-	help (command) shows help str for command
+	help (command) + shows help str for command
 	ban <cn> <time> reason -
 	kick [cn] [time mins] [reason] -
 	restart +
 	stats (cn) | stats -1 - for all  + //не показывает пока returned flags
 	getip (cn) +
 	version +   //показывает последнюю ревизию serverctrl.cpp       
-	time [min] -  // set remaining time for current round
-	gtime [min] -  // set time for every round      
-	uptime - server uptime
-	disc [cn] - disconnect player
-	unmute [cn] - unmute player
-	autodemo [0|1] - automatically record demo after every match
+	time [min] +  // set remaining time for current round
+	gtime [min] +  // set time for every round      
+	uptime + server uptime
+	disc [cn] + disconnect player
+	unmute [cn] + unmute player
+	autodemo [0|1] + automatically record demo after every match
 	
 	
 	
