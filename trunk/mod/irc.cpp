@@ -497,6 +497,12 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
                 c->lastjoin = totalmillis;
             }
             ircprintf(n, 3, w[g+1], "\fg%s (%s@%s) has joined", user[0], user[1], user[2]);
+
+            // remod
+            if(strcmp(n->nick, user[0]) != 0)
+            {
+                c->adduser(user[0], NONE);
+            }
         }
     }
     else if(!strcasecmp(w[g], "PART"))
@@ -510,12 +516,24 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
                 c->lastjoin = totalmillis;
             }
             ircprintf(n, 3, w[g+1], "\fo%s (%s@%s) has left", user[0], user[1], user[2]);
+
+            // remod
+            c->deluser(user[0]);
         }
     }
     else if(!strcasecmp(w[g], "QUIT"))
     {
         if(numargs > g+1) ircprintf(n, 3, NULL, "\fr%s (%s@%s) has quit: %s", user[0], user[1], user[2], w[g+1]);
         else ircprintf(n, 3, NULL, "\fr%s (%s@%s) has quit", user[0], user[1], user[2]);
+
+        // remod
+        loopv(ircnets)
+        {
+            loopvj(ircnets[i]->channels)
+            {
+                ircnets[i]->channels[j].deluser(user[0]);
+            }
+        }
     }
     else if(!strcasecmp(w[g], "KICK"))
     {
@@ -528,6 +546,9 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
                 c->lastjoin = totalmillis;
             }
             ircprintf(n, 3, w[g+1], "\fr%s (%s@%s) has kicked %s from %s", user[0], user[1], user[2], w[g+2], w[g+1]);
+
+            // remod
+            c->deluser(user[0]);
         }
     }
     else if(!strcasecmp(w[g], "MODE"))
@@ -541,6 +562,27 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
                 concatstring(modestr, w[g+2+i]);
             }
             ircprintf(n, 4, w[g+1], "\fr%s (%s@%s) sets mode: %s %s", user[0], user[1], user[2], w[g+1], modestr);
+
+            // remod
+            printf("modestr='%s' w[g+2]='%s' w[g+3]='%s' w[g+4]='%s'", modestr, w[g+2], w[g+3], w[g+4]);
+            ircchan *c = ircfindchan(n, w[g+1]);
+            if(c)
+            {
+                if(w[g+2][0]=='-') // -
+                {
+                    c->setusermode(w[g+3], NONE);
+                }
+                else // +
+                {
+                    switch(w[g+2][1]) // +o +v
+                    {
+                        case 'o': c->setusermode(w[g+3], OP); break;
+                        case 'v': c->setusermode(w[g+3], VOICE); break;
+                        default: c->setusermode(w[g+3], NONE); break;
+                    }
+                }
+            }
+
         }
         else if(numargs > g+1)
             ircprintf(n, 4, w[g+1], "\fr%s (%s@%s) sets mode: %s", user[0], user[1], user[2], w[g+1]);
@@ -597,29 +639,38 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
             case 353:
             {
                 // char *s - list of nicks
-                char nick[255];
-                const char *pnick;
-                int chpos=0;
+                char *nick;
+                char *pnick;
+                usermode state=NONE;
 
                 ircchan *c = ircfindchan(n, w[g+3]);
+                c->resetusers();
 
-                for(int i=0; i<strlen(s); i++)
+                nick = strtok(s, " ");
+                while(nick!= NULL)
                 {
-                    char chr = s[i];
-                    if(chr != ' ') { nick[chpos++] = chr; }
-                    else
+                    switch(nick[0])
                     {
-                        nick[chpos] = '\0';
-                        chpos = 0;
-                        pnick=newstring(nick);
-                        c->nicks.add(pnick);
+                        case '*': state = OWNER; break;
+                        case '!': state = ADMIN; break;
+                        case '@': state = OP; break;
+                        case '+': state = VOICE; break;
+                        case '%': state = HALFOP; break;
+                        default: state = NONE; break;
                     }
+
+                    if(state != NONE)
+                    {
+                        int len = strlen(nick);
+                        strncpy(nick, &nick[1], len-1);
+                        nick[len-1] = '\0';
+                    }
+
+                    pnick=newstring(nick);
+                    c->adduser(pnick, state);
+
+                    nick = strtok(NULL, " ");
                 }
-
-                // Add last name
-                pnick=newstring(nick);
-                c->nicks.add(pnick);
-
                 break;
             }
 
@@ -811,21 +862,23 @@ void ircslice()
     }
 }
 
-bool irc_user_is_op(char *name)
+bool irc_user_state(char *nick, usermode state)
 {
-    char *s = newstring("@");
-    strcat(s, name);
-
     loopv(ircnets)
     {
         loopvj(ircnets[i]->channels)
         {
-            loopvk(ircnets[i]->channels[j].nicks)
+            loopvk(ircnets[i]->channels[j].users)
             {
-                if(!strcasecmp(s, ircnets[i]->channels[j].nicks[k]))
+                conoutf("compare '%s' - '%s'",ircnets[i]->channels[j].users[k].nick, nick);
+                if(strcmp(ircnets[i]->channels[j].users[k].nick, nick)==0)
                 {
-                    return true;
+                    if(ircnets[i]->channels[j].users[k].state == state)
+                        return true;
+                        else
+                        return false;
                 }
+
             }
         }
     }
@@ -834,36 +887,12 @@ bool irc_user_is_op(char *name)
 
 void ircisop(char *name)
 {
-    intret(irc_user_is_op(name));
-}
-
-bool irc_user_has_voice(char *name)
-{
-    char *s = newstring("+");
-    char *s2 = newstring("@");
-
-    strcat(s, name);
-    strcat(s2, name);
-
-    loopv(ircnets)
-    {
-        loopvj(ircnets[i]->channels)
-        {
-            loopvk(ircnets[i]->channels[j].nicks)
-            {
-                if(!strcasecmp(s, ircnets[i]->channels[j].nicks[k]) || !strcasecmp(s2, ircnets[i]->channels[j].nicks[k]))
-                {
-                    return true;
-                }
-            }
-        }
-    }
-    return false;
+    intret(irc_user_state(name, OP));
 }
 
 void ircisvoice(char *name)
 {
-    intret(irc_user_has_voice(name));
+    intret(irc_user_state(name, VOICE));
 }
 
 void ircsayto(char *to, char *msg)
@@ -876,16 +905,16 @@ void ircsayto(char *to, char *msg)
     }
 }
 
-#if 0
+#if 1
 void irc_dumpnicks()
 {
     loopv(ircnets)
     {
         loopvj(ircnets[i]->channels)
         {
-            loopvk(ircnets[i]->channels[j].nicks)
+            loopvk(ircnets[i]->channels[j].users)
             {
-                printf("ircnets[%i]->channels[%i].nicks[%i]=%s\n", i, j, k, ircnets[i]->channels[j].nicks[k]);
+                printf("ircnets[%i]->channels[%i].users[%i]=%s stat=%d\n", i, j, k, ircnets[i]->channels[j].users[k].nick, ircnets[i]->channels[j].users[k].state);
             }
         }
     }

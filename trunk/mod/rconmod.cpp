@@ -1,3 +1,13 @@
+/*
+* remod:    rconmod.cpp
+* date:     2007
+* author:   degrave
+*
+* remot control
+*/
+
+
+
 #include "rconmod.h"
 
 extern int execute(const char *p);

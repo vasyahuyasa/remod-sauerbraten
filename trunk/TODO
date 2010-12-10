@@ -122,7 +122,9 @@ Cube script:
 	getcn [name] +	return cn of player	  
 	$autodemo [1|0] +	automatycaly record demo on every next match 
 	$demodir [str] + 	folder for saved demos
-	$savedemo [1|0] +	allow save demos to disk
+	$savedemo [1|0] +	allow save demos to disk  
+	halt +	stop server   
+	geodb [filename] +	load GEOIP database
 
 	IRC: +
 	ircsay +
@@ -164,7 +166,7 @@ Cube script:
 	#   b - 1|0, y|n, true|false - bool
 	#   t - time value in seconds or  mm:ss; command gets number of seconds
 	#   s - string (must be last at parameters list)
-	#   | - delimiter between required and not rewuired parameters
+	#   | - delimiter between required and not required parameters
 	# help_string  -  help string for command
 	
 	unregistercommand [command_name]
