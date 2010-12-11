@@ -36,7 +36,8 @@ Server events: +
 	onbotbalance [cn] [balance]
 	//onauth [cn] [name] = onsetmaster
     @onpausegame [1|0] +   
-    onmodmap [cn] +
+    onmodmap [cn] +  
+    onmute [1|0] [cn] +
 
 	#coopedit
 	@ongetmap [cn] +
@@ -125,7 +126,8 @@ Cube script:
 	$savedemo [1|0] +	allow save demos to disk  
 	halt +	stop server   
 	geodb [filename] +	load GEOIP database      
-	isgeoip (1|0) +	return status of geoip
+	isgeoip (1|0) +	return status of geoip       
+	setmaster [1|0] [cn] +	give or revoke master rights
 
 	IRC: +
 	ircsay +

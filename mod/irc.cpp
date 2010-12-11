@@ -564,7 +564,6 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
             ircprintf(n, 4, w[g+1], "\fr%s (%s@%s) sets mode: %s %s", user[0], user[1], user[2], w[g+1], modestr);
 
             // remod
-            printf("modestr='%s' w[g+2]='%s' w[g+3]='%s' w[g+4]='%s'", modestr, w[g+2], w[g+3], w[g+4]);
             ircchan *c = ircfindchan(n, w[g+1]);
             if(c)
             {

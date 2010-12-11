@@ -395,17 +395,18 @@ void playerexists(int *pcn)
     intret(0);
 }
 
-void mute(int *pcn, char *val)
+void mute(int *pcn, int *val)
 {
-    int cn=(int)*pcn;
-    if(val[0]) //if player specified
+    int cn = (int)*pcn;
+    bool v = (bool)*val;
+
+    clientinfo *ci = (clientinfo *)getinfo(cn);
+    if(ci)
     {
-        int i = atoi(val);
-        clientinfo *ci = (clientinfo *)getinfo(cn);
-        if(ci)
+        if(ci->state.muted != v)
         {
-            ci->state.muted=i;
-            remod::onevent("onmute", "ii", cn, i ? 1 : 0);
+            ci->state.muted = v;
+            remod::onevent("onmute", "ii", v ? 1 : 0, cn);
         }
     }
 }
@@ -488,6 +489,43 @@ void halt()
     exit(0);
 }
 
+void setmastercmd(int *val, int *pcn)
+{
+    bool v = (bool)*val;
+    int cn = (int)*pcn;
+    clientinfo *ci = (clientinfo *)getinfo(cn);
+    if(ci)
+    {
+        const char *name = "";
+        if(!v)
+        {
+            if(ci->privilege>PRIV_NONE)
+            {
+                name = privname(ci->privilege);
+                revokemaster(ci);
+            }  else return;
+        }
+        else
+        {
+            if(ci->privilege>=PRIV_MASTER) return;
+            loopv(clients) if(clients[i]->privilege>PRIV_NONE) revokemaster(clients[i]);
+            ci->privilege = PRIV_MASTER;
+            name = privname(ci->privilege);
+        }
+
+        remod::onevent("onsetmaster", "iiss", ci->clientnum, v ? 1:0, "", "");
+
+        string msg;
+        formatstring(msg)("%s %s %s", colorname(ci, NULL), v ? "claimed" : "relinquished", name);
+        sendservmsg(msg);
+
+        mastermode = MM_OPEN;
+        allowedips.shrink(0);
+        currentmaster = val ? ci->clientnum : -1;
+        sendf(-1, 1, "ri4", N_CURRENTMASTER, currentmaster, currentmaster >= 0 ? ci->privilege : 0, mastermode);
+    }
+}
+
 //Cube script binds
 COMMAND(getname, "i");
 COMMAND(getmap, "");
@@ -533,9 +571,10 @@ COMMANDN(addgban, _addgban, "s");
 COMMANDN(cleargbans, _cleargbans, "");
 COMMANDN(numclients, _numclients, "");
 COMMAND(playerexists, "i");
-COMMAND(mute, "is");
+COMMAND(mute, "ii");
 COMMAND(ismuted, "i");
 COMMAND(formatmillis, "si");
 COMMAND(getcn, "i");
 COMMAND(halt, "");
+COMMANDN(setmaster, setmastercmd, "ii");
 }
