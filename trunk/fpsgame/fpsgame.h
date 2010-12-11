@@ -433,13 +433,16 @@ namespace server
     void filtercstext(char *dst, const char *src);
 
     clientinfo *getinfo(int n);
+    const char *privname(int type);
     void pausegame(bool val);
+    void revokemaster(clientinfo *ci);
     void changemap(const char *s, int mode);
     void suicide(clientinfo *ci);
     void checkmaps(int req);
     void sendservmsg(const char *s);
     void srvmsgf(int cn, const char *s, ...);
     int numclients(int exclude , bool nospec, bool noai, bool priv);
+    const char *colorname(clientinfo *ci, char *name);
     void addgban(const char *name);
     void cleargbans();
 
