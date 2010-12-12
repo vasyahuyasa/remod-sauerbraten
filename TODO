@@ -169,18 +169,44 @@ Cube script:
 	#   b - 1|0, y|n, true|false - bool
 	#   t - time value in seconds or  mm:ss; command gets number of seconds
 	#   s - string (must be last at parameters list)
+	#	w - one word (string without spaces)
 	#   | - delimiter between required and not required parameters
 	# help_string  -  help string for command
 	
 	unregistercommand [command_name]
-	commandslist [permissions]  -  returns list of commands available for player with specified permissions
+	loopcommands $var perm [body] -  iterates server's commands with permission <= perm and executes body. $var contains command name
 	commandhelp [command_name]  -  returns help string for command
 	
 	irc_registercommand [command_name] [command_function] [permissions] [command_parameters_description] [help_string]
 	irc_unregistercommand [command_name]
-	irc_commandslist [permissions] 
+	irc_loopcommands $var perm [body]
 	irc_commandhelp [command_name] 
 	
+	
+	grantperm cn
+	irc_grantperm user
+	# Script may declare these functions for defining permissions for player/irc_user. 
+	# If so, server uses this logic for every permission check (u can define custom rules, e.g. player with ip 127.0.0.1 has the same permissions as master).
+	# Otherways default permission check is used:
+	# FOR SERVER COMMANDS
+	# if (isadmin(cn)) {
+	#	return 2;
+	# } else if (ismaster(cn)) {
+	#	return 3;
+	# } else {
+	#	return 1;
+	#} 
+	# FOR IRC COMMANDS:
+	# if (irc_user_state(usr, VOICE)) {
+	#	return 1;
+	# } else if (irc_user_state(usr, OP)) {
+	#	return 2;
+	# } else {
+	#	return 0;
+	# }
+	#
+	
+	checkipbymask [ip] [mask]  -  returns true if ip and mask are smth like "127.0.0.1" and "127.0.*.*" 
 Rcon: +
 	индивидуальная сессия каждого подключения -
 

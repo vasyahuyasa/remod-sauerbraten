@@ -116,12 +116,12 @@ bool onevent(const char *evt_type, const char *fmt, ...)
 		string command_name, command_params;
 
 		char* spacepos = strstr(command_str, " ");
-		if (spacepos == 0) {
+		if (!spacepos) {
 			strcpy(command_name, command_str);
-			strcpy(command_params, "");
+			command_params[0] = '\0';
 		} else {
 			strcpy(command_params, spacepos+1);
-			strcpy(spacepos, "");
+			spacepos[0] = '\0';
 			strcpy(command_name, command_str);
 		}
 		//calling server command
@@ -139,12 +139,6 @@ bool onevent(const char *evt_type, const char *fmt, ...)
 		string user;
 		strcpy(user, va_arg(vl, const char *));
 
-		//escaping ^ character in nickname - ^o_o^
-//		char *ch;
-//		while (ch = strchr(user, '^')) {
-//			strncpy(ch, "x", 1);
-//			//ch += 2;
-//		}
 		string command_str;
 		strcpy(command_str, va_arg(vl, const char *));
 		va_end(vl);

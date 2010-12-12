@@ -526,6 +526,54 @@ void setmastercmd(int *val, int *pcn)
     }
 }
 
+
+/**
+ * checks if ip matches mask
+ * ip = "127.0.0.1",	mask = "127.0.0.1"		--  true
+ * ip = "192.168.1.23",	mask = "192.168.1.*"	--  true
+ * ip = "127.0.0.1",	mask = "128.0.0.1"		--  false
+ */
+bool checkipbymask(char *ip, char *mask) {
+	string istr;
+	string mstr;
+
+	strcpy(istr, ip);
+	strcpy(mstr, mask);
+
+	bool b = true;
+
+	while (b && strlen(istr) > 0) {
+		char *idot = strchr(istr, '.');
+		string iseg;
+		if (idot) {
+			int c = idot-istr;
+			strncpy(iseg, istr, c);
+			iseg[c] = '\0';
+			strcpy(istr, idot+1);
+		} else {
+			strcpy(iseg, istr);
+			istr[0] = '\0';
+		}
+
+		char *mdot = strchr(mstr, '.');
+		string mseg;
+		if (mdot) {
+			int c = mdot-mstr;
+			strncpy(mseg, mstr, c);
+			mseg[c] = '\0';
+			strcpy(mstr, mdot+1);
+		} else {
+			strcpy(mseg, mstr);
+			mstr[0] = '\0';
+		}
+
+		if (strcmp(iseg, mseg) != 0 && strcmp(mseg, "*") != 0) {
+			b = false;
+		}
+	}
+	return b;
+}
+
 //Cube script binds
 COMMAND(getname, "i");
 COMMAND(getmap, "");
@@ -577,4 +625,7 @@ COMMAND(formatmillis, "si");
 COMMAND(getcn, "i");
 COMMAND(halt, "");
 COMMANDN(setmaster, setmastercmd, "ii");
+
+ICOMMAND(checkipbymask, "ss", (char *ip, char *mask), intret(checkipbymask(ip, mask) ? 1 : 0));
+
 }
