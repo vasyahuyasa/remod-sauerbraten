@@ -124,7 +124,7 @@ Cube script:
 	$autodemo [1|0] +	automatycaly record demo on every next match 
 	$demodir [str] + 	folder for saved demos
 	$savedemo [1|0] +	allow save demos to disk  
-	halt +	stop server   
+	halt [err] +	stop server with error code  
 	geodb [filename] +	load GEOIP database      
 	isgeoip (1|0) +	return status of geoip       
 	setmaster [1|0] [cn] +	give or revoke master rights
