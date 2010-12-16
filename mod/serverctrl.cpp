@@ -483,10 +483,10 @@ void getcn(char *name)
     intret(cn);
 }
 
-void halt()
+void halt(int *err)
 {
-    // normal exit
-    exit(0);
+    int errcode = (int)*err;
+    exit(errcode);
 }
 
 void setmastercmd(int *val, int *pcn)
@@ -623,7 +623,7 @@ COMMAND(mute, "ii");
 COMMAND(ismuted, "i");
 COMMAND(formatmillis, "si");
 COMMAND(getcn, "i");
-COMMAND(halt, "");
+COMMAND(halt, "i");
 COMMANDN(setmaster, setmastercmd, "ii");
 
 ICOMMAND(checkipbymask, "ss", (char *ip, char *mask), intret(checkipbymask(ip, mask) ? 1 : 0));

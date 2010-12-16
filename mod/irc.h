@@ -63,7 +63,7 @@ struct ircchan
         loopv(lines) DELETEA(lines[i]);
         lines.shrink(0);
 #endif
-        loopv(users) delete(&users[i]);
+        //loopv(users) delete(&users[i]); // crash
         users.shrink(0);
     }
 
