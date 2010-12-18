@@ -63,8 +63,7 @@ struct ircchan
         loopv(lines) DELETEA(lines[i]);
         lines.shrink(0);
 #endif
-        //loopv(users) delete(&users[i]); // crash
-        users.shrink(0);
+        resetusers();
     }
 
     void adduser(char *nick, usermode state)
@@ -92,7 +91,7 @@ struct ircchan
 
     void resetusers()
     {
-        loopv(users) delete(&users[i]);
+        //loopv(users) delete(&users[i]); // posible crash
         users.shrink(0);
     }
 };
