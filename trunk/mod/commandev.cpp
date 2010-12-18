@@ -131,6 +131,7 @@ bool onevent(const char *evt_type, const char *fmt, ...)
     	return true;
 
     } //if irc_oncommand
+    #ifdef IRC
     else if (strcmp(evt_type, "irc_oncommand") == 0)
     {
     	//getting username
@@ -162,7 +163,9 @@ bool onevent(const char *evt_type, const char *fmt, ...)
     	//eat it!
     	return true;
 
-    } //If handler defined
+    }
+    #endif
+    //If handler defined
     else if (ishandle(evt_type))
     {
     	int paramcount = strlen(fmt);

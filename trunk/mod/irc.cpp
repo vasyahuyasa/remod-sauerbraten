@@ -640,12 +640,14 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
                 // char *s - list of nicks
                 char *nick;
                 char *pnick;
+                mkstring(s2);
+                strcpy(s2, s); // dublicate users line
                 usermode state=NONE;
 
                 ircchan *c = ircfindchan(n, w[g+3]);
                 c->resetusers();
 
-                nick = strtok(s, " ");
+                nick = strtok(s2, " ");
                 while(nick!= NULL)
                 {
                     switch(nick[0])
