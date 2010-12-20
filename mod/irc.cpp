@@ -527,13 +527,10 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
         else ircprintf(n, 3, NULL, "\fr%s (%s@%s) has quit", user[0], user[1], user[2]);
 
         // remod
-        loopv(ircnets)
-        {
-            loopvj(ircnets[i]->channels)
+            loopv(n->channels)
             {
-                ircnets[i]->channels[j].deluser(user[0]);
+                n->channels[i].deluser(user[0]);
             }
-        }
     }
     else if(!strcasecmp(w[g], "KICK"))
     {

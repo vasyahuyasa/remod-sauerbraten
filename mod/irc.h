@@ -77,7 +77,11 @@ struct ircchan
     {
         loopv(users)
         {
-            if(strcmp(users[i].nick, nick)==0) users.remove(i);
+            if(strcmp(users[i].nick, nick)==0)
+            {
+                users.remove(i);
+                return;
+            }
         }
     }
 
