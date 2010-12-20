@@ -14,13 +14,13 @@ namespace remod
         public:
         GeoIPtool()
         {
-            gi = GeoIP_open("GeoIP.dat", GEOIP_MEMORY_CACHE);
+            gi = GeoIP_open("GeoIP.dat", GEOIP_STANDARD | GEOIP_MEMORY_CACHE);
         }
 
-        GeoIPtool(char *dbname)
+        GeoIPtool(const char *dbname)
         {
 
-            gi = GeoIP_open(dbname, GEOIP_MEMORY_CACHE);
+            gi = GeoIP_open(dbname, GEOIP_STANDARD | GEOIP_MEMORY_CACHE);
         }
 
         ~GeoIPtool()
@@ -33,7 +33,7 @@ namespace remod
             if(gi != NULL) return true; else return false;
         }
 
-        char *getcountry(char *host)
+        const char *getcountry(char *host)
         {
             if(gi)
             {

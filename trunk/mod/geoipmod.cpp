@@ -32,9 +32,9 @@ void loadgeoip(char *dbname)
 
 void getcountry(char *ip)
 {
-    char *country=NULL;
+    const char *country = NULL;
     country = GIt->getcountry(ip);
-    if(country == NULL) country=ip;
+    if(!country) country = ip;
     result(country);
 }
 
