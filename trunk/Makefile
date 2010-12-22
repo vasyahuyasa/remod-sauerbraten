@@ -1,3 +1,4 @@
+CXX= gcc
 CXXFLAGS= -O3 -fomit-frame-pointer -DGEOIPDATADIR
 override CXXFLAGS+= -Wall -fsigned-char
 
@@ -23,10 +24,10 @@ endif
 
 ifneq (,$(findstring MINGW,$(PLATFORM)))
 SERVER_INCLUDES+= -DSTANDALONE $(INCLUDES) -Iinclude
-SERVER_LIBS= -Llib -lzdll -lenet -lws2_32 -lwinmm
+SERVER_LIBS= -Llib -lzdll -lenet -lws2_32 -lwinmm 
 else
 SERVER_INCLUDES+= -DSTANDALONE $(INCLUDES)
-SERVER_LIBS= -Lenet/.libs -L/usr/local/lib -lenet -lz
+SERVER_LIBS= -Lenet/.libs -L/usr/local/lib -lenet -lz -lstdc++
 endif
 SERVER_OBJS= \
 	shared/crypto-standalone.o \
@@ -42,7 +43,6 @@ SERVER_OBJS= \
 	mod/rconmod-standalone.o \
 	mod/serverctrl-standalone.o	\
 	mod/remod-standalone.o \
-	\
 	libGeoIP/GeoIP-standalone.o
 
 ifeq ($(PLATFORM),SunOS)
