@@ -1,4 +1,4 @@
-CXXFLAGS= -O3 -fomit-frame-pointer
+CXXFLAGS= -O3 -fomit-frame-pointer -DGEOIPDATADIR
 override CXXFLAGS+= -Wall -fsigned-char
 
 PLATFORM= $(shell uname -s)
@@ -26,7 +26,7 @@ SERVER_INCLUDES+= -DSTANDALONE $(INCLUDES) -Iinclude
 SERVER_LIBS= -Llib -lzdll -lenet -lws2_32 -lwinmm
 else
 SERVER_INCLUDES+= -DSTANDALONE $(INCLUDES)
-SERVER_LIBS= -Lenet/.libs -L/usr/local/lib -lenet -lz -lGeoIP
+SERVER_LIBS= -Lenet/.libs -L/usr/local/lib -lenet -lz
 endif
 SERVER_OBJS= \
 	shared/crypto-standalone.o \
@@ -41,10 +41,11 @@ SERVER_OBJS= \
 	mod/irc-standalone.o \
 	mod/rconmod-standalone.o \
 	mod/serverctrl-standalone.o	\
-	mod/remod-standalone.o
+	mod/remod-standalone.o \
+	\
+	libGeoIP/GeoIP-standalone.o
 
 ifeq ($(PLATFORM),SunOS)
-CLIENT_LIBS+= -lsocket -lnsl -lX11
 SERVER_LIBS+= -lsocket -lnsl
 endif
 
@@ -69,7 +70,10 @@ clean:
 	$(MV) $@.tmp $@
 
 %-standalone.o: %.cpp
-	$(CXX) $(CXXFLAGS) -c -o $@ $(subst -standalone.o,.cpp,$@)
+	$(CXX) $(CXXFLAGS) -c -o $@ $(subst -standalone.o,.cpp,$@) 
+
+%-standalone.o: %.c
+	$(CXX) $(CXXFLAGS) -c -o $@ $(subst -standalone.o,.c,$@)	
 
 $(CLIENT_OBJS): CXXFLAGS += $(CLIENT_INCLUDES)
 $(filter shared/%,$(CLIENT_OBJS)): $(filter shared/%,$(CLIENT_PCH))
