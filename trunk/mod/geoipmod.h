@@ -14,13 +14,7 @@ namespace remod
         public:
         GeoIPtool()
         {
-            gi = GeoIP_open("GeoIP.dat", GEOIP_STANDARD | GEOIP_MEMORY_CACHE);
-        }
-
-        GeoIPtool(const char *dbname)
-        {
-
-            gi = GeoIP_open(dbname, GEOIP_STANDARD | GEOIP_MEMORY_CACHE);
+            gi = NULL;
         }
 
         ~GeoIPtool()
@@ -28,19 +22,29 @@ namespace remod
             GeoIP_delete(gi);
         }
 
+        bool loaddb(const char *dbname)
+        {
+            gi = GeoIP_open(dbname, GEOIP_STANDARD | GEOIP_MEMORY_CACHE);
+            if(gi == NULL) return false;
+                else return true;
+        }
+
         bool loaded()
         {
-            if(gi != NULL) return true; else return false;
+            if(gi == NULL) return false; else return true;
         }
 
         const char *getcountry(char *host)
         {
-            if(gi)
+            if(loaded())
             {
                 const char *name;
                 name = GeoIP_country_name_by_addr(gi, host);
                 return (char*)name;
-            } else return NULL;
+            } else
+            {
+                return NULL;
+            }
         }
     };
 }

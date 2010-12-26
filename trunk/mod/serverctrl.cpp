@@ -115,7 +115,7 @@ void getmastermodename(int *mm)
 void version()
 {
     string txt;
-    formatstring(txt)("Remod $Rev$ (build %s %s)", __DATE__, __TIME__);
+    formatstring(txt)("Remod $Rev (build %s %s)", __DATE__, __TIME__);
     result(txt);
 }
 
@@ -268,7 +268,7 @@ void _mastermode(int *mm)
 {
     mastermode = (int)*mm;
     remod::onevent("onmastermode", "ii", -1, mastermode);
-    if((int)*mm>=MM_PRIVATE)
+    if(mastermode>=MM_PRIVATE)
     {
         loopv(clients) allowedips.add(getclientip(clients[i]->clientnum));
     }

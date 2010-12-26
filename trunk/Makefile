@@ -1,5 +1,5 @@
 CXX= gcc
-CXXFLAGS= -O3 -fomit-frame-pointer -DGEOIPDATADIR
+CXXFLAGS= -O3 -fomit-frame-pointer -DGEOIPDATADIR -DGEOIP -DIRC
 override CXXFLAGS+= -Wall -fsigned-char
 
 PLATFORM= $(shell uname -s)
@@ -15,8 +15,6 @@ endif
 endif
 
 MV=mv
-
-SERVER_INCLUDES+= -DGEOIP -DIRC #-D_DEBUG
 
 ifneq (,$(findstring MINGW,$(PLATFORM)))
 WINDRES= windres
