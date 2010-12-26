@@ -372,8 +372,8 @@ void ircprintf(ircnet *n, int relay, const char *target, const char *msg, ...)
             formatstring(s)("\fs\fa[%s:%s]\fS", n->name, c->name);
 
             //Remod
-            if(n->type == IRCT_RELAY && c->relay >= relay)
-                server::srvmsgf(relay > 1 ? -2 : -3, "\fs\fa[%s]\fS %s", c->friendly, str);
+            //if(n->type == IRCT_RELAY && c->relay >= relay)
+            //    server::srvmsgf(relay > 1 ? -2 : -3, "\fs\fa[%s]\fS %s", c->friendly, str);
         }
         else
         {
@@ -435,8 +435,12 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
                 if(n->type == IRCT_RELAY && g && strcasecmp(w[g+1], n->nick) && !strncasecmp(w[g+2], n->nick, strlen(n->nick)))
                 {
                     const char *p = &w[g+2][strlen(n->nick)];
-                    while(p && (*p == ':' || *p == ';' || *p == ',' || *p == '.' || *p == ' ' || *p == '\t')) p++;
-                    if(p && *p)
+                    bool used_delimiter = false; //use delimiters when dialing to bot
+                    while(p && (*p == ':' || *p == ';' || *p == ',' || *p == '.' || *p == ' ' || *p == '\t')) {
+                    	used_delimiter = true;
+                    	p++;
+                    };
+                    if(used_delimiter && p && *p)
                     {
                         // hightlighted message to bot
                         // user[0]='degrave'
