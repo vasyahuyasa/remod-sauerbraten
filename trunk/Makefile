@@ -16,7 +16,7 @@ endif
 
 MV=mv
 
-SERVER_INCLUDES+= -DGEOIP -DIRC
+SERVER_INCLUDES+= -DGEOIP -DIRC #-D_DEBUG
 
 ifneq (,$(findstring MINGW,$(PLATFORM)))
 WINDRES= windres
