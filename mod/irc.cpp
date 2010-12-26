@@ -366,14 +366,14 @@ void ircprintf(ircnet *n, int relay, const char *target, const char *msg, ...)
     mkstring(s);
     if(target && *target && strcasecmp(target, n->nick))
     {
-        ircchan *c = ircfindchan(n, target);
+     	ircchan *c = ircfindchan(n, target);
         if(c)
         {
             formatstring(s)("\fs\fa[%s:%s]\fS", n->name, c->name);
 
             //Remod
-            //if(n->type == IRCT_RELAY && c->relay >= relay)
-            //    server::srvmsgf(relay > 1 ? -2 : -3, "\fs\fa[%s]\fS %s", c->friendly, str);
+            if(n->type == IRCT_RELAY && c->relay >= relay)
+            	server::srvmsgf(relay > 1 ? -2 : -3, "\fs\fa[%s]\fS %s", c->friendly, str);
         }
         else
         {

@@ -15,12 +15,11 @@
 namespace remod
 {
 
-GeoIPtool *GIt;
+GeoIPtool *GIt = new GeoIPtool();
 
 void loadgeoip(char *dbname)
 {
-    GIt = new GeoIPtool(dbname);
-    if(GIt->loaded())
+    if(GIt->loaddb(dbname))
     {
         conoutf(CON_ERROR, "Geoip: loaded (db: '%s')", dbname);
     }

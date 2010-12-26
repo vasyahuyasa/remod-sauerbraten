@@ -64,7 +64,7 @@ namespace server
 
 
 
-    #define MAXDEMOS 5
+    #define MAXDEMOS 10
     vector<demofile> demos;
 
     bool demonextmatch = false;
