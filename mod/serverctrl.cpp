@@ -115,7 +115,7 @@ void getmastermodename(int *mm)
 void version()
 {
     string txt;
-    formatstring(txt)("Remod $Rev (build %s %s)", __DATE__, __TIME__);
+    formatstring(txt)("Remod $Rev$ (build %s %s)", __DATE__, __TIME__);
     result(txt);
 }
 
