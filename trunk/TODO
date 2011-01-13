@@ -46,7 +46,7 @@ Server events: +
 	#IRC bot
 	irc_onmsg [nick] [txt] +	"sender" "p a r a m s"   
 	irc_onprivmsg [nick] [txt] +
-	irc_oncommand [nick] [txt] +
+	//irc_oncommand [nick] [txt] + //moved to server core
 	
 	
 	#Commands engine
@@ -114,7 +114,7 @@ Cube script:
 	getrank [name] (rank) +	return player rank   
 	cleargbans + 
 	numclients + 
-	playerexists [name] +  
+	playerexists [cn] +  
 	addeat [event] +	add event for ignore execution of default server handler      
 	deleat [event] +	delete even from ignore
 	mute [name] [val] +	mute specified player (after reconnect mute still exists)    
@@ -130,8 +130,7 @@ Cube script:
 	setmaster [1|0] [cn] +	give or revoke master rights
 
 	IRC: +
-	ircsay +
-	ircsayto +
+	ircsay [msg] +
 
 	$verbose +
 	ircfilter +
@@ -235,4 +234,5 @@ IRC бот: +
 	disc [cn] + disconnect player
 	unmute [cn] + unmute player
 	autodemo [0|1] + automatically record demo after every match
+	... and more
 	

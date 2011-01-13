@@ -180,13 +180,13 @@ void spectator(int *st, int *pcn)
 void map(char *name)
 {
     sendf(-1, 1, "risii", N_MAPCHANGE, name, gamemode, 1);
-    changemap(name, gamemode);
+    server::changemap(name, gamemode);
 }
 
 void mapmode(char *name, int *mode)
 {
-    sendf(-1, 1, "risii", N_MAPCHANGE, name, mode, 1);
-    changemap(name, (int)*mode);
+    sendf(-1, 1, "risii", N_MAPCHANGE, name, (int)*mode, 1);
+    server::changemap(name, (int)*mode);
 }
 
 void _suicide(int *pcn)
@@ -220,11 +220,16 @@ void say(char *msg)
     sendservmsg(msg);
 }
 
-void pm(int *cn, char *msg)
+void pm(int *pcn, char *msg)
 {
-    if(clients.inrange((int)*cn))
+    int cn = (int)*pcn;
+    loopv(clients)
     {
-        sendf((int)*cn, 1, "ris", N_SERVMSG,msg);
+        clientinfo *ci = clients[i];
+        if(ci->clientnum == cn)
+        {
+            sendf(cn, 1, "ris", N_SERVMSG, msg);
+        }
     }
 }
 
@@ -378,21 +383,6 @@ void _cleargbans()
 void _numclients()
 {
     intret(numclients(-1, false, true, false));
-}
-
-void playerexists(int *pcn)
-{
-    int cn=(int)*pcn;
-    loopv(clients)
-    {
-        clientinfo *ci = clients[i];
-        if(ci->clientnum==cn)
-        {
-            intret(1);
-            return;
-        }
-    }
-    intret(0);
 }
 
 void mute(int *pcn, int *val)
@@ -618,7 +608,7 @@ COMMAND(getrank, "i");
 COMMANDN(addgban, _addgban, "s");
 COMMANDN(cleargbans, _cleargbans, "");
 COMMANDN(numclients, _numclients, "");
-COMMAND(playerexists, "i");
+ICOMMAND(playerexists, "i", (int *cn), intret(playerexists(cn)));
 COMMAND(mute, "ii");
 COMMAND(ismuted, "i");
 COMMAND(formatmillis, "si");
