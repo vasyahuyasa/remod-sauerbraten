@@ -35,6 +35,7 @@
 					<ul class="dorlist">
 							<li><a href="#events_control" >Events control</a></li>	
 							<li><a href="#events_list" >Events list</a></li>
+							<li><a href="#irc_bot_events_list" >IRC bot events list</a></li>							
 					</ul>
 				</ul>
 			</li>
@@ -113,6 +114,11 @@
 		<tr><td class="command">cleargbans</td><td class="description">clear list of permanent bans</td></tr>
 		<tr><td class="command">numclients (n)</td><td class="description">return number of player on server</td></tr>
 		<tr><td class="command">formatmillis [format] [millis] (str)</td><td class="description">return formated time string (%d - days, %h - hours, %m - minutes, %s - seconds)</td></tr>
+		<tr><td class="command">halt [err]</td><td class="description">stop server with error code</td></tr>
+		<tr><td class="command">geodb [filename]</td><td class="description">load GeoIP database</td></tr>
+		<tr><td class="command">isgeoip (1|0)</td><td class="description">return 1 if GeoIP database loaded</td></tr>
+		<tr><td class="command">setmaster [1|0] [cn]</td><td class="description">give/revoke master rights</td></tr>
+		<tr><td class="command">checkipbymask [ip] [mask] (1|0)</td><td class="description">returns 1 if ip equal mask (example: "127.0.0.1" "127.0.*.*")</td></tr>
 	</table>
 	</li>
 	<li>
@@ -132,6 +138,9 @@
 		<tr><td class="command">$roundtime</td><td class="description">RW</td><td class="description">redefined time of every next round, if 0 server will use default time</td></tr>
 		<tr><td class="command">$setroundtime</td><td class="description">RW</td><td class="description">set time limit of current round in millis</td></tr>
 		<tr><td class="command">$imissiontime</td><td class="description">RW</td><td class="description">set intermisson time in millis (default 10000)</td></tr>
+		<tr><td class="command">$autodemo [1|0]</td><td class="description">RW</td><td class="description">automatycaly record demo on every next match</td></tr>
+		<tr><td class="command">$demodir [str]</td><td class="description">RW</td><td class="description">folder for saved demos (example: demodir = "demos")</td></tr>
+		<tr><td class="command">$savedemo [1|0]</td><td class="description">RW</td><td class="description">allow save demos to disk</td></tr>
 	</table>
 	</li>
 	<li>
@@ -185,9 +194,15 @@
 		<tr><td class="command">addhandler [event] [cmd]</td><td class="description">Bind command for event</td></tr>
 		<tr><td class="command">delhandler [event] [cmd]</td><td class="description">Remove specified command from bind to event</td></tr>
 		<tr><td class="command">clearhandlers</td><td class="description">Clear all event binds</td></tr>
-		<tr><td class="command">dumphandlers</td><td class="description">Show all binded commands to events in debug build</td></tr>
+		<tr><td class="command">dumphandlers</td><td class="description">Show all binded commands to events if defined #DEBUG</td></tr>
 		<tr><td class="command">addeat [event]</td><td class="description">Do not allow server process that events</td></tr>
 		<tr><td class="command">deleat [event]</td><td class="description">Remove even from ignore list</td></tr>
+		<tr><td class="command">commandchar [str]</td><td class="description">Characters before user command (default: commandchar = "#")</td></tr>
+		<tr><td class="command">registercommand [command_name] [command_function] [permissions] [command_parameters_description] [help_string]</td><td class="description">Register user command<br><b>command_name</b> - name of command without command char<br><b>command_function</b> - cubescript function to process command. first arg is always cn of player entered this command<br><b>permissions</b> - 1 - any player can enter command, 2 - admins & masters, 3 - masters only<br><b>command_parameters_description</b> - list of types of parameters passing to command;<ul class="dotlist"><li>c - valid cn or player name; command gets cn</li><li>i - valid integer</li><li>f - valid float</li><li>p - valid cn or player name or -1; command gets cn or -1</li><li>b - 1|0, y|n, true|false - bool</li><li>w - one word (string without spaces)</li><li>s - string (must be last at parameters list)</li><li>| - delimiter between required and not required parameters</li></ul><br><b>help_string</b>  -  help string for command</td></tr>
+		<tr><td class="command">unregistercommand [command_name]</td><td class="description">Remove command from list</td></tr>
+		<tr><td class="command">loopcommands $var perm [body]</td><td class="description">Iterates server's commands with permission <= perm and executes body. $var contains command name</td></tr>
+		<tr><td class="command">commandhelp [command_name]</td><td class="description">Returns help string for command</td></tr>
+		<tr><td class="command">grantperm [cn]</td><td class="description">If alias grantperm defined, user get permission what it returns</td></tr>
 	</table>
 	</li>
 	
@@ -227,6 +242,35 @@
 		<tr><td class="command">@oncleardemos (demonum)</td><td class="description">Before player request cleardemos</td></tr>
 		<tr><td class="command">@onaddbot (skill)</td><td class="description">Before player request addbot</td></tr>
 		<tr><td class="command">@ondelbot</td><td class="description">Before player request delete bot</td></tr>
+		<tr><td class="command">onmodmap (cn)</td><td class="description">Modified player map</td></tr>
+		<tr><td class="command">onmute (1|0) (cn)</td><td class="description">When player muted/unmuted</td></tr>
+		<tr><td class="command">oncommandpermerror (cn) (command)</td><td class="description">When player not have permission for #command</td></tr>
+		<tr><td class="command">oncommandusageerror (cn) (command)</td><td class="description">When wrong #command parameters</td></tr>
+		<tr><td class="command">oncommandunknown (cn) (command)</td><td class="description">When #command not exists</td></tr>
+	</table>
+	</li>
+	
+	<li>
+	<h4 class="caption"><a name="irc_bot_events_control">IRC bot events control</a></h4>
+	<table class="listcommands">
+		<tr class="bold colnames" align="center"><td>command</td><td>description</td></tr>
+		<tr><td class="command">irc_registercommand [command_name] [command_function] [permissions] [command_parameters_description] [help_string]</td><td class="description">Look events control</td></tr>
+		<tr><td class="command">irc_unregistercommand [command_name]</td><td class="description">Look events control</td></tr>
+		<tr><td class="command">irc_loopcommands $var perm [body]</td><td class="description">Look events control</td></tr>
+		<tr><td class="command">irc_commandhelp [command_name] </td><td class="description">Look events control</td></tr>
+		<tr><td class="command">irc_grantperm [user]</td><td class="description">Look events control</td></tr>
+	</table>
+	</li>
+	
+	<li>
+	<h4 class="caption"><a name="irc_bot_events_list">IRC bot events list</a></h4>
+	<table class="listcommands" >
+		<tr class="bold colnames" align="center"><td>event</td><td>condition</td></tr>
+		<tr><td class="command">irc_onmsg (nick) (txt)</td><td class="description">When channel message</td></tr>
+		<tr><td class="command">irc_onprivmsg (nick) (txt)</td><td class="description">When private message</td></tr>
+		<tr><td class="command">irc_oncommandpermerror (nick) (command)</td><td class="description">When user dont have permissions for command</td></tr>
+		<tr><td class="command">irc_oncommandusageerror (nick) (command)</td><td class="description">When passed wrong parameters</td></tr>
+		<tr><td class="command">irc_oncommandunknown (nick) (command)</td><td class="description">When command dont exists</td></tr>
 	</table>
 	</li>
 	</ul>

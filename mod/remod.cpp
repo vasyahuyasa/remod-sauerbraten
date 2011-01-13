@@ -31,14 +31,29 @@ clientinfo* findbest(vector<clientinfo *> &a)
     return ci;
 }
 
-//Imported from client
+bool playerexists(int *pcn)
+{
+    int cn = (int)*pcn;
+    loopv(clients)
+    {
+        clientinfo *ci = clients[i];
+        if(ci->clientnum==cn)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+// convert player name to cn if exists or -1
+// imported from client
 int parseplayer(const char *arg)
 {
     char *end;
     int n = strtol(arg, &end, 10);
     if(*arg && !*end)
     {
-        if(!clients.inrange(n)) return -1;
+        if(!playerexists(&n)) return -1;
         return n;
     }
     // try case sensitive first
