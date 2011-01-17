@@ -320,6 +320,43 @@ namespace server
         }
     }
 
+    void persistautoteam()
+    {
+        if(!m_check(gamemode, M_CTF|M_PROTECT|M_HOLD)) return; // check for flag modes
+
+        string goodteam;
+        goodteam[0] = '\0';
+        loopv(clients)
+        {
+            clientinfo *ci = clients[i];
+            if(ci)
+            {
+                if((strcmp(ci->team, "good") != 0) && (strcmp(ci->team, "evil") != 0)) // not standart player team
+                {
+                    if(goodteam[0]) // if defined not standart "good" team
+                    {
+                        if(strcmp(ci->team, goodteam) == 0)
+                        {
+                            copystring(ci->team, "good", MAXTEAMLEN+1);
+                            sendf(-1, 1, "riisi", N_SETTEAM, ci->clientnum, "good", -1);
+                        }
+                        else
+                        {
+                            copystring(ci->team, "evil", MAXTEAMLEN+1);
+                            sendf(-1, 1, "riisi", N_SETTEAM, ci->clientnum, "evil", -1);
+                        }
+                    }
+                    else
+                    {
+                        copystring(goodteam, ci->team); // define "good" team
+                        copystring(ci->team, "good", MAXTEAMLEN+1);
+                        sendf(-1, 1, "riisi", N_SETTEAM, ci->clientnum, "good", -1);
+                    }
+                }
+            }
+        }
+    }
+
     struct teamrank
     {
         const char *name;
@@ -1095,7 +1132,7 @@ namespace server
         if(!m_mp(gamemode)) kicknonlocalclients(DISC_PRIVATE);
 
         //Remod
-        if(m_teammode && !persist) autoteam();
+        if(m_teammode && !persist) autoteam(); else persistautoteam();
 
         if(m_capture) smode = &capturemode;
         else if(m_ctf) smode = &ctfmode;
@@ -1169,6 +1206,18 @@ namespace server
             }
             else
             {
+                // Remod - map rotation
+                if(force && identexists("nextmap"))
+                {
+                    char *nextmap = executeret("nextmap");
+                    if(nextmap)
+                    {
+                        sendf(-1, 1, "risii", N_MAPCHANGE, nextmap, gamemode, 1);
+                        changemap(nextmap, gamemode);
+                        return; // change map by script
+                    }
+                }
+
                 mapreload = true;
                 if(clients.length()) sendf(-1, 1, "ri", N_MAPRELOAD);
             }
@@ -1191,6 +1240,15 @@ namespace server
     {
         clientinfo *ci = getinfo(sender);
         if(!ci || (ci->state.state==CS_SPECTATOR && !ci->privilege && !ci->local) || (!ci->local && !m_mp(reqmode))) return;
+
+        // remod - allow vote for map or mode
+        if(identexists("allowvote") && ci->privilege<PRIV_ADMIN)
+        {
+            defformatstring(allowvote)("allowvote %i %i %s", ci->clientnum, reqmode, map);
+            bool passvote = execute(allowvote);
+            if(!passvote) return;
+        }
+
         copystring(ci->mapvote, map);
         ci->modevote = reqmode;
 

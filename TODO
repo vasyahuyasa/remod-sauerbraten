@@ -1,4 +1,4 @@
-[UTF-8]
+﻿[UTF-8]
 General:
 	geoip +
 	баны
@@ -6,6 +6,8 @@ General:
 	украденые флаги, возвращенные флаги - 
 	irc-бот +
 	persist +
+
+
 
 Server events: +
 	onconnect [cn] +
@@ -57,6 +59,8 @@ Server events: +
 	irc_oncommandpermerror [nick] [command] //user has no permissions to do command
 	irc_oncommandusageerror [nick] [command] //command usage error
 	irc_oncommandunknown [nick] [command]  //command not found
+
+
 
 Cube script:
 	getmap (curent_map_name) +
@@ -129,7 +133,15 @@ Cube script:
 	isgeoip (1|0) +	return status of geoip       
 	setmaster [1|0] [cn] +	give or revoke master rights
 
-	IRC: +
+
+
+Cube script function variables
+	nextmap (str) +	if defined should return name of next map
+	allowvote [cn] [mode] [map] (1|0) +	if defined allow/disallow vote for some maps or modes
+
+
+
+IRC: +
 	ircsay [msg] +
 
 	$verbose +
@@ -206,8 +218,13 @@ Cube script:
 	#
 	
 	checkipbymask [ip] [mask]  -  returns true if ip and mask are smth like "127.0.0.1" and "127.0.*.*" 
+
+
+
 Rcon: +
 	индивидуальная сессия каждого подключения -
+
+
 
 IRC бот: +
 	возможность кика/бана +
@@ -216,6 +233,8 @@ IRC бот: +
 	изменение режима игры и карты -
 	общение +
 	предупреждение -
+
+
 
 #commands: -
 	persist [0|1] +
