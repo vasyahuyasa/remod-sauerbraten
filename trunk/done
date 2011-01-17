@@ -13,3 +13,6 @@
 12. Добавлена void filtercstext() в fpsgame/server.cpp
 13. В fpsserver/server.cpp после case N_TEXT: QUEUE_MSG заменен на QUEUE_INT(N_TEXT) который исправляет пустые сообщения на сервере
 14. В fpsgame/fpsgame.h в struct gamestate:fpsstate добавлена bool mute, в gamestate:fpsstate:save() reset(), struct savedscore:save() restore() добавлена bool muted
+15. В fpsgame/server.cpp в checkvotes() добавлена проверка identexists("nextmap")
+16. В fpsgame/server.cpp в vote() добавлена проверка identexists("allowvote")
+17. В fpsgame/server.cpp добавлена persistautoteam()
