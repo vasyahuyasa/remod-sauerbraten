@@ -1,0 +1,1135 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+
+<html>
+<head>
+  <meta name="generator" content="HTML Tidy for Windows (vers 25 March 2009), see www.w3.org">
+  <meta name="generator" content="Bluefish 2.0.2">
+
+  <title>Remode user guide</title>
+  <style type="text/css">
+      .dotlist { list-style: point; }
+        .numlist { list-style: decimal; }
+        .bold { font-weight: bold; }    
+        .caption { margin-top: 2em; margin-bottom: 0; }
+        .listcommands { border-collapse: collapse; }
+        .listcommands td { border: #cacaca 1px solid; }          
+        .listcommands caption { font-weight: bold; }    
+        .listcommands .colnames { background-color: #dfdfdf }
+        .listcommands .command { padding: 0.5em 1em; font: bold 0.8em arial,sans-serif; }
+        .listcommands .description { padding: 0 1em; }
+  </style>
+</head>
+
+<body>
+  <h1>User guide</h1>
+  <hr>
+
+  <ul class="numlist">
+    <li>
+      <a href="#remod_cube_script_specification">Remod cube script specification</a>
+
+      <ul class="numlist">
+        <li>
+          <a href="#cube_script_events">General commands</a>
+
+          <ul class="dorlist">
+            <li><a href="#player_control">Player control</a></li>
+
+            <li><a href="#server_control">Server control</a></li>
+
+            <li><a href="#server_variables">Server variables</a></li>
+
+            <li><a href="#cube_script_function_variables">Cube script function variables</a></li>
+
+            <li><a href="#geoip">GeoIP</a></li>
+
+            <li><a href="#rcon">Rcon</a></li>
+
+            <li><a href="#irc_bot">IRC bot</a></li>
+          </ul>
+        </li>
+
+        <li>
+          <a href="#cube_script_events">Cube script events</a>
+
+          <ul class="dotlist">
+            <li><a href="#events_control">Events control</a></li>
+
+            <li><a href="#events_list">Events list</a></li>
+
+            <li><a href="#irc_bot_events_list">IRC bot events list</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+  <hr>
+
+  <ul class="numlist">
+    <li>
+      <h2><a name="remod_cube_script_specification" id="remod_cube_script_specification">Remod cube script specification</a></h2>
+
+      <h4>legend:</h4>
+
+      <ul class="dotlist">
+        <li><b>[ ]</b> - accept parameters</li>
+
+        <li><b>( )</b> - returned value</li>
+
+        <li><b>cn</b> - client number</li>
+
+        <li><b>name</b> - client name or client number</li>
+
+        <li><b>n</b> - number parameter</li>
+
+        <li><b>1|0</b> - boolean parameter same as <b>n</b> but only can be <b>0</b> or <b>1</b></li>
+
+        <li><b>str</b> - string parameter</li>
+      </ul>
+
+      <ul class="numlist">
+        <li>
+          <h3><a name="general_commands" id="general_commands">General commands</a></h3>
+
+          <ul class="dotlist">
+            <li>
+              <h4 class="caption"><a name="player_control" id="player_control">Player control</a></h4>
+
+              <table class="listcommands">
+                <tr class="bold colnames" align="center">
+                  <td>command</td>
+
+                  <td>description</td>
+                </tr>
+
+                <tr>
+                  <td class="command">getname [cn] (str)</td>
+
+                  <td class="description">return name of player</td>
+                </tr>
+
+                <tr>
+                  <td class="command">getip [cn] (str)</td>
+
+                  <td class="description">return ip address of player</td>
+                </tr>
+
+                <tr>
+                  <td class="command">getfrags [cn] (n)</td>
+
+                  <td class="description">return frags of client</td>
+                </tr>
+
+                <tr>
+                  <td class="command">getdeaths [cn] (n)</td>
+
+                  <td class="description">return deaths of player</td>
+                </tr>
+
+                <tr>
+                  <td class="command">getteamkills [cn] (n)</td>
+
+                  <td class="description">return teamkills of player</td>
+                </tr>
+
+                <tr>
+                  <td class="command">getaccuracy [cn] (n)</td>
+
+                  <td class="description">return accuracy of player</td>
+                </tr>
+
+                <tr>
+                  <td class="command">getflags [cn] (n)</td>
+
+                  <td class="description">return scored flags of player</td>
+                </tr>
+
+                <tr>
+                  <td class="command">getretflags [cn] (n)</td>
+
+                  <td class="description">(unimplemented) return frags of player</td>
+                </tr>
+
+                <tr>
+                  <td class="command">kick [cn]</td>
+
+                  <td class="description">kick player</td>
+                </tr>
+
+                <tr>
+                  <td class="command">disconnect [cn]</td>
+
+                  <td class="description">disconnect player with reason "normal"</td>
+                </tr>
+
+                <tr>
+                  <td class="command">spectator [1|0] [cn]</td>
+
+                  <td class="description">spec player [1] or unspec [0]</td>
+                </tr>
+
+                <tr>
+                  <td class="command">ismaster [cn] (1|0)</td>
+
+                  <td class="description">return status of player</td>
+                </tr>
+
+                <tr>
+                  <td class="command">isadmin [cn] (1|0)</td>
+
+                  <td class="description">return status of player</td>
+                </tr>
+
+                <tr>
+                  <td class="command">isspectator [cn] (1|0)</td>
+
+                  <td class="description">return status of player</td>
+                </tr>
+
+                <tr>
+                  <td class="command">soucide [cn]</td>
+
+                  <td class="description">force suicide player</td>
+                </tr>
+
+                <tr>
+                  <td class="command">addbot [skill]</td>
+
+                  <td class="description">add bot with specified skill</td>
+                </tr>
+
+                <tr>
+                  <td class="command">delbot</td>
+
+                  <td class="description">delete one bot</td>
+                </tr>
+
+                <tr>
+                  <td class="command">getteam [cn] (str)</td>
+
+                  <td class="description">return name of player team</td>
+                </tr>
+
+                <tr>
+                  <td class="command">setteam [cn] [team]</td>
+
+                  <td class="description">force move player to specified team</td>
+                </tr>
+
+                <tr>
+                  <td class="command">getping [cn] (n)</td>
+
+                  <td class="description">return player ping</td>
+                </tr>
+
+                <tr>
+                  <td class="command">getonline [cn] (n)</td>
+
+                  <td class="description">return player time on server in millis</td>
+                </tr>
+
+                <tr>
+                  <td class="command">getteamscores [team] (n)</td>
+
+                  <td class="description">return scores of team in team modes</td>
+                </tr>
+
+                <tr>
+                  <td class="command">getrank [cn] (n)</td>
+
+                  <td class="description">get player rank by frags (1, 2, 3 etc.)</td>
+                </tr>
+
+                <tr>
+                  <td class="command">playerexists [cn] (1|0)</td>
+
+                  <td class="description">return 1 if player exists</td>
+                </tr>
+
+                <tr>
+                  <td class="command">mute [cn] [1|0]</td>
+
+                  <td class="description">mute [1] or unmute [0] player</td>
+                </tr>
+
+                <tr>
+                  <td class="command">ismuted [cn] (1|0)</td>
+
+                  <td class="description">return 1 if player muted</td>
+                </tr>
+
+                <tr>
+                  <td class="command">getcn [name] (n)</td>
+
+                  <td class="description">return cn of player</td>
+                </tr>
+              </table>
+            </li>
+
+            <li>
+              <h4 class="caption"><a name="server_control" id="server_control">Server control</a></h4>
+
+              <table class="listcommands">
+                <tr class="bold colnames" align="center">
+                  <td>command</td>
+
+                  <td>description</td>
+                </tr>
+
+                <tr>
+                  <td class="command">getmap (str)</td>
+
+                  <td class="description">return name of current map on server</td>
+                </tr>
+
+                <tr>
+                  <td class="command">getmode (n)</td>
+
+                  <td class="description">return game mode</td>
+                </tr>
+
+                <tr>
+                  <td class="command">mastermode [n]</td>
+
+                  <td class="description">change server mastermode to n</td>
+                </tr>
+
+                <tr>
+                  <td class="command">getmastermode (n)</td>
+
+                  <td class="description">return server mastermode</td>
+                </tr>
+
+                <tr>
+                  <td class="command">getmastermodename [n] (s)</td>
+
+                  <td class="description">convert mastermode number to text name</td>
+                </tr>
+
+                <tr>
+                  <td class="command">version (s)</td>
+
+                  <td class="description">return information about build time and SVN revision</td>
+                </tr>
+
+                <tr>
+                  <td class="command">map [str]</td>
+
+                  <td class="description">change map on server to s</td>
+                </tr>
+
+                <tr>
+                  <td class="command">mapmode [map] [mode]</td>
+
+                  <td class="description">change server map and mode</td>
+                </tr>
+
+                <tr>
+                  <td class="command">pm [cn] [msg]</td>
+
+                  <td class="description">show message s to specified player</td>
+                </tr>
+
+                <tr>
+                  <td class="command">say [msg]</td>
+
+                  <td class="description">show message s to all players</td>
+                </tr>
+
+                <tr>
+                  <td class="command">saytonormal [msg]</td>
+
+                  <td class="description">show message to users with no privilege, masters and admins cannot see that</td>
+                </tr>
+
+                <tr>
+                  <td class="command">saytomaster [msg]</td>
+
+                  <td class="description">show message to masters, normal players and admins cannot see that</td>
+                </tr>
+
+                <tr>
+                  <td class="command">saytoadmin [msg]</td>
+
+                  <td class="description">show message to admins , normal players and masters cannot see that</td>
+                </tr>
+
+                <tr>
+                  <td class="command">addgban [ip]</td>
+
+                  <td class="description">add permanent ban to global ban list</td>
+                </tr>
+
+                <tr>
+                  <td class="command">clearbans</td>
+
+                  <td class="description">clear server ban list</td>
+                </tr>
+
+                <tr>
+                  <td class="command">cleargbans</td>
+
+                  <td class="description">clear list of permanent bans</td>
+                </tr>
+
+                <tr>
+                  <td class="command">numclients (n)</td>
+
+                  <td class="description">return number of player on server</td>
+                </tr>
+
+                <tr>
+                  <td class="command">formatmillis [format] [millis] (str)</td>
+
+                  <td class="description">return formated time string (%d - days, %h - hours, %m - minutes, %s - seconds)</td>
+                </tr>
+
+                <tr>
+                  <td class="command">halt [err]</td>
+
+                  <td class="description">stop server with error code</td>
+                </tr>
+
+                <tr>
+                  <td class="command">setmaster [1|0] [cn]</td>
+
+                  <td class="description">give/revoke master rights</td>
+                </tr>
+
+                <tr>
+                  <td class="command">checkipbymask [ip] [mask] (1|0)</td>
+
+                  <td class="description">returns 1 if ip equal mask (example: "127.0.0.1" "127.0.*.*")</td>
+                </tr>
+              </table>
+            </li>
+
+            <li>
+              <h4 class="caption"><a name="server_variables" id="server_variables">Server variables</a></h4>
+
+              <h4>legend:</h4>
+
+              <ul class="dotlist">
+                <li><b>R</b> - read only parameters</li>
+
+                <li><b>RW</b> - read write parameters</li>
+              </ul>
+
+              <table class="listcommands">
+                <tr class="bold colnames" align="center">
+                  <td>variable</td>
+
+                  <td>mode</td>
+
+                  <td>description</td>
+                </tr>
+
+                <tr>
+                  <td class="command">$pause [1|0]</td>
+
+                  <td class="description">RW</td>
+
+                  <td class="description">pause game</td>
+                </tr>
+
+                <tr>
+                  <td class="command">$persist [1|0]</td>
+
+                  <td class="description">RW</td>
+
+                  <td class="description">disable shuffle teams</td>
+                </tr>
+
+                <tr>
+                  <td class="command">$totalmillis</td>
+
+                  <td class="description">R</td>
+
+                  <td class="description">return server uptime in milliseconds</td>
+                </tr>
+
+                <tr>
+                  <td class="command">$gamelimit</td>
+
+                  <td class="description">R</td>
+
+                  <td class="description">return round time limit</td>
+                </tr>
+
+                <tr>
+                  <td class="command">$gamemillis</td>
+
+                  <td class="description">R</td>
+
+                  <td class="description">return played round time in millis</td>
+                </tr>
+
+                <tr>
+                  <td class="command">$roundtime</td>
+
+                  <td class="description">RW</td>
+
+                  <td class="description">redefined time of every next round, if 0 server will use default time</td>
+                </tr>
+
+                <tr>
+                  <td class="command">$setroundtime</td>
+
+                  <td class="description">RW</td>
+
+                  <td class="description">set time limit of current round in millis</td>
+                </tr>
+
+                <tr>
+                  <td class="command">$imissiontime</td>
+
+                  <td class="description">RW</td>
+
+                  <td class="description">set intermisson time in millis (default 10000)</td>
+                </tr>
+
+                <tr>
+                  <td class="command">$autodemo [1|0]</td>
+
+                  <td class="description">RW</td>
+
+                  <td class="description">automatycaly record demo on every next match</td>
+                </tr>
+
+                <tr>
+                  <td class="command">$demodir [str]</td>
+
+                  <td class="description">RW</td>
+
+                  <td class="description">folder for saved demos (example: demodir = "demos")</td>
+                </tr>
+
+                <tr>
+                  <td class="command">$savedemo [1|0]</td>
+
+                  <td class="description">RW</td>
+
+                  <td class="description">allow save demos to disk</td>
+                </tr>
+              </table>
+            </li>
+
+            <li>
+              <h4 class="caption"><a name="cube_script_function_variables" id="cube_script_function_variables">Cube script function variables</a></h4>
+
+              <table class="listcommands">
+                <tr class="bold colnames" align="center">
+                  <td>function</td>
+
+                  <td>description</td>
+                </tr>
+
+                <tr>
+                  <td class="command">nextmap (str)</td>
+
+                  <td class="description">if function defined should return name of next map</td>
+                </tr>
+
+                <tr>
+                  <td class="command">allowvote [cn] [mode] [map] (1|0)</td>
+
+                  <td class="description">if function defined allow/disallow vote for some maps or modes</td>
+                </tr>
+              </table>
+            </li>
+
+            <li>
+              <h4 class="caption"><a name="geoip" id="geoip">GeoIP</a></h4>
+
+              <table class="listcommands">
+                <tr class="bold colnames" align="center">
+                  <td>command</td>
+
+                  <td>description</td>
+                </tr>
+
+                <tr>
+                  <td class="command">geodb [filename]</td>
+
+                  <td class="description">load GeoIP database</td>
+                </tr>
+
+                <tr>
+                  <td class="command">isgeoip (1|0)</td>
+
+                  <td class="description">return 1 if GeoIP database loaded</td>
+                </tr>
+
+                <tr>
+                  <td class="command">getcountry [ip] (str)</td>
+
+                  <td class="description">return country by ip (ip is string)</td>
+                </tr>
+              </table>
+            </li>
+
+            <li>
+              <h4 class="caption"><a name="rcon" id="rcon">Rcon</a></h4>
+
+              <table class="listcommands">
+                <tr class="bold colnames" align="center">
+                  <td>command</td>
+
+                  <td>description</td>
+                </tr>
+
+                <tr>
+                  <td class="command">rconpass [str]</td>
+
+                  <td class="description">set password for rcon</td>
+                </tr>
+              </table>
+            </li>
+
+            <li>
+              <h4 class="caption"><a name="irc_bot" id="irc_bot">IRC bot</a></h4>
+
+              <table class="listcommands">
+                <tr class="bold colnames" align="center">
+                  <td>command</td>
+
+                  <td>description</td>
+                </tr>
+
+                <tr>
+                  <td class="command">ircsay</td>
+
+                  <td class="description">undocumented yet</td>
+                </tr>
+
+                <tr>
+                  <td class="command">$verbose</td>
+
+                  <td class="description">undocumented yet</td>
+                </tr>
+
+                <tr>
+                  <td class="command">ircfilter</td>
+
+                  <td class="description">undocumented yet</td>
+                </tr>
+
+                <tr>
+                  <td class="command">ircaddclient</td>
+
+                  <td class="description">undocumented yet</td>
+                </tr>
+
+                <tr>
+                  <td class="command">ircaddrelay</td>
+
+                  <td class="description">undocumented yet</td>
+                </tr>
+
+                <tr>
+                  <td class="command">ircserv</td>
+
+                  <td class="description">undocumented yet</td>
+                </tr>
+
+                <tr>
+                  <td class="command">ircport</td>
+
+                  <td class="description">undocumented yet</td>
+                </tr>
+
+                <tr>
+                  <td class="command">ircnick</td>
+
+                  <td class="description">undocumented yet</td>
+                </tr>
+
+                <tr>
+                  <td class="command">ircbind</td>
+
+                  <td class="description">undocumented yet</td>
+                </tr>
+
+                <tr>
+                  <td class="command">ircpass</td>
+
+                  <td class="description">undocumented yet</td>
+                </tr>
+
+                <tr>
+                  <td class="command">ircauth</td>
+
+                  <td class="description">undocumented yet</td>
+                </tr>
+
+                <tr>
+                  <td class="command">ircconnect</td>
+
+                  <td class="description">undocumented yet</td>
+                </tr>
+
+                <tr>
+                  <td class="command">ircaddchan</td>
+
+                  <td class="description">undocumented yet</td>
+                </tr>
+
+                <tr>
+                  <td class="command">ircjoinchan</td>
+
+                  <td class="description">undocumented yet</td>
+                </tr>
+
+                <tr>
+                  <td class="command">ircpasschan</td>
+
+                  <td class="description">undocumented yet</td>
+                </tr>
+
+                <tr>
+                  <td class="command">ircrelaychan</td>
+
+                  <td class="description">undocumented yet</td>
+                </tr>
+
+                <tr>
+                  <td class="command">ircfriendlychan</td>
+
+                  <td class="description">undocumented yet</td>
+                </tr>
+
+                <tr>
+                  <td class="command">ircconns</td>
+
+                  <td class="description">undocumented yet</td>
+                </tr>
+
+                <tr>
+                  <td class="command">$ircflooddelay</td>
+
+                  <td class="description">undocumented yet</td>
+                </tr>
+              </table>
+            </li>
+          </ul>
+        </li>
+
+        <li>
+          <h3><a name="cube_script_events" id="cube_script_events">Cube script events</a></h3>
+
+          <ul class="dotlist">
+            <li>
+              <h4 class="caption"><a name="events_control" id="events_control">Events control</a></h4>
+
+              <table class="listcommands">
+                <tr class="bold colnames" align="center">
+                  <td>command</td>
+
+                  <td>description</td>
+                </tr>
+
+                <tr>
+                  <td class="command">addhandler [event] [cmd]</td>
+
+                  <td class="description">Bind command for event</td>
+                </tr>
+
+                <tr>
+                  <td class="command">delhandler [event] [cmd]</td>
+
+                  <td class="description">Remove specified command from bind to event</td>
+                </tr>
+
+                <tr>
+                  <td class="command">clearhandlers</td>
+
+                  <td class="description">Clear all event binds</td>
+                </tr>
+
+                <tr>
+                  <td class="command">dumphandlers</td>
+
+                  <td class="description">Show all binded commands to events if defined #DEBUG</td>
+                </tr>
+
+                <tr>
+                  <td class="command">addeat [event]</td>
+
+                  <td class="description">Do not allow server process that events</td>
+                </tr>
+
+                <tr>
+                  <td class="command">deleat [event]</td>
+
+                  <td class="description">Remove even from ignore list</td>
+                </tr>
+
+                <tr>
+                  <td class="command">commandchar [str]</td>
+
+                  <td class="description">Characters before user command (default: commandchar = "#")</td>
+                </tr>
+
+                <tr>
+                  <td class="command">registercommand [command_name] [command_function] [permissions] [command_parameters_description] [help_string]</td>
+
+                  <td class="description">
+                    Register user command<br>
+                    <b>command_name</b> - name of command without command char<br>
+                    <b>command_function</b> - cubescript function to process command. first arg is always cn of player entered this command<br>
+                    <b>permissions</b> - 1 - any player can enter command, 2 - admins &amp; masters, 3 - masters only<br>
+                    <b>command_parameters_description</b> - list of types of parameters passing to command;
+
+                    <ul class="dotlist">
+                      <li>c - valid cn or player name; command gets cn</li>
+
+                      <li>i - valid integer</li>
+
+                      <li>f - valid float</li>
+
+                      <li>p - valid cn or player name or -1; command gets cn or -1</li>
+
+                      <li>b - 1|0, y|n, true|false - bool</li>
+
+                      <li>w - one word (string without spaces)</li>
+
+                      <li>s - string (must be last at parameters list)</li>
+
+                      <li>| - delimiter between required and not required parameters</li>
+                    </ul><br>
+                    <b>help_string</b> - help string for command
+                  </td>
+                </tr>
+
+                <tr>
+                  <td class="command">unregistercommand [command_name]</td>
+
+                  <td class="description">Remove command from list</td>
+                </tr>
+
+                <tr>
+                  <td class="command">loopcommands $var perm [body]</td>
+
+                  <td class="description">Iterates server's commands with permission &lt;= perm and executes body. $var contains command name</td>
+                </tr>
+
+                <tr>
+                  <td class="command">commandhelp [command_name]</td>
+
+                  <td class="description">Returns help string for command</td>
+                </tr>
+
+                <tr>
+                  <td class="command">grantperm [cn]</td>
+
+                  <td class="description">If alias grantperm defined, user get permission what it returns</td>
+                </tr>
+              </table>
+            </li>
+
+            <li>
+              <h4 class="caption"><a name="events_list" id="events_list">Events list</a></h4>
+
+              <h4>legend:</h4>
+
+              <ul class="dotlist">
+                <li><b>@</b> - event can be eaten (disable server default handler)</li>
+              </ul>
+
+              <table class="listcommands">
+                <tr class="bold colnames" align="center">
+                  <td>event</td>
+
+                  <td>condition</td>
+                </tr>
+
+                <tr>
+                  <td class="command">onconnect (cn)</td>
+
+                  <td class="description">After player connected</td>
+                </tr>
+
+                <tr>
+                  <td class="command">ondisconnect (cn)</td>
+
+                  <td class="description">Before player disconnect</td>
+                </tr>
+
+                <tr>
+                  <td class="command">onteamkill (cn)</td>
+
+                  <td class="description">When player teamkill</td>
+                </tr>
+
+                <tr>
+                  <td class="command">@ontext (cn) (msg)</td>
+
+                  <td class="description">Send chat message</td>
+                </tr>
+
+                <tr>
+                  <td class="command">@onsayteam (cn) (msg)</td>
+
+                  <td class="description">Send teamchat message</td>
+                </tr>
+
+                <tr>
+                  <td class="command">@onswitchname (cn) (newname)</td>
+
+                  <td class="description">Before player reaname</td>
+                </tr>
+
+                <tr>
+                  <td class="command">onswitchmodel (cn) (mdl)</td>
+
+                  <td class="description">Change player model</td>
+                </tr>
+
+                <tr>
+                  <td class="command">@onswitchteam (cn) (newteam)</td>
+
+                  <td class="description">Before player switch team</td>
+                </tr>
+
+                <tr>
+                  <td class="command">onmapvote (cn) (map) (mode)</td>
+
+                  <td class="description">Map vote</td>
+                </tr>
+
+                <tr>
+                  <td class="command">@onkick (cn) (victim)</td>
+
+                  <td class="description">Before player getkicked</td>
+                </tr>
+
+                <tr>
+                  <td class="command">onspectator (cn) (1|0)</td>
+
+                  <td class="description">When player became speced/unspeced</td>
+                </tr>
+
+                <tr>
+                  <td class="command">@onsetteam (cn) (newteam)</td>
+
+                  <td class="description">Before setteam action</td>
+                </tr>
+
+                <tr>
+                  <td class="command">@onlistdemos (cn)</td>
+
+                  <td class="description">Before request of list demos</td>
+                </tr>
+
+                <tr>
+                  <td class="command">@ongetdemo (cn) (demonum)</td>
+
+                  <td class="description">Before player request getdemo</td>
+                </tr>
+
+                <tr>
+                  <td class="command">onsetmaster (cn) (1|0) (pass) (authname)</td>
+
+                  <td class="description">When player claimed/revoke master or admin or auth</td>
+                </tr>
+
+                <tr>
+                  <td class="command">onbotlimit (cn) (limit)</td>
+
+                  <td class="description">When changing bot limit</td>
+                </tr>
+
+                <tr>
+                  <td class="command">@ongetmap (cn)</td>
+
+                  <td class="description">Before player request getmap</td>
+                </tr>
+
+                <tr>
+                  <td class="command">@onnewmap (cn)</td>
+
+                  <td class="description">Before player request newmap</td>
+                </tr>
+
+                <tr>
+                  <td class="command">@onpausegame (1|0)</td>
+
+                  <td class="description">Before game paused/unpaused</td>
+                </tr>
+
+                <tr>
+                  <td class="command">onmapstart</td>
+
+                  <td class="description">When new round begun</td>
+                </tr>
+
+                <tr>
+                  <td class="command">onimission</td>
+
+                  <td class="description">After intermission started</td>
+                </tr>
+
+                <tr>
+                  <td class="command">@onmastermode (cn) (mode)</td>
+
+                  <td class="description">Before change mastermode</td>
+                </tr>
+
+                <tr>
+                  <td class="command">@onclearbans (cn)</td>
+
+                  <td class="description">Before player request clearbans</td>
+                </tr>
+
+                <tr>
+                  <td class="command">@onrecorddemo</td>
+
+                  <td class="description">Before start demo record</td>
+                </tr>
+
+                <tr>
+                  <td class="command">onstopdemo</td>
+
+                  <td class="description">Wned demo record complite</td>
+                </tr>
+
+                <tr>
+                  <td class="command">@oncleardemos (demonum)</td>
+
+                  <td class="description">Before player request cleardemos</td>
+                </tr>
+
+                <tr>
+                  <td class="command">@onaddbot (skill)</td>
+
+                  <td class="description">Before player request addbot</td>
+                </tr>
+
+                <tr>
+                  <td class="command">@ondelbot</td>
+
+                  <td class="description">Before player request delete bot</td>
+                </tr>
+
+                <tr>
+                  <td class="command">onmodmap (cn)</td>
+
+                  <td class="description">Modified player map</td>
+                </tr>
+
+                <tr>
+                  <td class="command">onmute (1|0) (cn)</td>
+
+                  <td class="description">When player muted/unmuted</td>
+                </tr>
+
+                <tr>
+                  <td class="command">oncommandpermerror (cn) (command)</td>
+
+                  <td class="description">When player not have permission for #command</td>
+                </tr>
+
+                <tr>
+                  <td class="command">oncommandusageerror (cn) (command)</td>
+
+                  <td class="description">When wrong #command parameters</td>
+                </tr>
+
+                <tr>
+                  <td class="command">oncommandunknown (cn) (command)</td>
+
+                  <td class="description">When #command not exists</td>
+                </tr>
+              </table>
+            </li>
+
+            <li>
+              <h4 class="caption"><a name="irc_bot_events_control" id="irc_bot_events_control">IRC bot events control</a></h4>
+
+              <table class="listcommands">
+                <tr class="bold colnames" align="center">
+                  <td>command</td>
+
+                  <td>description</td>
+                </tr>
+
+                <tr>
+                  <td class="command">irc_registercommand [command_name] [command_function] [permissions] [command_parameters_description] [help_string]</td>
+
+                  <td class="description">Look events control</td>
+                </tr>
+
+                <tr>
+                  <td class="command">irc_unregistercommand [command_name]</td>
+
+                  <td class="description">Look events control</td>
+                </tr>
+
+                <tr>
+                  <td class="command">irc_loopcommands $var perm [body]</td>
+
+                  <td class="description">Look events control</td>
+                </tr>
+
+                <tr>
+                  <td class="command">irc_commandhelp [command_name]</td>
+
+                  <td class="description">Look events control</td>
+                </tr>
+
+                <tr>
+                  <td class="command">irc_grantperm [user]</td>
+
+                  <td class="description">Look events control</td>
+                </tr>
+              </table>
+            </li>
+
+            <li>
+              <h4 class="caption"><a name="irc_bot_events_list" id="irc_bot_events_list">IRC bot events list</a></h4>
+
+              <table class="listcommands">
+                <tr class="bold colnames" align="center">
+                  <td>event</td>
+
+                  <td>condition</td>
+                </tr>
+
+                <tr>
+                  <td class="command">irc_onmsg (nick) (txt)</td>
+
+                  <td class="description">When channel message</td>
+                </tr>
+
+                <tr>
+                  <td class="command">irc_onprivmsg (nick) (txt)</td>
+
+                  <td class="description">When private message</td>
+                </tr>
+
+                <tr>
+                  <td class="command">irc_oncommandpermerror (nick) (command)</td>
+
+                  <td class="description">When user dont have permissions for command</td>
+                </tr>
+
+                <tr>
+                  <td class="command">irc_oncommandusageerror (nick) (command)</td>
+
+                  <td class="description">When passed wrong parameters</td>
+                </tr>
+
+                <tr>
+                  <td class="command">irc_oncommandunknown (nick) (command)</td>
+
+                  <td class="description">When command dont exists</td>
+                </tr>
+              </table>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</body>
+</html>

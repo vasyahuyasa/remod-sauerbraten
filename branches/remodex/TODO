@@ -1,0 +1,257 @@
+﻿[UTF-8]
+General:
+	geoip +
+	баны
+	статистика по игроку в конце игры (фраги, смерти, аккуратность) +
+	украденые флаги, возвращенные флаги - 
+	irc-бот +
+	persist +
+
+
+
+Server events: +
+	onconnect [cn] +
+	ondisconnect [cn] +
+	onmapstart +
+	onimission +
+	onteamkill [cn] +
+	@ontext [cn] [msg] +	
+	@onsayteam [cn] [msg] +
+	@onswitchname [cn] [newname] +
+	onswitchmodel [cn] [mdl] +
+	@onswitchteam [cn] [newteam] +	
+	onmapvote [cn] [map] [mode] +
+	@onmastermode [cn] [mode] +
+	@onclearbans [cn] +
+	@onkick [cn] [victim] +
+	onspectator [cn] [1|0] +	if 0 - unspec, if 1 became spec
+	@onsetteam [cn] [newteam] +
+	@onrecorddemo +
+	onstopdemo +
+	@oncleardemos [demonum] +
+	@onlistdemos [cn] +
+	@ongetdemo [cn] [demonum] +
+	onsetmaster [cn] [1|0] [passhash] [authname] +
+	@onaddbot [skill] +
+	@ondelbot +
+	onbotlimit [cn] [limit] +
+	onbotbalance [cn] [balance]
+	//onauth [cn] [name] = onsetmaster
+    @onpausegame [1|0] +   
+    onmodmap [cn] +  
+    onmute [1|0] [cn] +
+
+	#coopedit
+	@ongetmap [cn] +
+	@onnewmap [cn] +   
+	
+	#IRC bot
+	irc_onmsg [nick] [txt] +	"sender" "p a r a m s"   
+	irc_onprivmsg [nick] [txt] +
+	//irc_oncommand [nick] [txt] + //moved to server core
+	
+	
+	#Commands engine
+	oncommandpermerror [cn] [command] //player has no permissions to do command
+	oncommandusageerror [cn] [command] //command usage error
+	oncommandunknown [cn] [command]  //command not found
+	
+	irc_oncommandpermerror [nick] [command] //user has no permissions to do command
+	irc_oncommandusageerror [nick] [command] //command usage error
+	irc_oncommandunknown [nick] [command]  //command not found
+
+
+
+Cube script:
+	getmap (curent_map_name) +
+	getmode (curent_game_mode) +
+	getip [name] (client_ip) +
+	getcountry [ip] (ip_country) +
+	getfrags [name] (client_frags) +
+	getdeaths [name] (client_deaths) +
+	getteamkills [name] (client_teamkills) +
+	getaccuracy [name] (client_acuracy) +
+	getflags [name] (client_scored_flags) +
+	getretflags	[name] (client_returned_flags) -
+    getmastermode (mm)+
+	getmastermodename [mm] (txt) +
+	ismaster [cn] (1|0) +
+	isadmin [cn] (1|0) +
+	isspectator [cn] (1|0)+
+	version (txt)	+
+
+	getteam [name] +
+	disconnect [cn] +	reason "normal"
+	kick [name] +
+	spectator [1|0] [name] +
+	map [s] +
+	mapmode [s] [n] +
+	soucide [name] +
+	addbot [skill] +
+	delbot +
+
+	say [txt] +	send message to everyone
+	pm [cn] [txt] +	send private message to cn
+	saytonormal [txt] +	send message to normal clients
+    saytomaster [txt] +	send message to master
+	saytoadmin  [txt] +	send message to admin
+	$totalmillis +	   
+	mastermode [n] +
+	$persist [1|0] +
+	$gamemillis +
+	$gamelimit +	time limit for current round
+	$roundtime +	predefined time of every round, if 0 server will set default time
+	$setroundtime +	set limit of current round
+	$pause [1|0] +  
+
+	$imissiontime +	intermisson time in millis (default 10000) 
+	
+	getname [cn] [txt] +         
+	clearbans +
+	addgban [ip] -	add global ban     
+	setteam [name] [team] +           
+	clearhandlers +       
+	delhandler [evt] [cmd] +  
+	getping [name] +    
+	getonline [cn] +	player connect time     
+	getteamscores [team] (scores) +
+	getrank [name] (rank) +	return player rank   
+	cleargbans + 
+	numclients + 
+	playerexists [cn] +  
+	addeat [event] +	add event for ignore execution of default server handler      
+	deleat [event] +	delete even from ignore
+	mute [name] [val] +	mute specified player (after reconnect mute still exists)    
+	ismuted [cn] (val) +	return player's mute status     
+	formatmillis [fmt] [millis] (str) +	convert millis to string (%d - days, %h - hours, %m - minutes, %s - seconds)
+	getcn [name] +	return cn of player	  
+	$autodemo [1|0] +	automatycaly record demo on every next match 
+	$demodir [str] + 	folder for saved demos
+	$savedemo [1|0] +	allow save demos to disk  
+	halt [err] +	stop server with error code  
+	geodb [filename] +	load GEOIP database      
+	isgeoip (1|0) +	return status of geoip       
+	setmaster [1|0] [cn] +	give or revoke master rights
+
+
+
+Cube script function variables
+	nextmap (str) +	if defined should return name of next map
+	allowvote [cn] [mode] [map] (1|0) +	if defined allow/disallow vote for some maps or modes
+
+
+
+IRC: +
+	ircsay [msg] +
+
+	$verbose +
+	ircfilter +
+	ircaddclient +
+	ircaddrelay +
+	ircserv +
+	ircport +
+	ircnick +
+	ircbind +
+	ircpass +
+	ircauth +
+	ircconnect +
+	ircaddchan +
+	ircjoinchan +
+	ircpasschan +
+	ircrelaychan +
+	ircfriendlychan +
+	ircconns +
+	$ircflooddelay +          
+	
+	ircsayto [nick/chan] [msg] +	send private message or to channel
+	ircisop [nick] [0|1] +	return 1 if nick is OP       
+	ircisvoice [nick] [0|1] +	return 1 if nick have voice
+	
+	#commands engine
+	registercommand [command_name] [command_function] [permissions] [command_parameters_description] [help_string]
+	# command_name - name of command without command char (help for #help)
+	# command_function - cubescript function to process command. first arg is always cn of player entered this command
+	# permissions - 1 - any player can enter command, 2 - admins & masters, 3 - masters only
+	# command_parameters_description - list of types of parameters passing to command; 
+	#   c - valid cn or player name; command gets cn
+	#   i - valid integer
+	#   f - valid float
+	#   p - valid cn or player name or -1; command gets cn or -1
+	#   b - 1|0, y|n, true|false - bool
+	#   t - time value in seconds or  mm:ss; command gets number of seconds
+	#   s - string (must be last at parameters list)
+	#	w - one word (string without spaces)
+	#   | - delimiter between required and not required parameters
+	# help_string  -  help string for command
+	
+	unregistercommand [command_name]
+	loopcommands $var perm [body] -  iterates server's commands with permission <= perm and executes body. $var contains command name
+	commandhelp [command_name]  -  returns help string for command
+	
+	irc_registercommand [command_name] [command_function] [permissions] [command_parameters_description] [help_string]
+	irc_unregistercommand [command_name]
+	irc_loopcommands $var perm [body]
+	irc_commandhelp [command_name] 
+	
+	
+	grantperm cn
+	irc_grantperm user
+	# Script may declare these functions for defining permissions for player/irc_user. 
+	# If so, server uses this logic for every permission check (u can define custom rules, e.g. player with ip 127.0.0.1 has the same permissions as master).
+	# Otherways default permission check is used:
+	# FOR SERVER COMMANDS
+	# if (isadmin(cn)) {
+	#	return 2;
+	# } else if (ismaster(cn)) {
+	#	return 3;
+	# } else {
+	#	return 1;
+	#} 
+	# FOR IRC COMMANDS:
+	# if (irc_user_state(usr, VOICE)) {
+	#	return 1;
+	# } else if (irc_user_state(usr, OP)) {
+	#	return 2;
+	# } else {
+	#	return 0;
+	# }
+	#
+	
+	checkipbymask [ip] [mask]  -  returns true if ip and mask are smth like "127.0.0.1" and "127.0.*.*" 
+
+
+
+Rcon: +
+	индивидуальная сессия каждого подключения -
+
+
+
+IRC бот: +
+	возможность кика/бана +
+	перекидывание игрока в другую команду -
+	spect/unspec +
+	изменение режима игры и карты -
+	общение +
+	предупреждение -
+
+
+
+#commands: -
+	persist [0|1] +
+	specall [0|1] +
+	mute [cn] [0|1] + 
+	help (command) + shows help str for command
+	ban <cn> <time> reason -
+	kick [cn] [time mins] [reason] -
+	restart +
+	stats (cn) | stats -1 - for all  + //не показывает пока returned flags
+	getip (cn) +
+	version +   //показывает последнюю ревизию serverctrl.cpp       
+	time [min] +  // set remaining time for current round
+	gtime [min] +  // set time for every round      
+	uptime + server uptime
+	disc [cn] + disconnect player
+	unmute [cn] + unmute player
+	autodemo [0|1] + automatically record demo after every match
+	... and more
+	
