@@ -348,6 +348,12 @@ namespace server
     {
         int time;
         uint ip;
+        //Remod
+        int length; //length of ban in milliseconds
+        string sender; //who banned
+        string player; //player's name
+        uint senderip; //sender ip
+        string reason; //reason
     };
 
     namespace aiman

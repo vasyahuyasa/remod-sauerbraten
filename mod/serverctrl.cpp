@@ -9,6 +9,7 @@
 
 #include "fpsgame.h"
 #include "commandev.h"
+#include "commandhandler.h"
 #include "remod.h"
 
 #ifndef WIN32
@@ -135,16 +136,24 @@ void disconnect(int *pcn)
     disconnect_client(cn, DISC_NONE);
 }
 
-void kick(int *pcn)
+void kick(int *pcn, int *plength, int *psendercn, char *sender, char *reason)
 {
     int cn=(int)*pcn;
     clientinfo *ci = (clientinfo *)getinfo(cn);
     if(ci)
     {
-        remod::onevent("onkick", "ii", -1, cn);
+    	int length = (int) *plength;
+    	if (!length) length = 4*60*60000; //length of ban in milliseconds (default - 4 hours )
+        remod::onevent("onkick", "iiiss", cn, length, *psendercn, sender, reason);
         ban &b = bannedips.add();
         b.time = totalmillis;
         b.ip = getclientip(cn);
+        strcpy(b.player, ci->name);
+        b.length = length;
+        strcpy(b.sender, sender);
+        b.senderip = getclientip(*psendercn);
+        strcpy(b.reason, reason);
+        printf("time: %d, ip: %d, player: %s, len: %d, sender: %s, senderip: %d, reason: %s\n", b.time, b.ip, b.player, b.length, b.sender, b.senderip, b.reason);
         allowedips.removeobj(b.ip);
         disconnect_client(cn, DISC_KICK);
     }
@@ -564,6 +573,80 @@ bool checkipbymask(char *ip, char *mask) {
 	return b;
 }
 
+/**
+ * Loops through list of commands available for player/user with specified permission. Common for server and irc
+ */
+void loopbans(
+		const char *player_name,
+		const char *player_ip,
+		const char *time,
+		const char *length,
+		const char *sender_name,
+		const char *sender_ip,
+		const char *reason,
+		const char *body)
+{
+	ident* idents[7];
+	idents[0] = newident(player_name);
+	idents[1] = newident(player_ip);
+	idents[2] = newident(time);
+	idents[3] = newident(length);
+	idents[4] = newident(sender_name);
+	idents[5] = newident(sender_ip);
+	idents[6] = newident(reason);
+
+	for (int i = 0; i < 7; i++) {
+		if (idents[i]->type != ID_ALIAS) return;
+	}
+
+	int j = 0;
+
+	in_addr addr;
+
+	for (int i = 0; i < bannedips.length(); i++) {
+		printf("1\n");
+		ban b = bannedips[i];
+		printf("2\n");
+		if (j) {
+
+			aliasa(idents[0]->name, newstring(b.player));
+
+			addr.s_addr = b.ip;
+			aliasa(idents[1]->name, newstring(inet_ntoa(addr)));
+
+			aliasa(idents[2]->name, newstring(intstr(b.time)));
+			aliasa(idents[3]->name, newstring(intstr(b.length)));
+
+			aliasa(idents[4]->name, newstring(b.sender));
+
+			addr.s_addr = b.senderip;
+			aliasa(idents[5]->name, newstring(inet_ntoa(addr)));
+
+			aliasa(idents[6]->name, newstring(b.reason));
+		} else {
+			pushident(*idents[0], newstring(b.player));
+
+			addr.s_addr = b.ip;
+			pushident(*idents[1], newstring(inet_ntoa(addr)));
+			pushident(*idents[2], newstring(intstr(b.time)));
+			pushident(*idents[3], newstring(intstr(b.length)));
+			pushident(*idents[4], newstring(b.sender));
+			addr.s_addr = b.senderip;
+			pushident(*idents[5], newstring(inet_ntoa(addr)));
+			pushident(*idents[6], newstring(b.reason));
+		}
+		printf("before body %s\n", body);
+		execute(body);
+		printf("after body\n");
+		j++;
+	}
+	if (j) {
+		for (int i = 0; i < 7; i++) {
+			popident(*idents[i]);
+		}
+	}
+}
+
 //Cube script binds
 COMMAND(getname, "i");
 COMMAND(getmap, "");
@@ -584,7 +667,7 @@ COMMAND(version, "");
 
 COMMAND(getteam,"i");
 COMMAND(disconnect, "i");
-COMMAND(kick, "i");
+COMMAND(kick, "iiiss");
 COMMAND(spectator, "ii");
 COMMAND(map, "s");
 COMMAND(mapmode, "si");
@@ -618,4 +701,17 @@ COMMANDN(setmaster, setmastercmd, "ii");
 
 ICOMMAND(checkipbymask, "ss", (char *ip, char *mask), intret(checkipbymask(ip, mask) ? 1 : 0));
 
+ICOMMAND(loopbans,
+		"sssssss",
+		(
+				char *player_name,
+				char *player_ip,
+				char *time,
+				char *length,
+				char *sender_name,
+				char *sender_ip,
+				char *reason,
+				char *body
+		),
+		loopbans(player_name, player_ip, time, length, sender_name, sender_ip, reason, body));
 }
