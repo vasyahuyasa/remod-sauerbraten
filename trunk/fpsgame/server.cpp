@@ -1528,7 +1528,10 @@ namespace server
             if(smode) smode->update();
         }
 
-        while(bannedips.length() && bannedips[0].time-totalmillis>4*60*60000) bannedips.remove(0);
+        //while(bannedips.length() && bannedips[0].time-totalmillis>4*60*60000) bannedips.remove(0);
+        //Remod
+        while(bannedips.length() && bannedips[0].time-totalmillis>bannedips[0].length) bannedips.remove(0);
+
         loopv(connects) if(totalmillis-connects[i]->connectmillis>15000) disconnect_client(connects[i]->clientnum, DISC_TIMEOUT);
 
         if(nextexceeded && gamemillis > nextexceeded && (!m_timed || gamemillis < gamelimit))
@@ -2380,6 +2383,14 @@ namespace server
                     ban &b = bannedips.add();
                     b.time = totalmillis;
                     b.ip = getclientip(victim);
+                    //remod
+                    strcpy(b.player, ci->name);
+                    b.length = 4*60*60000;
+                    clientinfo *si = (clientinfo *) getinfo(sender);
+                    strncpy(b.sender, si ? si->name : "console", sizeof(b.sender));
+                    b.senderip = getclientip(sender);
+                    b.reason[0] = '\0';
+
                     allowedips.removeobj(b.ip);
                     disconnect_client(victim, DISC_KICK);
                 }

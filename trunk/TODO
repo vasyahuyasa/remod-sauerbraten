@@ -133,7 +133,7 @@ Cube script:
 	isgeoip (1|0) +	return status of geoip       
 	setmaster [1|0] [cn] +	give or revoke master rights
 
-
+	loopbans
 
 Cube script function variables
 	nextmap (str) +	if defined should return name of next map
@@ -241,7 +241,7 @@ IRC бот: +
 	specall [0|1] +
 	mute [cn] [0|1] + 
 	help (command) + shows help str for command
-	ban <cn> <time> reason -
+	ban <cn> <time> reason +
 	kick [cn] [time mins] [reason] -
 	restart +
 	stats (cn) | stats -1 - for all  + //не показывает пока returned flags
