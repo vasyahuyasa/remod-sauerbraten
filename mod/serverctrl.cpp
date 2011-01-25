@@ -19,8 +19,6 @@
 //Remod
 namespace remod
 {
-using namespace server;
-
 
 void getname(int *cn)
 {
@@ -29,16 +27,6 @@ void getname(int *cn)
     {
         result(ci->name);
     }
-}
-
-void getmap()
-{
-    result(smapname);
-}
-
-void getmode()
-{
-    intret(gamemode);
 }
 
 void getip(int *pcn)
@@ -103,16 +91,6 @@ void getflags(int *pcn)
     }
 }
 
-void getmastermode()
-{
-    intret(mastermode);
-}
-
-void getmastermodename(int *mm)
-{
-    result(mastermodename((int)*mm, "unknown"));
-}
-
 void version()
 {
     string txt;
@@ -130,33 +108,13 @@ void getteam(int *pcn)
     }
 }
 
-void disconnect(int *pcn)
+void kick(int *pcn, int *pexpire)
 {
-    int cn=(int)*pcn;
-    disconnect_client(cn, DISC_NONE);
-}
-
-void kick(int *pcn, int *plength, int *psendercn, char *sender, char *reason)
-{
-    int cn=(int)*pcn;
-    clientinfo *ci = (clientinfo *)getinfo(cn);
-    if(ci)
-    {
-    	int length = (int) *plength;
-    	if (!length) length = 4*60*60000; //length of ban in milliseconds (default - 4 hours )
-        remod::onevent("onkick", "iiiss", cn, length, *psendercn, sender, reason);
-        ban &b = bannedips.add();
-        b.time = totalmillis;
-        b.ip = getclientip(cn);
-        strcpy(b.player, ci->name);
-        b.length = length;
-        strcpy(b.sender, sender);
-        b.senderip = getclientip(*psendercn);
-        strcpy(b.reason, reason);
-        printf("time: %d, ip: %d, player: %s, len: %d, sender: %s, senderip: %d, reason: %s\n", b.time, b.ip, b.player, b.length, b.sender, b.senderip, b.reason);
-        allowedips.removeobj(b.ip);
-        disconnect_client(cn, DISC_KICK);
-    }
+    int cn = (int)*pcn;
+    int expire = (int)*pexpire;
+    if(!pexpire || expire<=0) expire = totalmillis+4*60*60000;
+    remod::onevent("onkick", "ii", -1, cn);
+    server::kick(cn, -1, expire);
 }
 
 void spectator(int *st, int *pcn)
@@ -186,18 +144,6 @@ void spectator(int *st, int *pcn)
     if(!val && mapreload && !spinfo->privilege && !spinfo->local) sendf(spectator, 1, "ri", N_MAPRELOAD);
 }
 
-void map(char *name)
-{
-    sendf(-1, 1, "risii", N_MAPCHANGE, name, gamemode, 1);
-    server::changemap(name, gamemode);
-}
-
-void mapmode(char *name, int *mode)
-{
-    sendf(-1, 1, "risii", N_MAPCHANGE, name, (int)*mode, 1);
-    server::changemap(name, (int)*mode);
-}
-
 void _suicide(int *pcn)
 {
     int cn=(int)*pcn;
@@ -206,27 +152,6 @@ void _suicide(int *pcn)
     {
         suicide(ci);
     }
-}
-
-void addbot(int *s)
-{
-    if(!aiman::addai((int)*s, -1))
-    {
-        //Couldn't add bot
-    }
-}
-
-void delbot()
-{
-    if(!aiman::deleteai())
-    {
-        //Can't delete any bot
-    }
-}
-
-void say(char *msg)
-{
-    sendservmsg(msg);
 }
 
 void pm(int *pcn, char *msg)
@@ -287,13 +212,6 @@ void _mastermode(int *mm)
         loopv(clients) allowedips.add(getclientip(clients[i]->clientnum));
     }
     sendf(-1, 1, "rii", N_MASTERMODE, mastermode);
-}
-
-void clearbans()
-{
-    remod::onevent("onclearbans", "");
-    bannedips.shrink(0);
-    sendservmsg("cleared all bans");
 }
 
 void setteam(int *pcn, const char *team)
@@ -379,21 +297,6 @@ void getrank(int *pcn)
     intret(-1);
 }
 
-void _addgban(const char *name)
-{
-    addgban(name);
-}
-
-void _cleargbans()
-{
-    cleargbans();
-}
-
-void _numclients()
-{
-    intret(numclients(-1, false, true, false));
-}
-
 void mute(int *pcn, int *val)
 {
     int cn = (int)*pcn;
@@ -474,18 +377,6 @@ void formatmillis(char *fmt, int *millis)
     }
     s.add('\0');
     result(s.getbuf());
-}
-
-void getcn(char *name)
-{
-    int cn = parseplayer(name);
-    intret(cn);
-}
-
-void halt(int *err)
-{
-    int errcode = (int)*err;
-    exit(errcode);
 }
 
 void setmastercmd(int *val, int *pcn)
@@ -573,75 +464,47 @@ bool checkipbymask(char *ip, char *mask) {
 	return b;
 }
 
-/**
- * Loops through list of commands available for player/user with specified permission. Common for server and irc
- */
-void loopbans(
-		const char *player_name,
-		const char *player_ip,
-		const char *time,
-		const char *length,
-		const char *sender_name,
-		const char *sender_ip,
-		const char *reason,
-		const char *body)
+void loopbans(const char *name, const char *ip, const char *expire, const char *actor, const char *actorip, const char *body)
 {
-	ident* idents[7];
-	idents[0] = newident(player_name);
-	idents[1] = newident(player_ip);
-	idents[2] = newident(time);
-	idents[3] = newident(length);
-	idents[4] = newident(sender_name);
-	idents[5] = newident(sender_ip);
-	idents[6] = newident(reason);
+	ident* idents[5];
+	idents[0] = newident(name);
+	idents[1] = newident(ip);
+	idents[2] = newident(expire);
+	idents[3] = newident(actor);
+	idents[4] = newident(actorip);
 
-	for (int i = 0; i < 7; i++) {
+	loopi(5)
+	{
 		if (idents[i]->type != ID_ALIAS) return;
 	}
-
-	int j = 0;
-
 	in_addr addr;
-
-	for (int i = 0; i < bannedips.length(); i++) {
-		printf("1\n");
+	loopv(bannedips)
+	{
 		ban b = bannedips[i];
-		printf("2\n");
-		if (j) {
-
-			aliasa(idents[0]->name, newstring(b.player));
-
+		if (i) {
+			aliasa(idents[0]->name, b.name);
 			addr.s_addr = b.ip;
 			aliasa(idents[1]->name, newstring(inet_ntoa(addr)));
-
-			aliasa(idents[2]->name, newstring(intstr(b.time)));
-			aliasa(idents[3]->name, newstring(intstr(b.length)));
-
-			aliasa(idents[4]->name, newstring(b.sender));
-
-			addr.s_addr = b.senderip;
-			aliasa(idents[5]->name, newstring(inet_ntoa(addr)));
-
-			aliasa(idents[6]->name, newstring(b.reason));
+			aliasa(idents[2]->name, newstring(intstr(b.expire)));
+			aliasa(idents[3]->name, newstring(b.actor));
+			addr.s_addr = b.actorip;
+			aliasa(idents[4]->name, newstring(inet_ntoa(addr)));
 		} else {
-			pushident(*idents[0], newstring(b.player));
-
+			pushident(*idents[0], newstring(b.name));
 			addr.s_addr = b.ip;
 			pushident(*idents[1], newstring(inet_ntoa(addr)));
-			pushident(*idents[2], newstring(intstr(b.time)));
-			pushident(*idents[3], newstring(intstr(b.length)));
-			pushident(*idents[4], newstring(b.sender));
-			addr.s_addr = b.senderip;
-			pushident(*idents[5], newstring(inet_ntoa(addr)));
-			pushident(*idents[6], newstring(b.reason));
+			pushident(*idents[2], newstring(intstr(b.expire)));
+			pushident(*idents[3], newstring(b.actor));
+			addr.s_addr = b.actorip;
+			pushident(*idents[4], newstring(inet_ntoa(addr)));
 		}
-		printf("before body %s\n", body);
 		execute(body);
-		printf("after body\n");
-		j++;
 	}
-	if (j) {
-		for (int i = 0; i < 7; i++) {
+
+	if (bannedips.length())
+	{
+        loopi(5)
+        {
 			popident(*idents[i]);
 		}
 	}
@@ -649,8 +512,8 @@ void loopbans(
 
 //Cube script binds
 COMMAND(getname, "i");
-COMMAND(getmap, "");
-COMMAND(getmode, "");
+ICOMMAND(getmap, "", (), result(smapname));
+ICOMMAND(getmode, "", (), intret(gamemode));
 COMMAND(getip, "i");
 COMMAND(getfrags, "i");
 COMMAND(getdeaths, "i");
@@ -658,60 +521,49 @@ COMMAND(getteamkills, "i");
 COMMAND(getaccuracy, "i");
 COMMAND(getflags, "i");
 //COMMAND(getretflags, "i"); unimplemented
-COMMAND(getmastermode, "");
-COMMAND(getmastermodename, "i");
+ICOMMAND(getmastermode, "", (), intret(mastermode));
+ICOMMAND(getmastermodename, "i", (int *mm), result(mastermodename((int)*mm, "unknown")));
+
 ICOMMAND(ismaster, "i", (int*cn), intret(ismaster(cn) ? 1 : 0));
 ICOMMAND(isadmin, "i", (int *cn), intret(isadmin(cn) ? 1 : 0));
 ICOMMAND(isspectator, "i", (int *cn), intret(isspectator(cn) ? 1 : 0));
 COMMAND(version, "");
-
 COMMAND(getteam,"i");
-COMMAND(disconnect, "i");
+ICOMMAND(disconnect, "i", (int *cn), disconnect_client(*cn, DISC_NONE));
 COMMAND(kick, "iiiss");
 COMMAND(spectator, "ii");
-COMMAND(map, "s");
-COMMAND(mapmode, "si");
+ICOMMAND(map, "s", (char *name), sendf(-1, 1, "risii", N_MAPCHANGE, name, gamemode, 1); server::changemap(name, gamemode));
+ICOMMAND(mapmode, "si", (char *name, int *mode), sendf(-1, 1, "risii", N_MAPCHANGE, name, *mode, 1); server::changemap(name, *mode));
 COMMANDN(suicide, _suicide, "i");
-COMMAND(addbot, "i");
-COMMAND(delbot, "");
-
-COMMAND(say, "C");
+ICOMMAND(addbot, "i", (int *s), aiman::addai(*s, -1));
+ICOMMAND(delbot, "", (), aiman::deleteai());
+ICOMMAND(say, "C", (char *msg), sendservmsg(msg));
 COMMAND(pm, "is");
 COMMAND(saytonormal, "C");
 COMMAND(saytomaster, "C");
 COMMAND(saytoadmin, "C");
 COMMANDN(mastermode, _mastermode, "i");
 VARF(pause, 0, 0, 1, server::pausegame(pause));
-COMMAND(clearbans, "");
+ICOMMAND(clearbans, "", (), remod::onevent("onclearbans", ""); bannedips.shrink(0); sendservmsg("cleared all bans"));
 COMMAND(setteam, "is");
 COMMAND(getping, "i");
 COMMAND(getonline, "i");
 COMMANDN(getteamscores, _getteamscore, "s");
 COMMAND(getrank, "i");
-COMMANDN(addgban, _addgban, "s");
-COMMANDN(cleargbans, _cleargbans, "");
-COMMANDN(numclients, _numclients, "");
+COMMAND(addgban, "s");
+COMMAND(cleargbans, "");
+ICOMMAND(numclients, "", (), intret(numclients(-1, false, true, false)));
 ICOMMAND(playerexists, "i", (int *cn), intret(playerexists(cn)));
 COMMAND(mute, "ii");
 COMMAND(ismuted, "i");
 COMMAND(formatmillis, "si");
-COMMAND(getcn, "i");
-COMMAND(halt, "i");
+ICOMMAND(getcn, "s", (char *name), int cn = parseplayer(name); intret(cn));
+ICOMMAND(halt, "i", (int *err), exit(*err));
 COMMANDN(setmaster, setmastercmd, "ii");
-
 ICOMMAND(checkipbymask, "ss", (char *ip, char *mask), intret(checkipbymask(ip, mask) ? 1 : 0));
-
 ICOMMAND(loopbans,
-		"sssssss",
-		(
-				char *player_name,
-				char *player_ip,
-				char *time,
-				char *length,
-				char *sender_name,
-				char *sender_ip,
-				char *reason,
-				char *body
-		),
-		loopbans(player_name, player_ip, time, length, sender_name, sender_ip, reason, body));
+		"ssssss",
+		(char *name, char *ip, char *expire, char *actor, char *actorip, char *body),
+		loopbans(name, ip, expire, actor, actorip, body));
+ICOMMAND(delban, "i", (int *n), if(bannedips.inrange(*n)) bannedips.remove(*n));
 }
