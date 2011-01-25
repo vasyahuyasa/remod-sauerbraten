@@ -322,7 +322,7 @@ namespace server
 
     void persistautoteam()
     {
-        if(!m_check(gamemode, M_CTF|M_PROTECT|M_HOLD)) return; // check for flag modes
+        //if(!m_check(gamemode, M_CTF|M_PROTECT|M_HOLD)) return; // check for flag modes
 
         string goodteam;
         goodteam[0] = '\0';
@@ -1132,7 +1132,7 @@ namespace server
         if(!m_mp(gamemode)) kicknonlocalclients(DISC_PRIVATE);
 
         //Remod
-        if(m_teammode && !persist) autoteam(); else persistautoteam();
+        if(m_teammode) if(!persist) { autoteam(); } else { persistautoteam(); }
 
         if(m_capture) smode = &capturemode;
         else if(m_ctf) smode = &ctfmode;
@@ -1530,7 +1530,11 @@ namespace server
 
         //while(bannedips.length() && bannedips[0].time-totalmillis>4*60*60000) bannedips.remove(0);
         //Remod
-        while(bannedips.length() && bannedips[0].time-totalmillis>bannedips[0].length) bannedips.remove(0);
+        loopv(bannedips)
+        {
+            if(totalmillis>bannedips[i].expire) bannedips.remove(i);
+        }
+
 
         loopv(connects) if(totalmillis-connects[i]->connectmillis>15000) disconnect_client(connects[i]->clientnum, DISC_TIMEOUT);
 
@@ -1704,6 +1708,28 @@ namespace server
     {
         loopv(gbans) if((ip & gbans[i].mask) == gbans[i].ip) return true;
         return false;
+    }
+
+    void kick(int cn, int actor, int expire)
+    {
+        clientinfo *vic = getinfo(cn);
+        clientinfo *act = getinfo(actor);
+        if(vic)
+        {
+            ban &b = bannedips.add();
+            b.expire = expire;
+            b.ip = getclientip(cn);
+            strcpy(b.name, vic->name);
+            b.actor[0] = '\0';
+            b.actorip = 0;
+            if(act)
+            {
+                strcpy(b.actor, act->name);
+                b.actorip = getclientip(cn);
+            }
+            allowedips.removeobj(b.ip);
+            disconnect_client(cn, DISC_KICK);
+        }
     }
 
     void addgban(const char *name)
@@ -2380,19 +2406,7 @@ namespace server
                 {
                     //Remod
                     if(remod::onevent("onkick", "ii", sender, victim)) break;
-                    ban &b = bannedips.add();
-                    b.time = totalmillis;
-                    b.ip = getclientip(victim);
-                    //remod
-                    strcpy(b.player, ci->name);
-                    b.length = 4*60*60000;
-                    clientinfo *si = (clientinfo *) getinfo(sender);
-                    strncpy(b.sender, si ? si->name : "console", sizeof(b.sender));
-                    b.senderip = getclientip(sender);
-                    b.reason[0] = '\0';
-
-                    allowedips.removeobj(b.ip);
-                    disconnect_client(victim, DISC_KICK);
+                    kick(victim, sender, totalmillis+4*60*60000);
                 }
                 break;
             }

@@ -132,9 +132,11 @@ Cube script:
 	geodb [filename] +	load GEOIP database      
 	isgeoip (1|0) +	return status of geoip       
 	setmaster [1|0] [cn] +	give or revoke master rights
-
-	loopbans
-
+	loopbans [name] [ip] [expire] [actor] [actorip] [body] + loop through ban list
+	delban [n] + delete specified ban from list
+	
+	
+	
 Cube script function variables
 	nextmap (str) +	if defined should return name of next map
 	allowvote [cn] [mode] [map] (1|0) +	if defined allow/disallow vote for some maps or modes
