@@ -322,7 +322,7 @@ namespace server
 
     void persistautoteam()
     {
-        if(!m_check(gamemode, M_CTF|M_PROTECT|M_HOLD)) return; // check for flag modes
+        //if(!m_check(gamemode, M_CTF|M_PROTECT|M_HOLD)) return; // check for flag modes
 
         string goodteam;
         goodteam[0] = '\0';
@@ -1132,7 +1132,7 @@ namespace server
         if(!m_mp(gamemode)) kicknonlocalclients(DISC_PRIVATE);
 
         //Remod
-        if(m_teammode && !persist) autoteam(); else persistautoteam();
+        if(m_teammode) if(!persist) { autoteam(); } else { persistautoteam(); }
 
         if(m_capture) smode = &capturemode;
         else if(m_ctf) smode = &ctfmode;
@@ -1290,8 +1290,28 @@ namespace server
 
     void startintermission() { gamelimit = min(gamelimit, gamemillis); checkintermission(); }
 
+    // remodex
+    #include "remodex.h"
+    VAR(selfdamage, 0, 1, 1);
+    VAR(friendlyfire, 0, 1, 1);
+
     void dodamage(clientinfo *target, clientinfo *actor, int damage, int gun, const vec &hitpush = vec(0, 0, 0))
     {
+        // self and team damage
+        if(actor==target)
+        {
+            if(!selfdamage)
+                damage = 0;
+        }
+        else
+        {
+            if(m_teammode && !friendlyfire && (strcmp(target->team, actor->team) == -1))
+                damage = 0;
+        }
+        // damage scale
+        if(remodex::getdamagescale(gun)>-1)
+            damage = damage*remodex::getdamagescale(gun);
+
         gamestate &ts = target->state;
         ts.dodamage(damage);
         actor->state.damage += damage;
@@ -1528,7 +1548,14 @@ namespace server
             if(smode) smode->update();
         }
 
-        while(bannedips.length() && bannedips[0].time-totalmillis>4*60*60000) bannedips.remove(0);
+        //while(bannedips.length() && bannedips[0].time-totalmillis>4*60*60000) bannedips.remove(0);
+        //Remod
+        loopv(bannedips)
+        {
+            if(totalmillis>bannedips[i].expire) bannedips.remove(i);
+        }
+
+
         loopv(connects) if(totalmillis-connects[i]->connectmillis>15000) disconnect_client(connects[i]->clientnum, DISC_TIMEOUT);
 
         if(nextexceeded && gamemillis > nextexceeded && (!m_timed || gamemillis < gamelimit))
@@ -1703,6 +1730,28 @@ namespace server
         return false;
     }
 
+    void kick(int cn, int actor, int expire)
+    {
+        clientinfo *vic = getinfo(cn);
+        clientinfo *act = getinfo(actor);
+        if(vic)
+        {
+            ban &b = bannedips.add();
+            b.expire = expire;
+            b.ip = getclientip(cn);
+            strcpy(b.name, vic->name);
+            b.actor[0] = '\0';
+            b.actorip = 0;
+            if(act)
+            {
+                strcpy(b.actor, act->name);
+                b.actorip = getclientip(cn);
+            }
+            allowedips.removeobj(b.ip);
+            disconnect_client(cn, DISC_KICK);
+        }
+    }
+
     void addgban(const char *name)
     {
         union { uchar b[sizeof(enet_uint32)]; enet_uint32 i; } ip, mask;
@@ -1853,6 +1902,76 @@ namespace server
             }
         }
     }
+
+    // remodex
+    VAR(arenamode, 0, 0, 1); // spawn when last man standing
+    VAR(arenaspawndelay, 0, 5000, INT_MAX); // millis to spawn after round win (default 5 sec)
+    int arenawin = -1; // millis when last men standing
+
+    void arenasendspawn()
+    {
+        arenawin = -1;
+        loopv(clients)
+        {
+            clientinfo *ci = getinfo(i);
+            if(ci)
+            {
+                if(!ci->clientmap[0] && !ci->mapcrc)
+                {
+                    ci->mapcrc = -1;
+                    checkmaps();
+                }
+                if(ci->state.lastdeath)
+                {
+                    flushevents(ci, ci->state.lastdeath + DEATHMILLIS);
+                    ci->state.respawn();
+                }
+                cleartimedevents(ci);
+                sendspawn(ci);
+            }
+        }
+    }
+
+    bool arenacanspawn()
+    {
+        if(arenawin>-1)
+        {
+            if((totalmillis-arenawin)>arenaspawndelay)
+                return true;
+        }
+        return false;
+    }
+
+    bool arenacheckspawn()
+    {
+        int stand = 0; // people remain
+        loopv(clients)
+        {
+            clientinfo *ci = getinfo(i);
+            if(ci->state.state == CS_ALIVE) stand++;
+        }
+        if(stand<=1) return true;
+        if(!m_teammode) return false; // check for team mode
+        string teamname = "";
+        loopv(clients)
+        {
+            clientinfo *ci = getinfo(i);
+            if(ci->state.state == CS_ALIVE)
+            {
+                if(teamname[0]) // first run
+                {
+                    strcpy(teamname, ci->team);
+                }
+                else
+                {
+                    if(strcmp(teamname, ci->team) != -1) return false; // difirent teams
+                }
+            }
+        }
+        return true; // all in one team;
+    }
+
+
 
     void parsepacket(int sender, int chan, packetbuf &p)     // has to parse exactly each byte of the packet
     {
@@ -2057,6 +2176,13 @@ namespace server
 
             case N_TRYSPAWN:
                 if(!ci || !cq || cq->state.state!=CS_DEAD || cq->state.lastspawn>=0 || (smode && !smode->canspawn(cq))) break;
+                if(arenamode)
+                {
+                    if(arenacanspawn())
+                        arenasendspawn();
+                    else break;
+                }
+
                 if(!ci->clientmap[0] && !ci->mapcrc)
                 {
                     ci->mapcrc = -1;
@@ -2377,11 +2503,7 @@ namespace server
                 {
                     //Remod
                     if(remod::onevent("onkick", "ii", sender, victim)) break;
-                    ban &b = bannedips.add();
-                    b.time = totalmillis;
-                    b.ip = getclientip(victim);
-                    allowedips.removeobj(b.ip);
-                    disconnect_client(victim, DISC_KICK);
+                    kick(victim, sender, totalmillis+4*60*60000);
                 }
                 break;
             }

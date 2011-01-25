@@ -132,6 +132,8 @@ Cube script:
 	geodb [filename] +	load GEOIP database      
 	isgeoip (1|0) +	return status of geoip       
 	setmaster [1|0] [cn] +	give or revoke master rights
+	loopbans [name] [ip] [expire] [actor] [actorip] [body] + loop through ban list
+	delban [n] + delete specified ban from list
 
 
 
@@ -241,7 +243,7 @@ IRC бот: +
 	specall [0|1] +
 	mute [cn] [0|1] + 
 	help (command) + shows help str for command
-	ban <cn> <time> reason -
+	ban <cn> <time> reason +
 	kick [cn] [time mins] [reason] -
 	restart +
 	stats (cn) | stats -1 - for all  + //не показывает пока returned flags

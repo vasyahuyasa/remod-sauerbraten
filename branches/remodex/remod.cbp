@@ -124,6 +124,8 @@
 		<Unit filename="mod\rconmod.h" />
 		<Unit filename="mod\remod.cpp" />
 		<Unit filename="mod\remod.h" />
+		<Unit filename="mod\remodex.cpp" />
+		<Unit filename="mod\remodex.h" />
 		<Unit filename="mod\serverctrl.cpp" />
 		<Unit filename="shared\command.h" />
 		<Unit filename="shared\crypto.cpp" />

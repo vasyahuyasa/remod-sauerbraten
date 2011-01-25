@@ -61,8 +61,8 @@ enum
 struct fpsentity : extentity
 {
     int triggerstate, lasttrigger;
-    
-    fpsentity() : triggerstate(TRIGGER_RESET), lasttrigger(0) {} 
+
+    fpsentity() : triggerstate(TRIGGER_RESET), lasttrigger(0) {}
 };
 
 enum { GUN_FIST = 0, GUN_SG, GUN_CG, GUN_RL, GUN_RIFLE, GUN_GL, GUN_PISTOL, GUN_FIREBALL, GUN_ICEBALL, GUN_SLIMEBALL, GUN_BITE, GUN_BARREL, NUMGUNS };
@@ -348,6 +348,9 @@ static const struct guninfo { short sound, attackdelay, damage, projspeed, part,
 
 #include "ai.h"
 
+// remodex
+#include "remodex.h"
+
 // inherited by fpsent and server clients
 struct fpsstate
 {
@@ -484,6 +487,25 @@ struct fpsstate
             ammo[GUN_PISTOL] = m_sp ? 80 : 40;
             ammo[GUN_GL] = 1;
         }
+
+        // remodex
+        // ammo
+        loopi(NUMGUNS)
+        {
+            if(remodex::getammo(i)>-1) ammo[i] = remodex::getammo(i);
+        }
+        ammo[GUN_FIST] = 1;
+        // armour
+        if(remodex::getarmourtype()>-1) armourtype = remodex::getarmourtype();
+        if(remodex::getarmour()>-1) armour = remodex::getarmour();
+        // health
+        if(remodex::gethealth()>0)
+        {
+            maxhealth = remodex::gethealth();
+            health = remodex::gethealth();
+        }
+        // gunselect
+        if(remodex::getgunselect()>-1) gunselect = remodex::getgunselect();
     }
 
     // just subtract damage here, can set death, etc. later in code calling this

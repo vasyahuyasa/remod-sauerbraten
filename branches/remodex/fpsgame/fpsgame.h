@@ -346,8 +346,12 @@ namespace server
 
     struct ban
     {
-        int time;
-        uint ip;
+        //Remod
+        int expire;     // when ban expire
+        uint ip;        // victim ip
+        string name;    // victim name
+        string actor;   // baning player's name (empty if by server)
+        uint actorip;  // baning player's ip (0.0.0.0 if by server)
     };
 
     namespace aiman
@@ -431,6 +435,7 @@ namespace server
 
     //Remod
     void filtercstext(char *dst, const char *src);
+    void kick(int cn, int actor, int expire);
 
     clientinfo *getinfo(int n);
     const char *privname(int type);
