@@ -1717,6 +1717,7 @@ namespace server
         if(vic)
         {
             ban &b = bannedips.add();
+
             b.expire = expire;
             b.ip = getclientip(cn);
             strcpy(b.name, vic->name);
@@ -1726,6 +1727,8 @@ namespace server
             {
                 strcpy(b.actor, act->name);
                 b.actorip = getclientip(cn);
+            } else {
+            	strcpy(b.actor, "server");
             }
             allowedips.removeobj(b.ip);
             disconnect_client(cn, DISC_KICK);
