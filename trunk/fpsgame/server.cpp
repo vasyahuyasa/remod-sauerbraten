@@ -3,6 +3,8 @@
 
 #include "commandev.h"
 
+#include "remod.h"
+
 namespace game
 {
     void parseoptions(vector<const char *> &args)
@@ -1637,7 +1639,8 @@ namespace server
 
     void noclients()
     {
-        bannedips.shrink(0);
+        // remoc
+        //bannedips.shrink(0); // do not clear bans
         aiman::clearai();
     }
 
@@ -1710,8 +1713,10 @@ namespace server
         return false;
     }
 
-    void kick(int cn, int actor, int expire)
+
+    void kick(int cn, char* actorname, int expire)
     {
+        int actor = remod::parseplayer(actorname);
         clientinfo *vic = getinfo(cn);
         clientinfo *act = getinfo(actor);
         if(vic)
@@ -1728,7 +1733,7 @@ namespace server
                 strcpy(b.actor, act->name);
                 b.actorip = getclientip(cn);
             } else {
-            	strcpy(b.actor, "server");
+            	strcpy(b.actor, actorname);
             }
             allowedips.removeobj(b.ip);
             disconnect_client(cn, DISC_KICK);
@@ -2409,7 +2414,7 @@ namespace server
                 {
                     //Remod
                     if(remod::onevent("onkick", "ii", sender, victim)) break;
-                    kick(victim, sender, totalmillis+4*60*60000);
+                    kick(victim, ci->name, totalmillis+4*60*60000);
                 }
                 break;
             }

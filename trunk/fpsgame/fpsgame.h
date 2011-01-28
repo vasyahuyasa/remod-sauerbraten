@@ -435,7 +435,7 @@ namespace server
 
     //Remod
     void filtercstext(char *dst, const char *src);
-    void kick(int cn, int actor, int expire);
+    void kick(int cn, char *actorname, int expire);
 
     clientinfo *getinfo(int n);
     const char *privname(int type);
