@@ -108,15 +108,15 @@ void getteam(int *pcn)
     }
 }
 
-void kick(int *pcn, int *pexpire, int *pactor)
+void kick(int *pcn, int *pexpire, char *actorname)
 {
     int cn = (int)*pcn;
-    int actor = (int)*pactor;
     int expire = (int)*pexpire;
     if (!pexpire || expire<=0) expire = 4*60*60000; //4 hours - default
     expire += totalmillis;  //add current uptime
     remod::onevent("onkick", "ii", -1, cn);
-    server::kick(cn, actor, expire);
+    if(strlen(actorname) == 0) actorname = newstring("console");
+    server::kick(cn, actorname, expire);
 }
 
 void spectator(int *st, int *pcn)
@@ -532,7 +532,7 @@ ICOMMAND(isspectator, "i", (int *cn), intret(isspectator(cn) ? 1 : 0));
 COMMAND(version, "");
 COMMAND(getteam,"i");
 ICOMMAND(disconnect, "i", (int *cn), disconnect_client(*cn, DISC_NONE));
-COMMAND(kick, "iii");
+COMMAND(kick, "iis");
 COMMAND(spectator, "ii");
 ICOMMAND(map, "s", (char *name), sendf(-1, 1, "risii", N_MAPCHANGE, name, gamemode, 1); server::changemap(name, gamemode));
 ICOMMAND(mapmode, "si", (char *name, int *mode), sendf(-1, 1, "risii", N_MAPCHANGE, name, *mode, 1); server::changemap(name, *mode));
