@@ -134,6 +134,7 @@ Cube script:
 	loopbans [name] [ip] [expire] [actor] [actorip] [body] + loop through ban list
 	delban [n] + delete specified ban from list
 	kick [cn] [time] [actor] + kick and ban cn for specified time, actor can be cn or name of kicker
+	systimef [format] (str) + returnt formated system time see http://www.cplusplus.com/reference/clibrary/ctime/strftime/
 	
 	
 	
