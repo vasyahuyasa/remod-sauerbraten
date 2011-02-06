@@ -512,6 +512,19 @@ void loopbans(const char *name, const char *ip, const char *expire, const char *
 	}
 }
 
+// system time format see http://www.cplusplus.com/reference/clibrary/ctime/strftime/
+void systimef(const char *format)
+{
+    time_t now;
+    struct tm *timeinfo;
+    string buf;
+
+    time(&now);
+    timeinfo = localtime(&now);
+    strftime(buf, MAXSTRLEN, format, timeinfo);
+    result(buf);
+}
+
 //Cube script binds
 COMMAND(getname, "i");
 ICOMMAND(getmap, "", (), result(smapname));
@@ -568,4 +581,5 @@ ICOMMAND(loopbans,
 		(char *name, char *ip, char *expire, char *actor, char *actorip, char *body),
 		loopbans(name, ip, expire, actor, actorip, body));
 ICOMMAND(delban, "i", (int *n), if(bannedips.inrange(*n)) bannedips.remove(*n));
+COMMAND(systimef, "s");
 }
