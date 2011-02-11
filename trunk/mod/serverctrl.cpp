@@ -16,6 +16,8 @@
 #include <arpa/inet.h>
 #endif
 
+#include "version.inc"
+
 //Remod
 namespace remod
 {
@@ -94,7 +96,7 @@ void getflags(int *pcn)
 void version()
 {
     string txt;
-    formatstring(txt)("Remod $Rev$ (build %s %s)", __DATE__, __TIME__);
+    formatstring(txt)("Remod %s (build %s %s)", REMOD_VERSION, __DATE__, __TIME__);
     result(txt);
 }
 
