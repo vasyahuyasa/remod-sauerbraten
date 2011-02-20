@@ -16,6 +16,8 @@
 #include <arpa/inet.h>
 #endif
 
+#include "version.inc"
+
 //Remod
 namespace remod
 {
@@ -94,7 +96,7 @@ void getflags(int *pcn)
 void version()
 {
     string txt;
-    formatstring(txt)("Remod $Rev$ (build %s %s)", __DATE__, __TIME__);
+    formatstring(txt)("Remodex %s (build %s %s)", REMOD_VERSION, __DATE__, __TIME__);
     result(txt);
 }
 
@@ -108,13 +110,15 @@ void getteam(int *pcn)
     }
 }
 
-void kick(int *pcn, int *pexpire)
+void kick(int *pcn, int *pexpire, char *actorname)
 {
     int cn=(int)*pcn;
     int expire = (int)*pexpire;
-    if(!pexpire || expire<=0) expire = totalmillis+4*60*60000;
+    if (!pexpire || expire<=0) expire = 4*60*60000; //4 hours - default
+    expire += totalmillis;  //add current uptime
         remod::onevent("onkick", "ii", -1, cn);
-    server::kick(cn, -1, expire);
+    if(strlen(actorname) == 0) actorname = newstring("console");
+    server::kick(cn, actorname, expire);
     }
 
 void spectator(int *st, int *pcn)
@@ -510,6 +514,19 @@ void loopbans(const char *name, const char *ip, const char *expire, const char *
 	}
 }
 
+// system time format see http://www.cplusplus.com/reference/clibrary/ctime/strftime/
+void systimef(const char *format)
+{
+    time_t now;
+    struct tm *timeinfo;
+    string buf;
+
+    time(&now);
+    timeinfo = localtime(&now);
+    strftime(buf, MAXSTRLEN, format, timeinfo);
+    result(buf);
+}
+
 //Cube script binds
 COMMAND(getname, "i");
 ICOMMAND(getmap, "", (), result(smapname));
@@ -530,7 +547,7 @@ ICOMMAND(isspectator, "i", (int *cn), intret(isspectator(cn) ? 1 : 0));
 COMMAND(version, "");
 COMMAND(getteam,"i");
 ICOMMAND(disconnect, "i", (int *cn), disconnect_client(*cn, DISC_NONE));
-COMMAND(kick, "iiiss");
+COMMAND(kick, "iis");
 COMMAND(spectator, "ii");
 ICOMMAND(map, "s", (char *name), sendf(-1, 1, "risii", N_MAPCHANGE, name, gamemode, 1); server::changemap(name, gamemode));
 ICOMMAND(mapmode, "si", (char *name, int *mode), sendf(-1, 1, "risii", N_MAPCHANGE, name, *mode, 1); server::changemap(name, *mode));
@@ -566,4 +583,5 @@ ICOMMAND(loopbans,
 		(char *name, char *ip, char *expire, char *actor, char *actorip, char *body),
 		loopbans(name, ip, expire, actor, actorip, body));
 ICOMMAND(delban, "i", (int *n), if(bannedips.inrange(*n)) bannedips.remove(*n));
+COMMAND(systimef, "s");
 }

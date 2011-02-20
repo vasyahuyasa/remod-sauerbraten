@@ -3,6 +3,8 @@
 
 #include "commandev.h"
 
+#include "remod.h"
+
 namespace game
 {
     void parseoptions(vector<const char *> &args)
@@ -1291,7 +1293,6 @@ namespace server
     void startintermission() { gamelimit = min(gamelimit, gamemillis); checkintermission(); }
 
     // remodex
-    #include "remodex.h"
     VAR(selfdamage, 0, 1, 1);
     VAR(friendlyfire, 0, 1, 1);
 
@@ -1516,6 +1517,9 @@ namespace server
 
     bool ispaused() { return gamepaused; }
 
+    // remodex
+    VAR(arenamode, 0, 0, 1); // spawn when last man standing
+
     void serverupdate()
     {
         if(!gamepaused) gamemillis += curtime;
@@ -1546,6 +1550,8 @@ namespace server
             }
             aiman::checkai();
             if(smode) smode->update();
+            //Remodex
+            if(arenamode) remodex::arenamodeupdate();
         }
 
         //while(bannedips.length() && bannedips[0].time-totalmillis>4*60*60000) bannedips.remove(0);
@@ -1657,7 +1663,8 @@ namespace server
 
     void noclients()
     {
-        bannedips.shrink(0);
+        // remoc
+        //bannedips.shrink(0); // do not clear bans
         aiman::clearai();
     }
 
@@ -1730,13 +1737,16 @@ namespace server
         return false;
     }
 
-    void kick(int cn, int actor, int expire)
+
+    void kick(int cn, char* actorname, int expire)
     {
+        int actor = remod::parseplayer(actorname);
         clientinfo *vic = getinfo(cn);
         clientinfo *act = getinfo(actor);
         if(vic)
         {
             ban &b = bannedips.add();
+
             b.expire = expire;
             b.ip = getclientip(cn);
             strcpy(b.name, vic->name);
@@ -1746,6 +1756,8 @@ namespace server
             {
                 strcpy(b.actor, act->name);
                 b.actorip = getclientip(cn);
+            } else {
+            	strcpy(b.actor, actorname);
             }
             allowedips.removeobj(b.ip);
             disconnect_client(cn, DISC_KICK);
@@ -1902,76 +1914,6 @@ namespace server
             }
         }
     }
-
-    // remodex
-    VAR(arenamode, 0, 0, 1); // spawn when last man standing
-    VAR(arenaspawndelay, 0, 5000, INT_MAX); // millis to spawn after round win (default 5 sec)
-    int arenawin = -1; // millis when last men standing
-
-    void arenasendspawn()
-    {
-        arenawin = -1;
-        loopv(clients)
-        {
-            clientinfo *ci = getinfo(i);
-            if(ci)
-            {
-                if(!ci->clientmap[0] && !ci->mapcrc)
-                {
-                    ci->mapcrc = -1;
-                    checkmaps();
-                }
-                if(ci->state.lastdeath)
-                {
-                    flushevents(ci, ci->state.lastdeath + DEATHMILLIS);
-                    ci->state.respawn();
-                }
-                cleartimedevents(ci);
-                sendspawn(ci);
-            }
-        }
-    }
-
-    bool arenacanspawn()
-    {
-        if(arenawin>-1)
-        {
-            if((totalmillis-arenawin)>arenaspawndelay)
-                return true;
-        }
-        return false;
-    }
-
-    bool arenacheckspawn()
-    {
-        int stand = 0; // people remain
-        loopv(clients)
-        {
-            clientinfo *ci = getinfo(i);
-            if(ci->state.state == CS_ALIVE) stand++;
-        }
-        if(stand<=1) return true;
-        if(!m_teammode) return false; // check for team mode
-        string teamname = "";
-        loopv(clients)
-        {
-            clientinfo *ci = getinfo(i);
-            if(ci->state.state == CS_ALIVE)
-            {
-                if(teamname[0]) // first run
-                {
-                    strcpy(teamname, ci->team);
-                }
-                else
-                {
-                    if(strcmp(teamname, ci->team) != -1) return false; // difirent teams
-                }
-            }
-        }
-        return true; // all in one team;
-    }
-
-
 
     void parsepacket(int sender, int chan, packetbuf &p)     // has to parse exactly each byte of the packet
     {
@@ -2176,12 +2118,7 @@ namespace server
 
             case N_TRYSPAWN:
                 if(!ci || !cq || cq->state.state!=CS_DEAD || cq->state.lastspawn>=0 || (smode && !smode->canspawn(cq))) break;
-                if(arenamode)
-                {
-                    if(arenacanspawn())
-                        arenasendspawn();
-                    else break;
-                }
+                if(arenamode) break;
 
                 if(!ci->clientmap[0] && !ci->mapcrc)
                 {
@@ -2503,7 +2440,7 @@ namespace server
                 {
                     //Remod
                     if(remod::onevent("onkick", "ii", sender, victim)) break;
-                    kick(victim, sender, totalmillis+4*60*60000);
+                    kick(victim, ci->name, totalmillis+4*60*60000);
                 }
                 break;
             }

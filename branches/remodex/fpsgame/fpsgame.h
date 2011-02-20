@@ -435,7 +435,7 @@ namespace server
 
     //Remod
     void filtercstext(char *dst, const char *src);
-    void kick(int cn, int actor, int expire);
+    void kick(int cn, char *actorname, int expire);
 
     clientinfo *getinfo(int n);
     const char *privname(int type);
@@ -450,6 +450,11 @@ namespace server
     const char *colorname(clientinfo *ci, char *name);
     void addgban(const char *name);
     void cleargbans();
+
+    //Remodex
+    void flushevents(clientinfo *ci, int millis);
+    void cleartimedevents(clientinfo *ci);
+    void sendspawn(clientinfo *ci);
 
 }
 #endif

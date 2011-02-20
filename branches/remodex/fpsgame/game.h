@@ -3,6 +3,9 @@
 
 #include "cube.h"
 
+// remodex
+#include "remodex.h"
+
 // console message types
 
 enum
@@ -347,9 +350,6 @@ static const struct guninfo { short sound, attackdelay, damage, projspeed, part,
 };
 
 #include "ai.h"
-
-// remodex
-#include "remodex.h"
 
 // inherited by fpsent and server clients
 struct fpsstate
