@@ -1134,7 +1134,7 @@ namespace server
         if(!m_mp(gamemode)) kicknonlocalclients(DISC_PRIVATE);
 
         //Remod
-        if(m_teammode) if(!persist) { autoteam(); } else { persistautoteam(); }
+        if(m_teammode) if(!persist) { autoteam(); } else { if(m_ctf) persistautoteam(); }
 
         if(m_capture) smode = &capturemode;
         else if(m_ctf) smode = &ctfmode;
@@ -1209,10 +1209,10 @@ namespace server
             else
             {
                 // Remod - map rotation
-                if(force && identexists("nextmap"))
+                if(force && clients.length() && identexists("nextmap"))
                 {
                     char *nextmap = executeret("nextmap");
-                    if(nextmap)
+                    if(nextmap && strlen(nextmap)>0)
                     {
                         sendf(-1, 1, "risii", N_MAPCHANGE, nextmap, gamemode, 1);
                         changemap(nextmap, gamemode);
