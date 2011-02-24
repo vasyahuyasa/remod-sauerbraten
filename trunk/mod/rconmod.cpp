@@ -6,8 +6,6 @@
 * remot control
 */
 
-
-
 #include "rconmod.h"
 
 extern int execute(const char *p);
@@ -137,7 +135,7 @@ void init(int port=27070)
     if(sock<0)
     {
         active=false;
-        conoutf("Rcon: cannot create socket\n");
+        logoutf("Rcon: cannot create socket\n");
     }
     else
     {
@@ -147,8 +145,8 @@ void init(int port=27070)
 
         if(bind(sock, (struct sockaddr *)&addr, sizeof(addr)) < 0)
         {
-            conoutf("Rcon: connot bind socket\n");
-            active=false;
+            logoutf("Rcon: connot bind socket");
+            active = false;
         }
         else
         {
@@ -164,7 +162,7 @@ void init(int port=27070)
             {
                 rconpeers[i].logined=false;
             }
-            conoutf("Rcon: inizialized on port %d\n",port);
+            logoutf("Rcon: inizialized on port %d\n",port);
         }
     }
 }
@@ -173,7 +171,7 @@ void init(int port=27070)
 void setpassword(char *pwd)
 {
     strcpy(password, pwd);
-    conoutf("Rcon pass: %s\n", password);
+    logoutf("Rcon pass: %s", password);
 }
 
 //Send message to all logined peers

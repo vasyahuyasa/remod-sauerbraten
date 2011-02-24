@@ -414,10 +414,15 @@
                   <td class="description">delete specified ban from list</td>
                 </tr>                
                 
-            <tr>
+                <tr>
                   <td class="command">systimef [format] (str)</td>
 
                   <td class="description">format current system time see <a href="http://www.cplusplus.com/reference/clibrary/ctime/strftime/">http://www.cplusplus.com/reference/clibrary/ctime/strftime/</a></td>
+                </tr>
+				<tr>
+                  <td class="command">setlogfile [str]</td>
+
+                  <td class="description">file for write logs instead of STDOUT, same as -g option</td>
                 </tr>
               </table>
             </li>
@@ -553,6 +558,13 @@
 
                   <td class="description">if function defined allow/disallow vote for some maps or modes</td>
                 </tr>
+				
+				<tr>
+                  <td class="command">allowswitchteam [cn] [team] (1|0)</td>
+
+                  <td class="description">if function defined allow/disallow change player team</td>
+                </tr>
+				
               </table>
             </li>
 

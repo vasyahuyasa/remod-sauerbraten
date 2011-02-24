@@ -584,4 +584,5 @@ ICOMMAND(loopbans,
 		loopbans(name, ip, expire, actor, actorip, body));
 ICOMMAND(delban, "i", (int *n), if(bannedips.inrange(*n)) bannedips.remove(*n));
 COMMAND(systimef, "s");
+COMMAND(setlogfile, "s");
 }

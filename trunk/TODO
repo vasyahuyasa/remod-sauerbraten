@@ -135,12 +135,13 @@ Cube script:
 	delban [n] + delete specified ban from list
 	kick [cn] [time] [actor] + kick and ban cn for specified time, actor can be cn or name of kicker
 	systimef [format] (str) + returnt formated system time see http://www.cplusplus.com/reference/clibrary/ctime/strftime/
-	
+	setlogfile [str] + same as -g option
 	
 	
 Cube script function variables
 	nextmap (str) +	if defined should return name of next map
 	allowvote [cn] [mode] [map] (1|0) +	if defined allow/disallow vote for some maps or modes
+	allowswitchteam [cn] [team] (1|0) + if defined allow/disallow change player team
 
 
 
