@@ -2272,6 +2272,12 @@ namespace server
             {
                 getstring(text, p);
                 filtertext(text, text, false, MAXTEAMLEN);
+                if(identexists("allowswitchteam"))
+                {
+                    defformatstring(allowswitch)("allowswitchteam %i %s", sender, text);
+                    int passswitch = execute(allowswitch);
+                    if(passswitch == 0) return;
+                }
                 if(strcmp(ci->team, text) && m_teammode && (!smode || smode->canchangeteam(ci, ci->team, text)))
                 {
                     //Remod
