@@ -27,14 +27,14 @@ void setlogfile(const char *fname)
         fname = findfile(fname, "w");
         if(fname) logfile = fopen(fname, "w");
     }
-    setvbuf(logfile ? logfile : stdout, NULL, _IOLBF, BUFSIZ);
+    setvbuf(logfile ? logfile : stdout, NULL, _IONBF, BUFSIZ);
 }
 
 void logoutfv(const char *fmt, va_list args)
 {
     vfprintf(logfile ? logfile : stdout, fmt, args);
     fputc('\n', logfile ? logfile : stdout);
-    fflush(logfile ? logfile: stdout);
+    //fflush(logfile ? logfile: stdout);
 }
 
 void logoutf(const char *fmt, ...)
@@ -873,9 +873,9 @@ bool serveroption(char *opt)
         case 'j': setvar("serverport", atoi(opt+2)); return true;
         case 'm': setsvar("mastername", opt+2); setvar("updatemaster", mastername[0] ? 1 : 0); return true;
 #ifdef STANDALONE
-        case 'q': logoutf("Using home directory: %s\n", opt+2); sethomedir(opt+2); return true;
-        case 'k': logoutf("Adding package directory: %s\n", opt+2); addpackagedir(opt+2); return true;
-        case 'g': logoutf("Setting log file: %s", opt+2); setlogfile(opt+2); return true;
+        case 'q': conoutf("Using home directory: %s\n", opt+2); sethomedir(opt+2); return true;
+        case 'k': conoutf("Adding package directory: %s\n", opt+2); addpackagedir(opt+2); return true;
+        case 'g': conoutf("Setting log file: %s", opt+2); setlogfile(opt+2); return true;
 
 #endif
         default: return false;

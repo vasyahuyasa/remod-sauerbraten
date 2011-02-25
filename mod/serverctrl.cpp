@@ -585,4 +585,5 @@ ICOMMAND(loopbans,
 ICOMMAND(delban, "i", (int *n), if(bannedips.inrange(*n)) bannedips.remove(*n));
 COMMAND(systimef, "s");
 COMMAND(setlogfile, "s");
+ICOMMAND(echo, "C", (char *s), conoutf("%s", s));
 }

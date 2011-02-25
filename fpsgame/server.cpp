@@ -1307,11 +1307,12 @@ namespace server
         }
         if(ts.health<=0)
         {
+            bool onteamkill = false;
             target->state.deaths++;
             if(actor!=target && isteam(actor->team, target->team)) //Remod
             {
                 actor->state.teamkills++;
-                remod::onevent("onteamkill", "i", actor->clientnum);
+                onteamkill = true;
             }
             int fragvalue = smode ? smode->fragvalue(target, actor) : (target==actor || isteam(target->team, actor->team) ? -1 : 1);
             actor->state.frags += fragvalue;
@@ -1329,6 +1330,9 @@ namespace server
             ts.lastdeath = gamemillis;
             // don't issue respawn yet until DEATHMILLIS has elapsed
             // ts.respawn();
+
+            // Remod
+            if(onteamkill) remod::onevent("onteamkill", "i", actor->clientnum);
         }
     }
 
@@ -1452,7 +1456,8 @@ namespace server
 
     void clearevent(clientinfo *ci)
     {
-        delete ci->events.remove(0);
+        if(ci->events.length())
+            delete ci->events.remove(0);
     }
 
     void flushevents(clientinfo *ci, int millis)
@@ -1470,7 +1475,7 @@ namespace server
         loopv(clients)
         {
             clientinfo *ci = clients[i];
-            if(curtime>0 && ci->state.quadmillis) ci->state.quadmillis = max(ci->state.quadmillis-curtime, 0);
+            if(ci && curtime>0 && ci->state.quadmillis) ci->state.quadmillis = max(ci->state.quadmillis-curtime, 0);
             flushevents(ci, gamemillis);
         }
     }
