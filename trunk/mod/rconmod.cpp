@@ -4,6 +4,7 @@
 * author:   degrave
 *
 * remot control
+* remot control
 */
 
 #include "rconmod.h"
@@ -66,7 +67,7 @@ bool addpeer(struct sockaddr_in addr)
             rconpeers[i].logined=true;
             ipstr = inet_ntoa(addr.sin_addr);
             formatstring(msg)("Rcon: new peer [%s]\n", ipstr);
-            sendmsg(msg);
+            conoutf(msg);
             return true;
         }
     }
@@ -135,7 +136,7 @@ void init(int port=27070)
     if(sock<0)
     {
         active=false;
-        logoutf("Rcon: cannot create socket\n");
+        conoutf("Rcon: cannot create socket\n");
     }
     else
     {
@@ -145,7 +146,7 @@ void init(int port=27070)
 
         if(bind(sock, (struct sockaddr *)&addr, sizeof(addr)) < 0)
         {
-            logoutf("Rcon: connot bind socket");
+            conoutf("Rcon: connot bind socket");
             active = false;
         }
         else
@@ -162,7 +163,7 @@ void init(int port=27070)
             {
                 rconpeers[i].logined=false;
             }
-            logoutf("Rcon: inizialized on port %d\n",port);
+            conoutf("Rcon: inizialized on port %d",port);
         }
     }
 }
@@ -171,7 +172,7 @@ void init(int port=27070)
 void setpassword(char *pwd)
 {
     strcpy(password, pwd);
-    logoutf("Rcon pass: %s", password);
+    conoutf("Rcon pass: %s", password);
 }
 
 //Send message to all logined peers

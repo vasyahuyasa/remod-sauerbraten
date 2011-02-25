@@ -27,7 +27,7 @@ void console(int type, const char *s, ...)
     filtertext(osf, sf);
     formatstring(psf)("%s %s", gettime(fmt), osf);
     printf("%s\n", osf);
-    fflush(stdout);
+    //fflush(stdout);
 }
 
 vector<ircnet *> ircnets;
