@@ -233,11 +233,19 @@ struct ctfclientmode : clientmode
             if(m_protect && insidebase(f, ci->state.o))
             {
                 returnflag(i);
+
+                //Remod
+                remod::onevent("onreturnflag", "ii", ci->clientnum, f.team);
+
                 sendf(-1, 1, "ri4", N_RETURNFLAG, ci->clientnum, i, ++f.version);
             }
             else
             {
                 ivec o(vec(ci->state.o).mul(DMF));
+
+                //Remod
+                remod::onevent("ondropflag", "ii", ci->clientnum, f.team);
+
                 sendf(-1, 1, "ri7", N_DROPFLAG, ci->clientnum, i, ++f.version, o.x, o.y, o.z);
                 dropflag(i, o.tovec().div(DMF), lastmillis, ci->clientnum);
             }
@@ -284,6 +292,10 @@ struct ctfclientmode : clientmode
         ci->state.flags++;
         int team = ctfteamflag(ci->team), score = addscore(team, 1);
         if(m_hold) spawnflag(goal);
+
+        //Remod
+        remod::onevent("onscoreflag", "ii", ci->clientnum, score);
+
         sendf(-1, 1, "rii9", N_SCOREFLAG, ci->clientnum, relay, relay >= 0 ? ++flags[relay].version : -1, goal, ++flags[goal].version, flags[goal].spawnindex, team, score, ci->state.flags);
         if(score >= FLAGLIMIT) startintermission();
     }
@@ -298,7 +310,11 @@ struct ctfclientmode : clientmode
         {
             loopvj(flags) if(flags[j].owner==ci->clientnum) return;
             ownflag(i, ci->clientnum, lastmillis);
+
             sendf(-1, 1, "ri4", N_TAKEFLAG, ci->clientnum, i, ++f.version);
+
+            //Remod
+            remod::onevent("ontakeflag", "ii", ci->clientnum, f.team);
         }
         else if(m_protect)
         {
@@ -307,6 +323,10 @@ struct ctfclientmode : clientmode
         else if(f.droptime)
         {
             returnflag(i);
+
+            //Remod
+            remod::onevent("onreturnflag", "ii", ci->clientnum, f.team);
+
             sendf(-1, 1, "ri4", N_RETURNFLAG, ci->clientnum, i, ++f.version);
         }
         else
@@ -325,11 +345,19 @@ struct ctfclientmode : clientmode
             {
                 returnflag(i, m_protect ? lastmillis : 0);
                 if(m_hold) spawnflag(i);
+
+                //Remod
+                remod::onevent("onresetflag", "i", f.team);
+
                 sendf(-1, 1, "ri6", N_RESETFLAG, i, ++f.version, f.spawnindex, m_hold ? 0 : f.team, m_hold ? 0 : addscore(f.team, m_protect ? -1 : 0));
             }
             if(f.invistime && lastmillis - f.invistime >= INVISFLAGTIME)
             {
                 f.invistime = 0;
+
+                //Remod
+                remod::onevent("oninvisflag", "i", f.team);
+
                 sendf(-1, 1, "ri3", N_INVISFLAG, i, 0);
             }
             if(m_hold && f.owner>=0 && lastmillis - f.owntime >= HOLDSECS*1000)
@@ -339,6 +367,10 @@ struct ctfclientmode : clientmode
                 else
                 {
                     spawnflag(i);
+
+                    //Remod
+                    remod::onevent("onresetflag", "i", f.team);
+
                     sendf(-1, 1, "ri6", N_RESETFLAG, i, ++f.version, f.spawnindex, 0, 0);
                 }
             }
@@ -395,6 +427,10 @@ struct ctfclientmode : clientmode
                     if(!addflag(i, vec(0, 0, 0), 0, 0)) break;
                     flag &f = flags[i];
                     spawnflag(i);
+
+                    //Remod
+                    remod::onevent("onresetflag", "i", f.team);
+
                     sendf(-1, 1, "ri6", N_RESETFLAG, i, ++f.version, f.spawnindex, 0, 0);
 
                 }

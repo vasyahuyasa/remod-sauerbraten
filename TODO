@@ -41,6 +41,14 @@ Server events: +
     onmodmap [cn] +  
     onmute [1|0] [cn] +
 
+	//flags
+	ontakeflag [cn] [flagteam] 
+	onreturnflag [cn] [flagteam]
+	onresetflag [flagteam]
+	oninvisflag [flagteam]
+	ondropflag [cn] [flagteam]
+	onscoreflag [cn] [score]
+	
 	#coopedit
 	@ongetmap [cn] +
 	@onnewmap [cn] +   
