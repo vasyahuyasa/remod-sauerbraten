@@ -42,12 +42,12 @@ Server events: +
     onmute [1|0] [cn] +
 
 	//flags
-	ontakeflag [cn] [flagteam] 
+	ontakeflag [cn] [flagteam] [frombase 1|0] 
 	onreturnflag [cn] [flagteam]
 	onresetflag [flagteam]
 	oninvisflag [flagteam]
 	ondropflag [cn] [flagteam]
-	onscoreflag [cn] [score]
+	onscoreflag [cn] [scored team]
 	
 	#coopedit
 	@ongetmap [cn] +

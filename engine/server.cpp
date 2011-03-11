@@ -24,8 +24,8 @@ void setlogfile(const char *fname)
     closelogfile();
     if(fname && fname[0])
     {
-        fname = findfile(fname, "w");
-        if(fname) logfile = fopen(fname, "w");
+        fname = findfile(fname, "a");
+        if(fname) logfile = fopen(fname, "a");
     }
     setvbuf(logfile ? logfile : stdout, NULL, _IONBF, BUFSIZ);
 }
