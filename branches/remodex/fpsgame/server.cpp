@@ -1134,7 +1134,7 @@ namespace server
         if(!m_mp(gamemode)) kicknonlocalclients(DISC_PRIVATE);
 
         //Remod
-        if(m_teammode) if(!persist) { autoteam(); } else { persistautoteam(); }
+        if(m_teammode) if(!persist) { autoteam(); } else { if(m_ctf) persistautoteam(); }
 
         if(m_capture) smode = &capturemode;
         else if(m_ctf) smode = &ctfmode;
@@ -1209,10 +1209,10 @@ namespace server
             else
             {
                 // Remod - map rotation
-                if(force && identexists("nextmap"))
+                if(force && clients.length() && identexists("nextmap"))
                 {
                     char *nextmap = executeret("nextmap");
-                    if(nextmap)
+                    if(nextmap && strlen(nextmap)>0)
                     {
                         sendf(-1, 1, "risii", N_MAPCHANGE, nextmap, gamemode, 1);
                         changemap(nextmap, gamemode);
@@ -1326,11 +1326,12 @@ namespace server
         }
         if(ts.health<=0)
         {
+            bool onteamkill = false;
             target->state.deaths++;
             if(actor!=target && isteam(actor->team, target->team)) //Remod
             {
                 actor->state.teamkills++;
-                remod::onevent("onteamkill", "i", actor->clientnum);
+                onteamkill = true;
             }
             int fragvalue = smode ? smode->fragvalue(target, actor) : (target==actor || isteam(target->team, actor->team) ? -1 : 1);
             actor->state.frags += fragvalue;
@@ -1348,6 +1349,9 @@ namespace server
             ts.lastdeath = gamemillis;
             // don't issue respawn yet until DEATHMILLIS has elapsed
             // ts.respawn();
+
+            // Remod
+            if(onteamkill) remod::onevent("onteamkill", "i", actor->clientnum);
         }
     }
 
@@ -1471,7 +1475,8 @@ namespace server
 
     void clearevent(clientinfo *ci)
     {
-        delete ci->events.remove(0);
+        if(ci->events.length())
+            delete ci->events.remove(0);
     }
 
     void flushevents(clientinfo *ci, int millis)
@@ -1489,7 +1494,7 @@ namespace server
         loopv(clients)
         {
             clientinfo *ci = clients[i];
-            if(curtime>0 && ci->state.quadmillis) ci->state.quadmillis = max(ci->state.quadmillis-curtime, 0);
+            if(ci && curtime>0 && ci->state.quadmillis) ci->state.quadmillis = max(ci->state.quadmillis-curtime, 0);
             flushevents(ci, gamemillis);
         }
     }
@@ -2298,6 +2303,12 @@ namespace server
             {
                 getstring(text, p);
                 filtertext(text, text, false, MAXTEAMLEN);
+                if(identexists("allowswitchteam"))
+                {
+                    defformatstring(allowswitch)("allowswitchteam %i %s", sender, text);
+                    int passswitch = execute(allowswitch);
+                    if(passswitch == 0) return;
+                }
                 if(strcmp(ci->team, text) && m_teammode && (!smode || smode->canchangeteam(ci, ci->team, text)))
                 {
                     //Remod

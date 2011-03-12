@@ -2,8 +2,8 @@
 
 <html>
 <head>
-  <meta name="generator" content="HTML Tidy for Windows (vers 25 March 2009), see www.w3.org">
-  <meta name="generator" content="Bluefish 2.0.2">
+  <meta name="generator" content="Bluefish 2.0.2" >
+  <meta name="generator" content="Bluefish 2.0.2" >
 
   <title>Remode user guide</title>
   <style type="text/css">
@@ -151,9 +151,9 @@
                 </tr>
 
                 <tr>
-                  <td class="command">kick [cn]</td>
+                  <td class="command">kick [cn] [time] [actor]</td>
 
-                  <td class="description">kick player</td>
+                  <td class="description">ick and ban cn for specified time, actor can be cn or name of kicker</td>
                 </tr>
 
                 <tr>
@@ -401,6 +401,29 @@
 
                   <td class="description">returns 1 if ip equal mask (example: "127.0.0.1" "127.0.*.*")</td>
                 </tr>
+				
+				<tr>
+                  <td class="command">loopbans [name] [ip] [expire] [actor] [actorip] [body]</td>
+
+                  <td class="description">loop through ban list</td>
+                </tr>
+				
+				<tr>
+                  <td class="command">delban [n]</td>
+
+                  <td class="description">delete specified ban from list</td>
+                </tr>                
+                
+                <tr>
+                  <td class="command">systimef [format] (str)</td>
+
+                  <td class="description">format current system time see <a href="http://www.cplusplus.com/reference/clibrary/ctime/strftime/">http://www.cplusplus.com/reference/clibrary/ctime/strftime/</a></td>
+                </tr>
+				<tr>
+                  <td class="command">setlogfile [str]</td>
+
+                  <td class="description">file for write logs instead of STDOUT, same as -g option</td>
+                </tr>
               </table>
             </li>
 
@@ -535,6 +558,13 @@
 
                   <td class="description">if function defined allow/disallow vote for some maps or modes</td>
                 </tr>
+				
+				<tr>
+                  <td class="command">allowswitchteam [cn] [team] (1|0)</td>
+
+                  <td class="description">if function defined allow/disallow change player team</td>
+                </tr>
+				
               </table>
             </li>
 
@@ -1040,6 +1070,44 @@
 
                   <td class="description">When #command not exists</td>
                 </tr>
+                
+                <tr>
+                  <td class="command">ontakeflag (cn) (flagteam) (frombase)</td>
+
+                  <td class="description">When flag taken, flagteam - what flag was stolen, frombase - 1 if flagtaken from base, 0 - if flag taken from someone</td>
+                </tr>
+                
+                <tr>
+                  <td class="command">onreturnflag (cn) (flagteam)</td>
+
+                  <td class="description">When someone return flag</td>
+                </tr>
+                
+                <tr>
+                  <td class="command">onresetflag (flagteam)</td>
+
+                  <td class="description">When flag reset by time</td>
+                </tr>
+                
+                <tr>
+                  <td class="command">oninvisflag (flagteam)</td>
+
+                  <td class="description">When flag became invisible (suicide and flag fall down)</td>
+                </tr>
+                
+                <tr>
+                  <td class="command">ondropflag (cn) (flagteam)</td>
+
+                  <td class="description">When flag dropped</td>
+                </tr>
+                
+                <tr>
+                  <td class="command">onscoreflag (cn) (scored team)</td>
+
+                  <td class="description">When team scored flag</td>
+                </tr>
+                
+                
               </table>
             </li>
 

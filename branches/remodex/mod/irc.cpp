@@ -27,7 +27,7 @@ void console(int type, const char *s, ...)
     filtertext(osf, sf);
     formatstring(psf)("%s %s", gettime(fmt), osf);
     printf("%s\n", osf);
-    fflush(stdout);
+    //fflush(stdout);
 }
 
 vector<ircnet *> ircnets;
@@ -370,10 +370,6 @@ void ircprintf(ircnet *n, int relay, const char *target, const char *msg, ...)
         if(c)
         {
             formatstring(s)("\fs\fa[%s:%s]\fS", n->name, c->name);
-
-            //Remod
-            if(n->type == IRCT_RELAY && c->relay >= relay)
-            	server::srvmsgf(relay > 1 ? -2 : -3, "\fs\fa[%s]\fS %s", c->friendly, str);
         }
         else
         {
@@ -412,7 +408,9 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
                     if(ismsg)
                     {
                         if(!strcasecmp(q, "ACTION"))
-                            ircprintf(n, 1, g ? w[g+1] : NULL, "\fv* %s %s", user[0], r);
+                        {
+                            //ircprintf(n, 1, g ? w[g+1] : NULL, "\fv* %s %s", user[0], r);
+                        }
                         else
                         {
                             ircprintf(n, 4, g ? w[g+1] : NULL, "\fr%s requests: %s %s", user[0], q, r);
@@ -466,7 +464,7 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
                     // w[2]='#rb-servers'
                     // w[3]='a'
 
-                    ircprintf(n, 1, g ? w[g+1] : NULL, "\fa<\fw%s\fa>\fw %s", user[0], w[g+2]);
+                    //ircprintf(n, 1, g ? w[g+1] : NULL, "\fa<\fw%s\fa>\fw %s", user[0], w[g+2]);
                     //Remod
                     server::filtercstext(ftext, w[g+2]);
                     if(strcasecmp(w[g+1], n->nick)) // normal msg
@@ -500,7 +498,7 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
                 c->state = IRCC_JOINED;
                 c->lastjoin = totalmillis;
             }
-            ircprintf(n, 3, w[g+1], "\fg%s (%s@%s) has joined", user[0], user[1], user[2]);
+            //ircprintf(n, 3, w[g+1], "\fg%s (%s@%s) has joined", user[0], user[1], user[2]);
 
             // remod
             if(strcmp(n->nick, user[0]) != 0)
@@ -519,7 +517,7 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
                 c->state = IRCC_NONE;
                 c->lastjoin = totalmillis;
             }
-            ircprintf(n, 3, w[g+1], "\fo%s (%s@%s) has left", user[0], user[1], user[2]);
+            //ircprintf(n, 3, w[g+1], "\fo%s (%s@%s) has left", user[0], user[1], user[2]);
 
             // remod
             c->deluser(user[0]);
@@ -527,8 +525,8 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
     }
     else if(!strcasecmp(w[g], "QUIT"))
     {
-        if(numargs > g+1) ircprintf(n, 3, NULL, "\fr%s (%s@%s) has quit: %s", user[0], user[1], user[2], w[g+1]);
-        else ircprintf(n, 3, NULL, "\fr%s (%s@%s) has quit", user[0], user[1], user[2]);
+        //if(numargs > g+1) ircprintf(n, 3, NULL, "\fr%s (%s@%s) has quit: %s", user[0], user[1], user[2], w[g+1]);
+        //else ircprintf(n, 3, NULL, "\fr%s (%s@%s) has quit", user[0], user[1], user[2]);
 
         // remod
             loopv(n->channels)
@@ -546,7 +544,7 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
                 c->state = IRCC_KICKED;
                 c->lastjoin = totalmillis;
             }
-            ircprintf(n, 3, w[g+1], "\fr%s (%s@%s) has kicked %s from %s", user[0], user[1], user[2], w[g+2], w[g+1]);
+            //ircprintf(n, 3, w[g+1], "\fr%s (%s@%s) has kicked %s from %s", user[0], user[1], user[2], w[g+2], w[g+1]);
 
             // remod
             c->deluser(user[0]);
@@ -591,7 +589,7 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
     {
         if(numargs > g+1)
         {
-            ircprintf(n, 4, NULL, "%s PING %s", user[0], w[g+1]);
+            //ircprintf(n, 4, NULL, "%s PING %s", user[0], w[g+1]);
             ircsend(n, "PONG %s", w[g+1]);
         }
         else

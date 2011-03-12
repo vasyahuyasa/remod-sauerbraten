@@ -326,14 +326,15 @@ void ismuted(int *icn)
 
 void formatmillis(char *fmt, int *millis)
 {
-    // %s - seconds, %m - minutes, %h - hours, %d - days
-    int seconds, minutes, hours, days;
+    // %i - milliseconds, %s - seconds, %m - minutes, %h - hours, %d - days
+    int mseconds, seconds, minutes, hours, days;
     vector<char> s;
 
     days = (int)*millis/(1000*60*60*24);
     hours = ((int)*millis/(1000*60*60))-(days*24);
     minutes = ((int)*millis/(1000*60))-(days*24*60+hours*60);
     seconds = ((int)*millis/1000)-(days*24*60*60+hours*60*60+minutes*60);
+    mseconds  = *millis - (days*24*60*60+hours*60*60+minutes*60+seconds)*1000;
 
     while(*fmt)
     {
@@ -343,6 +344,13 @@ void formatmillis(char *fmt, int *millis)
             int i = *fmt++;
             switch(i)
             {
+            	case 'i':
+				{
+					const char *smseconds = intstr(mseconds);
+					while(*smseconds) s.add(*smseconds++);
+					break;
+				}
+
                 case 's':
                 {
                     const char *sseconds = newstring(2);
@@ -584,4 +592,6 @@ ICOMMAND(loopbans,
 		loopbans(name, ip, expire, actor, actorip, body));
 ICOMMAND(delban, "i", (int *n), if(bannedips.inrange(*n)) bannedips.remove(*n));
 COMMAND(systimef, "s");
+COMMAND(setlogfile, "s");
+ICOMMAND(echo, "C", (char *s), conoutf("%s", s));
 }

@@ -3,16 +3,57 @@
 
 #include "engine.h"
 #include "rconmod.h"
+
 #ifdef IRC
-    #include "irc.h"
+#include "irc.h"
 #endif
+
+static FILE *logfile = NULL;
+
+void closelogfile()
+{
+    if(logfile)
+    {
+        fclose(logfile);
+        logfile = NULL;
+    }
+}
+
+void setlogfile(const char *fname)
+{
+    closelogfile();
+    if(fname && fname[0])
+    {
+        fname = findfile(fname, "a");
+        if(fname) logfile = fopen(fname, "a");
+    }
+    setvbuf(logfile ? logfile : stdout, NULL, _IONBF, BUFSIZ);
+}
+
+void logoutfv(const char *fmt, va_list args)
+{
+    vfprintf(logfile ? logfile : stdout, fmt, args);
+    fputc('\n', logfile ? logfile : stdout);
+    //fflush(logfile ? logfile: stdout);
+}
+
+void logoutf(const char *fmt, ...)
+{
+    va_list args;
+    va_start(args, fmt);
+    logoutfv(fmt, args);
+    va_end(args);
+}
+
 #ifdef STANDALONE
 void fatal(const char *s, ...)
 {
     void cleanupserver();
     cleanupserver();
     defvformatstring(msg,s,s);
-    printf("servererror: %s\n", msg);
+    if(logfile) logoutf("%s", msg);
+    fprintf(stderr, "server error: %s\n", msg);
+    closelogfile();
     exit(EXIT_FAILURE);
 }
 
@@ -21,7 +62,8 @@ void conoutfv(int type, const char *fmt, va_list args)
     string sf, sp;
     vformatstring(sf, fmt, args);
     filtertext(sp, sf);
-    puts(sp);
+    logoutf("%s", sp);
+    // Remod
     remod::rcon::sendmsg(sp);
 }
 
@@ -831,8 +873,10 @@ bool serveroption(char *opt)
         case 'j': setvar("serverport", atoi(opt+2)); return true;
         case 'm': setsvar("mastername", opt+2); setvar("updatemaster", mastername[0] ? 1 : 0); return true;
 #ifdef STANDALONE
-        case 'q': printf("Using home directory: %s\n", opt+2); sethomedir(opt+2); return true;
-        case 'k': printf("Adding package directory: %s\n", opt+2); addpackagedir(opt+2); return true;
+        case 'q': conoutf("Using home directory: %s\n", opt+2); sethomedir(opt+2); return true;
+        case 'k': conoutf("Adding package directory: %s\n", opt+2); addpackagedir(opt+2); return true;
+        case 'g': conoutf("Setting log file: %s", opt+2); setlogfile(opt+2); return true;
+
 #endif
         default: return false;
     }
@@ -843,12 +887,13 @@ vector<const char *> gameargs;
 #ifdef STANDALONE
 int main(int argc, char* argv[])
 {
+    setlogfile(NULL);
     if(enet_initialize()<0) fatal("Unable to initialise network module");
     atexit(enet_deinitialize);
     enet_time_set(0);
     for(int i = 1; i<argc; i++) if(argv[i][0]!='-' || !serveroption(argv[i])) gameargs.add(argv[i]);
     game::parseoptions(gameargs);
     initserver(true, true);
-    return 0;
+    return EXIT_SUCCESS;
 }
 #endif

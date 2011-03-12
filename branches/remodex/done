@@ -16,3 +16,5 @@
 15. В fpsgame/server.cpp в checkvotes() добавлена проверка identexists("nextmap")
 16. В fpsgame/server.cpp в vote() добавлена проверка identexists("allowvote")
 17. В fpsgame/server.cpp добавлена persistautoteam()
+18. Команда "ICOMMAND(echo, "C",..." в command.cpp заменена на "ICOMMAND(echo, "C", (char *s), logoutf("\f1%s", s))" в serverctrl.cpp
+19. fpsgame/server.cpp в void clearevent(clientinfo *ci) добавлено if(ci->events.length())
