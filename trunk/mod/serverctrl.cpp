@@ -356,6 +356,7 @@ void formatmillis(char *fmt, int *millis)
                     const char *sseconds = newstring(2);
                     sprintf((char*)sseconds, "%02d", seconds);
                     while(*sseconds) s.add(*sseconds++);
+                    // xxx DELETEA(sseconds);
                     break;
                 }
 
@@ -364,6 +365,7 @@ void formatmillis(char *fmt, int *millis)
                     const char *sminutes = newstring(2);
                     sprintf((char*)sminutes, "%02d", minutes);
                     while(*sminutes) s.add(*sminutes++);
+                    // xxx DELETEA(sminutes);
                     break;
                 }
 
@@ -372,6 +374,7 @@ void formatmillis(char *fmt, int *millis)
                     const char *shours = newstring(2);
                     sprintf((char*)shours, "%02d", hours);
                     while(*shours) s.add(*shours++);
+                    // xxx DELETEA(shours);
                     break;
                 }
 
@@ -496,19 +499,43 @@ void loopbans(const char *name, const char *ip, const char *expire, const char *
 		if (i) {
 			aliasa(idents[0]->name, b.name);
 			addr.s_addr = b.ip;
-			aliasa(idents[1]->name, newstring(inet_ntoa(addr)));
-			aliasa(idents[2]->name, newstring(intstr(b.expire)));
-			aliasa(idents[3]->name, newstring(b.actor));
+			char *tmp = newstring(inet_ntoa(addr));
+			aliasa(idents[1]->name, tmp);
+			// xxx DELETEA(tmp);
+			tmp = newstring(intstr(b.expire));
+			aliasa(idents[2]->name, tmp);
+			// xxx DELETEA(tmp);
+			tmp = newstring(b.actor);
+			aliasa(idents[3]->name, tmp);
+			// xxx DELETEA(tmp);
+
 			addr.s_addr = b.actorip;
-			aliasa(idents[4]->name, newstring(inet_ntoa(addr)));
+			tmp = newstring(inet_ntoa(addr));
+			aliasa(idents[4]->name, tmp);
+			// xxx DELETEA(tmp);
 		} else {
-			pushident(*idents[0], newstring(b.name));
+			char *tmp = newstring(b.name);
+			pushident(*idents[0], tmp);
+			// xxx DELETEA(tmp);
+
 			addr.s_addr = b.ip;
-			pushident(*idents[1], newstring(inet_ntoa(addr)));
-			pushident(*idents[2], newstring(intstr(b.expire)));
-			pushident(*idents[3], newstring(b.actor));
+			tmp = newstring(inet_ntoa(addr));
+			pushident(*idents[1], tmp);
+			// xxx DELETEA(tmp);
+
+			tmp = newstring(intstr(b.expire));
+			pushident(*idents[2], tmp);
+			// xxx DELETEA(tmp);
+
+			tmp = newstring(b.actor);
+			pushident(*idents[3], tmp);
+			// xxx DELETEA(tmp);
+
 			addr.s_addr = b.actorip;
-			pushident(*idents[4], newstring(inet_ntoa(addr)));
+
+			tmp = newstring(inet_ntoa(addr));
+			pushident(*idents[4], tmp);
+			// xxx DELETEA(tmp);
 		}
 		execute(body);
 	}

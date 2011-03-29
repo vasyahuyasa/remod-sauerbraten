@@ -11,38 +11,9 @@
 #include "commandhandler.h"
 namespace remod
 {
-vector<const char *> eat; //Do not allow server process that events
 vector<evt_handler> evt_handlers; //Event handlers
 
 
-void addeat(const char *evt_type)
-{
-    loopv(eat)
-    {
-        const char *e = eat[i];
-        if(strcmp(evt_type, e) == 0) return;
-    }
-    eat.add(evt_type);
-}
-
-void deleat(const char *evt_type)
-{
-    loopv(eat)
-    {
-        const char *e = eat[i];
-        if(strcmp(evt_type, e) == 0) eat.remove(i);
-    }
-}
-
-bool iseat(const char *evt_type)
-{
-    loopv(eat)
-    {
-        const char *e = eat[i];
-        if(strcmp(evt_type, e) == 0) return true;
-    }
-    return false;
-}
 
 //Add script callback to event
 void addhandler(const char *evt_type, const char *callbackcmd)
@@ -214,19 +185,10 @@ bool onevent(const char *evt_type, const char *fmt, ...)
         }
     }
 
-    if(iseat(evt_type))
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    return false;
 
 }
 
-COMMAND(addeat, "s");
-COMMAND(deleat, "s");
 COMMAND(addhandler, "ss");
 COMMAND(delhandler, "ss");
 COMMAND(clearhandlers, "");
