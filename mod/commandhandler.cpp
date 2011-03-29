@@ -194,14 +194,15 @@ void common_loopcommands(const char *var, int *permission, const char *body, vec
 	if (id->type != ID_ALIAS)
 		return;
 	int j = 0;
-	for (int i = 0; i < handlers.length(); i++)
+	loopi(handlers.length())
 	{
 		cmd_handler handler = handlers[i];
 		if (handler.cmd_permissions <= *permission) {
+			char *st = newstring(handler.cmd_name);
 			if (j) {
-				aliasa(id->name, newstring(handler.cmd_name));
+				aliasa(id->name, st);
 			} else {
-				pushident(*id, newstring(handler.cmd_name));
+				pushident(*id, st);
 			}
 			execute(body);
 			j++;
@@ -320,8 +321,7 @@ int getperm_(int *cn) {
 }
 
 void getperm(int *cn) {
-	char *r = newstring(intstr(getperm_(cn)));
-	result(r);
+	result(intstr(getperm_(cn)));
 }
 
 /**
