@@ -1,0 +1,6 @@
+// command example
+cmd_example = [
+	...
+]
+
+registercommand "example" cmd_example 2 "cs" "example [cn] [msg] ^f1Command example"
