@@ -150,6 +150,7 @@ bool onevent(const char *evt_type, const char *fmt, ...)
             for(int i=0; i<paramcount; i++)
             {
                 strcat(evparams, " ");
+                const char* p;
                 switch(fmt[i])
                 {
                 case 'i':
@@ -157,7 +158,10 @@ bool onevent(const char *evt_type, const char *fmt, ...)
                     break;
                 case 's':
                     strcat(evparams, "\"");
-                    strcat(evparams, va_arg(vl, const char *));
+                    p = va_arg(vl, const char *);
+                    if (p) {
+                    	strcat(evparams, p);
+                    }
                     strcat(evparams, "\"");
                     break;
                 case 'd':
