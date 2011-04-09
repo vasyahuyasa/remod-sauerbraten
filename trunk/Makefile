@@ -2,6 +2,10 @@ CXX= gcc
 CXXFLAGS= -O3 -fomit-frame-pointer -DGEOIPDATADIR -DGEOIP -DIRC
 override CXXFLAGS+= -Wall -fsigned-char
 
+#DEBUG INFORMATION
+#override CXXFLAGS+= -DDEBUG -g
+
+
 PLATFORM= $(shell uname -s)
 PLATFORM_PREFIX= native
 
