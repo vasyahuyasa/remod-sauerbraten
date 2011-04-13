@@ -26,7 +26,7 @@ bool parsecommandparams(const char *descr, const char *params, vector<cmd_param>
 	bool oblig_params = true; //current parameter is obligatory
 	int len = strlen(descr);
 	string p; //temporary variable containing param-string
-	strcpy(p, params);
+	strncpy(p, params, sizeof(p));
 	for (int i = 0; i < len; i++) {
 		char ch = descr[i];
 		if (ch == '|') {
@@ -45,7 +45,7 @@ bool parsecommandparams(const char *descr, const char *params, vector<cmd_param>
 			}
 
 			string param;
-			char* space_pos = strchr(p, ' '); //searching space character in
+			char* space_pos = strstr(p, " "); //searching space character in
 			if (ch == 's' || space_pos == 0) { //if parameter is string or space not found
 				strcpy(param, p); //residual param string as current parameter
 				p[0] = '\0';
