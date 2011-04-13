@@ -77,10 +77,10 @@ bool onevent(const char *evt_type, const char *fmt, ...)
     {
     	//getting cn
     	va_list vl;
-		va_start(vl, 2);
+		va_start(vl, fmt);
 		int cn = va_arg(vl, int);
 		string command_str;
-		strcpy(command_str, va_arg(vl, const char *));
+		strncpy(command_str, va_arg(vl, const char *), 220);
 		va_end(vl);
 
 		//splitting command_string to command_name and command_params
@@ -107,12 +107,13 @@ bool onevent(const char *evt_type, const char *fmt, ...)
     {
     	//getting username
     	va_list vl;
-		va_start(vl, 2);
+		va_start(vl, fmt);
 		string user;
-		strcpy(user, va_arg(vl, const char *));
+
+		strncpy(user, va_arg(vl, const char *), 220);
 
 		string command_str;
-		strcpy(command_str, va_arg(vl, const char *));
+		strncpy(command_str, va_arg(vl, const char *), 220);
 		va_end(vl);
 
 		//splitting command_string to command_name and command_params
