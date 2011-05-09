@@ -38,7 +38,6 @@ bool parsecommandparams(const char *descr, const char *params, vector<cmd_param>
 			cmd_param cp;
 			if ( (long) p >= (long) params_end) { // no more parameters
 				if (!required_params) {
-
 					cp.type = ch;
 					cp.param[0] = '\0';
 					res->add(cp);
@@ -98,6 +97,7 @@ bool parsecommandparams(const char *descr, const char *params, vector<cmd_param>
 				}
 				break;
 			case 'c': //client num or player name
+				if (!is_int(param)) return false;
 				cn = parseplayer(param);
 				if (cn == -1) {
 					return false;
@@ -105,6 +105,7 @@ bool parsecommandparams(const char *descr, const char *params, vector<cmd_param>
 				strcpy(param, intstr(cn));
 				break;
 			case 'p': //client num for specified player or -1 for all
+				if (!is_int(param)) return false;
 				if (strcmp(param, "-1") != 0) {
 					cn = parseplayer(param);
 					if (cn == -1) {
@@ -179,7 +180,7 @@ int execute_command(cmd_handler &handler, const char *caller, const char *cmd_pa
 	loopv(params)
 	{
 		strcat(cmd, " ");
-		if (params[i].type == 's') { //for correct string transition in list one must escape it with "
+		if (params[i].type == 's' || strlen(params[i].param) == 0) { //for correct string transition in list one must escape it with "
 			strcat(cmd, "\"");
 			strcat(cmd, params[i].param);
 			strcat(cmd, "\"");
@@ -188,8 +189,10 @@ int execute_command(cmd_handler &handler, const char *caller, const char *cmd_pa
 		}
 
 	}
+
 	//calling command
 	int ret = execute(cmd);
+
 	cmd[0] = '\0';
 	return ret;
 }
