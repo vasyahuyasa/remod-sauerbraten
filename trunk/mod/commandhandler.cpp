@@ -23,20 +23,24 @@ bool is_int(const char* param) {
  */
 bool parsecommandparams(const char *descr, const char *params, vector<cmd_param> *res)
 {
-	bool oblig_params = true; //current parameter is obligatory
-	int len = strlen(descr);
-	string p; //temporary variable containing param-string
-	strncpy(p, params, sizeof(p));
-	for (int i = 0; i < len; i++) {
-		char ch = descr[i];
+	bool required_params = true; //current parameter is required
+	int descr_len = strlen(descr);
+
+	unsigned long params_len = strlen(params);
+	const char *params_end = params + params_len;
+	const char *p = params; //current position in paramstring
+
+	for (int i = 0; i < descr_len; i++) {
+		char ch = descr[i]; //type of current parameter
 		if (ch == '|') {
-			oblig_params = false;
+			required_params = false; //next parameters are not required
 		} else {
-			if (strlen(p) == 0) { //no more parameters
-				if (!oblig_params) {
-					cmd_param cp;
+			cmd_param cp;
+			if ( (long) p >= (long) params_end) { // no more parameters
+				if (!required_params) {
+
 					cp.type = ch;
-					strcpy(cp.param, "");
+					cp.param[0] = '\0';
 					res->add(cp);
 					continue; //parameter is not required. add empty string
 				} else {
@@ -44,26 +48,32 @@ bool parsecommandparams(const char *descr, const char *params, vector<cmd_param>
 				}
 			}
 
-			string param;
-			char* space_pos = strstr(p, " "); //searching space character in
-			if (ch == 's' || space_pos == 0) { //if parameter is string or space not found
-				strcpy(param, p); //residual param string as current parameter
-				p[0] = '\0';
+			char param[sizeof(cp.param)];
+
+			const char *param_end_pos;
+			const char *next_param_start_pos;
+			if (ch == 's') { //if string - use whole paramstring as parameter
+				param_end_pos = next_param_start_pos = params_end;
 			} else {
-				int j = 0;
-				while (strchr(space_pos+1, ' ') == space_pos+1) { // fuck up multiple spaces
-					space_pos = space_pos+1;
-					j++;
+
+				param_end_pos = strstr(p, " "); //parameter ends by space
+
+				if (param_end_pos) { // there is space in p
+					next_param_start_pos = param_end_pos;
+					while (*next_param_start_pos++ == ' '); // fuck multiple spaces
+				} else {
+					param_end_pos = next_param_start_pos = params_end;
 				}
-				if (j > 0) {
-					strncpy(space_pos-j, "", j);
-				}
-				//param = all_before_space in p
-				//p = all_after_space in p
-				strncpy(param, p, space_pos-p);
-				param[space_pos-p] = '\0';
-				strcpy(p, space_pos+1);
 			}
+			unsigned long fact_size = param_end_pos - p;
+			if (sizeof(param) < fact_size + 1) {
+				strncpy(param, p, sizeof(param)-1);
+				param[sizeof(param) -1] = '\0';
+			} else {
+				strncpy(param, p, fact_size);
+			}
+
+			p = next_param_start_pos;
 
 			int cn;
 			//valdating param
@@ -125,7 +135,6 @@ bool parsecommandparams(const char *descr, const char *params, vector<cmd_param>
 				}
 				break;
 			}
-			cmd_param cp;
 			cp.type = ch;
 			strcpy(cp.param, param);
 			res->add(cp);
@@ -163,7 +172,7 @@ int execute_command(cmd_handler &handler, const char *caller, const char *cmd_pa
 		return -1;
 	}
 	//creating cmd string
-	string cmd;
+	char cmd[512];
 	strcpy(cmd, handler.cmd_func);
 	strcat(cmd, " ");
 	strcat(cmd, caller); //first parameter is always cn of player
