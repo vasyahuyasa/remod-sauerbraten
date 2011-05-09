@@ -33,7 +33,7 @@ namespace remod
 
     struct cmd_param
     {
-    	string param;
+    	char param[512];
     	char type;
     };
 
