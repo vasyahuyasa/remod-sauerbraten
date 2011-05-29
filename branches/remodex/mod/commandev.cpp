@@ -11,38 +11,9 @@
 #include "commandhandler.h"
 namespace remod
 {
-vector<const char *> eat; //Do not allow server process that events
 vector<evt_handler> evt_handlers; //Event handlers
 
 
-void addeat(const char *evt_type)
-{
-    loopv(eat)
-    {
-        const char *e = eat[i];
-        if(strcmp(evt_type, e) == 0) return;
-    }
-    eat.add(evt_type);
-}
-
-void deleat(const char *evt_type)
-{
-    loopv(eat)
-    {
-        const char *e = eat[i];
-        if(strcmp(evt_type, e) == 0) eat.remove(i);
-    }
-}
-
-bool iseat(const char *evt_type)
-{
-    loopv(eat)
-    {
-        const char *e = eat[i];
-        if(strcmp(evt_type, e) == 0) return true;
-    }
-    return false;
-}
 
 //Add script callback to event
 void addhandler(const char *evt_type, const char *callbackcmd)
@@ -106,10 +77,10 @@ bool onevent(const char *evt_type, const char *fmt, ...)
     {
     	//getting cn
     	va_list vl;
-		va_start(vl, 2);
+		va_start(vl, fmt);
 		int cn = va_arg(vl, int);
 		string command_str;
-		strcpy(command_str, va_arg(vl, const char *));
+		strncpy(command_str, va_arg(vl, const char *), 220);
 		va_end(vl);
 
 		//splitting command_string to command_name and command_params
@@ -136,12 +107,13 @@ bool onevent(const char *evt_type, const char *fmt, ...)
     {
     	//getting username
     	va_list vl;
-		va_start(vl, 2);
+		va_start(vl, fmt);
 		string user;
-		strcpy(user, va_arg(vl, const char *));
+
+		strncpy(user, va_arg(vl, const char *), 220);
 
 		string command_str;
-		strcpy(command_str, va_arg(vl, const char *));
+		strncpy(command_str, va_arg(vl, const char *), 220);
 		va_end(vl);
 
 		//splitting command_string to command_name and command_params
@@ -179,6 +151,7 @@ bool onevent(const char *evt_type, const char *fmt, ...)
             for(int i=0; i<paramcount; i++)
             {
                 strcat(evparams, " ");
+                const char* p;
                 switch(fmt[i])
                 {
                 case 'i':
@@ -186,7 +159,10 @@ bool onevent(const char *evt_type, const char *fmt, ...)
                     break;
                 case 's':
                     strcat(evparams, "\"");
-                    strcat(evparams, va_arg(vl, const char *));
+                    p = va_arg(vl, const char *);
+                    if (p) {
+                    	strcat(evparams, p);
+                    }
                     strcat(evparams, "\"");
                     break;
                 case 'd':
@@ -214,19 +190,10 @@ bool onevent(const char *evt_type, const char *fmt, ...)
         }
     }
 
-    if(iseat(evt_type))
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    return false;
 
 }
 
-COMMAND(addeat, "s");
-COMMAND(deleat, "s");
 COMMAND(addhandler, "ss");
 COMMAND(delhandler, "ss");
 COMMAND(clearhandlers, "");

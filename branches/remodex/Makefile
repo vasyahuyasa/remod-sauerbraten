@@ -1,11 +1,52 @@
+########### CONFIGURATION ############
+
+#Use geoip module?  true|false 
+USE_GEOIP=true
+
+#Use database?  none|mysql|postgres|sqlite
+#NOT IMPLEMENTED YET
+#USE_DATABASE=mysql
+
+#Use irc bot? true|false
+USE_IRCBOT=true
+
+######################################
+
 CXX= gcc
-CXXFLAGS= -O3 -fomit-frame-pointer -DGEOIPDATADIR -DGEOIP -DIRC
-override CXXFLAGS+= -Wall -fsigned-char
+CXXFLAGS= -O3 -fomit-frame-pointer -Wall -fsigned-char 
+ 
+override CXXFLAGS+= -g -DDEBUG # uncomment for debugging
 
 PLATFORM= $(shell uname -s)
 PLATFORM_PREFIX= native
 
-INCLUDES= -Ishared -Iengine -Ifpsgame -Ienet/include -Imod -IlibGeoIP
+INCLUDES= -Ishared -Iengine -Ifpsgame -Ienet/include -Imod 
+
+#geoip
+ifeq ($(USE_GEOIP),true)
+override CXXFLAGS+= -DGEOIPDATADIR -DGEOIP
+override INCLUDES+= -IlibGeoIP
+endif
+
+#irc
+ifeq ($(USE_IRCBOT),true)
+override CXXFLAGS+=  -DIRC
+endif
+
+#database
+#ifeq ($(USE_DATABASE),mysql)
+#override INCLUDES+= -Iinclude/db/mysql
+#override CXXFLAGS+= -DDBMYSQL -DDATABASE -lmysqlclient
+#endif
+#ifeq ($(USE_DATABASE),postgres)
+#override INCLUDES+= -Ipostgres
+#override CXXFLAGS+= -DDBPOSTGRES -DDATABASE
+#endif
+#ifeq ($(USE_DATABASE),sqlite)
+#override INCLUDES+= -Ipostgres
+#override CXXFLAGS+= -DDBSQLITE -DDATABASE
+#endif
+
 
 STRIP=
 ifeq (,$(findstring -g,$(CXXFLAGS)))
@@ -41,6 +82,7 @@ SERVER_OBJS= \
 	mod/rconmod-standalone.o \
 	mod/serverctrl-standalone.o	\
 	mod/remod-standalone.o \
+	mod/remodex-standalone.o \
 	libGeoIP/GeoIP-standalone.o
 
 ifeq ($(PLATFORM),SunOS)
@@ -52,7 +94,8 @@ default: all
 all: server
 
 enet/Makefile:
-	cd enet; ./configure --enable-shared=no --enable-static=yes
+	cd enet; chmod +x configure; ./configure --enable-shared=no 
+--enable-static=yes
 	
 libenet: enet/Makefile
 	$(MAKE)	-C enet/ all
@@ -85,32 +128,17 @@ ifneq (,$(findstring MINGW,$(PLATFORM)))
 vcpp/%.o:
 	$(CXX) $(CXXFLAGS) -c -o $@ $(subst .o,.c,$@) 
 
-client: $(CLIENT_OBJS)
-	$(WINDRES) -I vcpp -i vcpp/mingw.rc -J rc -o vcpp/mingw.res -O coff 
-	$(CXX) $(CXXFLAGS) -o ../bin/sauerbraten.exe vcpp/mingw.res $(CLIENT_OBJS) $(CLIENT_LIBS)
-
 server: $(SERVER_OBJS)
 	$(CXX) $(CXXFLAGS) -o ../bin/sauer_server.exe $(SERVER_OBJS) $(SERVER_LIBS)
 
-master: $(MASTER_OBJS)
-	$(CXX) $(CXXFLAGS) -o ../bin/sauer_master.exe $(MASTER_OBJS) $(SERVER_LIBS)
-
 install: all
 else
-client:	libenet $(CLIENT_OBJS)
-	$(CXX) $(CXXFLAGS) -o sauer_client $(CLIENT_OBJS) $(CLIENT_LIBS)
-
 server:	libenet $(SERVER_OBJS)
 	$(CXX) $(CXXFLAGS) -o sauer_server $(SERVER_OBJS) $(SERVER_LIBS)  
 	
-master: libenet $(MASTER_OBJS)
-	$(CXX) $(CXXFLAGS) -o sauer_master $(MASTER_OBJS) $(SERVER_LIBS)  
-
 install: all
-	cp sauer_client	../bin_unix/$(PLATFORM_PREFIX)_client
 	cp sauer_server	../bin_unix/$(PLATFORM_PREFIX)_server
 ifneq (,$(STRIP))
-	$(STRIP) ../bin_unix/$(PLATFORM_PREFIX)_client
 	$(STRIP) ../bin_unix/$(PLATFORM_PREFIX)_server
 endif
 endif
