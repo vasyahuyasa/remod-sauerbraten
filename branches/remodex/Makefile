@@ -13,7 +13,7 @@ USE_IRCBOT=true
 ######################################
 
 CXX= gcc
-CXXFLAGS= -O3 -fomit-frame-pointer -Wall -fsigned-char 
+CXXFLAGS= -O0 -fomit-frame-pointer -Wall -fsigned-char 
  
 override CXXFLAGS+= -g -DDEBUG # uncomment for debugging
 

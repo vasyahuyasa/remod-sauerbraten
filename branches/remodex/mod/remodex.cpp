@@ -27,7 +27,7 @@ namespace remodex
     // ammo control
     void setammo(int *wep, int *ammo)
     {
-        if(*wep>-1 && *wep<NUMGUNS)
+        if(*wep>-1 && *wep<GUN_PISTOL)
         {
             ammoex[*wep] = *ammo;
         }
@@ -35,7 +35,7 @@ namespace remodex
 
     int getammo(int wep)
     {
-        if(wep>-1 && wep<NUMGUNS)
+        if(wep>-1 && wep<GUN_PISTOL)
         {
             return ammoex[wep];
         } else return -1;
@@ -175,7 +175,7 @@ namespace remodex
                 }
                 else
                 {
-                    if(strcmp(teamname, ci->team) != -1) return false; // difirent teams
+                    if(strcmp(teamname, ci->team) != -1) return false; // diffirent teams
                 }
             }
         }
@@ -196,7 +196,7 @@ namespace remodex
         {
             if(arenacheckwin()) // one man or team stand
             {
-                sendservmsg("arena winw");
+                sendservmsg("arena win, one man(team) stand");
                 arenawin = gamemillis;
             }
         }
@@ -210,4 +210,10 @@ namespace remodex
     COMMANDN(gunselect, setgunselect, "i");
     COMMANDN(damagescale, setdamagescale, "ii");
 
+    ICOMMAND(getammo, "i", (int *wep), intret(getammo(*wep)));
+    ICOMMAND(getarmourtype, "", (), intret(getarmourtype()));
+    ICOMMAND(getarmour, "", (), intret(getarmour()));
+    ICOMMAND(gethealth, "", (), intret(gethealth()));
+    ICOMMAND(getgunselect, "", (), intret(getgunselect()));
+    ICOMMAND(getdamagescale, "i", (int *wep), intret(getdamagescale(*wep)));
 }
