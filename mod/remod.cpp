@@ -89,4 +89,17 @@ bool isspectator(int *cn)
     return (ci && ci->state.state==CS_SPECTATOR);
 }
 
+char* concatpstring(char *d, const char *s) {
+	char *tmp = newstring(d);
+	DELETEA(d);
+	size_t lt = strlen(tmp);
+	size_t ls = strlen(s);
+	d = new char[lt +ls + 1];
+	strncpy(d, tmp, lt);
+	strncpy(&d[lt], s, ls);
+	d[lt +ls] = '\0';
+	DELETEA(tmp);
+	return d;
+}
+
 }
