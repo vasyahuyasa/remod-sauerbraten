@@ -8,7 +8,7 @@
     #define REMOD_SYSTEM "Windows"
 #elif defined(__linux__)
     #define REMOD_SYSTEM "Linux"
-#elif defined(FREEBSD)
+#elif defined(__FreeBSD__)
     #define REMOD_SYSTEM "FreeBSD"
 #elif defined(BSD)
     #define REMOD_SYSTEM "BSD"
