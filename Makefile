@@ -13,7 +13,7 @@ USE_IRCBOT=true
 ######################################
 
 CXX= gcc
-CXXFLAGS= -O3 -fomit-frame-pointer -Wall -fsigned-char 
+CXXFLAGS= -O0 -fomit-frame-pointer -Wall -fsigned-char 
  
 override CXXFLAGS+= -g -DDEBUG # uncomment for debugging
 
@@ -90,7 +90,13 @@ endif
 
 default: all
 
-all: server
+all: revision server
+
+revision:
+SVNVERSION= $(shell svnversion -cn . 2>/dev/null | sed -e "s/.*://" -e "s/\([0-9]*\).*/\1/" | grep "[0-9]") 
+ifneq "$(SVNVERSION)" " "
+override CXXFLAGS+= -DREMOD_VERSION="\"SVN build rev: $(SVNVERSION)\""
+endif
 
 enet/Makefile:
 	cd enet; chmod +x configure; ./configure --enable-shared=no --enable-static=yes
