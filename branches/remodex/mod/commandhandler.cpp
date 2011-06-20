@@ -21,16 +21,17 @@ bool is_int(const char* param) {
 /**
  * returns list of params parsed via description or null if failed
  */
-bool parsecommandparams(const char *descr, const char *params, vector<cmd_param> *res)
+bool parsecommandparams(const char *descr, const char *params, vector<cmd_param> &res)
 {
 	bool required_params = true; //current parameter is required
-	int descr_len = strlen(descr);
-
+	unsigned long descr_len = strlen(descr);
 	unsigned long params_len = strlen(params);
-	const char *params_end = params + params_len;
-	const char *p = params; //current position in paramstring
+	const char *params_end = params + params_len;//last element of params string
+	const char *p = params; //current position in params string
 
-	for (int i = 0; i < descr_len; i++) {
+	bool validated = true;
+
+	for (unsigned int i = 0; i < descr_len; i++) {
 		char ch = descr[i]; //type of current parameter
 		if (ch == '|') {
 			required_params = false; //next parameters are not required
@@ -39,107 +40,122 @@ bool parsecommandparams(const char *descr, const char *params, vector<cmd_param>
 			if ( (long) p >= (long) params_end) { // no more parameters
 				if (!required_params) {
 					cp.type = ch;
-					cp.param[0] = '\0';
-					res->add(cp);
+					cp.param = newstring("");
+					res.add(cp);
 					continue; //parameter is not required. add empty string
 				} else {
 					return false; //parameter is required. error.
 				}
 			}
 
-			char param[sizeof(cp.param)];
-
-			const char *param_end_pos;
-			const char *next_param_start_pos;
+			const char *param_end_pos; //first character after current parameter in params string
+			const char *next_param_start_pos; //first character of next parameter in params string
 			if (ch == 's') { //if string - use whole paramstring as parameter
 				param_end_pos = next_param_start_pos = params_end;
 			} else {
-
-				param_end_pos = strstr(p, " "); //parameter ends by space
+				param_end_pos = strchr(p, ' '); //parameter ends by space
 
 				if (param_end_pos) { // there is space in p
 					next_param_start_pos = param_end_pos;
-					while (*next_param_start_pos++ == ' '); // fuck multiple spaces
+					while (next_param_start_pos[0] == ' ') {// fuck the multiple spaces up
+						next_param_start_pos++;
+					}
 				} else {
-					param_end_pos = next_param_start_pos = params_end;
+					param_end_pos = next_param_start_pos = params_end; // no more spaces, we reached the end of params string
 				}
 			}
-			unsigned long fact_size = param_end_pos - p;
-			if (sizeof(param) < fact_size + 1) {
-				strncpy(param, p, sizeof(param)-1);
-				param[sizeof(param) -1] = '\0';
-			} else {
-				strncpy(param, p, fact_size);
-			}
+			unsigned long fact_size = param_end_pos - p; //length of param
+			char *param = newstring(p, fact_size); //current parameter
 
 			p = next_param_start_pos;
 
 			int cn;
+
 			//valdating param
 			switch (ch) {
 			case 'i': //integer
 				if (!is_int(param)) {
-					return false;
+					validated = false;
 				}
 				break;
 			case 'f': //float
 				if (strcmp(param, "0") != 0 && atof(param) == 0) {
-					return false;
+					validated = false;
 				}
 				break;
 			case 'b': //boolean
 				if (strcmp(param, "1") == 0 || strcmp(param, "true") == 0 || strcmp(param, "y") == 0) {
-					strcpy(param, "1");
+					DELETEA(param);
+					param = newstring("1");
 				} else if (strcmp(param, "0") == 0 || strcmp(param, "false") == 0 || strcmp(param, "n") == 0) {
-					strcpy(param, "0");
+					DELETEA(param);
+					param = newstring("0");
 				} else {
-					return false;
+					validated = false;
 				}
 				break;
 			case 'c': //client num or player name
 				if (!is_int(param)) return false;
 				cn = parseplayer(param);
 				if (cn == -1) {
-					return false;
+					validated = false;
+				} else {
+					DELETEA(param);
+					param = newstring(intstr(cn));
 				}
-				strcpy(param, intstr(cn));
 				break;
 			case 'p': //client num for specified player or -1 for all
 				if (!is_int(param)) return false;
 				if (strcmp(param, "-1") != 0) {
 					cn = parseplayer(param);
 					if (cn == -1) {
-						return false;
+						validated = false;
+					} else {
+						DELETEA(param);
+						param = newstring(intstr(cn));
 					}
-					strcpy(param, intstr(cn));
 				}
 				break;
 			case 'w': //word
-				break;
+				break; //nothing to do
 			case 't': //time (integer - seconds  or mm:ss)
 				char *colon_pos = strchr(param, ':');
 				if (colon_pos != 0) {
 
 					string min, sec;
+					strncpy(min, param, (unsigned long) (colon_pos - param));
 					strcpy(sec, colon_pos+1);
-					strcpy(colon_pos, "");
-					strcpy(min, param);
+
 					if (!is_int(min) || !is_int(sec)) {
-						return false;
+						validated = false;
 					} else {
-						strcpy(param, intstr(atoi(min)*60+atoi(sec)));
+						DELETEA(param);
+						param = newstring(intstr(atoi(min)*60+atoi(sec)));
 					}
 				} else {
 					if (!is_int(param)) {
-						return false;
+						validated = false;
 					}
 				}
 				break;
 			}
-			cp.type = ch;
-			strcpy(cp.param, param);
-			res->add(cp);
+			if (!validated) {
+				DELETEA(param);
+				break;
+			} else {
+				cp.type = ch;
+				cp.param = newstring(param);
+				DELETEA(param);
+				res.add(cp);
+			}
 		}
+
+	}
+	if (!validated) {
+		for (int i = 0; i < res.length(); i++) {
+			DELETEA(res[i].param);
+		}
+		return false;
 	}
 	return true;
 }
@@ -168,32 +184,34 @@ int find_command_handler(const char *cmd_name, vector<cmd_handler> &handlers) {
 int execute_command(cmd_handler &handler, const char *caller, const char *cmd_params) {
 	//parsing params string
 	vector<cmd_param> params;
-	bool parsed = parsecommandparams(handler.cmd_descr, cmd_params, &params);
+	bool parsed = parsecommandparams(handler.cmd_descr, cmd_params, params);
 	if (!parsed) {
 		return -1;
 	}
 	//creating cmd string
-	char cmd[512];
-	strcpy(cmd, handler.cmd_func);
-	strcat(cmd, " ");
-	strcat(cmd, caller); //first parameter is always cn of player
+	char* cmd = newstring("");
+	cmd = concatpstring(cmd, handler.cmd_func);
+	cmd = concatpstring(cmd, " ");
+	cmd = concatpstring(cmd, caller); //first parameter is always cn of player
 	loopv(params)
 	{
-		strcat(cmd, " ");
-		if (params[i].type == 's' || strlen(params[i].param) == 0) { //for correct string transition in list one must escape it with "
-			strcat(cmd, "\"");
-			strcat(cmd, params[i].param);
-			strcat(cmd, "\"");
+		cmd = concatpstring(cmd, " ");
+		if (params[i].type == 's' || strlen(params[i].param) == 0) { //for correct string transition in list it should be escaped by "
+			cmd = concatpstring(cmd, "\"");
+			cmd = concatpstring(cmd, params[i].param);
+			cmd = concatpstring(cmd, "\"");
 		} else {
-			strcat(cmd, params[i].param);
+			cmd = concatpstring(cmd, params[i].param);
 		}
-
+		DELETEA(params[i].param);
 	}
+
+
 
 	//calling command
 	int ret = execute(cmd);
 
-	cmd[0] = '\0';
+	DELETEA(cmd);
 	return ret;
 }
 
@@ -232,20 +250,16 @@ void common_commandhelp(vector<cmd_handler> &handlers, const char* cmd_name)
 {
 	cmd_handler handler;
 	//searching for command with name cmd_name in registered handlers
-	bool found = false;
 	int i = 0;
 	int len = handlers.length();
-	while (i < len && !found)
+	while (i < len)
 	{
 		if (strcmp(cmd_name, handlers[i].cmd_name) == 0) {
 			handler = handlers[i];
-			found = true;
+			result(handler.cmd_help);
+			return;
 		}
 		i++;
-	}
-
-	if (found) {
-		result(handler.cmd_help);
 	}
 }
 
@@ -256,10 +270,10 @@ void common_registercommand(vector<cmd_handler> &handlers, const char* cmd_name,
 {
 	if (cmd_name[0] && cmd_func[0]) {
 		cmd_handler cmd;
-		strcpy(cmd.cmd_descr, cmd_descr);
-		strcpy(cmd.cmd_name, cmd_name);
-		strcpy(cmd.cmd_func, cmd_func);
-		strcpy(cmd.cmd_help, cmd_help);
+		cmd.cmd_descr = newstring(cmd_descr);
+		cmd.cmd_name = newstring(cmd_name);
+		cmd.cmd_func = newstring(cmd_func);
+		cmd.cmd_help = newstring(cmd_help);
 		cmd.cmd_permissions = *cmd_perm;
 
 		//find position to add command - for sorted list
@@ -289,6 +303,10 @@ void common_unregistercommand(vector<cmd_handler> &handlers, const char* cmd_nam
 	for (int i = 0; i < handlers.length(); i++)
 	{
 		if (strcmp(cmd_name, handlers[i].cmd_name) == 0) {
+			DELETEA(handlers[i].cmd_descr);
+			DELETEA(handlers[i].cmd_name);
+			DELETEA(handlers[i].cmd_func);
+			DELETEA(handlers[i].cmd_help);
 			handlers.remove(i);
 			return;
 		}
@@ -316,11 +334,10 @@ int getperm_(int *cn) {
 	//check if grantperm exists
 	ident *i = getident("grantperm");
 	if (i && i->type == ID_ALIAS) {
-		string cmd;
-		strcpy(cmd, "grantperm ");
-		strcat(cmd, intstr(*cn));
+		char *cmd = newstring("grantperm ");
+		cmd = concatpstring(cmd, intstr(*cn));
 		int ret = execute(cmd);
-		cmd[0] = '\0';
+		DELETEA(cmd);
 		return ret;
 	}
 	if (isadmin(cn)) {
@@ -346,6 +363,7 @@ bool checkperm(int cn, int perm) {
 
 void oncommand(int cn, const char *cmd_name, const char *cmd_params)
 {
+
 	int found = find_command_handler(cmd_name, cmd_handlers);
 
 	if (found == -1) {
@@ -354,6 +372,7 @@ void oncommand(int cn, const char *cmd_name, const char *cmd_params)
 		return;
 	}
 	cmd_handler handler = cmd_handlers[found];
+
 	//checking for permission
 
 	if (!checkperm(cn, handler.cmd_permissions))
@@ -384,7 +403,6 @@ void commandhelp(const char* cmd_name)
  */
 void registercommand(const char* cmd_name, const char* cmd_func, int *cmd_perm, const char* cmd_descr, const char* cmd_help)
 {
-
 	common_registercommand(cmd_handlers, cmd_name, cmd_func, cmd_perm, cmd_descr, cmd_help);
 }
 
@@ -424,11 +442,10 @@ int irc_getperm_(char *usr) {
 	//check if irc_grantperm exists
 	ident *i = getident("irc_grantperm");
 	if (i && i->type == ID_ALIAS) {
-		string cmd;
-		strcpy(cmd, "irc_grantperm ");
-		strcat(cmd, usr);
+		char *cmd = newstring("irc_grantperm ");
+		cmd = concatpstring(cmd, usr);
 		int ret = execute(cmd);
-		cmd[0] = '\0';
+		DELETEA(cmd);
 		return ret;
 	}
 	if (irc_user_state(usr, VOICE)) {

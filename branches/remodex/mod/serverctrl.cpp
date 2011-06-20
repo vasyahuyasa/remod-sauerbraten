@@ -96,7 +96,7 @@ void getflags(int *pcn)
 void version()
 {
     string txt;
-    formatstring(txt)("Remodex %s (build %s %s)", REMOD_VERSION, __DATE__, __TIME__);
+    formatstring(txt)("Remod %s (build %s %s) %s/%s", REMOD_VERSION, __DATE__, __TIME__, REMOD_SYSTEM, REMOD_ARCH);
     result(txt);
 }
 
@@ -497,45 +497,21 @@ void loopbans(const char *name, const char *ip, const char *expire, const char *
 	{
 		ban b = bannedips[i];
 		if (i) {
-			aliasa(idents[0]->name, b.name);
+			aliasa(idents[0]->name, newstring(b.name));
 			addr.s_addr = b.ip;
-			char *tmp = newstring(inet_ntoa(addr));
-			aliasa(idents[1]->name, tmp);
-			// xxx DELETEA(tmp);
-			tmp = newstring(intstr(b.expire));
-			aliasa(idents[2]->name, tmp);
-			// xxx DELETEA(tmp);
-			tmp = newstring(b.actor);
-			aliasa(idents[3]->name, tmp);
-			// xxx DELETEA(tmp);
-
+			aliasa(idents[1]->name, newstring(inet_ntoa(addr)));
+			aliasa(idents[2]->name, newstring(intstr(b.expire)));
+			aliasa(idents[3]->name, newstring(b.actor));
 			addr.s_addr = b.actorip;
-			tmp = newstring(inet_ntoa(addr));
-			aliasa(idents[4]->name, tmp);
-			// xxx DELETEA(tmp);
+			aliasa(idents[4]->name, newstring(inet_ntoa(addr)));
 		} else {
-			char *tmp = newstring(b.name);
-			pushident(*idents[0], tmp);
-			// xxx DELETEA(tmp);
-
+			pushident(*idents[0], newstring(b.name));
 			addr.s_addr = b.ip;
-			tmp = newstring(inet_ntoa(addr));
-			pushident(*idents[1], tmp);
-			// xxx DELETEA(tmp);
-
-			tmp = newstring(intstr(b.expire));
-			pushident(*idents[2], tmp);
-			// xxx DELETEA(tmp);
-
-			tmp = newstring(b.actor);
-			pushident(*idents[3], tmp);
-			// xxx DELETEA(tmp);
-
+			pushident(*idents[1], newstring(inet_ntoa(addr)));
+			pushident(*idents[2], newstring(intstr(b.expire)));
+			pushident(*idents[3], newstring(b.actor));
 			addr.s_addr = b.actorip;
-
-			tmp = newstring(inet_ntoa(addr));
-			pushident(*idents[4], tmp);
-			// xxx DELETEA(tmp);
+			pushident(*idents[4], newstring(inet_ntoa(addr)));
 		}
 		execute(body);
 	}

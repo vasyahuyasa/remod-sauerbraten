@@ -9,6 +9,7 @@
 
 #include "commandev.h"
 #include "commandhandler.h"
+#include "remod.h"
 namespace remod
 {
 vector<evt_handler> evt_handlers; //Event handlers
@@ -18,11 +19,11 @@ vector<evt_handler> evt_handlers; //Event handlers
 //Add script callback to event
 void addhandler(const char *evt_type, const char *callbackcmd)
 {
-    if(evt_type[0] && callbackcmd[0])
+    if(evt_type && evt_type[0] && callbackcmd && callbackcmd[0])
     {
         evt_handler eh;
-        strcpy(eh.evt_type, evt_type);
-        strcpy(eh.evt_cmd, callbackcmd);
+        eh.evt_cmd = newstring(callbackcmd);
+        eh.evt_type = newstring(evt_type);
         evt_handlers.add(eh);
     }
 
@@ -32,8 +33,12 @@ void delhandler(const char* evt_type, const char *cmd)
 {
     for(int i=0; i<evt_handlers.length(); i++)
     {
-        if((strcmp(evt_handlers[i].evt_type, evt_type) == 0) && (strcmp(evt_handlers[i].evt_cmd, cmd) == 0))
+    	evt_handler eh = evt_handlers[i];
+        if ((strcmp(eh.evt_type, evt_type) == 0) && (strcmp(eh.evt_cmd, cmd) == 0)) {
+        	DELETEA(eh.evt_cmd);
+        	DELETEA(eh.evt_type);
             evt_handlers.remove(i);
+        }
     }
 }
 
@@ -69,9 +74,6 @@ void clearhandlers()
 //Return true - eat server handler, false allow server to handle
 bool onevent(const char *evt_type, const char *fmt, ...)
 {
-    string evcmd = "";
-    string evparams = "";
-
     //if oncommand
     if (strcmp(evt_type, "oncommand") == 0)
     {
@@ -79,24 +81,28 @@ bool onevent(const char *evt_type, const char *fmt, ...)
     	va_list vl;
 		va_start(vl, fmt);
 		int cn = va_arg(vl, int);
-		string command_str;
-		strncpy(command_str, va_arg(vl, const char *), 220);
+		char *command_str = newstring(va_arg(vl, const char *));
 		va_end(vl);
 
 		//splitting command_string to command_name and command_params
-		string command_name, command_params;
+		char *command_name;
+		char *command_params;
 
-		char* spacepos = strstr(command_str, " ");
+		char *spacepos = strstr(command_str, " ");
 		if (!spacepos) {
-			strcpy(command_name, command_str);
-			command_params[0] = '\0';
+			command_name = newstring(command_str);
+			command_params = newstring("");
 		} else {
-			strcpy(command_params, spacepos+1);
+			command_params = newstring(spacepos+1);
 			spacepos[0] = '\0';
-			strcpy(command_name, command_str);
+			command_name = newstring(command_str);
 		}
 		//calling server command
 		remod::oncommand(cn, command_name, command_params);
+
+		DELETEA(command_name);
+		DELETEA(command_params);
+		DELETEA(command_str);
 
     	//eat it!
     	return true;
@@ -108,30 +114,32 @@ bool onevent(const char *evt_type, const char *fmt, ...)
     	//getting username
     	va_list vl;
 		va_start(vl, fmt);
-		string user;
+		char *user = newstring(va_arg(vl, const char *));
 
-		strncpy(user, va_arg(vl, const char *), 220);
-
-		string command_str;
-		strncpy(command_str, va_arg(vl, const char *), 220);
+		char *command_str = newstring(va_arg(vl, const char *));
 		va_end(vl);
 
 		//splitting command_string to command_name and command_params
-		string command_name, command_params;
+		char *command_name;
+		char *command_params;
 
-		char* spacepos = strstr(command_str, " ");
-		if (spacepos == 0) {
-			strcpy(command_name, command_str);
-			strcpy(command_params, "");
+		char *spacepos = strstr(command_str, " ");
+		if (!spacepos) {
+			command_name = newstring(command_str);
+			command_params = newstring("");
 		} else {
-			strcpy(command_params, spacepos+1);
-			strcpy(spacepos, "");
-			strcpy(command_name, command_str);
+			command_params = newstring(spacepos+1);
+			spacepos[0] = '\0';
+			command_name = newstring(command_str);
 		}
 
 		//calling irc command
 		remod::irc_oncommand(user, command_name, command_params);
 
+		DELETEA(user);
+		DELETEA(command_str);
+		DELETEA(command_name);
+		DELETEA(command_params);
     	//eat it!
     	return true;
 
@@ -141,6 +149,7 @@ bool onevent(const char *evt_type, const char *fmt, ...)
     else if (ishandle(evt_type))
     {
     	int paramcount = strlen(fmt);
+    	char *evparams = newstring("");
         //Check params
         if(paramcount>0)
         {
@@ -150,23 +159,23 @@ bool onevent(const char *evt_type, const char *fmt, ...)
             //Convert params to string
             for(int i=0; i<paramcount; i++)
             {
-                strcat(evparams, " ");
+            	evparams = concatpstring(evparams, " ");
                 const char* p;
                 switch(fmt[i])
                 {
                 case 'i':
-                    strcat(evparams, intstr(va_arg(vl, int)));
+                	evparams = concatpstring(evparams, intstr(va_arg(vl, int)));
                     break;
                 case 's':
-                    strcat(evparams, "\"");
+                	evparams = concatpstring(evparams, "\"");
                     p = va_arg(vl, const char *);
                     if (p) {
-                    	strcat(evparams, p);
+                    	evparams = concatpstring(evparams, p);
                     }
-                    strcat(evparams, "\"");
+                    evparams =  concatpstring(evparams, "\"");
                     break;
                 case 'd':
-                    strcat(evparams, floatstr(va_arg(vl, double)));
+                	evparams = concatpstring(evparams, floatstr(va_arg(vl, double)));
                     break;
                 default:
                     //Read and forgot
@@ -177,17 +186,20 @@ bool onevent(const char *evt_type, const char *fmt, ...)
             va_end(vl);
         }
 
+
+
         //Process handlers
         for(int i=0; i<evt_handlers.length(); i++)
         {
             if(strcmp(evt_type, evt_handlers[i].evt_type) == 0)
             {
-                strcat(evcmd, evt_handlers[i].evt_cmd);
-                strcat(evcmd, evparams);
+            	char *evcmd = newstring(evt_handlers[i].evt_cmd);
+            	evcmd = concatpstring(evcmd, evparams);
                 execute(evcmd);
-                evcmd[0] = '\0';
+                DELETEA(evcmd);
             }
         }
+        DELETEA(evparams);
     }
 
     return false;

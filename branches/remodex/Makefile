@@ -91,11 +91,16 @@ endif
 
 default: all
 
-all: server
+all: revision server
+
+revision:
+SVNVERSION= $(shell svnversion -cn . 2>/dev/null | sed -e "s/.*://" -e "s/\([0-9]*\).*/\1/" | grep "[0-9]") 
+ifneq "$(SVNVERSION)" " "
+override CXXFLAGS+= -DREMOD_VERSION="\"SVN build rev: $(SVNVERSION)\""
+endif
 
 enet/Makefile:
-	cd enet; chmod +x configure; ./configure --enable-shared=no 
---enable-static=yes
+	cd enet; chmod +x configure; ./configure --enable-shared=no --enable-static=yes
 	
 libenet: enet/Makefile
 	$(MAKE)	-C enet/ all
@@ -104,7 +109,7 @@ clean-enet: enet/Makefile
 	$(MAKE) -C enet/ clean
 
 clean:
-	-$(RM) $(CLIENT_PCH) $(CLIENT_OBJS) $(SERVER_OBJS) $(MASTER_OBJS) sauer_client sauer_server sauer_master
+	-$(RM) $(CLIENT_PCH) $(CLIENT_OBJS) $(SERVER_OBJS) $(MASTER_OBJS) sauer_client sauer_server
 
 %.h.gch: %.h
 	$(CXX) $(CXXFLAGS) -o $@.tmp $(subst .h.gch,.h,$@)

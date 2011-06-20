@@ -24,16 +24,16 @@ namespace remod
 	 */
     struct cmd_handler
     {
-        string cmd_name; //Command name
-        string cmd_func; //Callback function
-        string cmd_help; //help string
-        string cmd_descr; //String containing description of command params: i - integer, b - boolean, c - valid cn or player name, s - string, | - separator between obligatory and non-obligatory params.  ci|s
+        char* cmd_name; //Command name
+        char* cmd_func; //Callback function
+        char* cmd_help; //help string
+        char* cmd_descr; //String containing description of command params: i - integer, b - boolean, c - valid cn or player name, s - string, | - separator between obligatory and non-obligatory params.  ci|s
         int cmd_permissions; //1 - all players, 2 - admins, 3 - masters
     };
 
     struct cmd_param
     {
-    	char param[512];
+    	char* param;
     	char type;
     };
 
