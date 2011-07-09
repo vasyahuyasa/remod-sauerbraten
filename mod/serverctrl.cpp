@@ -166,6 +166,7 @@ void pm(int *pcn, char *msg)
         clientinfo *ci = clients[i];
         if(ci->clientnum == cn)
         {
+            if(ci->state.aitype != AI_NONE) return;
             sendf(cn, 1, "ris", N_SERVMSG, msg);
         }
     }
