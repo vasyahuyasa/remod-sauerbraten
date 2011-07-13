@@ -7,7 +7,27 @@
 * remot control
 */
 
+#include <stdio.h>
+
+#ifndef WIN32
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <string.h>
+#include <sys/fcntl.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#endif
+
+#ifdef WIN32
+#include "windows.h"
+#define socklen_t int
+#endif
+
+#include "fpsgame.h"
 #include "rconmod.h"
+
+#define MAXRCONPEERS 32
+#define MAXBUF 1024*60
 
 extern int execute(const char *p);
 namespace remod
@@ -16,35 +36,23 @@ namespace remod
 namespace rcon
 {
 
-#define MAXRCONPEERS 64
-
-//Peer struct
-struct rconpeer
-{
-    struct sockaddr_in addr;
-    bool logined;
-};
-
-//State of rcon
+// state of rcon
 bool active;
 
-//List of peers
+// rcon password
+SVAR(rconpass, "");
+
+// list of peers
 rconpeer rconpeers[MAXRCONPEERS];
 
-//Listen socket information
+// listen socket
 int sock;
 struct sockaddr_in addr;
 struct sockaddr_in fromaddr;
 int addrlen;
-int recvlen;
-char buf[1024*60]; // Max recive
+char buf[MAXBUF];
 
-//password for use rcon
-string password;
-
-string s;
-
-//Check for \n in end of line
+// check for \n in end of line
 bool havenl(char *msg)
 {
     for(int c = *msg; c; c = *++msg)
@@ -54,7 +62,7 @@ bool havenl(char *msg)
     return false;
 }
 
-//Add peer to list of logined peers
+// add peer to broadcast list
 bool addpeer(struct sockaddr_in addr)
 {
     char *ipstr;
@@ -66,7 +74,7 @@ bool addpeer(struct sockaddr_in addr)
             rconpeers[i].addr=addr;
             rconpeers[i].logined=true;
             ipstr = inet_ntoa(addr.sin_addr);
-            formatstring(msg)("Rcon: new peer [%s]\n", ipstr);
+            formatstring(msg)("Rcon: new peer [%s:%i]\n", ipstr, ntohs(addr.sin_port));
             conoutf(msg);
             return true;
         }
@@ -74,10 +82,10 @@ bool addpeer(struct sockaddr_in addr)
     return false;
 }
 
-//Update peer info when recive any data
+// update peer info when recive any data
 void uppeer(struct sockaddr_in addr)
 {
-    //List all peers and update sockaddr information
+    // list all peers and update sockaddr information
     for(int i=0; i<MAXRCONPEERS; i++)
     {
         if(rconpeers[i].addr.sin_addr.s_addr==addr.sin_addr.s_addr && rconpeers[i].logined)
@@ -87,44 +95,47 @@ void uppeer(struct sockaddr_in addr)
     }
 }
 
-//Log out all peers
+// logout all peers
 void logout()
 {
-    sendmsg("Logout");
-    for(int i=0; i<MAXRCONPEERS; i++)
+    sendmsg("Logout due reach peer limit");
+    // dont touch first 5 peers
+    for(int i=4; i<MAXRCONPEERS; i++)
     {
         rconpeers[i].logined = false;
     }
 }
 
-//Check if peer logined or login him with msg password
+// check peer state
 bool logined(struct sockaddr_in addr, char *msg)
 {
-    //Check all connected peers by ip and login
+    // check all connected peers by ip and login
     for(int i=0; i<MAXRCONPEERS; i++)
     {
         if(rconpeers[i].addr.sin_addr.s_addr==addr.sin_addr.s_addr && rconpeers[i].logined)
         {
-            //Update peer information and return
+            // update peer information and return
             uppeer(addr);
             return true;
         }
     }
 
-    //If we have correct password login peer, but he be logined only on next call this function
-    if(strncmp(password, msg, strlen(password))==0)
+    // check password
+    if(strncmp(rconpass, msg, strlen(rconpass))==0)
     {
-        //if we don't have more slots logout all peers
+        // if we don't have more slots logout all peers
         if(!addpeer(addr))
         {
             logout();
             addpeer(addr);
         }
+
+        //
         return false;
     }
     else
     {
-        //Peer not logined
+        // password not correct
         return false;
     }
 }
@@ -136,7 +147,7 @@ void init(int port=27070)
     if(sock<0)
     {
         active=false;
-        conoutf("Rcon: cannot create socket\n");
+        conoutf("Rcon: cannot create socket");
     }
     else
     {
@@ -146,7 +157,7 @@ void init(int port=27070)
 
         if(bind(sock, (struct sockaddr *)&addr, sizeof(addr)) < 0)
         {
-            conoutf("Rcon: connot bind socket");
+            conoutf("Rcon: con not bind socket");
             active = false;
         }
         else
@@ -163,44 +174,52 @@ void init(int port=27070)
             {
                 rconpeers[i].logined=false;
             }
-            conoutf("Rcon: inizialized on port %d",port);
+            conoutf("Rcon: listen on port %d", port);
         }
     }
 }
 
-// Set rcon password
-void setpassword(char *pwd)
+// send message to all logined peers
+void sendmsg(char *msg, int len)
 {
-    strcpy(password, pwd);
-    conoutf("Rcon pass: %s", password);
-}
+    char *data;
 
-//Send message to all logined peers
-void sendmsg(char *msg)
-{
-    //always send message with \n
-    if(!havenl(msg))
+    // message must ends with \n
+    if (msg[len-1] != '\n')
     {
-        formatstring(s)("%s\n", msg);
+        data = newstring(msg, len);
+        data[len] = '\n';
+        len++;
     }
-    else formatstring(s)("%s", msg);
+    else
+    {
+        data = msg;
+    }
 
-    //Send raw text
+    // send text to all peers
     for(int i=0; i<MAXRCONPEERS; i++)
     {
         if(rconpeers[i].logined)
         {
-            sendto(sock, s, strlen(s), 0, (struct sockaddr *)&rconpeers[i].addr, addrlen);
+            sendto(sock, data, len, 0, (struct sockaddr *)&rconpeers[i].addr, addrlen);
         }
     }
+
 }
 
-//update on every server frame
+void sendmsg(char *msg)
+{
+    sendmsg(msg, strlen(msg));
+}
+
+// update on every server frame
 void update()
 {
     if(active)
     {
-        recvlen=recvfrom(sock, buf, 1024, 0, (struct sockaddr*)&fromaddr, (socklen_t*)&addrlen);
+        int recvlen;
+        // MAXBUF-1 for avoid buffer overflow
+        recvlen=recvfrom(sock, buf, MAXBUF-1, 0, (struct sockaddr*)&fromaddr, (socklen_t*)&addrlen);
         if(recvlen>0)
         {
             if(logined(fromaddr, buf))
@@ -211,8 +230,5 @@ void update()
         }
     }
 }
-
-COMMANDN(rconpass, setpassword, "s");
-
-}
-}
+} // namespace rcon
+} // namespace remod
