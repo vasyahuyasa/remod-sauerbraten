@@ -419,10 +419,20 @@
 
                   <td class="description">format current system time see <a href="http://www.cplusplus.com/reference/clibrary/ctime/strftime/">http://www.cplusplus.com/reference/clibrary/ctime/strftime/</a></td>
                 </tr>
-				<tr>
+		<tr>
                   <td class="command">setlogfile [str]</td>
 
                   <td class="description">file for write logs instead of STDOUT, same as -g option</td>
+                </tr>
+		<tr>
+                  <td class="command">loadmap [str]</td>
+
+                  <td class="description">(coopedit) upload map to server from file system, also check $mapdir</td>
+                </tr>
+		<tr>
+                  <td class="command">savemp [str]</td>
+
+                  <td class="description">(coopedit) save map to local file system, also check $mapdir</td>
                 </tr>
               </table>
             </li>
@@ -534,6 +544,14 @@
 
                   <td class="description">allow save demos to disk</td>
                 </tr>
+
+		<tr>
+                  <td class="command">$mapdir [str]</td>
+
+                  <td class="description">RW</td>
+
+                  <td class="description">(coopedit) folder fo save and load maps</td>
+                </tr>
               </table>
             </li>
 
@@ -609,9 +627,9 @@
                 </tr>
 
                 <tr>
-                  <td class="command">rconpass [str]</td>
+                  <td class="command">$rconpass</td>
 
-                  <td class="description">set password for rcon</td>
+                  <td class="description">rcon password</td>
                 </tr>
               </table>
             </li>
