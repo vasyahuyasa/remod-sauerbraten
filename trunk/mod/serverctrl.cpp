@@ -588,10 +588,56 @@ void loadmap(const char *name)
     sendservmsg(msg);
 }
 
-//void savemap(const char *name)
-//{
-//    server::mapdata->
-//}
+void savemap(const char *name)
+{
+    if(!m_edit) return;
+
+    stream *data;
+    string fname = "";
+    string buf = "";
+    copystring(buf, mapdir);
+    if(mapdir[0])
+    {
+        int slen = strlen(buf);
+        if(buf[slen] != '/' && buf[slen] != '\\' && slen+1 < (int)sizeof(buf)) { buf[slen] = '/'; buf[slen+1] = '\0'; }
+    }
+    formatstring(fname)("%s%s.ogz", buf, name);
+
+    // status message
+    string msg;
+
+    if(server::mapdata)
+    {
+        data = openfile(fname, "wb");
+        if(!data)
+        {
+            formatstring(msg)("[failed to open %s for writing]", fname);
+        }
+        else
+        {
+            // copy data
+            char *fbuf;
+            long len = server::mapdata->size();
+            fbuf = new char[len];
+
+            server::mapdata->seek(0, SEEK_SET);
+            server::mapdata->read(fbuf, len); // copy file to buffer
+            data->seek(0, SEEK_SET);
+            data->write(fbuf, len); // write buffer to file
+            DELETEA(fbuf);
+
+            // close file
+            data->close();
+            DELETEP(data);
+            formatstring(msg)("[map %s was saved]", name);
+        }
+    }
+    else
+    {
+        formatstring(msg)("[no map to save]", fname);
+    }
+    sendservmsg(msg);
+}
 
 //Cube script binds
 COMMAND(getname, "i");
@@ -653,4 +699,5 @@ COMMAND(systimef, "s");
 COMMAND(setlogfile, "s");
 ICOMMAND(echo, "C", (char *s), conoutf("%s", s));
 COMMAND(loadmap, "s");
+COMMAND(savemap, "s");
 }
