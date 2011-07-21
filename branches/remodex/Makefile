@@ -83,7 +83,9 @@ SERVER_OBJS= \
 	mod/serverctrl-standalone.o	\
 	mod/remod-standalone.o \
 	mod/remodex-standalone.o \
+	mod/arena-standalone.o \
 	libGeoIP/GeoIP-standalone.o
+	
 
 ifeq ($(PLATFORM),SunOS)
 SERVER_LIBS+= -lsocket -lnsl

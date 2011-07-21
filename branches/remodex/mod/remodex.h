@@ -11,6 +11,5 @@ namespace remodex
     int gethealth();
     int getgunselect();
     int getdamagescale(int wep);
-    void arenamodeupdate();
 }
 #endif

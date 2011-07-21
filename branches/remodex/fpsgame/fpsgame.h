@@ -433,7 +433,8 @@ namespace server
 
     extern servmode *smode;
 
-    //Remod
+    // Remod
+    extern stream *mapdata;
     void filtercstext(char *dst, const char *src);
     void kick(int cn, char *actorname, int expire);
 

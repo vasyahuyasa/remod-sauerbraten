@@ -21,7 +21,6 @@
 //Remod
 namespace remod
 {
-
 void getname(int *cn)
 {
     clientinfo *ci = (clientinfo *)getinfo((int)*cn);
@@ -96,7 +95,7 @@ void getflags(int *pcn)
 void version()
 {
     string txt;
-    formatstring(txt)("Remod %s (build %s %s) %s/%s", REMOD_VERSION, __DATE__, __TIME__, REMOD_SYSTEM, REMOD_ARCH);
+    formatstring(txt)("RemodEx %s (build %s %s) %s/%s", REMOD_VERSION, __DATE__, __TIME__, REMOD_SYSTEM, REMOD_ARCH);
     result(txt);
 }
 
@@ -112,14 +111,14 @@ void getteam(int *pcn)
 
 void kick(int *pcn, int *pexpire, char *actorname)
 {
-    int cn=(int)*pcn;
+    int cn = (int)*pcn;
     int expire = (int)*pexpire;
     if (!pexpire || expire<=0) expire = 4*60*60000; //4 hours - default
     expire += totalmillis;  //add current uptime
-        remod::onevent("onkick", "ii", -1, cn);
+    remod::onevent("onkick", "ii", -1, cn);
     if(strlen(actorname) == 0) actorname = newstring("console");
     server::kick(cn, actorname, expire);
-    }
+}
 
 void spectator(int *st, int *pcn)
 {
@@ -166,6 +165,7 @@ void pm(int *pcn, char *msg)
         clientinfo *ci = clients[i];
         if(ci->clientnum == cn)
         {
+            if(ci->state.aitype != AI_NONE) return;
             sendf(cn, 1, "ris", N_SERVMSG, msg);
         }
     }
@@ -344,51 +344,53 @@ void formatmillis(char *fmt, int *millis)
             int i = *fmt++;
             switch(i)
             {
-            	case 'i':
-				{
-					const char *smseconds = intstr(mseconds);
-					while(*smseconds) s.add(*smseconds++);
-					break;
-				}
-
-                case 's':
-                {
-                    const char *sseconds = newstring(2);
-                    sprintf((char*)sseconds, "%02d", seconds);
-                    while(*sseconds) s.add(*sseconds++);
-                    // xxx DELETEA(sseconds);
-                    break;
-                }
-
-                case 'm':
-                {
-                    const char *sminutes = newstring(2);
-                    sprintf((char*)sminutes, "%02d", minutes);
-                    while(*sminutes) s.add(*sminutes++);
-                    // xxx DELETEA(sminutes);
-                    break;
-                }
-
-                case 'h':
-                {
-                    const char *shours = newstring(2);
-                    sprintf((char*)shours, "%02d", hours);
-                    while(*shours) s.add(*shours++);
-                    // xxx DELETEA(shours);
-                    break;
-                }
-
-                case 'd':
-                {
-                    const char *sdays;
-                    sdays = intstr(days);
-                    while(*sdays) s.add(*sdays++);
-                    break;
-                }
-
-                default: s.add(i);
+            case 'i':
+            {
+                const char *smseconds = intstr(mseconds);
+                while(*smseconds) s.add(*smseconds++);
+                break;
             }
-        } else s.add(c);
+
+            case 's':
+            {
+                const char *sseconds = newstring(2);
+                sprintf((char*)sseconds, "%02d", seconds);
+                while(*sseconds) s.add(*sseconds++);
+                // xxx DELETEA(sseconds);
+                break;
+            }
+
+            case 'm':
+            {
+                const char *sminutes = newstring(2);
+                sprintf((char*)sminutes, "%02d", minutes);
+                while(*sminutes) s.add(*sminutes++);
+                // xxx DELETEA(sminutes);
+                break;
+            }
+
+            case 'h':
+            {
+                const char *shours = newstring(2);
+                sprintf((char*)shours, "%02d", hours);
+                while(*shours) s.add(*shours++);
+                // xxx DELETEA(shours);
+                break;
+            }
+
+            case 'd':
+            {
+                const char *sdays;
+                sdays = intstr(days);
+                while(*sdays) s.add(*sdays++);
+                break;
+            }
+
+            default:
+                s.add(i);
+            }
+        }
+        else s.add(c);
     }
     s.add('\0');
     result(s.getbuf());
@@ -408,7 +410,8 @@ void setmastercmd(int *val, int *pcn)
             {
                 name = privname(ci->privilege);
                 revokemaster(ci);
-            }  else return;
+            }
+            else return;
         }
         else
         {
@@ -438,91 +441,103 @@ void setmastercmd(int *val, int *pcn)
  * ip = "192.168.1.23",	mask = "192.168.1.*"	--  true
  * ip = "127.0.0.1",	mask = "128.0.0.1"		--  false
  */
-bool checkipbymask(char *ip, char *mask) {
-	string istr;
-	string mstr;
+bool checkipbymask(char *ip, char *mask)
+{
+    string istr;
+    string mstr;
 
-	strcpy(istr, ip);
-	strcpy(mstr, mask);
+    strcpy(istr, ip);
+    strcpy(mstr, mask);
 
-	bool b = true;
+    bool b = true;
 
-	while (b && strlen(istr) > 0) {
-		char *idot = strchr(istr, '.');
-		string iseg;
-		if (idot) {
-			int c = idot-istr;
-			strncpy(iseg, istr, c);
-			iseg[c] = '\0';
-			strcpy(istr, idot+1);
-		} else {
-			strcpy(iseg, istr);
-			istr[0] = '\0';
-		}
+    while (b && strlen(istr) > 0)
+    {
+        char *idot = strchr(istr, '.');
+        string iseg;
+        if (idot)
+        {
+            int c = idot-istr;
+            strncpy(iseg, istr, c);
+            iseg[c] = '\0';
+            strcpy(istr, idot+1);
+        }
+        else
+        {
+            strcpy(iseg, istr);
+            istr[0] = '\0';
+        }
 
-		char *mdot = strchr(mstr, '.');
-		string mseg;
-		if (mdot) {
-			int c = mdot-mstr;
-			strncpy(mseg, mstr, c);
-			mseg[c] = '\0';
-			strcpy(mstr, mdot+1);
-		} else {
-			strcpy(mseg, mstr);
-			mstr[0] = '\0';
-		}
+        char *mdot = strchr(mstr, '.');
+        string mseg;
+        if (mdot)
+        {
+            int c = mdot-mstr;
+            strncpy(mseg, mstr, c);
+            mseg[c] = '\0';
+            strcpy(mstr, mdot+1);
+        }
+        else
+        {
+            strcpy(mseg, mstr);
+            mstr[0] = '\0';
+        }
 
-		if (strcmp(iseg, mseg) != 0 && strcmp(mseg, "*") != 0) {
-			b = false;
-		}
-	}
-	return b;
+        if (strcmp(iseg, mseg) != 0 && strcmp(mseg, "*") != 0)
+        {
+            b = false;
+        }
+    }
+    return b;
 }
 
 void loopbans(const char *name, const char *ip, const char *expire, const char *actor, const char *actorip, const char *body)
 {
-	ident* idents[5];
-	idents[0] = newident(name);
-	idents[1] = newident(ip);
-	idents[2] = newident(expire);
-	idents[3] = newident(actor);
-	idents[4] = newident(actorip);
+    ident* idents[5];
+    idents[0] = newident(name);
+    idents[1] = newident(ip);
+    idents[2] = newident(expire);
+    idents[3] = newident(actor);
+    idents[4] = newident(actorip);
 
-	loopi(5)
-	{
-		if (idents[i]->type != ID_ALIAS) return;
-	}
-	in_addr addr;
-	loopv(bannedips)
-	{
-		ban b = bannedips[i];
-		if (i) {
-			aliasa(idents[0]->name, newstring(b.name));
-			addr.s_addr = b.ip;
-			aliasa(idents[1]->name, newstring(inet_ntoa(addr)));
-			aliasa(idents[2]->name, newstring(intstr(b.expire)));
-			aliasa(idents[3]->name, newstring(b.actor));
-			addr.s_addr = b.actorip;
-			aliasa(idents[4]->name, newstring(inet_ntoa(addr)));
-		} else {
-			pushident(*idents[0], newstring(b.name));
-			addr.s_addr = b.ip;
-			pushident(*idents[1], newstring(inet_ntoa(addr)));
-			pushident(*idents[2], newstring(intstr(b.expire)));
-			pushident(*idents[3], newstring(b.actor));
-			addr.s_addr = b.actorip;
-			pushident(*idents[4], newstring(inet_ntoa(addr)));
-		}
-		execute(body);
-	}
+    loopi(5)
+    {
+        if (idents[i]->type != ID_ALIAS) return;
+    }
+    in_addr addr;
+    loopv(bannedips)
+    {
+        ban b = bannedips[i];
+        if (i)
+        {
+            aliasa(idents[0]->name, newstring(b.name));
+            addr.s_addr = b.ip;
+            aliasa(idents[1]->name, newstring(inet_ntoa(addr)));
+            aliasa(idents[2]->name, newstring(intstr(b.expire)));
+            aliasa(idents[3]->name, newstring(b.actor));
+            addr.s_addr = b.actorip;
+            aliasa(idents[4]->name, newstring(inet_ntoa(addr)));
+        }
+        else
+        {
+            pushident(*idents[0], newstring(b.name));
+            addr.s_addr = b.ip;
+            pushident(*idents[1], newstring(inet_ntoa(addr)));
+            pushident(*idents[2], newstring(intstr(b.expire)));
+            pushident(*idents[3], newstring(b.actor));
+            addr.s_addr = b.actorip;
+            pushident(*idents[4], newstring(inet_ntoa(addr)));
+        }
+        execute(body);
+    }
 
-	if (bannedips.length())
-	{
+    if (bannedips.length())
+    {
         loopi(5)
         {
-			popident(*idents[i]);
-		}
-	}
+            popident(*idents[i]);
+        }
+    }
 }
 
 // system time format see http://www.cplusplus.com/reference/clibrary/ctime/strftime/
@@ -536,6 +551,92 @@ void systimef(const char *format)
     timeinfo = localtime(&now);
     strftime(buf, MAXSTRLEN, format, timeinfo);
     result(buf);
+}
+
+// directory with maps for load
+SVAR(mapdir, "");
+
+// load map from file system
+// name - map name without extension
+void loadmap(const char *name)
+{
+    if(!m_edit) return;
+
+    string fname = "";
+    string buf = "";
+    copystring(buf, mapdir);
+    if(mapdir[0])
+    {
+        int slen = strlen(buf);
+        if(buf[slen] != '/' && buf[slen] != '\\' && slen+1 < (int)sizeof(buf)) { buf[slen] = '/'; buf[slen+1] = '\0'; }
+    }
+    formatstring(fname)("%s%s.ogz", buf, name);
+
+    if(server::mapdata) DELETEP(server::mapdata);
+    server::mapdata = openfile(fname, "rb");
+
+    // status message
+    string msg;
+    if(!server::mapdata)
+    {
+        formatstring(msg)("[failed to open %s, map do not exist on the server]", name);
+    }
+    else
+    {
+        formatstring(msg)("[map %s was uploaded to server, \"/getmap\" to receive it]", name);
+    }
+    sendservmsg(msg);
+}
+
+void savemap(const char *name)
+{
+    if(!m_edit) return;
+
+    stream *data;
+    string fname = "";
+    string buf = "";
+    copystring(buf, mapdir);
+    if(mapdir[0])
+    {
+        int slen = strlen(buf);
+        if(buf[slen] != '/' && buf[slen] != '\\' && slen+1 < (int)sizeof(buf)) { buf[slen] = '/'; buf[slen+1] = '\0'; }
+    }
+    formatstring(fname)("%s%s.ogz", buf, name);
+
+    // status message
+    string msg;
+
+    if(server::mapdata)
+    {
+        data = openfile(fname, "wb");
+        if(!data)
+        {
+            formatstring(msg)("[failed to open %s for writing]", fname);
+        }
+        else
+        {
+            // copy data
+            char *fbuf;
+            long len = server::mapdata->size();
+            fbuf = new char[len];
+
+            server::mapdata->seek(0, SEEK_SET);
+            server::mapdata->read(fbuf, len); // copy file to buffer
+            data->seek(0, SEEK_SET);
+            data->write(fbuf, len); // write buffer to file
+            DELETEA(fbuf);
+
+            // close file
+            data->close();
+            DELETEP(data);
+            formatstring(msg)("[map %s was saved]", name);
+        }
+    }
+    else
+    {
+        formatstring(msg)("[no map to save]", fname);
+    }
+    sendservmsg(msg);
 }
 
 //Cube script binds
@@ -590,11 +691,13 @@ ICOMMAND(halt, "i", (int *err), exit(*err));
 COMMANDN(setmaster, setmastercmd, "ii");
 ICOMMAND(checkipbymask, "ss", (char *ip, char *mask), intret(checkipbymask(ip, mask) ? 1 : 0));
 ICOMMAND(loopbans,
-		"ssssss",
-		(char *name, char *ip, char *expire, char *actor, char *actorip, char *body),
-		loopbans(name, ip, expire, actor, actorip, body));
+         "ssssss",
+         (char *name, char *ip, char *expire, char *actor, char *actorip, char *body),
+         loopbans(name, ip, expire, actor, actorip, body));
 ICOMMAND(delban, "i", (int *n), if(bannedips.inrange(*n)) bannedips.remove(*n));
 COMMAND(systimef, "s");
 COMMAND(setlogfile, "s");
 ICOMMAND(echo, "C", (char *s), conoutf("%s", s));
+COMMAND(loadmap, "s");
+COMMAND(savemap, "s");
 }

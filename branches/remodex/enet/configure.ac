@@ -1,7 +1,6 @@
-AC_INIT([libenet], [1.3.0])
+AC_INIT([libenet], [1.3.3])
 AC_CONFIG_SRCDIR([include/enet/enet.h])
 AM_INIT_AUTOMAKE([foreign])
-AM_MAINTAINER_MODE([enable])
 
 AC_CONFIG_MACRO_DIR([m4])
 

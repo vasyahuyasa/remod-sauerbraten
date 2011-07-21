@@ -12,11 +12,12 @@
 				<Option compiler="gcc" />
 				<Option use_console_runner="0" />
 				<Compiler>
+					<Add option="-fomit-frame-pointer" />
 					<Add option="-O2" />
 					<Add option="-DSTANDALONE" />
 					<Add option="-DIRC" />
 					<Add option="-DGEOIP" />
-					<Add directory="enet\include" />
+					<Add directory="enet/include" />
 					<Add directory="shared" />
 					<Add directory="include" />
 					<Add directory="fpsgame" />
@@ -24,7 +25,6 @@
 					<Add directory="mod" />
 				</Compiler>
 				<Linker>
-					<Add option="-s" />
 					<Add library="wsock32" />
 					<Add library="ws2_32" />
 					<Add library="winmm" />
@@ -38,11 +38,16 @@
 				<Option compiler="gcc" />
 				<Option use_console_runner="0" />
 				<Compiler>
-					<Add option="-O2" />
+					<Add option="-fomit-frame-pointer" />
+					<Add option="-Wall" />
 					<Add option="-DSTANDALONE" />
 					<Add option="-DIRC" />
+					<Add option="-DGEOIP" />
+					<Add option="-DGEOIPDATADIR" />
 					<Add option="-DHAS_SOCKLEN_T" />
-					<Add directory="enet\include" />
+					<Add option="-DGEOIPDATADIR" />
+					<Add option="-DGEOIP" />
+					<Add directory="enet/include" />
 					<Add directory="shared" />
 					<Add directory="include" />
 					<Add directory="fpsgame" />
@@ -58,85 +63,87 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
-		<Unit filename="enet\callbacks.c">
+		<Unit filename="enet/callbacks.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="enet\compress.c">
+		<Unit filename="enet/compress.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="enet\host.c">
+		<Unit filename="enet/host.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="enet\include\enet\callbacks.h" />
-		<Unit filename="enet\include\enet\enet.h" />
-		<Unit filename="enet\include\enet\list.h" />
-		<Unit filename="enet\include\enet\protocol.h" />
-		<Unit filename="enet\include\enet\time.h" />
-		<Unit filename="enet\include\enet\types.h" />
-		<Unit filename="enet\include\enet\unix.h" />
-		<Unit filename="enet\include\enet\utility.h" />
-		<Unit filename="enet\include\enet\win32.h" />
-		<Unit filename="enet\list.c">
+		<Unit filename="enet/include/enet/callbacks.h" />
+		<Unit filename="enet/include/enet/enet.h" />
+		<Unit filename="enet/include/enet/list.h" />
+		<Unit filename="enet/include/enet/protocol.h" />
+		<Unit filename="enet/include/enet/time.h" />
+		<Unit filename="enet/include/enet/types.h" />
+		<Unit filename="enet/include/enet/unix.h" />
+		<Unit filename="enet/include/enet/utility.h" />
+		<Unit filename="enet/include/enet/win32.h" />
+		<Unit filename="enet/list.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="enet\packet.c">
+		<Unit filename="enet/packet.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="enet\peer.c">
+		<Unit filename="enet/peer.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="enet\protocol.c">
+		<Unit filename="enet/protocol.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="enet\unix.c">
+		<Unit filename="enet/unix.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="enet\win32.c">
+		<Unit filename="enet/win32.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="engine\command.cpp" />
-		<Unit filename="engine\engine.h" />
-		<Unit filename="engine\server.cpp" />
-		<Unit filename="fpsgame\ai.h" />
-		<Unit filename="fpsgame\aiman.h" />
-		<Unit filename="fpsgame\capture.h" />
-		<Unit filename="fpsgame\ctf.h" />
-		<Unit filename="fpsgame\extinfo.h" />
-		<Unit filename="fpsgame\fpsgame.h" />
-		<Unit filename="fpsgame\game.h" />
-		<Unit filename="fpsgame\server.cpp" />
-		<Unit filename="include\wincompat.h" />
-		<Unit filename="include\zconf.h" />
-		<Unit filename="include\zlib.h" />
-		<Unit filename="libGeoIP\GeoIP.c">
+		<Unit filename="engine/command.cpp" />
+		<Unit filename="engine/engine.h" />
+		<Unit filename="engine/server.cpp" />
+		<Unit filename="fpsgame/ai.h" />
+		<Unit filename="fpsgame/aiman.h" />
+		<Unit filename="fpsgame/capture.h" />
+		<Unit filename="fpsgame/ctf.h" />
+		<Unit filename="fpsgame/extinfo.h" />
+		<Unit filename="fpsgame/fpsgame.h" />
+		<Unit filename="fpsgame/game.h" />
+		<Unit filename="fpsgame/server.cpp" />
+		<Unit filename="include/wincompat.h" />
+		<Unit filename="include/zconf.h" />
+		<Unit filename="include/zlib.h" />
+		<Unit filename="libGeoIP/GeoIP.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="libGeoIP\GeoIP.h" />
-		<Unit filename="mod\commandev.cpp" />
-		<Unit filename="mod\commandev.h" />
-		<Unit filename="mod\commandhandler.cpp" />
-		<Unit filename="mod\commandhandler.h" />
-		<Unit filename="mod\geoipmod.cpp" />
-		<Unit filename="mod\geoipmod.h" />
-		<Unit filename="mod\irc.cpp" />
-		<Unit filename="mod\irc.h" />
-		<Unit filename="mod\rconmod.cpp" />
-		<Unit filename="mod\rconmod.h" />
-		<Unit filename="mod\remod.cpp" />
-		<Unit filename="mod\remod.h" />
-		<Unit filename="mod\remodex.cpp" />
-		<Unit filename="mod\remodex.h" />
-		<Unit filename="mod\serverctrl.cpp" />
-		<Unit filename="shared\command.h" />
-		<Unit filename="shared\crypto.cpp" />
-		<Unit filename="shared\cube.h" />
-		<Unit filename="shared\ents.h" />
-		<Unit filename="shared\geom.h" />
-		<Unit filename="shared\iengine.h" />
-		<Unit filename="shared\igame.h" />
-		<Unit filename="shared\stream.cpp" />
-		<Unit filename="shared\tools.cpp" />
-		<Unit filename="shared\tools.h" />
+		<Unit filename="libGeoIP/GeoIP.h" />
+		<Unit filename="mod/arena.cpp" />
+		<Unit filename="mod/arena.h" />
+		<Unit filename="mod/commandev.cpp" />
+		<Unit filename="mod/commandev.h" />
+		<Unit filename="mod/commandhandler.cpp" />
+		<Unit filename="mod/commandhandler.h" />
+		<Unit filename="mod/geoipmod.cpp" />
+		<Unit filename="mod/geoipmod.h" />
+		<Unit filename="mod/irc.cpp" />
+		<Unit filename="mod/irc.h" />
+		<Unit filename="mod/rconmod.cpp" />
+		<Unit filename="mod/rconmod.h" />
+		<Unit filename="mod/remod.cpp" />
+		<Unit filename="mod/remod.h" />
+		<Unit filename="mod/remodex.cpp" />
+		<Unit filename="mod/remodex.h" />
+		<Unit filename="mod/serverctrl.cpp" />
+		<Unit filename="shared/command.h" />
+		<Unit filename="shared/crypto.cpp" />
+		<Unit filename="shared/cube.h" />
+		<Unit filename="shared/ents.h" />
+		<Unit filename="shared/geom.h" />
+		<Unit filename="shared/iengine.h" />
+		<Unit filename="shared/igame.h" />
+		<Unit filename="shared/stream.cpp" />
+		<Unit filename="shared/tools.cpp" />
+		<Unit filename="shared/tools.h" />
 		<Extensions>
 			<code_completion />
 			<debugger />

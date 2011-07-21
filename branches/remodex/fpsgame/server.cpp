@@ -4,6 +4,7 @@
 #include "commandev.h"
 
 #include "remod.h"
+#include "arena.h"
 
 namespace game
 {
@@ -1134,7 +1135,7 @@ namespace server
         if(!m_mp(gamemode)) kicknonlocalclients(DISC_PRIVATE);
 
         //Remod
-        if(m_teammode) if(!persist) autoteam(); else if(m_ctf) persistautoteam();
+        if(m_teammode) { if(!persist) autoteam(); else if(m_ctf) persistautoteam(); }
 
         if(m_capture) smode = &capturemode;
         else if(m_ctf) smode = &ctfmode;

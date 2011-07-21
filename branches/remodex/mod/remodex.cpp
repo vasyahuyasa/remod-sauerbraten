@@ -13,7 +13,6 @@
 namespace remodex
 {
     using namespace server;
-    //using namespace server;
 
     // extendet ammo -1 use default ammo
     int ammoex[NUMGUNS] = { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
@@ -108,98 +107,6 @@ namespace remodex
         {
             return(damagescale[wep]);
         } else return 1;
-    }
-
-    // arena mode
-    VAR(arenaspawndelay, 0, 5000, INT_MAX); // millis to spawn after round win (default 5 sec)
-    int arenawin = -1; // millis when last men standing
-
-    void arenasendspawn()
-    {
-        loopv(clients)
-        {
-            clientinfo *ci = getinfo(i), *cq = ci;
-            if(ci && ci->state.state!=CS_SPECTATOR)
-            {
-                if(!ci->clientmap[0] && !ci->mapcrc)
-                {
-                    ci->mapcrc = -1;
-                    checkmaps(-1);
-                }
-                if(cq->state.lastdeath)
-                {
-                    flushevents(cq, cq->state.lastdeath + DEATHMILLIS);
-                    cq->state.respawn();
-                }
-                cleartimedevents(cq);
-                sendspawn(cq);
-                ci->state.state = CS_ALIVE;
-            }
-        }
-    }
-
-
-
-    bool arenacheckwin()
-    {
-        int stand = 0; // people remain
-        loopv(clients)
-        {
-            clientinfo *ci = getinfo(i);
-            if(ci && ci->state.state != CS_DEAD && ci->state.state != CS_SPECTATOR) stand++;
-        }
-        if(stand<=1)
-        {
-        loopv(clients)
-        {
-            clientinfo *ci = getinfo(i);
-            if(ci)
-            {
-                defformatstring(msg)("clients[%i].state=%i", ci->clientnum, ci->state.state);
-                sendservmsg(msg);
-            }
-        }
-
-           return true;
-        }
-        if(!m_teammode) return false; // check for team mode
-        string teamname = "";
-        loopv(clients)
-        {
-            clientinfo *ci = getinfo(i);
-            if(ci && ci->state.state != CS_DEAD && ci->state.state != CS_SPECTATOR)
-            {
-                if(teamname[0]) // first run
-                {
-                    strcpy(teamname, ci->team);
-                }
-                else
-                {
-                    if(strcmp(teamname, ci->team) != -1) return false; // diffirent teams
-                }
-            }
-        }
-        return true; // all in one team;
-    }
-
-    void arenamodeupdate()
-    {
-        if(arenawin > -1) // round ended wait for start
-        {
-            if(arenawin <= (gamemillis - arenaspawndelay)) // wait time elpsed
-            {
-                arenasendspawn();
-                arenawin = -1;
-            }
-        }
-        else // check win condition
-        {
-            if(arenacheckwin()) // one man or team stand
-            {
-                sendservmsg("arena win, one man(team) stand");
-                arenawin = gamemillis;
-            }
-        }
     }
 
     // bindings

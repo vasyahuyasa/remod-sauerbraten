@@ -1,6 +1,15 @@
 // command example
+
+// our callback function for user command
 cmd_example = [
+	// $arg2 - caller cn
 	...
 ]
 
 registercommand "example" cmd_example 2 "cs" "example [cn] [msg] ^f1Command example"
+
+// "example" - command name which user should type
+// cmd_example - function which executes when user call command
+// 2 - who can use that function (1 - any player, 2 - masters, 3 - admins only)
+// cs - parameters what user should pass (c - cn, s - string, w - word, | - not obligate parameters)
+// "example [cn] [msg] ^f1Command example" - help string which user see whn type #help example
