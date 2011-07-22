@@ -13,6 +13,7 @@ namespace remod
     bool ismaster(int *cn);
     bool isadmin(int *cn);
     bool isspectator(int *cn);
+    void setteam(int *pcn, const char *team);
 
     char* concatpstring(char *d, const char *s);
 }

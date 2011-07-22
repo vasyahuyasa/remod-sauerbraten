@@ -45,8 +45,6 @@
 					<Add option="-DGEOIP" />
 					<Add option="-DGEOIPDATADIR" />
 					<Add option="-DHAS_SOCKLEN_T" />
-					<Add option="-DGEOIPDATADIR" />
-					<Add option="-DGEOIP" />
 					<Add directory="enet/include" />
 					<Add directory="shared" />
 					<Add directory="include" />
@@ -134,6 +132,8 @@
 		<Unit filename="mod/remodex.cpp" />
 		<Unit filename="mod/remodex.h" />
 		<Unit filename="mod/serverctrl.cpp" />
+		<Unit filename="mod/zombie.cpp" />
+		<Unit filename="mod/zombie.h" />
 		<Unit filename="shared/command.h" />
 		<Unit filename="shared/crypto.cpp" />
 		<Unit filename="shared/cube.h" />

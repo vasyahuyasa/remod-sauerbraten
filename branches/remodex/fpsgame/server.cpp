@@ -5,6 +5,7 @@
 
 #include "remod.h"
 #include "arena.h"
+#include "zombie.h"
 
 namespace game
 {
@@ -927,6 +928,11 @@ namespace server
     {
         gamestate &gs = ci->state;
         gs.spawnstate(gamemode);
+
+        // Remodex
+        // take ammo and set health
+        if(remodex::iszombie(ci)) remodex::zombiestate(ci);
+
         gs.lifesequence = (gs.lifesequence + 1)&0x7F;
     }
 
@@ -1524,7 +1530,8 @@ namespace server
     bool ispaused() { return gamepaused; }
 
     // remodex
-    VAR(arenamode, 0, 0, 1); // spawn when last man standing
+    VAR(arenamode, 0, 0, 1);    // spawn when last man standing
+    VAR(zombiemode, 0, 0, 1);   // zombies!!11 o,.,o
 
     void serverupdate()
     {

@@ -84,6 +84,7 @@ SERVER_OBJS= \
 	mod/remod-standalone.o \
 	mod/remodex-standalone.o \
 	mod/arena-standalone.o \
+	mod/zombie-standalone.o \
 	libGeoIP/GeoIP-standalone.o
 	
 
