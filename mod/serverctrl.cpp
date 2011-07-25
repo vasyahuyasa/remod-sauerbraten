@@ -639,6 +639,22 @@ void savemap(const char *name)
     sendservmsg(msg);
 }
 
+// from client.cpp
+void listclients()
+{
+    vector<char> buf;
+    string cn;
+    int numclients = 0;
+    loopv(clients) if(clients[i])
+    {
+        formatstring(cn)("%d", clients[i]->clientnum);
+        if(numclients++) buf.add(' ');
+        buf.put(cn, strlen(cn));
+    }
+    buf.add('\0');
+    result(buf.getbuf());
+}
+
 //Cube script binds
 COMMAND(getname, "i");
 ICOMMAND(getmap, "", (), result(smapname));
@@ -700,4 +716,5 @@ COMMAND(setlogfile, "s");
 ICOMMAND(echo, "C", (char *s), conoutf("%s", s));
 COMMAND(loadmap, "s");
 COMMAND(savemap, "s");
+COMMAND(listclients, "");
 }
