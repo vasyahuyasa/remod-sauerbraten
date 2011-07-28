@@ -39,6 +39,9 @@ namespace rcon
 // state of rcon
 bool active;
 
+// wait connections
+VAR(rconenable, 0, 0, 1);
+
 // rcon password
 SVAR(rconpass, "");
 
@@ -143,6 +146,8 @@ bool logined(struct sockaddr_in addr, char *msg)
 //Init rcon module
 void init(int port=27070)
 {
+    if(!rconenable) { active = false; return; }
+
     sock=socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
     if(sock<0)
     {
