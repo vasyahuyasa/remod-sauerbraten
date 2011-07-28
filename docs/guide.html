@@ -430,9 +430,27 @@
                   <td class="description">(coopedit) upload map to server from file system, also check $mapdir</td>
                 </tr>
 		<tr>
-                  <td class="command">savemp [str]</td>
+                  <td class="command">savemap [str]</td>
 
                   <td class="description">(coopedit) save map to local file system, also check $mapdir</td>
+                </tr>
+	
+		<tr>
+                  <td class="command">publicserver [n]</td>
+
+                  <td class="description">Toggles whether a server is considered a "public" server when n=1: can only gain master by "auth" or admin and doesn't allow locked/private mastermodes. n=0 allows "setmaster 1" and locked/private mastermodes (for coop-editing and such). n=3 allows gain master by auth, allow mastermode 2 for masters, allow mastermode 3 for admins.</td>
+                </tr>
+
+		<tr>
+                  <td class="command">identexists [str] (1|0)</td>
+
+                  <td class="description">return 1 if variable "str" was defined somewhere, even if empy, othervise return 0</td>
+                </tr>
+
+		<tr>
+                  <td class="command">eval [str] (str)</td>
+
+                  <td class="description">evaluates a string as though it were an expression and returns a result</td>
                 </tr>
               </table>
             </li>
@@ -552,6 +570,14 @@
 
                   <td class="description">(coopedit) folder fo save and load maps</td>
                 </tr>
+
+		<tr>
+                  <td class="command">$commandchar [str]</td>
+
+                  <td class="description">RW</td>
+
+                  <td class="description">character before player command (default: "#")</td>
+                </tr>
               </table>
             </li>
 
@@ -568,7 +594,7 @@
                 <tr>
                   <td class="command">nextmap (str)</td>
 
-                  <td class="description">if function defined should return name of next map</td>
+                  <td class="description">if function defined should return name of next map, server use that variable for change map if not enough votes</td>
                 </tr>
 
                 <tr>
@@ -624,6 +650,18 @@
                   <td>command</td>
 
                   <td>description</td>
+                </tr>
+
+		<tr>
+                  <td class="command">$rconenable</td>
+
+                  <td class="description">allow remote acess to server's cubescript engine</td>
+                </tr>
+
+		<tr>
+                  <td class="command">$rconport</td>
+
+                  <td class="description">rcon port</td>
                 </tr>
 
                 <tr>

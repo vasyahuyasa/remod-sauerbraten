@@ -655,6 +655,8 @@ void listclients()
     result(buf.getbuf());
 }
 
+
+
 //Cube script binds
 COMMAND(getname, "i");
 ICOMMAND(getmap, "", (), result(smapname));
@@ -717,4 +719,6 @@ ICOMMAND(echo, "C", (char *s), conoutf("%s", s));
 COMMAND(loadmap, "s");
 COMMAND(savemap, "s");
 COMMAND(listclients, "");
+ICOMMAND(identexists, "s", (const char *name), intret(identexists(name)));
+ICOMMAND(eval, "C", (char *s), result(executeret(s)));
 }

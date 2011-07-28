@@ -1277,14 +1277,14 @@ namespace server
     }
 
     //Remod
-    VAR(intermissontime, 0, 10000, INT_MAX);
+    VAR(imissiontime, 0, 10000, INT_MAX);
     void checkintermission()
     {
         if(gamemillis >= gamelimit && !interm)
         {
             sendf(-1, 1, "ri2", N_TIMEUP, 0);
             if(smode) smode->intermission();
-            interm = gamemillis + intermissontime;
+            interm = gamemillis + imissiontime;
             //Remod
             remod::onevent("onimission", "");
         }
