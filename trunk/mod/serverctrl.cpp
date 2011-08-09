@@ -691,7 +691,7 @@ COMMAND(saytomaster, "C");
 COMMAND(saytoadmin, "C");
 COMMANDN(mastermode, _mastermode, "i");
 VARF(pause, 0, 0, 1, server::pausegame(pause));
-ICOMMAND(clearbans, "", (), remod::onevent("onclearbans", ""); bannedips.shrink(0); sendservmsg("cleared all bans"));
+ICOMMAND(clearbans, "", (), remod::onevent("onclearbans", "i", -1); bannedips.shrink(0); sendservmsg("cleared all bans"));
 COMMAND(setteam, "is");
 COMMAND(getping, "i");
 COMMAND(getonline, "i");
