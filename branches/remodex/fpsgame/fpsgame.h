@@ -455,6 +455,7 @@ namespace server
     //Remodex
     void flushevents(clientinfo *ci, int millis);
     void cleartimedevents(clientinfo *ci);
+    void spawnstate(clientinfo *ci);
     void sendspawn(clientinfo *ci);
 
 }

@@ -60,6 +60,10 @@ namespace server
     VAR(autodemo, 0, 0, 1 );
     SVAR(demodir, "");
 
+    // remodex
+    VAR(arenamode, 0, 0, 1);    // spawn when last man standing
+    VAR(zombiemode, 0, 0, 1);   // zombies!!11 o,.,o
+
     vector<uint> allowedips;
     vector<ban> bannedips;
     vector<clientinfo *> connects, clients, bots;
@@ -931,7 +935,7 @@ namespace server
 
         // Remodex
         // take ammo and set health
-        if(remodex::iszombie(ci)) remodex::zombiestate(ci);
+        if(zombiemode && remodex::iszombie(ci)) remodex::zombiestate(ci);
 
         gs.lifesequence = (gs.lifesequence + 1)&0x7F;
     }
@@ -1284,14 +1288,14 @@ namespace server
     }
 
     //Remod
-    VAR(intermissontime, 0, 10000, INT_MAX);
+    VAR(imissiontime, 0, 10000, INT_MAX);
     void checkintermission()
     {
         if(gamemillis >= gamelimit && !interm)
         {
             sendf(-1, 1, "ri2", N_TIMEUP, 0);
             if(smode) smode->intermission();
-            interm = gamemillis + intermissontime;
+            interm = gamemillis + imissiontime;
             //Remod
             remod::onevent("onimission", "");
         }
@@ -1529,9 +1533,7 @@ namespace server
 
     bool ispaused() { return gamepaused; }
 
-    // remodex
-    VAR(arenamode, 0, 0, 1);    // spawn when last man standing
-    VAR(zombiemode, 0, 0, 1);   // zombies!!11 o,.,o
+
 
     void serverupdate()
     {
