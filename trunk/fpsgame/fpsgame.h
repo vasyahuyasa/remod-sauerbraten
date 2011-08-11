@@ -113,6 +113,7 @@ namespace server
         float effectiveness;
         //remod
         bool muted;
+        bool editmuted;
 
         gamestate() : state(CS_DEAD), editstate(CS_DEAD) {}
 
@@ -138,6 +139,7 @@ namespace server
 
             //remod
             muted = false;
+            editmuted = false;
 
             frags = flags = deaths = teamkills = shotdamage = damage = 0;
 
@@ -171,6 +173,7 @@ namespace server
 
         //remod
         bool muted;
+        bool editmuted;
 
         void save(gamestate &gs)
         {
@@ -186,6 +189,7 @@ namespace server
 
             //remod
             muted = gs.muted;
+            editmuted = gs.editmuted;
         }
 
         void restore(gamestate &gs)
@@ -203,6 +207,7 @@ namespace server
 
             //remod
             gs.muted = muted;
+            gs.editmuted = editmuted;
         }
     };
 

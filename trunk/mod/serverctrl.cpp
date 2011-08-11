@@ -655,6 +655,28 @@ void listclients()
     result(buf.getbuf());
 }
 
+void editmute(int *pcn, int *val)
+{
+    int cn = (int)*pcn;
+    bool v = (bool)*val;
+
+    clientinfo *ci = (clientinfo *)getinfo(cn);
+    if(ci)
+    {
+        if(ci->state.editmuted != v)
+        {
+            ci->state.editmuted = v;
+            remod::onevent("oneditmute", "ii", v ? 1 : 0, cn);
+        }
+    }
+}
+
+void iseditmuted(int *cn)
+{
+    clientinfo *ci = (clientinfo *)getinfo(*cn);
+    intret(ci && ci->state.editmuted);
+}
+
 
 
 //Cube script binds
@@ -721,4 +743,6 @@ COMMAND(savemap, "s");
 COMMAND(listclients, "");
 ICOMMAND(identexists, "s", (const char *name), intret(identexists(name)));
 ICOMMAND(eval, "C", (char *s), result(executeret(s)));
+COMMAND(editmute, "ii");
+COMMAND(iseditmuted, "i");
 }

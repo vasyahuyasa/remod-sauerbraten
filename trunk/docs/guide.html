@@ -263,6 +263,18 @@
 
                   <td class="description">return cn of player</td>
                 </tr>
+
+		<tr>
+                  <td class="command">editmute [cn] [1|0]</td>
+
+                  <td class="description">editmute [1] or edit unmute [0] player, if player edit muted other players will not see it edits</td>
+                </tr>
+
+                <tr>
+                  <td class="command">iseditmuted [cn] (1|0)</td>
+
+                  <td class="description">return 1 if player editmuted</td>
+                </tr>
               </table>
             </li>
 
@@ -1163,6 +1175,11 @@
                   <td class="description">When team scored flag</td>
                 </tr>
                 
+		<tr>
+                  <td class="command">oneditmute (1|0) (cn)</td>
+
+                  <td class="description">When player editmuted/editunmuted</td>
+                </tr>
                 
               </table>
             </li>

@@ -52,6 +52,7 @@ Server events: +
 	#coopedit
 	@ongetmap [cn] +
 	@onnewmap [cn] +   
+	oneditemute [1|0] [cn]
 	
 	#IRC bot
 	irc_onmsg [nick] [txt] +	"sender" "p a r a m s"   
@@ -144,6 +145,13 @@ Cube script:
 	kick [cn] [time] [actor] + kick and ban cn for specified time, actor can be cn or name of kicker
 	systimef [format] (str) + returnt formated system time see http://www.cplusplus.com/reference/clibrary/ctime/strftime/
 	setlogfile [str] + same as -g option
+	loadmap [map] + savemap to disk
+	savemap [map] + load map from disk
+	listclients ( 1 2 4 ...) + return list of client numbers
+	identexists (1|0) + check if variable exists, even it equal 0 or empty line
+	eval [str] (str) + execute cube script string
+	editmute [cn] [1|0] + do not alow player to edit
+	iseditmuted (1|0) + check if player editmuted
 	
 	
 Cube script function variables

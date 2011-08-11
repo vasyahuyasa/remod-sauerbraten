@@ -1134,7 +1134,7 @@ namespace server
         if(!m_mp(gamemode)) kicknonlocalclients(DISC_PRIVATE);
 
         //Remod
-        if(m_teammode) if(!persist) { autoteam(); } else { if(m_ctf) persistautoteam(); }
+        if(m_teammode) { if(!persist) { autoteam(); } else { if(m_ctf) persistautoteam(); } }
 
         if(m_capture) smode = &capturemode;
         else if(m_ctf) smode = &ctfmode;
@@ -1898,6 +1898,7 @@ namespace server
 
     void parsepacket(int sender, int chan, packetbuf &p)     // has to parse exactly each byte of the packet
     {
+        // Remod /* thanks to other mods for some edit staff code :) */
         if(sender<0) return;
         char text[MAXTRANS];
         int type;
@@ -1952,7 +1953,7 @@ namespace server
         }
         else if(chan==2)
         {
-            receivefile(sender, p.buf, p.maxlen);
+            if(!ci->state.editmuted) receivefile(sender, p.buf, p.maxlen);
             return;
         }
 
@@ -2332,6 +2333,8 @@ namespace server
                 int type = getint(p);
                 loopk(5) getint(p);
                 if(!ci || ci->state.state==CS_SPECTATOR) break;
+                // Remod
+                if(ci->state.editmuted) break;
                 QUEUE_MSG;
                 bool canspawn = canspawnitem(type);
                 if(i<MAXENTS && (sents.inrange(i) || canspawnitem(type)))
@@ -2358,6 +2361,8 @@ namespace server
                     case ID_FVAR: getfloat(p); break;
                     case ID_SVAR: getstring(text, p);
                 }
+                // remod
+                if(ci->state.editmuted) break;
                 if(ci && ci->state.state!=CS_SPECTATOR) QUEUE_MSG;
                 break;
             }
@@ -2540,6 +2545,7 @@ namespace server
                 int size = getint(p);
                 if(!ci->privilege && !ci->local && ci->state.state==CS_SPECTATOR) break;
                 //Remod
+                if(ci->state.editmuted) break;
                 if(remod::onevent("onnewmap", "i", ci->clientnum)) break;
                 if(size>=0)
                 {
@@ -2615,17 +2621,23 @@ namespace server
             }
 
             case N_COPY:
+            {
                 ci->cleanclipboard();
                 ci->lastclipboard = totalmillis;
                 goto genericmsg;
+            }
 
             case N_PASTE:
+            {
                 if(ci->state.state!=CS_SPECTATOR) sendclipboard(ci);
                 goto genericmsg;
+            }
 
             case N_CLIPBOARD:
             {
                 int unpacklen = getint(p), packlen = getint(p);
+                // Remod
+                if(ci->state.editmuted) break;
                 ci->cleanclipboard(false);
                 if(ci->state.state==CS_SPECTATOR)
                 {
@@ -2666,7 +2678,7 @@ namespace server
                 int size = server::msgsizelookup(type);
                 if(size<=0) { disconnect_client(sender, DISC_TAGT); return; }
                 loopi(size-1) getint(p);
-                if(ci && cq && (ci != cq || ci->state.state!=CS_SPECTATOR)) { QUEUE_AI; QUEUE_MSG; }
+                if(ci && cq && (ci != cq || ci->state.state!=CS_SPECTATOR) && !ci->state.editmuted) { QUEUE_AI; QUEUE_MSG; }
                 break;
             }
         }
