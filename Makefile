@@ -3,18 +3,45 @@
 #Use geoip module?  true|false 
 USE_GEOIP=true
 
+#Use irc bot? true|false
+USE_IRCBOT=true
+
+#Sqlite3 support? true|false
+USE_SQLITE3=false
+
 #Use database?  none|mysql|postgres|sqlite
 #NOT IMPLEMENTED YET
 #USE_DATABASE=mysql
 
-#Use irc bot? true|false
-USE_IRCBOT=true
-
 ######################################
 
+### Tools
 CXX= gcc
-CXXFLAGS= -O0 -fomit-frame-pointer -Wall -fsigned-char 
- 
+MV=mv
+STRIP=
+ifeq (,$(findstring -g,$(CXXFLAGS)))
+ifeq (,$(findstring -pg,$(CXXFLAGS)))
+  STRIP=strip
+endif
+endif
+ifneq (,$(findstring MINGW,$(PLATFORM)))
+WINDRES= windres
+endif
+
+### Folders, libraries, includes
+ifneq (,$(findstring MINGW,$(PLATFORM)))
+SERVER_INCLUDES+= -DSTANDALONE $(INCLUDES) -Iinclude
+SERVER_LIBS= -Llib -lzdll -lenet -lws2_32 -lwinmm 
+else
+SERVER_INCLUDES+= -DSTANDALONE $(INCLUDES)
+SERVER_LIBS= -Lenet/.libs -L/usr/local/lib -lenet -lz -lstdc++
+endif
+
+ifeq ($(PLATFORM),SunOS)
+SERVER_LIBS+= -lsocket -lnsl
+endif
+
+CXXFLAGS= -O0 -fomit-frame-pointer -Wall -fsigned-char -DSTANDALONE
 override CXXFLAGS+= -g -DDEBUG # uncomment for debugging
 
 PLATFORM= $(shell uname -s)
@@ -22,15 +49,40 @@ PLATFORM_PREFIX= native
 
 INCLUDES= -Ishared -Iengine -Ifpsgame -Ienet/include -Imod 
 
+SERVER_OBJS= \
+	shared/crypto-standalone.o \
+	shared/stream-standalone.o \
+	shared/tools-standalone.o \
+	engine/command-standalone.o \
+	engine/server-standalone.o \
+	fpsgame/server-standalone.o \
+	mod/commandev-standalone.o \
+	mod/commandhandler-standalone.o \
+	mod/rconmod-standalone.o \
+	mod/serverctrl-standalone.o \
+	mod/remod-standalone.o
+
+### Options checks
+
 #geoip
 ifeq ($(USE_GEOIP),true)
 override CXXFLAGS+= -DGEOIPDATADIR -DGEOIP
 override INCLUDES+= -IlibGeoIP
+override SERVER_OBJS+= mod/geoipmod-standalone.o libGeoIP/GeoIP-standalone.o
 endif
 
 #irc
 ifeq ($(USE_IRCBOT),true)
-override CXXFLAGS+=  -DIRC
+override CXXFLAGS+= -DIRC
+override SERVER_OBJS+= mod/irc-standalone.o
+endif
+
+#sqlite3
+ifeq ($(USE_SQLITE3),true)
+override CXXFLAGS+= -DSQLITE3
+override INCLUDES+= -Isqlite3
+override SERVER_LIBS+= -ldl -lpthread
+override SERVER_OBJS+= sqlite3/sqlite3-standalone.o
 endif
 
 #database
@@ -46,47 +98,6 @@ endif
 #override INCLUDES+= -Ipostgres
 #override CXXFLAGS+= -DDBSQLITE -DDATABASE
 #endif
-
-
-STRIP=
-ifeq (,$(findstring -g,$(CXXFLAGS)))
-ifeq (,$(findstring -pg,$(CXXFLAGS)))
-  STRIP=strip
-endif
-endif
-
-MV=mv
-
-ifneq (,$(findstring MINGW,$(PLATFORM)))
-WINDRES= windres
-endif
-
-ifneq (,$(findstring MINGW,$(PLATFORM)))
-SERVER_INCLUDES+= -DSTANDALONE $(INCLUDES) -Iinclude
-SERVER_LIBS= -Llib -lzdll -lenet -lws2_32 -lwinmm 
-else
-SERVER_INCLUDES+= -DSTANDALONE $(INCLUDES)
-SERVER_LIBS= -Lenet/.libs -L/usr/local/lib -lenet -lz -lstdc++
-endif
-SERVER_OBJS= \
-	shared/crypto-standalone.o \
-	shared/stream-standalone.o \
-	shared/tools-standalone.o \
-	engine/command-standalone.o \
-	engine/server-standalone.o \
-	fpsgame/server-standalone.o \
-	mod/commandev-standalone.o \
-	mod/commandhandler-standalone.o \
-	mod/geoipmod-standalone.o \
-	mod/irc-standalone.o \
-	mod/rconmod-standalone.o \
-	mod/serverctrl-standalone.o	\
-	mod/remod-standalone.o \
-	libGeoIP/GeoIP-standalone.o
-
-ifeq ($(PLATFORM),SunOS)
-SERVER_LIBS+= -lsocket -lnsl
-endif
 
 default: all
 
