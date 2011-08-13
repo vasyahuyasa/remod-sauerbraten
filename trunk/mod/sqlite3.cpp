@@ -12,10 +12,10 @@
 * sqlite3_open	[str] (db)						// return: -1 error othervise return db handle number
 * sqlite3_query	[db]  [str] (req_handle)		// return: -1 error, "" request is done do finalize othervise return $req_handle
 * sqlite3_colnames [req_handle] (col1 col2 col3 ...)	// return column names
-* sqlite3_getrow   [req_handle] (field1 field2 field3 ...) // return: "" request is done othervise return list of fields and automaticaly do finalize
+* sqlite3_getrow   [req_handle] (field1 field2 field3 ...) // return: "" request is done (automaticaly finalize) othervise return list of fields
 * sqlite3_finalize [req_handle]					// free query result before all rows processed
-* sqlite3_error	 (str)							// return last error or ""
-* sqlite3_close	 [db]							// close database
+* sqlite3_error    [db] (str)					// return last error or ""
+* sqlite3_close	   [db]							// close database
 *
 **********************
 **** Insert values ***
@@ -71,7 +71,275 @@
 #include "fpsgame.h"
 #include "sqlite3.h"
 
+#define inrange(n, _max) (n>=0 && n<_max)
+
+#define MAXDB 10
+#define MAXSTMT 50
+
 namespace remod
 {
+    // list of databases
+    sqlite3* dbs[MAXDB] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
 
+    // list of statments
+    sqlite3_stmt* stmts[MAXSTMT] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
+
+    // open databse and return -1 or $db_id
+    void cs_sqlite3_open(const char *name)
+    {
+        sqlite3 *db;
+        int rc;
+
+        // open DB
+        rc = sqlite3_open(name, &db);
+        if(rc)
+        {
+            // error while opening DB
+            sqlite3_close(db);
+            intret(-1);
+        }
+        else
+        {
+            loopi(MAXDB)
+            {
+                // search for free slot and return it
+                if(dbs[i]  == NULL)
+                {
+                    dbs[i] = db;
+                    intret(i);
+                    return;
+                }
+            }
+
+            // no free slots
+            intret(-1);
+        }
+    }
+
+    // make sql query -1 on error, "" request is done, req_uid need make steps
+    void cs_sqlite3_query(int *dbuid, const char* query)
+    {
+        // chack if db in range
+        if(!inrange(*dbuid, MAXDB)) { intret(-1); return; }
+
+        int rc;
+
+        // statement for work
+        sqlite3_stmt *stmt;
+
+        // select database for work
+        sqlite3 *db = dbs[*dbuid];
+
+        // compile SQL query to bytecode
+        if(sqlite3_prepare(db, query, -1, &stmt, NULL))
+        {
+            // error in query
+            sqlite3_finalize(stmt);
+            intret(-1);
+            return;
+        }
+
+        // do request
+        rc = sqlite3_step(stmt);
+        switch(rc)
+        {
+            case SQLITE_ROW:
+            {
+                // return statement uid
+                loopi(MAXSTMT)
+                {
+                    if(stmts[i] == NULL)
+                    {
+                        stmts[i] = stmt;
+                        intret(i);
+                        return;
+                    }
+                }
+
+                // no free statement slot
+                intret(-1);
+                break;
+            }
+
+            case SQLITE_DONE:
+            {
+                // request done return ""
+                result("");
+                break;
+            }
+
+            default:
+            {
+                // unknow result
+                intret(-1);
+                break;
+            }
+        }
+
+        // request is done
+        sqlite3_finalize(stmt);
+    }
+
+    void cs_sqlite3_colnames(int *requid)
+    {
+        // chack if request uid in range
+        if(!inrange(*requid, MAXSTMT)) { result(""); return; }
+
+        // get statment from array
+        sqlite3_stmt *stmt = stmts[*requid];
+
+        if(stmt)
+        {
+            // return column names
+            vector<char> buf;
+
+            // add every column name to result
+            loopi(sqlite3_data_count(stmt))
+            {
+                if(buf.length()) buf.add(' ');
+                defformatstring(colname)("%s", sqlite3_column_name(stmt, i));
+                buf.put(colname, strlen(colname));
+            }
+            buf.add('\0');
+            result(buf.getbuf());
+        }
+        else
+        {
+            // return empty line
+            result("");
+        }
+    }
+
+    void cs_sqlite3_getrow(int *requid)
+    {
+        // chack if request uid in range
+        if(!inrange(*requid, MAXSTMT)) { result(""); return; }
+
+        // get statement from array
+        sqlite3_stmt *stmt = stmts[*requid];
+
+        if(stmt)
+        {
+            // if pointer not NULL
+            // return list of fields
+            vector<char> buf;
+
+            loopi(sqlite3_data_count(stmt))
+            {
+                if(buf.length()) buf.add(' ');
+                defformatstring(field)("%s", sqlite3_column_text(stmt, i));
+                buf.put(field, strlen(field));
+            }
+            buf.add('\0');
+            result(buf.getbuf());
+
+            // do next step
+            int rc = sqlite3_step(stmt);
+
+            switch(rc)
+            {
+                case SQLITE_DONE:
+                {
+                    // if request was finished do finalize
+                    sqlite3_finalize(stmt);
+
+                    // NULL'ize pointer in list
+                    stmts[*requid] = NULL;
+                    break;
+                }
+
+                case SQLITE_ROW:
+                {
+                    // we have one more row
+                    // do nothing
+                    break;
+                }
+
+                default:
+                {
+                    // error happaned
+                    // finalize
+                    sqlite3_finalize(stmt);
+                    stmts[*requid] = NULL;
+                    break;
+                }
+            }
+        }
+        else
+        {
+            // if NULL pointer return empty list
+            result("");
+        }
+
+    }
+
+    // finalize not
+    void cs_sqlite3_finalize(int *requid)
+    {
+
+        // chack if request uid in range
+        if(!inrange(*requid, MAXSTMT)) { return; }
+
+        // get statement from array
+        sqlite3_stmt *stmt = stmts[*requid];
+
+        if(stmt)
+        {
+            // if statemnt not NULL finalize and mke it NULL
+            sqlite3_finalize(stmt);
+            stmts[*requid] = NULL;
+        }
+    }
+
+    // return last error str
+    void cs_sqlite3_error(int *dbuid)
+    {
+        // chack if DB in range
+        if(!inrange(*dbuid, MAXDB)) { result(""); return; }
+
+        // select DB from list
+        sqlite3 *db = dbs[*dbuid];
+
+        // check if DB not null
+        if(db)
+        {
+            const char *errmsg = sqlite3_errmsg(db);
+
+            if(errmsg)
+            {
+                // return error
+                result(errmsg);
+                return;
+            }
+        }
+
+        // no DB or no error
+        result("");
+    }
+
+    // close DB and free handler
+    void cs_sqlite3_close(int *dbuid)
+    {
+        // chack if DB in range
+        if(!inrange(*dbuid, MAXDB)) { return; }
+
+        // select DB from list
+        sqlite3 *db = dbs[*dbuid];
+
+        // check if DB not null
+        if(db)
+        {
+            sqlite3_close(db);
+            dbs[*dbuid] = NULL;
+        }
+    }
+
+    // registering commands
+    COMMANDN(sqlite3_open,      cs_sqlite3_open,    "s");
+    COMMANDN(sqlite3_query,     cs_sqlite3_query,   "is");
+    COMMANDN(sqlite3_colnames,  cs_sqlite3_colnames,"i");
+    COMMANDN(sqlite3_getrow,    cs_sqlite3_getrow,  "i");
+    COMMANDN(sqlite3_finalize,  cs_sqlite3_finalize,"i");
+    COMMANDN(sqlite3_error,     cs_sqlite3_error,   "i");
+    COMMANDN(sqlite3_close,     cs_sqlite3_close,   "i");
 }
