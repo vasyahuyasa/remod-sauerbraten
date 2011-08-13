@@ -59,7 +59,7 @@
 * row = (sqlite3_getrow $req)
 *
 * while (!=s $row "") [
-*	print $row
+*	echo $row
 *	row = (sqlite3_getrow $req)
 * ]
 *

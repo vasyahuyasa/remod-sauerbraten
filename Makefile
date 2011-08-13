@@ -80,7 +80,7 @@ override CXXFLAGS+= -DSQLITE3
 override INCLUDES+= -Isqlite3
 
 #linux-only libs
-ifeq (($PLATFORM),Linux)
+ifeq ($(PLATFORM),Linux)
 override SERVER_LIBS+= -ldl -lpthread
 endif
 
