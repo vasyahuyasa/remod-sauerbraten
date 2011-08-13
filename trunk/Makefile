@@ -7,16 +7,12 @@ USE_GEOIP=true
 USE_IRCBOT=true
 
 #Sqlite3 support? true|false
-USE_SQLITE3=false
-
-#Use database?  none|mysql|postgres|sqlite
-#NOT IMPLEMENTED YET
-#USE_DATABASE=mysql
+USE_SQLITE3=true
 
 ######################################
 
 ### Tools
-CXX= gcc
+CXX=gcc
 MV=mv
 STRIP=
 ifeq (,$(findstring -g,$(CXXFLAGS)))
@@ -24,6 +20,7 @@ ifeq (,$(findstring -pg,$(CXXFLAGS)))
   STRIP=strip
 endif
 endif
+
 ifneq (,$(findstring MINGW,$(PLATFORM)))
 WINDRES= windres
 endif
@@ -81,23 +78,14 @@ endif
 ifeq ($(USE_SQLITE3),true)
 override CXXFLAGS+= -DSQLITE3
 override INCLUDES+= -Isqlite3
+
+#linux-only libs
+ifeq (($PLATFORM),Linux)
 override SERVER_LIBS+= -ldl -lpthread
-override SERVER_OBJS+= sqlite3/sqlite3-standalone.o
 endif
 
-#database
-#ifeq ($(USE_DATABASE),mysql)
-#override INCLUDES+= -Iinclude/db/mysql
-#override CXXFLAGS+= -DDBMYSQL -DDATABASE -lmysqlclient
-#endif
-#ifeq ($(USE_DATABASE),postgres)
-#override INCLUDES+= -Ipostgres
-#override CXXFLAGS+= -DDBPOSTGRES -DDATABASE
-#endif
-#ifeq ($(USE_DATABASE),sqlite)
-#override INCLUDES+= -Ipostgres
-#override CXXFLAGS+= -DDBSQLITE -DDATABASE
-#endif
+override SERVER_OBJS+= sqlite3/sqlite3-standalone.o mod/sqlite3-standalone.o
+endif
 
 default: all
 
