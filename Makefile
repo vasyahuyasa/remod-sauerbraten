@@ -64,8 +64,8 @@ SERVER_OBJS= \
 #geoip
 ifeq ($(USE_GEOIP),true)
 override CXXFLAGS+= -DGEOIPDATADIR -DGEOIP
-override INCLUDES+= -IlibGeoIP
-override SERVER_OBJS+= mod/geoipmod-standalone.o libGeoIP/GeoIP-standalone.o
+override INCLUDES+= -Imod/libGeoIP
+override SERVER_OBJS+= mod/geoipmod-standalone.o mod/libGeoIP/GeoIP-standalone.o
 endif
 
 #irc
@@ -77,14 +77,14 @@ endif
 #sqlite3
 ifeq ($(USE_SQLITE3),true)
 override CXXFLAGS+= -DSQLITE3
-override INCLUDES+= -Isqlite3
+override INCLUDES+= -Imod/sqlite3
 
 #linux-only libs
 ifeq ($(PLATFORM),Linux)
 override SERVER_LIBS+= -ldl -lpthread
 endif
 
-override SERVER_OBJS+= sqlite3/sqlite3-standalone.o mod/sqlite3-standalone.o
+override SERVER_OBJS+= mod/sqlite3/sqlite3-standalone.o mod/sqlite3-standalone.o
 endif
 
 default: all
