@@ -17,13 +17,14 @@
 					<Add option="-DSTANDALONE" />
 					<Add option="-DIRC" />
 					<Add option="-DGEOIP" />
+					<Add option="-DSQLITE3" />
 					<Add directory="enet/include" />
 					<Add directory="shared" />
 					<Add directory="include" />
 					<Add directory="fpsgame" />
 					<Add directory="mod" />
-					<Add directory="libGeoIP" />
-					<Add directory="sqlite3" />
+					<Add directory="mod/libGeoIP" />
+					<Add directory="mod/sqlite3" />
 				</Compiler>
 				<Linker>
 					<Add library="wsock32" />
@@ -46,13 +47,14 @@
 					<Add option="-DGEOIP" />
 					<Add option="-DGEOIPDATADIR" />
 					<Add option="-DHAS_SOCKLEN_T" />
+					<Add option="-DSQLITE3" />
 					<Add directory="enet/include" />
 					<Add directory="shared" />
 					<Add directory="include" />
 					<Add directory="fpsgame" />
 					<Add directory="mod" />
-					<Add directory="libGeoIP" />
-					<Add directory="sqlite3" />
+					<Add directory="mod/libGeoIP" />
+					<Add directory="mod/sqlite3" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -115,9 +117,6 @@
 		<Unit filename="include/wincompat.h" />
 		<Unit filename="include/zconf.h" />
 		<Unit filename="include/zlib.h" />
-		<Unit filename="libGeoIP/GeoIP.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="libGeoIP/GeoIP.h" />
 		<Unit filename="mod/commandev.cpp" />
 		<Unit filename="mod/commandev.h" />
@@ -127,12 +126,18 @@
 		<Unit filename="mod/geoipmod.h" />
 		<Unit filename="mod/irc.cpp" />
 		<Unit filename="mod/irc.h" />
+		<Unit filename="mod/libGeoIP/GeoIP.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="mod/rconmod.cpp" />
 		<Unit filename="mod/rconmod.h" />
 		<Unit filename="mod/remod.cpp" />
 		<Unit filename="mod/remod.h" />
 		<Unit filename="mod/serverctrl.cpp" />
 		<Unit filename="mod/sqlite3.cpp" />
+		<Unit filename="mod/sqlite3/sqlite3.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="shared/command.h" />
 		<Unit filename="shared/crypto.cpp" />
 		<Unit filename="shared/cube.h" />
@@ -143,9 +148,6 @@
 		<Unit filename="shared/stream.cpp" />
 		<Unit filename="shared/tools.cpp" />
 		<Unit filename="shared/tools.h" />
-		<Unit filename="sqlite3/sqlite3.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Extensions>
 			<code_completion />
 			<debugger />
