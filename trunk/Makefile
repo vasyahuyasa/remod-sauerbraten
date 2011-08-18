@@ -44,7 +44,7 @@ override CXXFLAGS+= -g -DDEBUG # uncomment for debugging
 PLATFORM= $(shell uname -s)
 PLATFORM_PREFIX= native
 
-INCLUDES= -Ishared -Iengine -Ifpsgame -Ienet/include -Imod 
+INCLUDES= -Ishared -Iengine -Ifpsgame -Ienet/include -Imod -Imod/hashlib2plus/src
 
 SERVER_OBJS= \
 	shared/crypto-standalone.o \
@@ -57,7 +57,18 @@ SERVER_OBJS= \
 	mod/commandhandler-standalone.o \
 	mod/rconmod-standalone.o \
 	mod/serverctrl-standalone.o \
-	mod/remod-standalone.o
+	mod/remod-standalone.o \
+	mod/cryptomod-standalone.o \
+	mod/hashlib2plus/src/hl_md5-standalone.o \
+	mod/hashlib2plus/src/hl_md5wrapper-standalone.o \
+	mod/hashlib2plus/src/hl_sha1-standalone.o \
+	mod/hashlib2plus/src/hl_sha1wrapper-standalone.o \
+	mod/hashlib2plus/src/hl_sha256-standalone.o \
+	mod/hashlib2plus/src/hl_sha256wrapper-standalone.o \
+	mod/hashlib2plus/src/hl_sha2ext-standalone.o \
+	mod/hashlib2plus/src/hl_sha384wrapper-standalone.o \
+	mod/hashlib2plus/src/hl_sha512wrapper-standalone.o
+
 
 ### Options checks
 

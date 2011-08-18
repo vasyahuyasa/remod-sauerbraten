@@ -25,6 +25,7 @@
 					<Add directory="mod" />
 					<Add directory="mod/libGeoIP" />
 					<Add directory="mod/sqlite3" />
+					<Add directory="mod/hashlib2plus/src" />
 				</Compiler>
 				<Linker>
 					<Add library="wsock32" />
@@ -55,6 +56,7 @@
 					<Add directory="mod" />
 					<Add directory="mod/libGeoIP" />
 					<Add directory="mod/sqlite3" />
+					<Add directory="mod/hashlib2plus/src" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -122,8 +124,18 @@
 		<Unit filename="mod/commandev.h" />
 		<Unit filename="mod/commandhandler.cpp" />
 		<Unit filename="mod/commandhandler.h" />
+		<Unit filename="mod/cryptomod.cpp" />
 		<Unit filename="mod/geoipmod.cpp" />
 		<Unit filename="mod/geoipmod.h" />
+		<Unit filename="mod/hashlib2plus/src/hl_md5.cpp" />
+		<Unit filename="mod/hashlib2plus/src/hl_md5wrapper.cpp" />
+		<Unit filename="mod/hashlib2plus/src/hl_sha1.cpp" />
+		<Unit filename="mod/hashlib2plus/src/hl_sha1wrapper.cpp" />
+		<Unit filename="mod/hashlib2plus/src/hl_sha256.cpp" />
+		<Unit filename="mod/hashlib2plus/src/hl_sha256wrapper.cpp" />
+		<Unit filename="mod/hashlib2plus/src/hl_sha2ext.cpp" />
+		<Unit filename="mod/hashlib2plus/src/hl_sha384wrapper.cpp" />
+		<Unit filename="mod/hashlib2plus/src/hl_sha512wrapper.cpp" />
 		<Unit filename="mod/irc.cpp" />
 		<Unit filename="mod/irc.h" />
 		<Unit filename="mod/libGeoIP/GeoIP.c">
