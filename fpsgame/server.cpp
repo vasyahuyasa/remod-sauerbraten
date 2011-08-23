@@ -89,6 +89,7 @@ namespace server
 
     //Remod
     SVAR(commandchar, "#"); //Command character
+    SVAR(masterpass, "");   //Password for calim master instead of admin
 
     void *newclientinfo() { return new clientinfo; }
     void deleteclientinfo(void *ci) { delete (clientinfo *)ci; }
@@ -667,18 +668,24 @@ namespace server
         if(val)
         {
             bool haspass = adminpass[0] && checkpassword(ci, adminpass, pass);
+            bool mhaspass = masterpass[0] && checkpassword(ci, masterpass, pass);
             if(ci->privilege)
             {
+                // Remod
+                if(!masterpass[0] || mhaspass==(ci->privilege==PRIV_MASTER)) return;
+
                 if(!adminpass[0] || haspass==(ci->privilege==PRIV_ADMIN)) return;
             }
-            else if(ci->state.state==CS_SPECTATOR && !haspass && !authname && !ci->local) return;
+            else if(ci->state.state==CS_SPECTATOR && (!haspass || !mhaspass) && !authname && !ci->local) return;
             loopv(clients) if(ci!=clients[i] && clients[i]->privilege)
             {
                 if(haspass) clients[i]->privilege = PRIV_NONE;
+                else if(mhaspass && clients[i]->privilege<=PRIV_MASTER) clients[i]->privilege = PRIV_NONE;
                 else if((authname || ci->local) && clients[i]->privilege<=PRIV_MASTER) continue;
                 else return;
             }
-            if(haspass) ci->privilege = PRIV_ADMIN;
+            // Remod
+            if(haspass || mhaspass) ci->privilege = (haspass? PRIV_ADMIN:PRIV_MASTER);
             else if(!authname && !(mastermask&MM_AUTOAPPROVE) && !ci->privilege && !ci->local)
             {
                 sendf(ci->clientnum, 1, "ris", N_SERVMSG, "This server requires you to use the \"/auth\" command to gain master.");
