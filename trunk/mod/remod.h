@@ -15,5 +15,6 @@ namespace remod
     bool isspectator(int *cn);
 
     char* concatpstring(char *d, const char *s);
+
 }
 #endif
