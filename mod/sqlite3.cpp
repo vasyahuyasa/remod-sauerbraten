@@ -31,6 +31,10 @@
 * // for debug compare $e with -1 and check sqlite3_error
 * e = (sqlite3_query $db "BEGIN")
 * e = (sqlite3_query $db "INSERT into PLAYERS values name='megakiller' passkey='sfdsfdsfgh445'")
+*
+* // or with slashing sql query parameters (HIGHLY RECOMMENDED)
+* e = (sqlite3_pquery $db "INSERT into PLAYERS values name=':0' passkey=':1'" "player'e play`e'rpassword666")
+*
 * e = (sqlite3_query $db "INSERT into PLAYERS values name='Pussy' passkey='fgr45sdd345fgh445'")
 * e = (sqlite3_query $db "INSERT into PLAYERS values name='Vasiliy' passkey='sfdsfhlg5aas3h445'")
 * e = (sqlite3_query $db "COMMIT")
@@ -71,12 +75,16 @@
 #include "fpsgame.h"
 #include "sqlite3.h"
 
+#include "db.h"
+
 #define inrange(n, _max) (n>=0 && n<_max)
 
 #define MAXDB 10
 #define MAXSTMT 50
 
 namespace remod
+{
+namespace db
 {
     // list of databases
     sqlite3* dbs[MAXDB] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
@@ -178,6 +186,13 @@ namespace remod
 
         // request is done
         sqlite3_finalize(stmt);
+    }
+
+
+    void cs_sqlite3_pquery(int *dbuid, const char *query, const char *params) {
+    	char *new_query = build_query(query, params);
+    	cs_sqlite3_query(dbuid, new_query);
+    	DELETEA(new_query);
     }
 
     void cs_sqlite3_colnames(int *requid)
@@ -337,9 +352,11 @@ namespace remod
     // registering commands
     COMMANDN(sqlite3_open,      cs_sqlite3_open,    "s");
     COMMANDN(sqlite3_query,     cs_sqlite3_query,   "is");
+    COMMANDN(sqlite3_pquery,    cs_sqlite3_pquery,  "iss");
     COMMANDN(sqlite3_colnames,  cs_sqlite3_colnames,"i");
     COMMANDN(sqlite3_getrow,    cs_sqlite3_getrow,  "i");
     COMMANDN(sqlite3_finalize,  cs_sqlite3_finalize,"i");
     COMMANDN(sqlite3_error,     cs_sqlite3_error,   "i");
     COMMANDN(sqlite3_close,     cs_sqlite3_close,   "i");
+}
 }

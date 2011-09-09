@@ -9,6 +9,9 @@ USE_IRCBOT=true
 #Sqlite3 support? true|false
 USE_SQLITE3=true
 
+#Mysql support? true|false NOT IMPLEMENTED YET
+USE_MYSQL=true
+
 ######################################
 
 ### Tools
@@ -44,7 +47,7 @@ override CXXFLAGS+= -g -DDEBUG # uncomment for debugging
 PLATFORM= $(shell uname -s)
 PLATFORM_PREFIX= native
 
-INCLUDES= -Ishared -Iengine -Ifpsgame -Ienet/include -Imod -Imod/hashlib2plus/src
+INCLUDES= -Ishared -Iengine -Ifpsgame -Ienet/include -Imod -Imod/hashlib2plus/src 
 
 SERVER_OBJS= \
 	shared/crypto-standalone.o \
@@ -85,6 +88,12 @@ override CXXFLAGS+= -DIRC
 override SERVER_OBJS+= mod/irc-standalone.o
 endif
 
+#use db
+ifeq ($(USE_SQLITE3),true)
+override SERVER_OBJS+= mod/db-standalone.o
+
+endif
+
 #sqlite3
 ifeq ($(USE_SQLITE3),true)
 override CXXFLAGS+= -DSQLITE3
@@ -97,6 +106,16 @@ endif
 
 override SERVER_OBJS+= mod/sqlite3/sqlite3-standalone.o mod/sqlite3-standalone.o
 endif
+
+
+#mysql
+ifeq ($(USE_MYSQL),true)
+override CXXFLAGS+= -DMYSQL
+#override INCLUDES+= -Imod/mysql
+
+#override SERVER_OBJS+= mod/sqlite3/sqlite3-standalone.o mod/sqlite3-standalone.o
+endif
+
 
 default: all
 
