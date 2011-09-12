@@ -125,6 +125,8 @@
 		<Unit filename="mod/commandhandler.cpp" />
 		<Unit filename="mod/commandhandler.h" />
 		<Unit filename="mod/cryptomod.cpp" />
+		<Unit filename="mod/db.cpp" />
+		<Unit filename="mod/db.h" />
 		<Unit filename="mod/geoipmod.cpp" />
 		<Unit filename="mod/geoipmod.h" />
 		<Unit filename="mod/hashlib2plus/src/hl_md5.cpp" />
