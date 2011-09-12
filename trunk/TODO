@@ -153,6 +153,7 @@ Cube script:
 	editmute [cn] [1|0] +	do not alow player to edit
 	iseditmuted (1|0) +	check if player editmuted
 	$masterpass [str] +	password for claim master instead of admin
+	uptimef [fmt] (str) +	formated output of up time (%s - seconds, %m - minutes, %h - hours, %d - days, %y - years, ex: uptimef "uptime %d days")
 	
 	# crypto
 	tiger192 [str] (str) +	tiger 192 bit 3 passes hash

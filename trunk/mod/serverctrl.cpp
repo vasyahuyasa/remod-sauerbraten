@@ -6,7 +6,7 @@
 * additional cubescript functions
 */
 
-
+#include <time.h>
 #include "fpsgame.h"
 #include "commandev.h"
 #include "commandhandler.h"
@@ -324,7 +324,7 @@ void ismuted(int *icn)
     intret(ci && ci->state.muted);
 }
 
-void formatmillis(char *fmt, int *millis)
+void formatmillis(const char *fmt, int *millis)
 {
     // %i - milliseconds, %s - seconds, %m - minutes, %h - hours, %d - days
     int mseconds, seconds, minutes, hours, days;
@@ -677,7 +677,79 @@ void iseditmuted(int *cn)
     intret(ci && ci->state.editmuted);
 }
 
+void uptimef(const char *fmt)
+{
+    // max correct uptime 134 years
+    // %s - seconds, %m - minutes, %h - hours, %d - days, %y
+    uint seconds, minutes, hours, days, years;
+    vector<char> s;
 
+    years = totalsecs/(60*60*24*365); // dont count leap year
+    days = (totalsecs/(60*60*24))-(years*365);
+    hours = (totalsecs/(60*60))-(years*365*24-days*24);
+    minutes = (totalsecs/(60))-(years*365*24*60-days*24*60+hours*60);
+    seconds = totalsecs-(years*365*24*60*60+days*24*60*60+hours*60*60+minutes*60);
+
+    while(*fmt)
+    {
+        int c = *fmt++;
+        if(c == '%')
+        {
+            int i = *fmt++;
+            switch(i)
+            {
+                case 's':
+                {
+                    const char *sseconds = newstring(2);
+                    sprintf((char*)sseconds, "%02d", seconds);
+                    while(*sseconds) s.add(*sseconds++);
+                    // xxx DELETEA(sseconds);
+                    break;
+                }
+
+                case 'm':
+                {
+                    const char *sminutes = newstring(2);
+                    sprintf((char*)sminutes, "%02d", minutes);
+                    while(*sminutes) s.add(*sminutes++);
+                    // xxx DELETEA(sminutes);
+                    break;
+                }
+
+                case 'h':
+                {
+                    const char *shours = newstring(2);
+                    sprintf((char*)shours, "%02d", hours);
+                    while(*shours) s.add(*shours++);
+                    // xxx DELETEA(shours);
+                    break;
+                }
+
+                case 'd':
+                {
+                    const char *sdays;
+                    sdays = intstr(days);
+                    while(*sdays) s.add(*sdays++);
+                    break;
+                }
+
+                case 'y':
+                {
+                    const char *syears;
+                    syears = intstr(years);
+                    while(*syears) s.add(*syears++);
+                    break;
+                }
+
+                default:
+                    s.add(i);
+            }
+        }
+        else s.add(c);
+    }
+    s.add('\0');
+    result(s.getbuf());
+}
 
 //Cube script binds
 COMMAND(getname, "i");
@@ -745,4 +817,5 @@ ICOMMAND(identexists, "s", (const char *name), intret(identexists(name)));
 ICOMMAND(eval, "C", (char *s), result(executeret(s)));
 COMMAND(editmute, "ii");
 COMMAND(iseditmuted, "i");
+COMMAND(uptimef, "s");
 }
