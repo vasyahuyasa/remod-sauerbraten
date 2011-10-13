@@ -2,15 +2,16 @@
 
 <html>
 <head>
-  <meta name="generator" content="Bluefish 2.0.2" >
-  <meta name="generator" content="Bluefish 2.0.2" >
+  <meta name="generator" content="Bluefish 2.0.3" >
+  <meta name="generator" content="Bluefish 2.0.3" >
 
   <title>Remode user guide</title>
   <style type="text/css">
-      .dotlist { list-style: point; }
+      	.dotlist { list-style: point; }
         .numlist { list-style: decimal; }
         .bold { font-weight: bold; }    
         .caption { margin-top: 2em; margin-bottom: 0; }
+        .cmdline_opt { display: block; background-color: #dfdfdf; padding-left: 0.5em; width: 2em; }
         .listcommands { border-collapse: collapse; }
         .listcommands td { border: #cacaca 1px solid; }          
         .listcommands caption { font-weight: bold; }    
@@ -32,7 +33,7 @@
         <li>
           <a href="#cube_script_events">General commands</a>
 
-          <ul class="dorlist">
+          <ul class="dotlist">
             <li><a href="#player_control">Player control</a></li>
 
             <li><a href="#server_control">Server control</a></li>
@@ -61,6 +62,15 @@
           </ul>
         </li>
       </ul>
+    </li>
+    <li>
+    	<a href="#remod_command_line_options">Remod command line options</a>
+    	
+    	<ul class="dotlist">
+            <li><a href="#-f">-f</a></li>
+            
+            <li><a href="#-g">-g</a></li>
+        </ul>
     </li>
   </ul>
   <hr>
@@ -1269,6 +1279,22 @@
             </li>
           </ul>
         </li>
+      </ul>
+    </li>
+    
+    <li>
+      <h2><a name="remod_command_line_options" id="remod_command_line_options">Remod command line options</a></h2>
+      
+      <ul class="dotlist">
+            <li>
+            	<a name="-f" id="-f" class="cmdline_opt">-f</a>
+            	Execute config file instead of server-init.cfg (ex. -fserver2.cfg)
+            </li>
+            
+            <li>
+            	<a name="-g" id="-g" class="cmdline_opt">-g</a>
+            	File for write logs instead of STDOUT (ex. -gserver.log)
+            </li>
       </ul>
     </li>
   </ul>
