@@ -77,20 +77,15 @@
 
 #include "db.h"
 
-#define inrange(n, _max) (n>=0 && n<_max)
-
-#define MAXDB 10
-#define MAXSTMT 50
-
 namespace remod
 {
 namespace db
 {
     // list of databases
-    sqlite3* dbs[MAXDB] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
+	vector_storage<sqlite3> sqlite3_dbs;
 
     // list of statments
-    sqlite3_stmt* stmts[MAXSTMT] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
+	vector_storage<sqlite3_stmt> sqlite3_stmts;
 
     // open databse and return -1 or $db_id
     void cs_sqlite3_open(const char *name)
@@ -108,27 +103,17 @@ namespace db
         }
         else
         {
-            loopi(MAXDB)
-            {
-                // search for free slot and return it
-                if(dbs[i]  == NULL)
-                {
-                    dbs[i] = db;
-                    intret(i);
-                    return;
-                }
-            }
-
-            // no free slots
-            intret(-1);
+        	intret(sqlite3_dbs.add(db));
         }
     }
 
     // make sql query -1 on error, "" request is done, req_uid need make steps
     void cs_sqlite3_query(int *dbuid, const char* query)
     {
-        // chack if db in range
-        if(!inrange(*dbuid, MAXDB)) { intret(-1); return; }
+        // check if db in range
+    	if (!sqlite3_dbs.exists(*dbuid)) {
+    		intret(-1); return;
+    	}
 
         int rc;
 
@@ -136,7 +121,7 @@ namespace db
         sqlite3_stmt *stmt;
 
         // select database for work
-        sqlite3 *db = dbs[*dbuid];
+        sqlite3 *db = sqlite3_dbs[*dbuid];
 
         // compile SQL query to bytecode
         if(sqlite3_prepare(db, query, -1, &stmt, NULL))
@@ -154,19 +139,8 @@ namespace db
             case SQLITE_ROW:
             {
                 // return statement uid
-                loopi(MAXSTMT)
-                {
-                    if(stmts[i] == NULL)
-                    {
-                        stmts[i] = stmt;
-                        intret(i);
-                        return;
-                    }
-                }
-
-                // no free statement slot
-                intret(-1);
-                break;
+            	intret(sqlite3_stmts.add(stmt));
+            	return;
             }
 
             case SQLITE_DONE:
@@ -197,94 +171,86 @@ namespace db
 
     void cs_sqlite3_colnames(int *requid)
     {
-        // chack if request uid in range
-        if(!inrange(*requid, MAXSTMT)) { result(""); return; }
+        // check if request uid in range
+    	if (!sqlite3_stmts.exists(*requid)) {
+    		result(""); return;
+    	}
+
 
         // get statment from array
-        sqlite3_stmt *stmt = stmts[*requid];
+        sqlite3_stmt *stmt = sqlite3_stmts[*requid];
 
-        if(stmt)
-        {
-            // return column names
-            vector<char> buf;
+		// return column names
+		vector<char> buf;
 
-            // add every column name to result
-            loopi(sqlite3_data_count(stmt))
-            {
-                if(buf.length()) buf.add(' ');
-                defformatstring(colname)("%s", sqlite3_column_name(stmt, i));
-                buf.put(colname, strlen(colname));
-            }
-            buf.add('\0');
-            result(buf.getbuf());
-        }
-        else
-        {
-            // return empty line
-            result("");
-        }
+		// add every column name to result
+		loopi(sqlite3_data_count(stmt))
+		{
+			if(buf.length()) buf.add(' ');
+			defformatstring(colname)("%s", sqlite3_column_name(stmt, i));
+			buf.put(colname, strlen(colname));
+		}
+		buf.add('\0');
+		result(buf.getbuf());
+
     }
 
     void cs_sqlite3_getrow(int *requid)
     {
-        // chack if request uid in range
-        if(!inrange(*requid, MAXSTMT)) { result(""); return; }
+        /// check if request uid in range
+    	if (!sqlite3_stmts.exists(*requid)) {
+    		result(""); return;
+    	}
 
         // get statement from array
-        sqlite3_stmt *stmt = stmts[*requid];
+        sqlite3_stmt *stmt = sqlite3_stmts[*requid];
 
-        if(stmt)
-        {
-            // if pointer not NULL
-            // return list of fields
-            vector<char> buf;
 
-            loopi(sqlite3_data_count(stmt))
-            {
-                if(buf.length()) buf.add(' ');
-                defformatstring(field)("%s", sqlite3_column_text(stmt, i));
-                buf.put(field, strlen(field));
-            }
-            buf.add('\0');
-            result(buf.getbuf());
+		// if pointer not NULL
+		// return list of fields
+		vector<char> buf;
 
-            // do next step
-            int rc = sqlite3_step(stmt);
+		loopi(sqlite3_data_count(stmt))
+		{
+			if(buf.length()) buf.add(' ');
+			defformatstring(field)("%s", sqlite3_column_text(stmt, i));
+			buf.put(field, strlen(field));
+		}
+		buf.add('\0');
+		result(buf.getbuf());
 
-            switch(rc)
-            {
-                case SQLITE_DONE:
-                {
-                    // if request was finished do finalize
-                    sqlite3_finalize(stmt);
+		// do next step
+		int rc = sqlite3_step(stmt);
 
-                    // NULL'ize pointer in list
-                    stmts[*requid] = NULL;
-                    break;
-                }
+		switch(rc)
+		{
+			case SQLITE_DONE:
+			{
+				// if request was finished do finalize
+				sqlite3_finalize(stmt);
 
-                case SQLITE_ROW:
-                {
-                    // we have one more row
-                    // do nothing
-                    break;
-                }
+				// NULL'ize pointer in list
+				sqlite3_stmts.remove(*requid);
+				break;
+			}
 
-                default:
-                {
-                    // error happaned
-                    // finalize
-                    sqlite3_finalize(stmt);
-                    stmts[*requid] = NULL;
-                    break;
-                }
-            }
-        }
-        else
-        {
-            // if NULL pointer return empty list
-            result("");
-        }
+			case SQLITE_ROW:
+			{
+				// we have one more row
+				// do nothing
+				break;
+			}
+
+			default:
+			{
+				// error happaned
+				// finalize
+				sqlite3_finalize(stmt);
+				sqlite3_stmts.remove(*requid);
+				break;
+			}
+		}
+
 
     }
 
@@ -292,61 +258,58 @@ namespace db
     void cs_sqlite3_finalize(int *requid)
     {
 
-        // chack if request uid in range
-        if(!inrange(*requid, MAXSTMT)) { return; }
+    	// check if request uid in range
+		if (!sqlite3_stmts.exists(*requid)) {
+			return;
+		}
 
         // get statement from array
-        sqlite3_stmt *stmt = stmts[*requid];
+        sqlite3_stmt *stmt = sqlite3_stmts[*requid];
 
-        if(stmt)
-        {
-            // if statemnt not NULL finalize and mke it NULL
-            sqlite3_finalize(stmt);
-            stmts[*requid] = NULL;
-        }
+
+		// if statemnt not NULL finalize and mke it NULL
+		sqlite3_finalize(stmt);
+		sqlite3_stmts.remove(*requid);
+
     }
 
     // return last error str
     void cs_sqlite3_error(int *dbuid)
     {
-        // chack if DB in range
-        if(!inrange(*dbuid, MAXDB)) { result(""); return; }
+    	// check if db uid in range
+		if (!sqlite3_dbs.exists(*dbuid)) {
+			result(""); return;
+		}
 
         // select DB from list
-        sqlite3 *db = dbs[*dbuid];
+        sqlite3 *db = sqlite3_dbs[*dbuid];
 
         // check if DB not null
-        if(db)
-        {
-            const char *errmsg = sqlite3_errmsg(db);
+		const char *errmsg = sqlite3_errmsg(db);
 
-            if(errmsg)
-            {
-                // return error
-                result(errmsg);
-                return;
-            }
-        }
+		if(errmsg)
+		{
+			// return error
+			result(errmsg);
+			return;
+		}
 
-        // no DB or no error
-        result("");
     }
 
     // close DB and free handler
     void cs_sqlite3_close(int *dbuid)
     {
-        // chack if DB in range
-        if(!inrange(*dbuid, MAXDB)) { return; }
+    	// check if db uid in range
+		if (!sqlite3_dbs.exists(*dbuid)) {
+			result(""); return;
+		}
 
         // select DB from list
-        sqlite3 *db = dbs[*dbuid];
+        sqlite3 *db = sqlite3_dbs[*dbuid];
 
         // check if DB not null
-        if(db)
-        {
-            sqlite3_close(db);
-            dbs[*dbuid] = NULL;
-        }
+        sqlite3_close(db);
+        sqlite3_dbs.remove(*dbuid);
     }
 
     // registering commands
