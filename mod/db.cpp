@@ -60,6 +60,61 @@ namespace db
 		return res;
 	}
 
+	vector<char*> parse_connection_string(char *s) {
+		char *c = strstr(s, "://");
+
+		vector<char*> res;
+		char *scheme = NULL;
+		char *login = NULL;
+		char *password = NULL;
+		char *server = NULL;
+		char *port = NULL;
+		char *path = NULL;
+
+		if (c) {
+			scheme = newstring(c, (size_t) (c - s));
+			c += 3;
+		} else {
+			c = s;
+		}
+
+		char *at = strchr(c, '@');
+		if (at) {
+			char *semicolon = strchr(c, ':');
+			if (semicolon < at) {
+				login = newstring(c, (size_t) (semicolon - c));
+				c = semicolon+1;
+				password = newstring(c, (size_t) (at - c));
+			} else {
+				login = newstring(c, (size_t) (at - c));
+			}
+			c = at+1;
+		}
+
+		char *semicolon = strchr(c, ':');
+		char *slash = strchr(c, '/');
+
+
+		if (slash) {
+			path = newstring(slash+1);
+		}
+
+		if (semicolon && (((semicolon < slash) && slash) || !slash) ) {
+			server = newstring(c, (size_t) (semicolon -  c));
+			port = slash ? newstring(semicolon+1, (size_t) (slash -  semicolon) - 1) : newstring(semicolon+1);
+		} else {
+			server = slash ? newstring(c, (size_t) (slash - c)) : newstring(c);
+		}
+
+		res.add(scheme);
+		res.add(login);
+		res.add(password);
+		res.add(server);
+		res.add(port);
+		res.add(path);
+
+		return res;
+	}
 }
 }
 

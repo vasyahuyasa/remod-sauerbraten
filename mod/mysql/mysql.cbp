@@ -1,0 +1,953 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="mysql" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin\Debug\mysql" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\Debug\" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add directory="include" />
+					<Add directory="extlib\regex" />
+					<Add directory="extlib\zlib" />
+					<Add directory="vio" />
+					<Add directory="strings" />
+					<Add directory="mysys" />
+					<Add directory="libmysql" />
+				</Compiler>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-o0 -fno-exceptions" />
+			<Add option="-DNO_OLDNAMES" />
+			<Add option="-DDBUG_OFF" />
+			<Add option="-DCHARSET=latin1" />
+			<Add directory="include" />
+			<Add directory="extlib\regex" />
+			<Add directory="extlib\zlib" />
+			<Add directory="vio" />
+			<Add directory="strings" />
+			<Add directory="mysys" />
+			<Add directory="libmysql" />
+		</Compiler>
+		<Linker>
+			<Add library="ws2_32" />
+		</Linker>
+		<Unit filename="extlib\regex\cclass.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="extlib\regex\cname.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="extlib\regex\debug.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="extlib\regex\debug.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="extlib\regex\engine.c">
+			<Option compilerVar="CC" />
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="extlib\regex\engine.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="extlib\regex\my_regex.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="extlib\regex\regcomp.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="extlib\regex\regcomp.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="extlib\regex\regerror.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="extlib\regex\regerror.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="extlib\regex\regex2.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="extlib\regex\regexec.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="extlib\regex\regexp.c">
+			<Option compilerVar="CC" />
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="extlib\regex\regfree.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="extlib\regex\reginit.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="extlib\regex\split.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="extlib\regex\utils.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="extlib\zlib\adler32.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="extlib\zlib\compress.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="extlib\zlib\crc32.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="extlib\zlib\crc32.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="extlib\zlib\deflate.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="extlib\zlib\deflate.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="extlib\zlib\gzio.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="extlib\zlib\infback.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="extlib\zlib\inffast.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="extlib\zlib\inffast.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="extlib\zlib\inffixed.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="extlib\zlib\inflate.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="extlib\zlib\inflate.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="extlib\zlib\inftrees.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="extlib\zlib\inftrees.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="extlib\zlib\trees.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="extlib\zlib\trees.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="extlib\zlib\uncompr.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="extlib\zlib\zconf.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="extlib\zlib\zlib.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="extlib\zlib\zutil.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="extlib\zlib\zutil.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\atomic\gcc_builtins.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\atomic\nolock.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\atomic\rwlock.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\atomic\x86-gcc.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\base64.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\charset-def.c">
+			<Option compilerVar="CC" />
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\charset.c">
+			<Option compilerVar="CC" />
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\config-win.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\decimal.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\errmsg.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\hash.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\keycache.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\lf.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\m_ctype.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\m_string.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\my_aes.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\my_alarm.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\my_alloc.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\my_atomic.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\my_attribute.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\my_base.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\my_bit.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\my_bitmap.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\my_charsets.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\my_config.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\my_dbug.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\my_dir.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\my_getopt.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\my_global.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\my_libwrap.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\my_list.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\my_md5.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\my_net.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\my_no_pthread.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\my_nosys.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\my_pthread.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\my_stacktrace.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\my_sys.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\my_time.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\my_tree.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\my_trie.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\my_uctype.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\my_vle.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\my_xml.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\myisampack.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\mysql.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\mysql_com.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\mysql_time.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\mysql_version.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\mysqld_error.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\mysys\rijndael.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\mysys_err.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\queues.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\service_versions.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\sha1.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\sha2.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\sql_common.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\sslopt-case.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\sslopt-longopts.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\sslopt-vars.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\t_ctype.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\thr_alarm.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\thr_lock.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\typelib.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\violite.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\waiting_threads.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="include\wqueue.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="libmysql\client.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="libmysql\client_settings.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="libmysql\errmsg.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="libmysql\get_password.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="libmysql\libmysql.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="libmysql\my_time.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="libmysql\net_serv.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="libmysql\pack.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="libmysql\password.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="libmysql\probes.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="mysys\array.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\base64.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\charset-def.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\charset.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\checksum.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\default.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\default_modify.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\errors.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\hash.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\lf_alloc-pin.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\lf_dynarray.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\lf_hash.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\list.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\md5.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\mf_arr_appstr.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\mf_brkhant.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\mf_cache.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\mf_dirname.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\mf_fn_ext.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\mf_format.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\mf_getdate.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\mf_iocache.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\mf_iocache2.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\mf_keycache.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\mf_keycaches.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\mf_loadpath.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\mf_pack.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\mf_path.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\mf_qsort.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\mf_qsort2.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\mf_radix.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\mf_same.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\mf_sort.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\mf_soundex.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\mf_strip.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\mf_tempdir.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\mf_tempfile.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\mf_unixpath.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\mf_util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\mf_wcomp.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\mf_wfile.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\mulalloc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_access.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_aes.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_alarm.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_alloc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_append.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_atomic.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_bit.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_bitmap.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_chmod.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_chsize.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_clock.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_compress.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_conio.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_copy.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_create.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_delete.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_div.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_dup.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_error.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_file.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_fopen.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_fstream.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_gethostbyname.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_gethwaddr.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_getncpus.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_getopt.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_getpagesize.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_getsystime.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_getwd.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_handler_errors.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="mysys\my_init.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_largepage.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_lib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_libwrap.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_lock.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_lockmem.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_malloc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_memmem.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_messnc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_mkdir.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_mmap.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_net.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_netware.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_new.cc">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="mysys\my_once.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_open.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_port.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_pread.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_pthread.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_quick.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_read.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_realloc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_redel.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_rename.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_rnd.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_safehash.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_safehash.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="mysys\my_seek.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_sleep.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_static.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_static.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="mysys\my_symlink.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_symlink2.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_sync.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_thr_init.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_uuid.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_vle.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_wincond.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_windac.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_winerr.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_winfile.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_winthread.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\my_write.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\mysys_priv.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="mysys\ptr_cmp.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\queues.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\rijndael.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\safemalloc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\sha1.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\stacktrace.c">
+			<Option compilerVar="CC" />
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="mysys\string.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\thr_alarm.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\thr_lock.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\thr_mutex.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\thr_rwlock.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\tree.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\trie.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\typelib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\waiting_threads.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mysys\wqueue.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="strings\bchange.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="strings\bcmp.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="strings\bfill.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="strings\bmove.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="strings\bmove512.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="strings\bmove_upp.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="strings\ctype-bin.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="strings\ctype-extra.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="strings\ctype-latin1.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="strings\ctype-mb.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="strings\ctype-simple.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="strings\ctype-utf8.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="strings\ctype.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="strings\decimal.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="strings\dtoa.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="strings\int2str.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="strings\is_prefix.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="strings\llstr.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="strings\longlong2str.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="strings\my_strchr.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="strings\my_strtoll10.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="strings\my_vsnprintf.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="strings\r_strinstr.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="strings\str2int.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="strings\str_alloc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="strings\strappend.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="strings\strcend.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="strings\strcont.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="strings\strend.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="strings\strfill.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="strings\strings-not-used.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="strings\strinstr.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="strings\strmake.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="strings\strmov.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="strings\strnlen.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="strings\strnmov.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="strings\strstr.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="strings\strto.c">
+			<Option compilerVar="CC" />
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="strings\strtol.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="strings\strtoll.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="strings\strtoul.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="strings\strtoull.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="strings\strxmov.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="strings\strxnmov.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="strings\t_ctype.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="strings\xml.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="test.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="vio\vio.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="vio\vio_priv.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="vio\viosocket.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
