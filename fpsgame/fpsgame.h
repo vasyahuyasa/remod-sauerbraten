@@ -440,7 +440,7 @@ namespace server
 
     // Remod
     extern stream *mapdata;
-    void filtercstext(char *dst, const char *src);
+    void filtercstext(char *str);
     void kick(int cn, char *actorname, int expire);
 
     clientinfo *getinfo(int n);

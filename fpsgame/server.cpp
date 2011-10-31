@@ -105,14 +105,12 @@ namespace server
     vector<savedscore> scores;
 
     //Remod
-    void filtercstext(char *dst, const char *src)
+    void filtercstext(char *str)
     {
-        for(int c = *src; c; c = *++src)
+        for(char *c = str; c && *c; c++)
         {
-            if(c == '\"') { c = '\''; }
-            *dst++ = c;
+            if (*c == '\"') { *c = '\''; }
         }
-        *dst = '\0';
     }
 
     int msgsizelookup(int msg)
@@ -2221,14 +2219,13 @@ namespace server
                 filtertext(text, text);
 
                 //Remod
-                char ftext[MAXTRANS];
-                filtercstext(ftext, text);
+                char* ftext = newstring(text);
+                filtercstext(ftext);
 
                 //Check for commandchar
                 if(strlen(ftext)>strlen(commandchar) && (strncmp(commandchar, ftext, strlen(commandchar)) == 0))
                 {
-                    strncpy(ftext, &ftext[strlen(commandchar)], strlen(ftext)-strlen(commandchar));
-                    ftext[strlen(ftext)-strlen(commandchar)] = '\0';
+                    ftext += strlen(commandchar);
                     remod::onevent("oncommand", "is", sender, ftext);
                     //conoutf(ftextchf);
                     break;
@@ -2237,7 +2234,7 @@ namespace server
                 if(ci->state.muted) break;
 
                 if(remod::onevent("ontext", "is", sender, &ftext)) break;
-
+                DELETEA(ftext);
                 QUEUE_AI;
                 QUEUE_INT(N_TEXT);
                 QUEUE_STR(text);

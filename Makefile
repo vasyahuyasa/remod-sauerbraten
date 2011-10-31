@@ -7,10 +7,10 @@ USE_GEOIP=true
 USE_IRCBOT=true
 
 #Sqlite3 support? true|false
-USE_SQLITE3=true
+USE_SQLITE3=false
 
 #Mysql support? true|false
-USE_MYSQL=true
+USE_MYSQL=false
 
 ######################################
 

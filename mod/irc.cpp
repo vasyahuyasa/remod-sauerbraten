@@ -428,7 +428,7 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
             else if(ismsg)
             {
                 //Remod
-                char ftext[MAXTRANS]; // command buffer
+                char *ftext; // command buffer
 
                 if(n->type == IRCT_RELAY && g && strcasecmp(w[g+1], n->nick) && !strncasecmp(w[g+2], n->nick, strlen(n->nick)))
                 {
@@ -448,8 +448,10 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
                         ircprintf(n, 0, w[g+1], "\fa<\fw%s\fa>\fw %s", user[0], p);
 
                         //irc_oncommand "sender" "p a r a m s"
-                        server::filtercstext(ftext, p);
+                        ftext = newstring(p);
+                        server::filtercstext(ftext);
                         remod::onevent("irc_oncommand", "ss", user[0], ftext);
+                        DELETEA(ftext);
                     }
                 }
                 else
@@ -466,7 +468,8 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
 
                     //ircprintf(n, 1, g ? w[g+1] : NULL, "\fa<\fw%s\fa>\fw %s", user[0], w[g+2]);
                     //Remod
-                    server::filtercstext(ftext, w[g+2]);
+                	ftext = newstring(w[g+2]);
+                    server::filtercstext(ftext);
                     if(strcasecmp(w[g+1], n->nick)) // normal msg
                     {
                         remod::onevent("irc_onmsg", "ss", user[0], ftext);
@@ -475,6 +478,7 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
                     {
                         remod::onevent("irc_onprivmsg", "ss", user[0], ftext);
                     }
+                    DELETEA(ftext);
                 }
             }
             else ircprintf(n, 2, g ? w[g+1] : NULL, "\fo-%s- %s", user[0], w[g+2]);

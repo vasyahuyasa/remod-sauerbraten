@@ -102,8 +102,11 @@ namespace db
 
         db = mysql_init(NULL);
 
+        mysql_options(db, MYSQL_OPT_RECONNECT, "1");
+
         // open DB
         if (mysql_real_connect(db, conndata[3], conndata[1], conndata[2], conndata[5], atoi(conndata[4]), NULL, 0)) {
+
         	intret(mysql_dbs.add(db));
         } else {
         	//print error to log
