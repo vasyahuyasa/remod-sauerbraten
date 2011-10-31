@@ -97,9 +97,9 @@ extern  void _db_flush_();
 */
 //#include <crtdbg.h>
 //#define DBUG_ABORT() (_db_flush_(),\
-                     (void)_CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_FILE),\
-                     (void)_CrtSetReportFile(_CRT_ERROR, _CRTDBG_FILE_STDERR),\
-                     _exit(3))
+//                     (void)_CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_FILE),\
+//                     (void)_CrtSetReportFile(_CRT_ERROR, _CRTDBG_FILE_STDERR),\
+//                     _exit(3))
 //#endif
 
 #else                                           /* No debugger */
