@@ -685,10 +685,10 @@ void uptimef(const char *fmt)
     vector<char> s;
 
     years = totalsecs/(60*60*24*365); // dont count leap year
-    days = (totalsecs/(60*60*24))-(years*365);
-    hours = (totalsecs/(60*60))-(years*365*24-days*24);
-    minutes = (totalsecs/(60))-(years*365*24*60-days*24*60+hours*60);
-    seconds = totalsecs-(years*365*24*60*60+days*24*60*60+hours*60*60+minutes*60);
+    days = (totalsecs/(60*60*24))%365;
+    hours = (totalsecs/(60*60))%24;
+    minutes = (totalsecs/(60))%60;
+    seconds = totalsecs%60;
 
     while(*fmt)
     {
