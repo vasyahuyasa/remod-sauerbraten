@@ -10,7 +10,7 @@ USE_IRCBOT=true
 USE_SQLITE3=true
 
 #Mysql support? true|false
-USE_MYSQL=false
+USE_MYSQL=true
 
 ######################################
 
@@ -19,14 +19,30 @@ CXX=gcc
 MV=mv
 STRIP=
 
+
+PLATFORM=$(shell uname -s)
+
+#result file name
+PLATFORM_SUFFIX=x32
+ifneq (,$(findstring x86_64,$(shell uname -a)))
+PLATFORM_SUFFIX=x64
+endif
+
+SERVER_NAME=server
 ifneq (,$(findstring MINGW,$(PLATFORM)))
-WINDRES= windres
+SERVER_NAME=server_windows_$(PLATFORM_SUFFIX).exe
+endif
+ifneq (,$(findstring Linux,$(PLATFORM)))
+SERVER_NAME=server_linux_$(PLATFORM_SUFFIX)
+endif
+ifneq (,$(findstring FreeBSD,$(PLATFORM)))
+SERVER_NAME=server_freebsd_$(PLATFORM_SUFFIX)
 endif
 
 ### Folders, libraries, includes
 ifneq (,$(findstring MINGW,$(PLATFORM)))
 SERVER_INCLUDES+= -DSTANDALONE $(INCLUDES) -Iinclude
-SERVER_LIBS= -Llib -lzdll -lenet -lws2_32 -lwinmm 
+SERVER_LIBS= -Llib -lzdll -lenet -lws2_32 -lwinmm -lstdc++
 else
 SERVER_INCLUDES+= -DSTANDALONE $(INCLUDES)
 SERVER_LIBS= -Lenet/.libs -L/usr/local/lib -lenet -lz -lstdc++
@@ -44,9 +60,6 @@ ifeq (,$(findstring -pg,$(CXXFLAGS)))
   STRIP=strip
 endif
 endif
-
-PLATFORM= $(shell uname -s)
-PLATFORM_PREFIX= native
 
 INCLUDES= -Ishared -Iengine -Ifpsgame -Ienet/include -Imod -Imod/hashlib2plus/src 
 
@@ -161,9 +174,8 @@ MYSQL_MYSYS_OBJS = array-standalone.o charset-def-standalone.o charset-standalon
 			my_windac-standalone.o my_winthread-standalone.o my_write-standalone.o ptr_cmp-standalone.o queues-standalone.o  \
 			rijndael-standalone.o safemalloc-standalone.o sha1-standalone.o string-standalone.o thr_alarm-standalone.o thr_lock-standalone.o thr_mutex-standalone.o \
 			thr_rwlock-standalone.o tree-standalone.o typelib-standalone.o my_vle-standalone.o base64-standalone.o my_memmem-standalone.o my_getpagesize-standalone.o \
-			lf_alloc-pin-standalone.o lf_dynarray-standalone.o lf_hash-standalone.o \
 			my_atomic-standalone.o my_getncpus-standalone.o my_rnd-standalone.o \
-			my_uuid-standalone.o wqueue-standalone.o waiting_threads-standalone.o my_port-standalone.o
+			my_uuid-standalone.o wqueue-standalone.o  my_port-standalone.o
 MYSQL_VIO_DIR = vio
 MYSQL_VIO_OBJS = vio-standalone.o viosocket-standalone.o
 MYSQL_LIBMYSQL_DIR = libmysql
@@ -174,7 +186,7 @@ override SERVER_OBJS += $(foreach v,$(MYSQL_REGEX_OBJS),mod/mysql/$(MYSQL_REGEX_
 override SERVER_OBJS += $(foreach v,$(MYSQL_MYSYS_OBJS),mod/mysql/$(MYSQL_MYSYS_DIR)/$(v))
 override SERVER_OBJS += $(foreach v,$(MYSQL_VIO_OBJS),mod/mysql/$(MYSQL_VIO_DIR)/$(v))
 override SERVER_OBJS += $(foreach v,$(MYSQL_LIBMYSQL_OBJS),mod/mysql/$(MYSQL_LIBMYSQL_DIR)/$(v))
-override SERVER_OBJS+= mod/mysql-standalone.o
+override SERVER_OBJS += mod/mysql-standalone.o
 endif
 #end of mysql
 
@@ -200,7 +212,7 @@ clean-enet: enet/Makefile
 	$(MAKE) -C enet/ clean
 
 clean:
-	-$(RM) $(SERVER_OBJS) sauer_server
+	-$(RM) $(SERVER_OBJS) 
 
 %.h.gch: %.h
 	$(CXX) $(CXXFLAGS) -o $@.tmp $(subst .h.gch,.h,$@)
@@ -216,20 +228,18 @@ clean:
 $(SERVER_OBJS): CXXFLAGS += $(SERVER_INCLUDES)
 
 ifneq (,$(findstring MINGW,$(PLATFORM)))
-vcpp/%.o:
-	$(CXX) $(CXXFLAGS) -c -o $@ $(subst .o,.c,$@) 
-
 server: $(SERVER_OBJS)
-	$(CXX) $(CXXFLAGS) -o ../bin/sauer_server.exe $(SERVER_OBJS) $(SERVER_LIBS)
+	$(CXX) $(CXXFLAGS) -o $(SERVER_NAME) $(SERVER_OBJS) $(SERVER_LIBS)
 
 install: all
+	cp $(SERVER_NAME)	../bin/$(SERVER_NAME)
 else
 server:	libenet $(SERVER_OBJS)
-	$(CXX) $(CXXFLAGS) -o sauer_server $(SERVER_OBJS) $(SERVER_LIBS)  
+	$(CXX) $(CXXFLAGS) -o $(SERVER_NAME) $(SERVER_OBJS) $(SERVER_LIBS)  
 	
 install: all
-	cp sauer_server	../bin_unix/$(PLATFORM_PREFIX)_server
+	cp $(SERVER_NAME)	../bin_unix/$(SERVER_NAME)
 ifneq (,$(STRIP))
-	$(STRIP) ../bin_unix/$(PLATFORM_PREFIX)_server
+	$(STRIP) ../bin_unix/$(SERVER_NAME)
 endif
 endif

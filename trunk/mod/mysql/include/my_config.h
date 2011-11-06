@@ -60,7 +60,7 @@
 #define HAVE_FCHMOD 1
 #define HAVE_FCNTL 1
 /* #undef HAVE_FCONVERT */
-#define HAVE_FDATASYNC 1
+/* #define HAVE_FDATASYNC 1 */
 /* #undef HAVE_FESETROUND */
 #define HAVE_FINITE 1
 /* #undef HAVE_FP_EXCEPT */
