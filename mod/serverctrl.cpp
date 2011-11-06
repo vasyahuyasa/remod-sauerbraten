@@ -756,6 +756,7 @@ COMMAND(getname, "i");
 ICOMMAND(getmap, "", (), result(smapname));
 ICOMMAND(getmode, "", (), intret(gamemode));
 COMMAND(getip, "i");
+ICOMMAND(getipint, "i", (int *cn), intret((int) getclientip(*cn)));
 COMMAND(getfrags, "i");
 COMMAND(getdeaths, "i");
 COMMAND(getteamkills, "i");

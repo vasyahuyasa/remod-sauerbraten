@@ -18,6 +18,10 @@
 #ifndef _global_h
 #define _global_h
 
+#ifndef ulong
+typedef unsigned long int ulong;
+#endif
+
 /*
   InnoDB depends on some MySQL internals which other plugins should not
   need.  This is because of InnoDB's foreign key support, "safe" binlog
@@ -446,19 +450,21 @@ C_MODE_END
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
-#if defined(__cplusplus) && defined(NO_CPLUSPLUS_ALLOCA)
+
+//#if defined(__cplusplus) && defined(NO_CPLUSPLUS_ALLOCA)
 #undef HAVE_ALLOCA
 #undef HAVE_ALLOCA_H
-#endif
-#ifdef HAVE_ALLOCA_H
-#include <alloca.h>
-#endif
+//#endif
+//#ifdef HAVE_ALLOCA_H
+//#include <alloca.h>
+//#endif
 
 #include <errno.h>				/* Recommended by debian */
 /* We need the following to go around a problem with openssl on solaris */
-#if defined(HAVE_CRYPT_H)
-#include <crypt.h>
-#endif
+//#if defined(HAVE_CRYPT_H)
+//#include <crypt.h>
+//#endif
+//#undef
 
 /*
   A lot of our programs uses asserts, so better to always include it
