@@ -201,6 +201,7 @@ namespace db
 				for (int i = 0; i < num_fields; i++) {
 					defformatstring(field)("%s", row[i]);
 					buf.put(field, strlen(field));
+					buf.add(' ');
 				}
 				buf.add('\0');
 				result(buf.getbuf());

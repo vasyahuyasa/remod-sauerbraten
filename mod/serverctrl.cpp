@@ -30,15 +30,22 @@ void getname(int *cn)
     }
 }
 
+/**
+ * returns integer representation of ip to string value
+ */
+char *ip2str(int ip) {
+    in_addr addr;
+    addr.s_addr = ip;
+    char *res = inet_ntoa(addr);
+    return res;
+}
+
 void getip(int *pcn)
 {
     int cn=(int)*pcn;
-    if(cn<(getnumclients()) && cn>=0)
-    {
-        in_addr addr;
-        addr.s_addr = getclientip(cn);
-        char *ip = inet_ntoa(addr);
-        result(ip);
+    if(cn<(getnumclients()) && cn>=0) {
+        char *res = ip2str(getclientip(cn));
+        result(res);
     }
 }
 
@@ -439,6 +446,7 @@ void setmastercmd(int *val, int *pcn)
  * checks if ip matches mask
  * ip = "127.0.0.1",	mask = "127.0.0.1"		--  true
  * ip = "192.168.1.23",	mask = "192.168.1.*"	--  true
+ *  * ip = "192.168.1.23",	mask = "192.168.1.255"	--  true
  * ip = "127.0.0.1",	mask = "128.0.0.1"		--  false
  */
 bool checkipbymask(char *ip, char *mask)
@@ -483,7 +491,7 @@ bool checkipbymask(char *ip, char *mask)
             mstr[0] = '\0';
         }
 
-        if (strcmp(iseg, mseg) != 0 && strcmp(mseg, "*") != 0)
+        if (strcmp(iseg, mseg) != 0 && strcmp(mseg, "*") != 0 && strcmp(mseg, "255") != 0)
         {
             b = false;
         }
@@ -538,6 +546,19 @@ void loopbans(const char *name, const char *ip, const char *expire, const char *
             popident(*idents[i]);
         }
     }
+}
+
+/**
+ * converts integer unix time to string due to format.
+ */
+void timef(int *t, const char *format) {
+	time_t now = *t;
+	struct tm *timeinfo;
+	string buf;
+
+	timeinfo = localtime(&now);
+	strftime(buf, MAXSTRLEN, format, timeinfo);
+	result(buf);
 }
 
 // system time format see http://www.cplusplus.com/reference/clibrary/ctime/strftime/
@@ -755,6 +776,7 @@ void uptimef(const char *fmt)
 COMMAND(getname, "i");
 ICOMMAND(getmap, "", (), result(smapname));
 ICOMMAND(getmode, "", (), intret(gamemode));
+ICOMMAND(ip2str, "i", (int *ip), result(ip2str(*ip)));
 COMMAND(getip, "i");
 ICOMMAND(getipint, "i", (int *cn), intret((int) getclientip(*cn)));
 COMMAND(getfrags, "i");
@@ -808,6 +830,7 @@ ICOMMAND(loopbans,
          (char *name, char *ip, char *expire, char *actor, char *actorip, char *body),
          loopbans(name, ip, expire, actor, actorip, body));
 ICOMMAND(delban, "i", (int *n), if(bannedips.inrange(*n)) bannedips.remove(*n));
+COMMAND(timef, "is");
 COMMAND(systimef, "s");
 COMMAND(setlogfile, "s");
 ICOMMAND(echo, "C", (char *s), conoutf("%s", s));

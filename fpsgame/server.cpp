@@ -2233,7 +2233,7 @@ namespace server
 
                 if(ci->state.muted) break;
 
-                if(remod::onevent("ontext", "is", sender, &ftext)) break;
+                if(remod::onevent("ontext", "is", sender, ftext)) break;
                 DELETEA(ftext);
                 QUEUE_AI;
                 QUEUE_INT(N_TEXT);
