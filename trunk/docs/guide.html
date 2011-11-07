@@ -129,6 +129,12 @@
 
                   <td class="description">return ip address of player as integer value</td>
                 </tr>
+                
+                <tr>
+                  <td class="command">ip2str [ip] (str)</td>
+
+                  <td class="description">return string representation of integer ip representation</td>
+                </tr>
 
                 <tr>
                   <td class="command">getfrags [cn] (n)</td>
@@ -441,7 +447,13 @@
 
                   <td class="description">delete specified ban from list</td>
                 </tr>                
-                
+
+				<tr>
+                  <td class="command">timef [timestamp] [format] (str)</td>
+
+                  <td class="description">format integer unix timestamp. see <a href="http://www.cplusplus.com/reference/clibrary/ctime/strftime/">http://www.cplusplus.com/reference/clibrary/ctime/strftime/</a></td>
+                </tr>
+				                
                 <tr>
                   <td class="command">systimef [format] (str)</td>
 
@@ -478,8 +490,21 @@
 		<tr>
                   <td class="command">eval [str] (str)</td>
 
-                  <td class="description">evaluates a string as though it were an expression and returns a result</td>
+                  <td class="description">evaluates a string as though it was an expression and returns a result</td>
                 </tr>
+                
+                 <tr>
+                  <td class="command">defaultvalue [name] [value]</td>
+
+                  <td class="description">sets value to variable "name" if it was not defined </td>
+                </tr>
+                
+				<tr>
+                  <td class="command">getvalue [name] [value] (str)</td>
+
+                  <td class="description">returns value of variable "name"" if it is defined and not null. Otherwise returns "value" </td>
+                </tr>
+                                
               </table>
             </li>
 
@@ -591,7 +616,7 @@
                   <td class="description">allow save demos to disk</td>
                 </tr>
 
-		<tr>
+				<tr>
                   <td class="command">$mapdir [str]</td>
 
                   <td class="description">RW</td>
@@ -599,14 +624,19 @@
                   <td class="description">(coopedit) folder fo save and load maps</td>
                 </tr>
 
-		<tr>
+				<tr>
                   <td class="command">$commandchar [str]</td>
 
                   <td class="description">RW</td>
 
                   <td class="description">character before player command (default: "#")</td>
                 </tr>
+                
+                
+                
+                
               </table>
+              
             </li>
 
             <li>
@@ -825,6 +855,88 @@
                 </tr>
               </table>
             </li>
+            
+            <li>
+              <h4 class="caption"><a name="database" id="database">Database</a></h4>
+				
+              <table class="listcommands">
+                <tr class="bold colnames" align="center">
+                  <td>command</td>
+                  <td>description</td>
+                </tr>
+
+                <tr>
+                  <td class="command">db_register [engine] [connection_string] [name] (str)</td>
+                  <td class="description">
+                  	Register database with specified engine and connection string to internal variable [name]. This variable is used for access to the database. In this and other database functions name is not required, if not specified "default" one is used<br/> 
+                  	Examples:<br/>
+                  	db_register "sqlite3" "/path/to/your/database.db" //used "default" database name<br/>
+                  	db_register "sqlite3" "/path/to/your/other_database.db" "second_db" //used "default" database name<br/>
+                  	db_register "mysql" "login:password@192.168.1.2:3306/db_name" "mysql_database" //all parts of connection string are required as in the example!<br/>
+                  	There are no limitations for database count. Now remod supports only sqlite3 and mysql engines
+                  	</td>
+                </tr>
+               
+                <tr>
+                  <td class="command">db_open [name] [connection_number] (dbuid)</td>
+                  <td class="description">
+                  	Opens connection with number [connection_number] for database name.  <br/>
+                  	Connection number is used to make possibility opening different connections for the same database. If not specified used 0 <br/>
+                  	Returns system connection identificator which is used for making queries on db.       
+                  </td>
+                </tr>
+                
+                
+                <tr>
+                  <td class="command">db_init [name] [connection_number] (dbuid)</td>
+                  <td class="description">
+                  	Opens connection if it has been not yet opened.
+                  </td>
+                </tr>
+                
+                <tr>
+                  <td class="command">db_query [query] [name] [connection_number] (result_id)</td>
+                  <td class="description"></td>
+                </tr>
+                
+                <tr>
+                  <td class="command">db_pquery [query] [params] [name] [connection_number] (result_id)</td>
+                  <td class="description"></td>
+                </tr>
+                
+                <tr>
+                  <td class="command">db_insert_replace [tablename] [last_part_of_query] [params] [name] [conn_num] (result_id)</td>
+                  <td class="description">
+                  	sqlite: "INSERT OR REPLACE INTO " $tablename " " $last_part_of_query <br/>
+                  	mysql: "REPLACE INTO " $tablename " " $last_part_of_query <br/>
+                  </td>
+                </tr>
+                
+                <tr>
+                  <td class="command">db_getrow [result_id] (row)</td>
+                  <td class="description"></td>
+                </tr>
+                
+                <tr>
+                  <td class="command">db_finalize [result_id] (int)</td>
+                  <td class="description"></td>
+                </tr>
+                
+                <tr>
+                  <td class="command">db_close [name] [connection_number] (int)</td>
+                  <td class="description"></td>
+                </tr>
+                
+                <tr>
+                  <td class="command">db_error [name] [connection_number]</td>
+                  <td class="description">
+                  	Gets database error message end prints it.
+                  </td>
+                </tr>
+                
+              </table>
+            </li>
+            
           </ul>
         </li>
 
@@ -1283,6 +1395,8 @@
                 </tr>
               </table>
             </li>
+            
+            
           </ul>
         </li>
       </ul>

@@ -215,6 +215,7 @@ namespace db
 			if(buf.length()) buf.add(' ');
 			defformatstring(field)("%s", sqlite3_column_text(stmt, i));
 			buf.put(field, strlen(field));
+			buf.add(' ');
 		}
 		buf.add('\0');
 		result(buf.getbuf());
