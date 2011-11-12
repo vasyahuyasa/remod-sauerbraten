@@ -18,14 +18,20 @@ namespace remod
 {
 namespace db
 {
-	char *addslashes(char *str) {
-		char *s = (char *)str;
 
+	char *addslashes(char *s) {
 		vector<char> buf;
 
+		int characters_len = sizeof(CHARACTERS)/sizeof(char);
+
 		for(;;) {
-			char *found;
-			if((found = strchr(s, '\'')) || (found = strchr(s, '"')) || (found = strchr(s, '`'))) {
+			char *found = 0;
+			for (int i = 0; i < characters_len; i++){
+				char *newfound = strchr(s, CHARACTERS[i]);
+				if (newfound && (!found || ((size_t) newfound < (size_t) found))) found = newfound;
+			}
+
+			if (found) {
 				while(s < found) buf.add(*s++);
 				buf.add('\\');
 				buf.add(*found);
@@ -33,9 +39,32 @@ namespace db
 			} else {
 				while(*s) buf.add(*s++);
 				buf.add('\0');
-				return newstring(buf.getbuf(), buf.length());
+				return newstring(buf.getbuf(), buf.length()-1);
 			}
 		}
+		return 0;
+	}
+
+	char *stripslashes(char *s) {
+		vector<char> buf;
+		int characters_len = sizeof(CHARACTERS)/sizeof(char);
+		while(s && *s) {
+			if (*s == '\\') {
+				char *prev = s++;
+				bool found = false;
+				for (int i = 0; i < characters_len; i++){
+					found = *s == CHARACTERS[i];
+					if (found) break;
+				}
+				if (!found) {
+					//current not found in CHARACTERS - it's not character to escape, adding \ as normal character
+					buf.add(*prev);
+				}
+			}
+			buf.add(*s++);
+		}
+		buf.add('\0');
+		return newstring(buf.getbuf(), buf.length()-1);
 	}
 
 	char *build_query(const char* query, const char *params) {
@@ -115,6 +144,10 @@ namespace db
 
 		return res;
 	}
+
+
+ICOMMAND(addslashes, "C", (char *s), char *c = addslashes(s); result(c); DELETEA(c));
+ICOMMAND(stripslashes, "C", (char *s), char *c = stripslashes(s); result(c); DELETEA(c));
 }
 }
 

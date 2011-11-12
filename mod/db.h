@@ -13,7 +13,13 @@
 namespace remod {
 namespace db {
 
+/**
+ * characters to escape
+ */
+const char CHARACTERS[4] = {'\'', '"', '`', '\\'};
+
 char *addslashes(char *str);
+char *stripslashes(char *str);
 char *build_query(const char* query, const char *params);
 
 /**
