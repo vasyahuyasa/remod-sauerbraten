@@ -30,24 +30,17 @@ void getname(int *cn)
     }
 }
 
-/**
- * returns integer representation of ip to string value
- */
-char *ip2str(int ip) {
-    in_addr addr;
-    addr.s_addr = ip;
-    char *res = inet_ntoa(addr);
-    return res;
+void getip(int *pcn) {
+	int cn = (int) *pcn;
+	if (cn < (getnumclients()) && cn >= 0) {
+		in_addr addr;
+		addr.s_addr = getclientip(cn);
+		char *res = inet_ntoa(addr);
+		result(res);
+	}
 }
 
-void getip(int *pcn)
-{
-    int cn=(int)*pcn;
-    if(cn<(getnumclients()) && cn>=0) {
-        char *res = ip2str(getclientip(cn));
-        result(res);
-    }
-}
+
 
 void getfrags(int *pcn)
 {
@@ -772,13 +765,38 @@ void uptimef(const char *fmt)
     result(s.getbuf());
 }
 
+/**
+ * converts string ip to integer value
+ */
+void ip2int(char *ip) {
+	uint i = 0;
+	for (int j = 0; j < 4; j++) {
+		char *dot = strchr(ip, '.');
+		size_t l = dot ? ((size_t) dot - (size_t) ip) : strlen(ip);
+		char *octet = newstring(ip, l);
+		char ioctet = atoi(octet);
+		i = (i << 8) | ioctet;
+		ip = dot + 1;
+		DELETEA(octet);
+	}
+	intret(i);
+}
+
+/**
+ * convert integer value of ip to string
+ */
+void int2ip(int *i) {
+	string ip;
+	int ii = *i;
+	sprintf(ip, "%d.%d.%d.%d", (ii & 0xFF000000) >> 24, (ii & 0xFF0000) >> 16, (ii & 0xFF00) >> 8, ii & 0xFF);
+	result(ip);
+}
+
 //Cube script binds
 COMMAND(getname, "i");
 ICOMMAND(getmap, "", (), result(smapname));
 ICOMMAND(getmode, "", (), intret(gamemode));
-ICOMMAND(ip2str, "i", (int *ip), result(ip2str(*ip)));
 COMMAND(getip, "i");
-ICOMMAND(getipint, "i", (int *cn), intret((int) getclientip(*cn)));
 COMMAND(getfrags, "i");
 COMMAND(getdeaths, "i");
 COMMAND(getteamkills, "i");
@@ -842,4 +860,7 @@ ICOMMAND(eval, "C", (char *s), result(executeret(s)));
 COMMAND(editmute, "ii");
 COMMAND(iseditmuted, "i");
 COMMAND(uptimef, "s");
+COMMAND(ip2int, "s");
+COMMAND(int2ip, "i");
+
 }

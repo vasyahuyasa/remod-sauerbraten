@@ -204,7 +204,9 @@ namespace db
 					buf.add(' ');
 				}
 				buf.add('\0');
-				result(buf.getbuf());
+				char *res = stripslashes(buf.getbuf());
+				result(res);
+				DELETEA(res);
 			} else {
 				result("");
 			}

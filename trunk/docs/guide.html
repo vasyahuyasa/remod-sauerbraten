@@ -124,16 +124,28 @@
                   <td class="description">return ip address of player</td>
                 </tr>
 
-				<tr>
-                  <td class="command">getipint [cn] (n)</td>
+                <tr>
+                  <td class="command">int2ip [int] (str)</td>
 
-                  <td class="description">return ip address of player as integer value</td>
+                  <td class="description">converts int representation of ip to string (e.g. 127.0.0.1)</td>
+                </tr>
+
+				<tr>
+                  <td class="command">ip2int [str] (int)</td>
+
+                  <td class="description">converts string value of  ip (e.g. 127.0.0.1) it's integer represenation</td>
                 </tr>
                 
                 <tr>
-                  <td class="command">ip2str [ip] (str)</td>
+                  <td class="command">addslashes [str] (str)</td>
 
-                  <td class="description">return string representation of integer ip representation</td>
+                  <td class="description">escapes special characters (', `, \, ") with slash for safe database work</td>
+                </tr>
+
+				<tr>
+                  <td class="command">stripslashes [str] (str)</td>
+
+                  <td class="description">removes slash before special characters (\" -> ")</td>
                 </tr>
 
                 <tr>
