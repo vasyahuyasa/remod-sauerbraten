@@ -163,6 +163,9 @@ Cube script:
 	sha384 [str] (str) +	sha-2 384 bit hash
 	sha512 [str] (str) +	sha-2 512 bit hash
 
+	addpermban [str] [str] +	add permanent ban with reason (ex. permban 123.43 (it is 123.43.0.0/16), permban 234.234.21.34 (it is 234.234.21.34/0))
+	looppermbans [ip] [mask] [reason] [body] +	loop through permban list
+
 
 
 Databases: +

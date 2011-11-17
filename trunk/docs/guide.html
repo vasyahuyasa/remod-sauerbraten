@@ -401,9 +401,9 @@
                 </tr>
 
                 <tr>
-                  <td class="command">addgban [ip]</td>
+                  <td class="command">permban [ip] [reason]</td>
 
-                  <td class="description">add permanent ban to global ban list</td>
+                  <td class="description">add permanent ban with reason (example: permban 123.234.131 "cheater", add ban for 123.234.131.0/24 network)</td>
                 </tr>
 
                 <tr>
@@ -453,11 +453,23 @@
 
                   <td class="description">loop through ban list</td>
                 </tr>
-				
-				<tr>
+                
+                <tr>
+                  <td class="command">looppermbans [ip] [mask] [reason] [body]</td>
+
+                  <td class="description">loop through permban list</td>
+                </tr>
+                
+                <tr>
                   <td class="command">delban [n]</td>
 
                   <td class="description">delete specified ban from list</td>
+                </tr>   
+				
+				<tr>
+                  <td class="command">delpermban [n]</td>
+
+                  <td class="description">delete specified permanent ban from list</td>
                 </tr>                
 
 				<tr>

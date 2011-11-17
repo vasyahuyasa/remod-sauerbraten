@@ -23,20 +23,20 @@ STRIP=
 PLATFORM=$(shell uname -s)
 
 #result file name
-PLATFORM_SUFFIX=x32
+PLATFORM_SUFFIX=.i386
 ifneq (,$(findstring x86_64,$(shell uname -a)))
-PLATFORM_SUFFIX=x64
+PLATFORM_SUFFIX=.x86_64
 endif
 
-SERVER_NAME=server
+SERVER_NAME=sauer_server
 ifneq (,$(findstring MINGW,$(PLATFORM)))
-SERVER_NAME=server_windows_$(PLATFORM_SUFFIX).exe
+SERVER_NAME=sauer_server$(PLATFORM_SUFFIX).exe
 endif
 ifneq (,$(findstring Linux,$(PLATFORM)))
-SERVER_NAME=server_linux_$(PLATFORM_SUFFIX)
+SERVER_NAME=sauer_server$(PLATFORM_SUFFIX)
 endif
 ifneq (,$(findstring FreeBSD,$(PLATFORM)))
-SERVER_NAME=server_freebsd_$(PLATFORM_SUFFIX)
+SERVER_NAME=sauer_server_freebsd$(PLATFORM_SUFFIX)
 endif
 
 ### Folders, libraries, includes
