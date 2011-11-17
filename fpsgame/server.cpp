@@ -60,6 +60,7 @@ namespace server
 
     vector<uint> allowedips;
     vector<ban> bannedips;
+    vector<permban> permbans; // Remod
     vector<clientinfo *> connects, clients, bots;
     vector<worldstate *> worldstates;
     bool reliablemessages = false;
@@ -1723,6 +1724,12 @@ namespace server
         return false;
     }
 
+    //Remod
+    bool checkpban(uint ip)
+    {
+        loopv(permbans) if((ip & permbans[i].mask) == permbans[i].ip) return true;
+        return false;
+    }
 
     void kick(int cn, char* actorname, int expire)
     {
@@ -1776,6 +1783,35 @@ namespace server
         }
     }
 
+    //Remod
+    void addpban(const char *name, const char *reason)
+    {
+        union { uchar b[sizeof(enet_uint32)]; enet_uint32 i; } ip, mask;
+        ip.i = 0;
+        mask.i = 0;
+        loopi(4)
+        {
+            char *end = NULL;
+            int n = strtol(name, &end, 10);
+            if(!end) break;
+            if(end > name) { ip.b[i] = n; mask.b[i] = 0xFF; }
+            name = end;
+            while(*name && *name++ != '.');
+        }
+        permban &ban = permbans.add();
+        ban.ip = ip.i;
+        ban.mask = mask.i;
+        strcpy(ban.reason, reason);
+        ban.reason[MAXSTRLEN-1] = '\0'; // to avoid problems in future
+
+        loopvrev(clients)
+        {
+            clientinfo *ci = clients[i];
+            if(ci->local || ci->privilege >= PRIV_ADMIN) continue;
+            if(checkpban(getclientip(ci->clientnum))) disconnect_client(ci->clientnum, DISC_IPBAN);
+        }
+    }
+
     int allowconnect(clientinfo *ci, const char *pwd)
     {
         if(ci->local) return DISC_NONE;
@@ -1790,6 +1826,8 @@ namespace server
         uint ip = getclientip(ci->clientnum);
         loopv(bannedips) if(bannedips[i].ip==ip) return DISC_IPBAN;
         if(checkgban(ip)) return DISC_IPBAN;
+        //Remod
+        if(checkpban(ip)) return DISC_IPBAN;
         if(mastermode>=MM_PRIVATE && allowedips.find(ip)<0) return DISC_PRIVATE;
         return DISC_NONE;
     }
