@@ -165,6 +165,7 @@ Cube script:
 
 	addpermban [str] [str] +	add permanent ban with reason (ex. permban 123.43 (it is 123.43.0.0/16), permban 234.234.21.34 (it is 234.234.21.34/0))
 	looppermbans [ip] [mask] [reason] [body] +	loop through permban list
+	getextensions (str) +	return list of compiled-in modules (ex. REMOD SQLITE3 GEOIP RCON..)
 
 
 

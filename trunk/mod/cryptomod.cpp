@@ -9,6 +9,9 @@
 
 #include "cube.h"
 #include "hashlibpp.h"
+#include "remod.h"
+
+EXTENSION(CRYPTO);
 
 // shared/crypto.cpp
 namespace tiger

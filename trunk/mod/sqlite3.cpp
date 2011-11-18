@@ -77,6 +77,8 @@
 
 #include "db.h"
 
+EXTENSION(SQLITE3);
+
 namespace remod
 {
 namespace db

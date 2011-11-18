@@ -25,9 +25,12 @@
 
 #include "fpsgame.h"
 #include "rconmod.h"
+#include "remod.h"
 
 #define MAXRCONPEERS 32
 #define MAXBUF 1024*60
+
+EXTENSION(RCON);
 
 extern int execute(const char *p);
 namespace remod

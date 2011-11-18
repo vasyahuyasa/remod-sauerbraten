@@ -1,7 +1,9 @@
 #ifdef IRC
 #include "irc.h"
+#include "remod.h"
 
 //REmod
+EXTENSION(IRC);
 VAR(verbose, 0, 0, 6);
 SVAR(consoletimefmt, "%c");
 
