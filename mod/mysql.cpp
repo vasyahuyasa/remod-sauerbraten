@@ -77,11 +77,14 @@
 #include <mysql.h>
 
 #include "db.h"
+#include "remod.h"
 
 #define inrange(n, _max) (n>=0 && n<_max)
 
 #define MAXDB 10
 #define MAXSTMT 50
+
+EXTENSION(MYSQL);
 
 namespace remod
 {
