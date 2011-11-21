@@ -769,12 +769,12 @@ void uptimef(const char *fmt)
  * converts string ip to integer value
  */
 void ip2int(char *ip) {
-	uint i = 0;
+	int i = 0;
 	for (int j = 0; j < 4; j++) {
 		char *dot = strchr(ip, '.');
 		size_t l = dot ? ((size_t) dot - (size_t) ip) : strlen(ip);
 		char *octet = newstring(ip, l);
-		char ioctet = atoi(octet);
+		short ioctet = atoi(octet);
 		i = (i << 8) | ioctet;
 		ip = dot + 1;
 		DELETEA(octet);
