@@ -27,6 +27,9 @@ PLATFORM_SUFFIX=.i386
 ifneq (,$(findstring x86_64,$(shell uname -a)))
 PLATFORM_SUFFIX=.x86_64
 endif
+ifneq (,$(findstring amd64,$(shell uname -a)))
+PLATFORM_SUFFIX=.x86_64
+endif
 
 SERVER_NAME=sauer_server
 ifneq (,$(findstring MINGW,$(PLATFORM)))
