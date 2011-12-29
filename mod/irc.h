@@ -68,6 +68,8 @@ struct ircchan
 
     void adduser(char *nick, usermode state)
     {
+        if(!nick) return;
+
         user &u = users.add();
         strcpy(u.nick, nick);
         u.state=state;
@@ -75,6 +77,8 @@ struct ircchan
 
     void deluser(char *nick)
     {
+        if(!nick) return;
+
         loopv(users)
         {
             if(strcmp(users[i].nick, nick)==0)
@@ -87,6 +91,8 @@ struct ircchan
 
     void setusermode(char *nick, usermode state)
     {
+        if(!nick) return;
+
         loopv(users)
         {
             if(strcmp(users[i].nick, nick)==0) users[i].state = state;
