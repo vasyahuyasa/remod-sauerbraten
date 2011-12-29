@@ -582,6 +582,7 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
                     {
                         case 'o': c->setusermode(w[g+3], OP); break;
                         case 'v': c->setusermode(w[g+3], VOICE); break;
+                        case 'm': break; // moderated channel >_<
                         default: c->setusermode(w[g+3], NONE); break;
                     }
                 }
@@ -870,6 +871,8 @@ void ircslice()
 
 bool irc_user_state(char *nick, usermode state)
 {
+    if(!nick) return false;
+
     loopv(ircnets)
     {
         loopvj(ircnets[i]->channels)
