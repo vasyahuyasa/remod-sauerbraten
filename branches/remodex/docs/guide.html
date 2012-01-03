@@ -2,15 +2,16 @@
 
 <html>
 <head>
-  <meta name="generator" content="Bluefish 2.0.2" >
-  <meta name="generator" content="Bluefish 2.0.2" >
+  <meta name="generator" content="Bluefish 2.0.3" >
+  <meta name="generator" content="Bluefish 2.0.3" >
 
   <title>Remode user guide</title>
   <style type="text/css">
-      .dotlist { list-style: point; }
+      	.dotlist { list-style: point; }
         .numlist { list-style: decimal; }
         .bold { font-weight: bold; }    
         .caption { margin-top: 2em; margin-bottom: 0; }
+        .cmdline_opt { display: block; background-color: #dfdfdf; padding-left: 0.5em; width: 2em; }
         .listcommands { border-collapse: collapse; }
         .listcommands td { border: #cacaca 1px solid; }          
         .listcommands caption { font-weight: bold; }    
@@ -32,7 +33,7 @@
         <li>
           <a href="#cube_script_events">General commands</a>
 
-          <ul class="dorlist">
+          <ul class="dotlist">
             <li><a href="#player_control">Player control</a></li>
 
             <li><a href="#server_control">Server control</a></li>
@@ -61,6 +62,15 @@
           </ul>
         </li>
       </ul>
+    </li>
+    <li>
+    	<a href="#remod_command_line_options">Remod command line options</a>
+    	
+    	<ul class="dotlist">
+            <li><a href="#-f">-f</a></li>
+            
+            <li><a href="#-g">-g</a></li>
+        </ul>
     </li>
   </ul>
   <hr>
@@ -112,6 +122,30 @@
                   <td class="command">getip [cn] (str)</td>
 
                   <td class="description">return ip address of player</td>
+                </tr>
+
+                <tr>
+                  <td class="command">int2ip [int] (str)</td>
+
+                  <td class="description">converts int representation of ip to string (e.g. 127.0.0.1)</td>
+                </tr>
+
+				<tr>
+                  <td class="command">ip2int [str] (int)</td>
+
+                  <td class="description">converts string value of  ip (e.g. 127.0.0.1) it's integer represenation</td>
+                </tr>
+                
+                <tr>
+                  <td class="command">addslashes [str] (str)</td>
+
+                  <td class="description">escapes special characters (', `, \, ") with slash for safe database work</td>
+                </tr>
+
+				<tr>
+                  <td class="command">stripslashes [str] (str)</td>
+
+                  <td class="description">removes slash before special characters (\" -> ")</td>
                 </tr>
 
                 <tr>
@@ -263,6 +297,18 @@
 
                   <td class="description">return cn of player</td>
                 </tr>
+
+		<tr>
+                  <td class="command">editmute [cn] [1|0]</td>
+
+                  <td class="description">editmute [1] or edit unmute [0] player, if player edit muted other players will not see it edits</td>
+                </tr>
+
+                <tr>
+                  <td class="command">iseditmuted [cn] (1|0)</td>
+
+                  <td class="description">return 1 if player editmuted</td>
+                </tr>
               </table>
             </li>
 
@@ -355,9 +401,9 @@
                 </tr>
 
                 <tr>
-                  <td class="command">addgban [ip]</td>
+                  <td class="command">permban [ip] [reason]</td>
 
-                  <td class="description">add permanent ban to global ban list</td>
+                  <td class="description">add permanent ban with reason (example: permban 123.234.131 "cheater", add ban for 123.234.131.0/24 network)</td>
                 </tr>
 
                 <tr>
@@ -407,13 +453,31 @@
 
                   <td class="description">loop through ban list</td>
                 </tr>
-				
-				<tr>
+                
+                <tr>
+                  <td class="command">looppermbans [ip] [mask] [reason] [body]</td>
+
+                  <td class="description">loop through permban list</td>
+                </tr>
+                
+                <tr>
                   <td class="command">delban [n]</td>
 
                   <td class="description">delete specified ban from list</td>
+                </tr>   
+				
+				<tr>
+                  <td class="command">delpermban [n]</td>
+
+                  <td class="description">delete specified permanent ban from list</td>
                 </tr>                
-                
+
+				<tr>
+                  <td class="command">timef [timestamp] [format] (str)</td>
+
+                  <td class="description">format integer unix timestamp. see <a href="http://www.cplusplus.com/reference/clibrary/ctime/strftime/">http://www.cplusplus.com/reference/clibrary/ctime/strftime/</a></td>
+                </tr>
+				                
                 <tr>
                   <td class="command">systimef [format] (str)</td>
 
@@ -450,8 +514,27 @@
 		<tr>
                   <td class="command">eval [str] (str)</td>
 
-                  <td class="description">evaluates a string as though it were an expression and returns a result</td>
+                  <td class="description">evaluates a string as though it was an expression and returns a result</td>
                 </tr>
+                
+                 <tr>
+                  <td class="command">defaultvalue [name] [value]</td>
+
+                  <td class="description">sets value to variable "name" if it was not defined </td>
+                </tr>
+                
+				<tr>
+                  <td class="command">getvalue [name] [value] (str)</td>
+
+                  <td class="description">returns value of variable "name"" if it is defined and not null. Otherwise returns "value" </td>
+                </tr>
+                
+                <tr>
+                  <td class="command">getextensions (str)</td>
+
+                  <td class="description">returns list of server modules (example: IRC REMOD RCON SQLITE3 GEOIP etc.)</td>
+                </tr>
+                                
               </table>
             </li>
 
@@ -563,7 +646,7 @@
                   <td class="description">allow save demos to disk</td>
                 </tr>
 
-		<tr>
+				<tr>
                   <td class="command">$mapdir [str]</td>
 
                   <td class="description">RW</td>
@@ -571,14 +654,19 @@
                   <td class="description">(coopedit) folder fo save and load maps</td>
                 </tr>
 
-		<tr>
+				<tr>
                   <td class="command">$commandchar [str]</td>
 
                   <td class="description">RW</td>
 
                   <td class="description">character before player command (default: "#")</td>
                 </tr>
+                
+                
+                
+                
               </table>
+              
             </li>
 
             <li>
@@ -797,6 +885,88 @@
                 </tr>
               </table>
             </li>
+            
+            <li>
+              <h4 class="caption"><a name="database" id="database">Database</a></h4>
+				
+              <table class="listcommands">
+                <tr class="bold colnames" align="center">
+                  <td>command</td>
+                  <td>description</td>
+                </tr>
+
+                <tr>
+                  <td class="command">db_register [engine] [connection_string] [name] (str)</td>
+                  <td class="description">
+                  	Register database with specified engine and connection string to internal variable [name]. This variable is used for access to the database. In this and other database functions name is not required, if not specified "default" one is used<br/> 
+                  	Examples:<br/>
+                  	db_register "sqlite3" "/path/to/your/database.db" //used "default" database name<br/>
+                  	db_register "sqlite3" "/path/to/your/other_database.db" "second_db" //used "default" database name<br/>
+                  	db_register "mysql" "login:password@192.168.1.2:3306/db_name" "mysql_database" //all parts of connection string are required as in the example!<br/>
+                  	There are no limitations for database count. Now remod supports only sqlite3 and mysql engines
+                  	</td>
+                </tr>
+               
+                <tr>
+                  <td class="command">db_open [name] [connection_number] (dbuid)</td>
+                  <td class="description">
+                  	Opens connection with number [connection_number] for database name.  <br/>
+                  	Connection number is used to make possibility opening different connections for the same database. If not specified used 0 <br/>
+                  	Returns system connection identificator which is used for making queries on db.       
+                  </td>
+                </tr>
+                
+                
+                <tr>
+                  <td class="command">db_init [name] [connection_number] (dbuid)</td>
+                  <td class="description">
+                  	Opens connection if it has been not yet opened.
+                  </td>
+                </tr>
+                
+                <tr>
+                  <td class="command">db_query [query] [name] [connection_number] (result_id)</td>
+                  <td class="description"></td>
+                </tr>
+                
+                <tr>
+                  <td class="command">db_pquery [query] [params] [name] [connection_number] (result_id)</td>
+                  <td class="description"></td>
+                </tr>
+                
+                <tr>
+                  <td class="command">db_insert_replace [tablename] [last_part_of_query] [params] [name] [conn_num] (result_id)</td>
+                  <td class="description">
+                  	sqlite: "INSERT OR REPLACE INTO " $tablename " " $last_part_of_query <br/>
+                  	mysql: "REPLACE INTO " $tablename " " $last_part_of_query <br/>
+                  </td>
+                </tr>
+                
+                <tr>
+                  <td class="command">db_getrow [result_id] (row)</td>
+                  <td class="description"></td>
+                </tr>
+                
+                <tr>
+                  <td class="command">db_finalize [result_id] (int)</td>
+                  <td class="description"></td>
+                </tr>
+                
+                <tr>
+                  <td class="command">db_close [name] [connection_number] (int)</td>
+                  <td class="description"></td>
+                </tr>
+                
+                <tr>
+                  <td class="command">db_error [name] [connection_number]</td>
+                  <td class="description">
+                  	Gets database error message end prints it.
+                  </td>
+                </tr>
+                
+              </table>
+            </li>
+            
           </ul>
         </li>
 
@@ -1163,6 +1333,11 @@
                   <td class="description">When team scored flag</td>
                 </tr>
                 
+		<tr>
+                  <td class="command">oneditmute (1|0) (cn)</td>
+
+                  <td class="description">When player editmuted/editunmuted</td>
+                </tr>
                 
               </table>
             </li>
@@ -1250,8 +1425,26 @@
                 </tr>
               </table>
             </li>
+            
+            
           </ul>
         </li>
+      </ul>
+    </li>
+    
+    <li>
+      <h2><a name="remod_command_line_options" id="remod_command_line_options">Remod command line options</a></h2>
+      
+      <ul class="dotlist">
+            <li>
+            	<a name="-f" id="-f" class="cmdline_opt">-f</a>
+            	Execute config file instead of server-init.cfg (ex. -fserver2.cfg)
+            </li>
+            
+            <li>
+            	<a name="-g" id="-g" class="cmdline_opt">-g</a>
+            	File for write logs instead of STDOUT (ex. -gserver.log)
+            </li>
       </ul>
     </li>
   </ul>

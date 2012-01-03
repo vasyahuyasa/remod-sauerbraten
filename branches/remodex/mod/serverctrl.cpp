@@ -6,7 +6,7 @@
 * additional cubescript functions
 */
 
-
+#include <time.h>
 #include "fpsgame.h"
 #include "commandev.h"
 #include "commandhandler.h"
@@ -30,17 +30,17 @@ void getname(int *cn)
     }
 }
 
-void getip(int *pcn)
-{
-    int cn=(int)*pcn;
-    if(cn<(getnumclients()) && cn>=0)
-    {
-        in_addr addr;
-        addr.s_addr = getclientip(cn);
-        char *ip = inet_ntoa(addr);
-        result(ip);
-    }
+void getip(int *pcn) {
+	int cn = (int) *pcn;
+	if (cn < (getnumclients()) && cn >= 0) {
+		in_addr addr;
+		addr.s_addr = getclientip(cn);
+		char *res = inet_ntoa(addr);
+		result(res);
+	}
 }
+
+
 
 void getfrags(int *pcn)
 {
@@ -324,7 +324,7 @@ void ismuted(int *icn)
     intret(ci && ci->state.muted);
 }
 
-void formatmillis(char *fmt, int *millis)
+void formatmillis(const char *fmt, int *millis)
 {
     // %i - milliseconds, %s - seconds, %m - minutes, %h - hours, %d - days
     int mseconds, seconds, minutes, hours, days;
@@ -439,6 +439,7 @@ void setmastercmd(int *val, int *pcn)
  * checks if ip matches mask
  * ip = "127.0.0.1",	mask = "127.0.0.1"		--  true
  * ip = "192.168.1.23",	mask = "192.168.1.*"	--  true
+ *  * ip = "192.168.1.23",	mask = "192.168.1.255"	--  true
  * ip = "127.0.0.1",	mask = "128.0.0.1"		--  false
  */
 bool checkipbymask(char *ip, char *mask)
@@ -483,7 +484,7 @@ bool checkipbymask(char *ip, char *mask)
             mstr[0] = '\0';
         }
 
-        if (strcmp(iseg, mseg) != 0 && strcmp(mseg, "*") != 0)
+        if (strcmp(iseg, mseg) != 0 && strcmp(mseg, "*") != 0 && strcmp(mseg, "255") != 0)
         {
             b = false;
         }
@@ -538,6 +539,19 @@ void loopbans(const char *name, const char *ip, const char *expire, const char *
             popident(*idents[i]);
         }
     }
+}
+
+/**
+ * converts integer unix time to string due to format.
+ */
+void timef(int *t, const char *format) {
+	time_t now = *t;
+	struct tm *timeinfo;
+	string buf;
+
+	timeinfo = localtime(&now);
+	strftime(buf, MAXSTRLEN, format, timeinfo);
+	result(buf);
 }
 
 // system time format see http://www.cplusplus.com/reference/clibrary/ctime/strftime/
@@ -655,7 +669,190 @@ void listclients()
     result(buf.getbuf());
 }
 
+void editmute(int *pcn, int *val)
+{
+    int cn = (int)*pcn;
+    bool v = (bool)*val;
 
+    clientinfo *ci = (clientinfo *)getinfo(cn);
+    if(ci)
+    {
+        if(ci->state.editmuted != v)
+        {
+            ci->state.editmuted = v;
+            remod::onevent("oneditmute", "ii", v ? 1 : 0, cn);
+        }
+    }
+}
+
+void iseditmuted(int *cn)
+{
+    clientinfo *ci = (clientinfo *)getinfo(*cn);
+    intret(ci && ci->state.editmuted);
+}
+
+void uptimef(const char *fmt)
+{
+    // max correct uptime 134 years
+    // %s - seconds, %m - minutes, %h - hours, %d - days, %y
+    uint seconds, minutes, hours, days, years;
+    vector<char> s;
+
+    years = totalsecs/(60*60*24*365); // dont count leap year
+    days = (totalsecs/(60*60*24))%365;
+    hours = (totalsecs/(60*60))%24;
+    minutes = (totalsecs/(60))%60;
+    seconds = totalsecs%60;
+
+    while(*fmt)
+    {
+        int c = *fmt++;
+        if(c == '%')
+        {
+            int i = *fmt++;
+            switch(i)
+            {
+                case 's':
+                {
+                    const char *sseconds = newstring(2);
+                    sprintf((char*)sseconds, "%02d", seconds);
+                    while(*sseconds) s.add(*sseconds++);
+                    // xxx DELETEA(sseconds);
+                    break;
+                }
+
+                case 'm':
+                {
+                    const char *sminutes = newstring(2);
+                    sprintf((char*)sminutes, "%02d", minutes);
+                    while(*sminutes) s.add(*sminutes++);
+                    // xxx DELETEA(sminutes);
+                    break;
+                }
+
+                case 'h':
+                {
+                    const char *shours = newstring(2);
+                    sprintf((char*)shours, "%02d", hours);
+                    while(*shours) s.add(*shours++);
+                    // xxx DELETEA(shours);
+                    break;
+                }
+
+                case 'd':
+                {
+                    const char *sdays;
+                    sdays = intstr(days);
+                    while(*sdays) s.add(*sdays++);
+                    break;
+                }
+
+                case 'y':
+                {
+                    const char *syears;
+                    syears = intstr(years);
+                    while(*syears) s.add(*syears++);
+                    break;
+                }
+
+                default:
+                    s.add(i);
+            }
+        }
+        else s.add(c);
+    }
+    s.add('\0');
+    result(s.getbuf());
+}
+
+/**
+ * converts string ip to integer value
+ */
+void ip2int(char *ip) {
+	int i = 0;
+	for (int j = 0; j < 4; j++) {
+		char *dot = strchr(ip, '.');
+		size_t l = dot ? ((size_t) dot - (size_t) ip) : strlen(ip);
+		char *octet = newstring(ip, l);
+		short ioctet = atoi(octet);
+		i = (i << 8) | ioctet;
+		ip = dot + 1;
+		DELETEA(octet);
+	}
+	intret(i);
+}
+
+/**
+ * convert integer value of ip to string
+ */
+void int2ip(int *i) {
+	string ip;
+	int ii = *i;
+	sprintf(ip, "%d.%d.%d.%d", (ii & 0xFF000000) >> 24, (ii & 0xFF0000) >> 16, (ii & 0xFF00) >> 8, ii & 0xFF);
+	result(ip);
+}
+
+void looppermbans(const char *ip, const char *mask, const char *reason, const char *body)
+{
+    ident* idents[3];
+    idents[0] = newident(ip);
+    idents[1] = newident(mask);
+    idents[2] = newident(reason);
+
+    loopi(3)
+    {
+        if (idents[i]->type != ID_ALIAS) return;
+    }
+
+    in_addr addr;
+    loopv(permbans)
+    {
+        permban b = permbans[i];
+        if (i)
+        {
+            addr.s_addr = b.ip;
+            aliasa(idents[0]->name, newstring(inet_ntoa(addr)));
+            addr.s_addr = b.mask;
+            aliasa(idents[1]->name, newstring(inet_ntoa(addr)));
+            aliasa(idents[2]->name, newstring(b.reason));
+        }
+        else
+        {
+            addr.s_addr = b.ip;
+            pushident(*idents[0], newstring(inet_ntoa(addr)));
+            addr.s_addr = b.mask;
+            pushident(*idents[1], newstring(inet_ntoa(addr)));
+            pushident(*idents[2], newstring(b.reason));
+        }
+        execute(body);
+    }
+
+    if (permbans.length())
+    {
+        loopi(3)
+        {
+            popident(*idents[i]);
+        }
+    }
+}
+
+// Shitcode below
+void getextensions()
+{
+    const extensionslist *extensions = getextensionslist();
+
+    vector<char> buf;
+    string ext;
+    int numext = 0;
+    for(int i = 0; i<extensions->length(); i++) if(extensions->getbuf()[i]) // :`( - ugly
+    {
+        formatstring(ext)("%s", extensions->getbuf()[i]);
+        if(numext++) buf.add(' ');
+        buf.put(ext, strlen(ext));
+    }
+    buf.add('\0');
+    result(buf.getbuf());
+}
 
 //Cube script binds
 COMMAND(getname, "i");
@@ -697,7 +894,6 @@ COMMAND(getping, "i");
 COMMAND(getonline, "i");
 COMMANDN(getteamscores, _getteamscore, "s");
 COMMAND(getrank, "i");
-COMMAND(addgban, "s");
 COMMAND(cleargbans, "");
 ICOMMAND(numclients, "", (), intret(numclients(-1, false, true, false)));
 ICOMMAND(playerexists, "i", (int *cn), intret(playerexists(cn)));
@@ -713,6 +909,7 @@ ICOMMAND(loopbans,
          (char *name, char *ip, char *expire, char *actor, char *actorip, char *body),
          loopbans(name, ip, expire, actor, actorip, body));
 ICOMMAND(delban, "i", (int *n), if(bannedips.inrange(*n)) bannedips.remove(*n));
+COMMAND(timef, "is");
 COMMAND(systimef, "s");
 COMMAND(setlogfile, "s");
 ICOMMAND(echo, "C", (char *s), conoutf("%s", s));
@@ -721,4 +918,16 @@ COMMAND(savemap, "s");
 COMMAND(listclients, "");
 ICOMMAND(identexists, "s", (const char *name), intret(identexists(name)));
 ICOMMAND(eval, "C", (char *s), result(executeret(s)));
+COMMAND(editmute, "ii");
+COMMAND(iseditmuted, "i");
+COMMAND(uptimef, "s");
+COMMAND(ip2int, "s");
+COMMAND(int2ip, "i");
+COMMANDN(permban, addpban, "ss");
+ICOMMAND(looppermbans,
+         "ssss",
+         (char *ip, char *mask, char *reason, char *body),
+         looppermbans(ip, mask, reason, body));
+ICOMMAND(delpermban, "i", (int *n), if(permbans.inrange(*n)) permbans.remove(*n));
+COMMANDN(getextensions, getextensions, "");
 }

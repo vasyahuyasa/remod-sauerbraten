@@ -275,7 +275,6 @@ void common_registercommand(vector<cmd_handler> &handlers, const char* cmd_name,
 		cmd.cmd_func = newstring(cmd_func);
 		cmd.cmd_help = newstring(cmd_help);
 		cmd.cmd_permissions = *cmd_perm;
-
 		//find position to add command - for sorted list
 		int i = 0;
 		bool b = false;

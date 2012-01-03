@@ -623,6 +623,19 @@ void updatemasterserver()
     lastupdatemaster = totalmillis ? totalmillis : 1;
 }
 
+uint totalsecs = 0;
+
+void updatetime()
+{
+    static int lastsec = 0;
+    if(totalmillis - lastsec >= 1000)
+    {
+        int cursecs = (totalmillis - lastsec) / 1000;
+        totalsecs += cursecs;
+        lastsec += cursecs * 1000;
+    }
+}
+
 void serverslice(bool dedicated, uint timeout)   // main server update, called from main loop in sp, or from below in dedicated server
 {
     localclients = nonlocalclients = 0;
@@ -647,6 +660,7 @@ void serverslice(bool dedicated, uint timeout)   // main server update, called f
         curtime = server::ispaused() ? 0 : millis - totalmillis;
         totalmillis = millis;
         lastmillis += curtime;
+        updatetime();
     }
     server::serverupdate();
 
@@ -813,10 +827,19 @@ bool setuplistenserver(bool dedicated)
 }
 //Remod
 VAR(rconport, 0, 27070, 65535);
+SVAR(initcfg, "");
 
 void initserver(bool listen, bool dedicated)
 {
-    if(dedicated) execfile("server-init.cfg", false);
+    if(dedicated)
+    {
+        if(strcmp(initcfg, "") == 0)
+            execfile("server-init.cfg", false);
+        else
+            execfile(initcfg, true);
+    }
+
+
 
     if(listen) setuplistenserver(dedicated);
 
@@ -875,7 +898,8 @@ bool serveroption(char *opt)
 #ifdef STANDALONE
         case 'q': conoutf("Using home directory: %s\n", opt+2); sethomedir(opt+2); return true;
         case 'k': conoutf("Adding package directory: %s\n", opt+2); addpackagedir(opt+2); return true;
-        case 'g': conoutf("Setting log file: %s", opt+2); setlogfile(opt+2); return true;
+        case 'g': conoutf("Setting log file: %s\n", opt+2); setlogfile(opt+2); return true;
+        case 'f': conoutf("Using config file: %s\n", opt+2); setsvar("initcfg", opt+2); return true;
 
 #endif
         default: return false;

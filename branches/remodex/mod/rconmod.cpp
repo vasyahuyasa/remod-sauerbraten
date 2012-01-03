@@ -25,9 +25,12 @@
 
 #include "fpsgame.h"
 #include "rconmod.h"
+#include "remod.h"
 
 #define MAXRCONPEERS 32
 #define MAXBUF 1024*60
+
+EXTENSION(RCON);
 
 extern int execute(const char *p);
 namespace remod
@@ -198,7 +201,7 @@ void sendmsg(char *msg, int len)
     }
     else
     {
-        data = msg;
+        data = newstring(msg);
     }
 
     // send text to all peers
@@ -209,6 +212,8 @@ void sendmsg(char *msg, int len)
             sendto(sock, data, len, 0, (struct sockaddr *)&rconpeers[i].addr, addrlen);
         }
     }
+
+    DELETEA(data);
 
 }
 

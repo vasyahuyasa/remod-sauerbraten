@@ -9,6 +9,23 @@
 
 #include "remod.h"
 
+EXTENSION(REMOD);
+
+extensionslist *extensions = NULL;
+
+bool addextension(const char *name)
+{
+    if(!extensions) extensions = new extensionslist;
+    char *s = newstring(name);
+    extensions->add(s);
+    return false;
+}
+
+const extensionslist* getextensionslist()
+{
+    return extensions;
+}
+
 namespace remod
 {
 using namespace server;

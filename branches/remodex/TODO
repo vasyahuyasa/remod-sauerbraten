@@ -1,9 +1,9 @@
 ﻿[UTF-8]
-General:
+General: +
 	geoip +
 	баны
 	статистика по игроку в конце игры (фраги, смерти, аккуратность) +
-	украденые флаги, возвращенные флаги - 
+	украденые флаги, возвращенные флаги - -
 	irc-бот +
 	persist +
 
@@ -44,6 +44,7 @@ Server events: +
 	#coopedit
 	@ongetmap [cn] +
 	@onnewmap [cn] +   
+	oneditemute [1|0] [cn]
 	
 	#IRC bot
 	irc_onmsg [nick] [txt] +	"sender" "p a r a m s"   
@@ -73,7 +74,7 @@ Cube script:
 	getaccuracy [name] (client_acuracy) +
 	getflags [name] (client_scored_flags) +
 	getretflags	[name] (client_returned_flags) -
-    getmastermode (mm)+
+	getmastermode (mm)+
 	getmastermodename [mm] (txt) +
 	ismaster [cn] (1|0) +
 	isadmin [cn] (1|0) +
@@ -93,7 +94,7 @@ Cube script:
 	say [txt] +	send message to everyone
 	pm [cn] [txt] +	send private message to cn
 	saytonormal [txt] +	send message to normal clients
-    saytomaster [txt] +	send message to master
+	saytomaster [txt] +	send message to master
 	saytoadmin  [txt] +	send message to admin
 	$totalmillis +	   
 	mastermode [n] +
@@ -132,14 +133,54 @@ Cube script:
 	geodb [filename] +	load GEOIP database      
 	isgeoip (1|0) +	return status of geoip       
 	setmaster [1|0] [cn] +	give or revoke master rights
-	loopbans [name] [ip] [expire] [actor] [actorip] [body] + loop through ban list
-	delban [n] + delete specified ban from list
+	loopbans [name] [ip] [expire] [actor] [actorip] [body] +	loop through ban list
+	delban [n] +	delete specified ban from list
+	kick [cn] [time] [actor] +	kick and ban cn for specified time, actor can be cn or name of kicker
+	systimef [format] (str) +	returnt formated system time see http://www.cplusplus.com/reference/clibrary/ctime/strftime/
+	setlogfile [str] +	same as -g option
+	loadmap [map] +	savemap to disk
+	savemap [map] +	load map from disk
+	listclients ( 1 2 4 ...) +	return list of client numbers
+	identexists (1|0) +	check if variable exists, even it equal 0 or empty line
+	eval [str] (str) +	execute cube script string
+	editmute [cn] [1|0] +	do not alow player to edit
+	iseditmuted (1|0) +	check if player editmuted
+	$masterpass [str] +	password for claim master instead of admin
+	uptimef [fmt] (str) +	formated output of up time (%s - seconds, %m - minutes, %h - hours, %d - days, %y - years, ex: uptimef "uptime %d days")
+	
+	# crypto
+	tiger192 [str] (str) +	tiger 192 bit 3 passes hash
+	md5 [str] (str) +		md5 hash
+	sha1 [str] (str) +	sha1 hash
+	sha256 [str] (str) +	sha-2 256 bit hash
+	sha384 [str] (str) +	sha-2 384 bit hash
+	sha512 [str] (str) +	sha-2 512 bit hash
 
+	addpermban [str] [str] +	add permanent ban with reason (ex. permban 123.43 (it is 123.43.0.0/16), permban 234.234.21.34 (it is 234.234.21.34/0))
+	looppermbans [ip] [mask] [reason] [body] +	loop through permban list
+	getextensions (str) +	return list of compiled-in modules (ex. REMOD SQLITE3 GEOIP RCON..)
+
+
+
+Databases: +
+	#sqlite3
+	sqlite3_open [str] (db) +	return: -1 error othervise return db handle number
+	sqlite3_query [db]  [str] (req_handle) +	 return: -1 error, "" request is done do finalize othervise return $req_handle
+	sqlite3_colnames [req_handle] (col1 col2 col3 ...) +	return column names
+	sqlite3_getrow [req_handle] (field1 field2 field3 ...) +	return: "" request is done (automaticaly finalize) othervise return list of fields
+	sqlite3_finalize [req_handle] +	free query result before all rows processed
+	sqlite3_error [db] (str) +	return last error or ""
+	sqlite3_close [db] +	close database
+
+	mysql -
+	NoSQL -
+	otherDB -
 
 
 Cube script function variables
 	nextmap (str) +	if defined should return name of next map
 	allowvote [cn] [mode] [map] (1|0) +	if defined allow/disallow vote for some maps or modes
+	allowswitchteam [cn] [team] (1|0) +	if defined allow/disallow change player team
 
 
 
@@ -195,7 +236,6 @@ IRC: +
 	irc_loopcommands $var perm [body]
 	irc_commandhelp [command_name] 
 	
-	
 	grantperm cn
 	irc_grantperm user
 	# Script may declare these functions for defining permissions for player/irc_user. 
@@ -242,18 +282,18 @@ IRC бот: +
 	persist [0|1] +
 	specall [0|1] +
 	mute [cn] [0|1] + 
-	help (command) + shows help str for command
+	help (command) +	shows help str for command
 	ban <cn> <time> reason +
 	kick [cn] [time mins] [reason] -
 	restart +
-	stats (cn) | stats -1 - for all  + //не показывает пока returned flags
+	stats (cn) | stats -1 - for all  +	//не показывает пока returned flags
 	getip (cn) +
-	version +   //показывает последнюю ревизию serverctrl.cpp       
-	time [min] +  // set remaining time for current round
-	gtime [min] +  // set time for every round      
-	uptime + server uptime
-	disc [cn] + disconnect player
-	unmute [cn] + unmute player
-	autodemo [0|1] + automatically record demo after every match
+	version +	//показывает последнюю ревизию serverctrl.cpp       
+	time [min] +	// set remaining time for current round
+	gtime [min] +	// set time for every round      
+	uptime +	server uptime
+	disc [cn] +	disconnect player
+	unmute [cn] +	unmute player
+	autodemo [0|1] +	automatically record demo after every match
 	... and more
 	

@@ -17,12 +17,15 @@
 					<Add option="-DSTANDALONE" />
 					<Add option="-DIRC" />
 					<Add option="-DGEOIP" />
+					<Add option="-DSQLITE3" />
 					<Add directory="enet/include" />
 					<Add directory="shared" />
 					<Add directory="include" />
 					<Add directory="fpsgame" />
-					<Add directory="libGeoIP" />
 					<Add directory="mod" />
+					<Add directory="mod/libGeoIP" />
+					<Add directory="mod/sqlite3" />
+					<Add directory="mod/hashlib2plus/src" />
 				</Compiler>
 				<Linker>
 					<Add library="wsock32" />
@@ -45,16 +48,21 @@
 					<Add option="-DGEOIP" />
 					<Add option="-DGEOIPDATADIR" />
 					<Add option="-DHAS_SOCKLEN_T" />
+					<Add option="-DSQLITE3" />
 					<Add directory="enet/include" />
 					<Add directory="shared" />
 					<Add directory="include" />
 					<Add directory="fpsgame" />
 					<Add directory="mod" />
-					<Add directory="libGeoIP" />
+					<Add directory="mod/libGeoIP" />
+					<Add directory="mod/sqlite3" />
+					<Add directory="mod/hashlib2plus/src" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
 					<Add library="z" />
+					<Add library="dl" />
+					<Add library="pthread" />
 				</Linker>
 			</Target>
 		</Build>
@@ -111,9 +119,6 @@
 		<Unit filename="include/wincompat.h" />
 		<Unit filename="include/zconf.h" />
 		<Unit filename="include/zlib.h" />
-		<Unit filename="libGeoIP/GeoIP.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="libGeoIP/GeoIP.h" />
 		<Unit filename="mod/arena.cpp" />
 		<Unit filename="mod/arena.h" />
@@ -121,10 +126,25 @@
 		<Unit filename="mod/commandev.h" />
 		<Unit filename="mod/commandhandler.cpp" />
 		<Unit filename="mod/commandhandler.h" />
+		<Unit filename="mod/cryptomod.cpp" />
+		<Unit filename="mod/db.cpp" />
+		<Unit filename="mod/db.h" />
 		<Unit filename="mod/geoipmod.cpp" />
 		<Unit filename="mod/geoipmod.h" />
+		<Unit filename="mod/hashlib2plus/src/hl_md5.cpp" />
+		<Unit filename="mod/hashlib2plus/src/hl_md5wrapper.cpp" />
+		<Unit filename="mod/hashlib2plus/src/hl_sha1.cpp" />
+		<Unit filename="mod/hashlib2plus/src/hl_sha1wrapper.cpp" />
+		<Unit filename="mod/hashlib2plus/src/hl_sha256.cpp" />
+		<Unit filename="mod/hashlib2plus/src/hl_sha256wrapper.cpp" />
+		<Unit filename="mod/hashlib2plus/src/hl_sha2ext.cpp" />
+		<Unit filename="mod/hashlib2plus/src/hl_sha384wrapper.cpp" />
+		<Unit filename="mod/hashlib2plus/src/hl_sha512wrapper.cpp" />
 		<Unit filename="mod/irc.cpp" />
 		<Unit filename="mod/irc.h" />
+		<Unit filename="mod/libGeoIP/GeoIP.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="mod/rconmod.cpp" />
 		<Unit filename="mod/rconmod.h" />
 		<Unit filename="mod/remod.cpp" />
@@ -134,6 +154,9 @@
 		<Unit filename="mod/serverctrl.cpp" />
 		<Unit filename="mod/zombie.cpp" />
 		<Unit filename="mod/zombie.h" />
+		<Unit filename="mod/sqlite3/sqlite3.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="shared/command.h" />
 		<Unit filename="shared/crypto.cpp" />
 		<Unit filename="shared/cube.h" />

@@ -66,6 +66,7 @@ namespace server
 
     vector<uint> allowedips;
     vector<ban> bannedips;
+    vector<permban> permbans; // Remod
     vector<clientinfo *> connects, clients, bots;
     vector<worldstate *> worldstates;
     bool reliablemessages = false;
@@ -95,6 +96,7 @@ namespace server
 
     //Remod
     SVAR(commandchar, "#"); //Command character
+    SVAR(masterpass, "");   //Password for calim master instead of admin
 
     void *newclientinfo() { return new clientinfo; }
     void deleteclientinfo(void *ci) { delete (clientinfo *)ci; }
@@ -110,14 +112,12 @@ namespace server
     vector<savedscore> scores;
 
     //Remod
-    void filtercstext(char *dst, const char *src)
+    void filtercstext(char *str)
     {
-        for(int c = *src; c; c = *++src)
+        for(char *c = str; c && *c; c++)
         {
-            if(c == '\"') { c = '\''; }
-            *dst++ = c;
+            if (*c == '\"') { *c = '\''; }
         }
-        *dst = '\0';
     }
 
     int msgsizelookup(int msg)
@@ -673,18 +673,24 @@ namespace server
         if(val)
         {
             bool haspass = adminpass[0] && checkpassword(ci, adminpass, pass);
+            bool mhaspass = masterpass[0] && checkpassword(ci, masterpass, pass);
             if(ci->privilege)
             {
+                // Remod
+                if(!masterpass[0] || mhaspass==(ci->privilege==PRIV_MASTER)) return;
+
                 if(!adminpass[0] || haspass==(ci->privilege==PRIV_ADMIN)) return;
             }
-            else if(ci->state.state==CS_SPECTATOR && !haspass && !authname && !ci->local) return;
+            else if(ci->state.state==CS_SPECTATOR && (!haspass || !mhaspass) && !authname && !ci->local) return;
             loopv(clients) if(ci!=clients[i] && clients[i]->privilege)
             {
                 if(haspass) clients[i]->privilege = PRIV_NONE;
+                else if(mhaspass && clients[i]->privilege<=PRIV_MASTER) clients[i]->privilege = PRIV_NONE;
                 else if((authname || ci->local) && clients[i]->privilege<=PRIV_MASTER) continue;
                 else return;
             }
-            if(haspass) ci->privilege = PRIV_ADMIN;
+            // Remod
+            if(haspass || mhaspass) ci->privilege = (haspass? PRIV_ADMIN:PRIV_MASTER);
             else if(!authname && !(mastermask&MM_AUTOAPPROVE) && !ci->privilege && !ci->local)
             {
                 sendf(ci->clientnum, 1, "ris", N_SERVMSG, "This server requires you to use the \"/auth\" command to gain master.");
@@ -1145,7 +1151,7 @@ namespace server
         if(!m_mp(gamemode)) kicknonlocalclients(DISC_PRIVATE);
 
         //Remod
-        if(m_teammode) { if(!persist) autoteam(); else if(m_ctf) persistautoteam(); }
+        if(m_teammode) { if(!persist) { autoteam(); } else { if(m_ctf) persistautoteam(); } }
 
         if(m_capture) smode = &capturemode;
         else if(m_ctf) smode = &ctfmode;
@@ -1752,6 +1758,12 @@ namespace server
         return false;
     }
 
+    //Remod
+    bool checkpban(uint ip)
+    {
+        loopv(permbans) if((ip & permbans[i].mask) == permbans[i].ip) return true;
+        return false;
+    }
 
     void kick(int cn, char* actorname, int expire)
     {
@@ -1805,6 +1817,35 @@ namespace server
         }
     }
 
+    //Remod
+    void addpban(const char *name, const char *reason)
+    {
+        union { uchar b[sizeof(enet_uint32)]; enet_uint32 i; } ip, mask;
+        ip.i = 0;
+        mask.i = 0;
+        loopi(4)
+        {
+            char *end = NULL;
+            int n = strtol(name, &end, 10);
+            if(!end) break;
+            if(end > name) { ip.b[i] = n; mask.b[i] = 0xFF; }
+            name = end;
+            while(*name && *name++ != '.');
+        }
+        permban &ban = permbans.add();
+        ban.ip = ip.i;
+        ban.mask = mask.i;
+        strcpy(ban.reason, reason);
+        ban.reason[MAXSTRLEN-1] = '\0'; // to avoid problems in future
+
+        loopvrev(clients)
+        {
+            clientinfo *ci = clients[i];
+            if(ci->local || ci->privilege >= PRIV_ADMIN) continue;
+            if(checkpban(getclientip(ci->clientnum))) disconnect_client(ci->clientnum, DISC_IPBAN);
+        }
+    }
+
     int allowconnect(clientinfo *ci, const char *pwd)
     {
         if(ci->local) return DISC_NONE;
@@ -1819,6 +1860,8 @@ namespace server
         uint ip = getclientip(ci->clientnum);
         loopv(bannedips) if(bannedips[i].ip==ip) return DISC_IPBAN;
         if(checkgban(ip)) return DISC_IPBAN;
+        //Remod
+        if(checkpban(ip)) return DISC_IPBAN;
         if(mastermode>=MM_PRIVATE && allowedips.find(ip)<0) return DISC_PRIVATE;
         return DISC_NONE;
     }
@@ -1932,6 +1975,7 @@ namespace server
 
     void parsepacket(int sender, int chan, packetbuf &p)     // has to parse exactly each byte of the packet
     {
+        // Remod /* thanks to other mods for some edit staff code :) */
         if(sender<0) return;
         char text[MAXTRANS];
         int type;
@@ -1986,7 +2030,7 @@ namespace server
         }
         else if(chan==2)
         {
-            receivefile(sender, p.buf, p.maxlen);
+            if(!ci->state.editmuted) receivefile(sender, p.buf, p.maxlen);
             return;
         }
 
@@ -2249,14 +2293,13 @@ namespace server
                 filtertext(text, text);
 
                 //Remod
-                char ftext[MAXTRANS];
-                filtercstext(ftext, text);
+                char* ftext = newstring(text);
+                filtercstext(ftext);
 
                 //Check for commandchar
                 if(strlen(ftext)>strlen(commandchar) && (strncmp(commandchar, ftext, strlen(commandchar)) == 0))
                 {
-                    strncpy(ftext, &ftext[strlen(commandchar)], strlen(ftext)-strlen(commandchar));
-                    ftext[strlen(ftext)-strlen(commandchar)] = '\0';
+                    ftext += strlen(commandchar);
                     remod::onevent("oncommand", "is", sender, ftext);
                     //conoutf(ftextchf);
                     break;
@@ -2264,8 +2307,8 @@ namespace server
 
                 if(ci->state.muted) break;
 
-                if(remod::onevent("ontext", "is", sender, &ftext)) break;
-
+                if(remod::onevent("ontext", "is", sender, ftext)) break;
+                DELETEA(ftext);
                 QUEUE_AI;
                 QUEUE_INT(N_TEXT);
                 QUEUE_STR(text);
@@ -2368,6 +2411,8 @@ namespace server
                 int type = getint(p);
                 loopk(5) getint(p);
                 if(!ci || ci->state.state==CS_SPECTATOR) break;
+                // Remod
+                if(ci->state.editmuted) break;
                 QUEUE_MSG;
                 bool canspawn = canspawnitem(type);
                 if(i<MAXENTS && (sents.inrange(i) || canspawnitem(type)))
@@ -2394,6 +2439,8 @@ namespace server
                     case ID_FVAR: getfloat(p); break;
                     case ID_SVAR: getstring(text, p);
                 }
+                // remod
+                if(ci->state.editmuted) break;
                 if(ci && ci->state.state!=CS_SPECTATOR) QUEUE_MSG;
                 break;
             }
@@ -2576,6 +2623,7 @@ namespace server
                 int size = getint(p);
                 if(!ci->privilege && !ci->local && ci->state.state==CS_SPECTATOR) break;
                 //Remod
+                if(ci->state.editmuted) break;
                 if(remod::onevent("onnewmap", "i", ci->clientnum)) break;
                 if(size>=0)
                 {
@@ -2651,17 +2699,23 @@ namespace server
             }
 
             case N_COPY:
+            {
                 ci->cleanclipboard();
                 ci->lastclipboard = totalmillis;
                 goto genericmsg;
+            }
 
             case N_PASTE:
+            {
                 if(ci->state.state!=CS_SPECTATOR) sendclipboard(ci);
                 goto genericmsg;
+            }
 
             case N_CLIPBOARD:
             {
                 int unpacklen = getint(p), packlen = getint(p);
+                // Remod
+                if(ci->state.editmuted) break;
                 ci->cleanclipboard(false);
                 if(ci->state.state==CS_SPECTATOR)
                 {
@@ -2702,7 +2756,7 @@ namespace server
                 int size = server::msgsizelookup(type);
                 if(size<=0) { disconnect_client(sender, DISC_TAGT); return; }
                 loopi(size-1) getint(p);
-                if(ci && cq && (ci != cq || ci->state.state!=CS_SPECTATOR)) { QUEUE_AI; QUEUE_MSG; }
+                if(ci && cq && (ci != cq || ci->state.state!=CS_SPECTATOR) && !ci->state.editmuted) { QUEUE_AI; QUEUE_MSG; }
                 break;
             }
         }

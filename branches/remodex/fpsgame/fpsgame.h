@@ -113,6 +113,7 @@ namespace server
         float effectiveness;
         //remod
         bool muted;
+        bool editmuted;
 
         gamestate() : state(CS_DEAD), editstate(CS_DEAD) {}
 
@@ -138,6 +139,7 @@ namespace server
 
             //remod
             muted = false;
+            editmuted = false;
 
             frags = flags = deaths = teamkills = shotdamage = damage = 0;
 
@@ -171,6 +173,7 @@ namespace server
 
         //remod
         bool muted;
+        bool editmuted;
 
         void save(gamestate &gs)
         {
@@ -186,6 +189,7 @@ namespace server
 
             //remod
             muted = gs.muted;
+            editmuted = gs.editmuted;
         }
 
         void restore(gamestate &gs)
@@ -203,6 +207,7 @@ namespace server
 
             //remod
             gs.muted = muted;
+            gs.editmuted = editmuted;
         }
     };
 
@@ -354,6 +359,13 @@ namespace server
         uint actorip;  // baning player's ip (0.0.0.0 if by server)
     };
 
+    //Remod
+    struct permban
+    {
+        enet_uint32 ip, mask;
+        string reason;
+    };
+
     namespace aiman
     {
         //Remod
@@ -403,6 +415,9 @@ namespace server
     extern vector<clientinfo *> connects, clients, bots;
     extern vector<savedscore> scores;
 
+    //Remod
+    extern vector<permban> permbans;
+
     struct servmode
     {
         virtual ~servmode() {}
@@ -435,8 +450,9 @@ namespace server
 
     // Remod
     extern stream *mapdata;
-    void filtercstext(char *dst, const char *src);
+    void filtercstext(char *str);
     void kick(int cn, char *actorname, int expire);
+    void addpban(const char *name, const char *reason);
 
     clientinfo *getinfo(int n);
     const char *privname(int type);

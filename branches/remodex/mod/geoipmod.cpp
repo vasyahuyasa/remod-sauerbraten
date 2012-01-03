@@ -11,6 +11,9 @@
 #ifdef GEOIP
 
 #include "geoipmod.h"
+#include "remod.h"
+
+EXTENSION(GEOIP);
 
 namespace remod
 {
