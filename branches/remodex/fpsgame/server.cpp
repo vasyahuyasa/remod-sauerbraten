@@ -1312,6 +1312,8 @@ namespace server
     // remodex
     VAR(selfdamage, 0, 1, 1);
     VAR(friendlyfire, 0, 1, 1);
+    VAR(midair, 0, 0, 1);
+    VAR(midairbase, 0, 0, INT_MAX);
 
     void dodamage(clientinfo *target, clientinfo *actor, int damage, int gun, const vec &hitpush = vec(0, 0, 0))
     {
@@ -1325,7 +1327,19 @@ namespace server
         {
             if(m_teammode && !friendlyfire && (strcmp(target->team, actor->team) == -1))
                 damage = 0;
+
+            // midair
+            if(midair)
+            {
+                // 120 - maximum rocket damage
+                if(gun==GUN_RL && damage==120 && target->state.o.z>=midairbase)
+                {
+                    damage = target->state.health;
+                }
+            }
         }
+
+
         // damage scale
         if(remodex::getdamagescale(gun)>-1)
             damage = damage*remodex::getdamagescale(gun);
