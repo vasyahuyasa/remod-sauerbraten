@@ -869,9 +869,9 @@ void ircslice()
     }
 }
 
-bool irc_user_state(char *nick, usermode state)
+usermode irc_user_state(char *nick)
 {
-    if(!nick) return false;
+    if(!nick) return ERR;
 
     loopv(ircnets)
     {
@@ -879,29 +879,26 @@ bool irc_user_state(char *nick, usermode state)
         {
             loopvk(ircnets[i]->channels[j].users)
             {
-                conoutf("compare '%s' - '%s'",ircnets[i]->channels[j].users[k].nick, nick);
+                //conoutf("compare '%s' - '%s'",ircnets[i]->channels[j].users[k].nick, nick);
                 if(strcmp(ircnets[i]->channels[j].users[k].nick, nick)==0)
                 {
-                    if(ircnets[i]->channels[j].users[k].state == state)
-                        return true;
-                        else
-                        return false;
+                    return ircnets[i]->channels[j].users[k].state;
                 }
 
             }
         }
     }
-    return false;
+    return ERR;
 }
 
 void ircisop(char *name)
 {
-    intret(irc_user_state(name, OP));
+    intret(irc_user_state(name) == OP);
 }
 
 void ircisvoice(char *name)
 {
-    intret(irc_user_state(name, VOICE));
+    intret(irc_user_state(name) == VOICE);
 }
 
 void ircsayto(char *to, char *msg)

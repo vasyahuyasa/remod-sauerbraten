@@ -30,7 +30,8 @@ enum usermode {
         VOICE = 1 << 3,
         ADMIN = 1 << 4,
         OWNER = 1 << 5,
-        NONE = 1 << 6
+        NONE = 1 << 6,
+        ERR = 0
     };
 
 struct user
@@ -139,7 +140,7 @@ extern bool resolverwait(const char *name, ENetAddress *address);
 
 extern vector<ircnet *> ircnets;
 
-extern bool irc_user_state(char *nick, usermode state);
+extern usermode irc_user_state(char *nick);
 
 extern ircnet *ircfind(const char *name);
 extern void ircestablish(ircnet *n);
