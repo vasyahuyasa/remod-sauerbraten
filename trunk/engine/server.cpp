@@ -983,8 +983,10 @@ int main(int argc, char* argv[])
     game::parseoptions(gameargs);
 
     // remod
+#ifndef WIN32
     if(isdaemon) daemodize();
     if(writepid) writepidfile(pidname);
+#endif
 
     initserver(true, true);
     return EXIT_SUCCESS;
