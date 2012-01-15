@@ -234,14 +234,10 @@ ifneq (,$(findstring MINGW,$(PLATFORM)))
 server: $(SERVER_OBJS)
 	$(CXX) $(CXXFLAGS) -o $(SERVER_NAME) $(SERVER_OBJS) $(SERVER_LIBS)
 
-install: all
-	cp $(SERVER_NAME)	../bin/$(SERVER_NAME)
 else
 server:	libenet $(SERVER_OBJS)
 	$(CXX) $(CXXFLAGS) -o $(SERVER_NAME) $(SERVER_OBJS) $(SERVER_LIBS)  
 	
-install: all
-	cp $(SERVER_NAME)	../bin_unix/$(SERVER_NAME)
 ifneq (,$(STRIP))
 	$(STRIP) ../bin_unix/$(SERVER_NAME)
 endif

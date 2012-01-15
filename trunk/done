@@ -19,3 +19,4 @@
 18. Команда "ICOMMAND(echo, "C",..." в command.cpp заменена на "ICOMMAND(echo, "C", (char *s), logoutf("\f1%s", s))" в serverctrl.cpp
 19. fpsgame/server.cpp в void clearevent(clientinfo *ci) добавлено if(ci->events.length())
 20. fpsgame/fpsgame.h добавлено extern stream *mapdata;
+21. engine/server.cpp добавлены функции daemodize() и writepidfile(char *name)
