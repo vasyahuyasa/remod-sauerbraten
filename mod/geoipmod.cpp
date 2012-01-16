@@ -22,13 +22,15 @@ GeoIPtool *GIt = new GeoIPtool();
 
 void loadgeoip(char *dbname)
 {
-    if(GIt->loaddb(dbname))
+    const char *fname = findfile(dbname, "r"); // full path
+
+    if(GIt->loaddb(fname))
     {
-        conoutf(CON_ERROR, "Geoip: loaded (db: '%s')", dbname);
+        conoutf(CON_ERROR, "Geoip: loaded (db: \"%s\")", fname);
     }
     else
     {
-        conoutf(CON_ERROR, "Geoip: can not load (db: '%s')", dbname);
+        conoutf(CON_ERROR, "Geoip: can not load (db: \"%s\")", fname);
     }
 }
 
