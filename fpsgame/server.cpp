@@ -1810,6 +1810,8 @@ namespace server
             if(ci->local || ci->privilege >= PRIV_ADMIN) continue;
             if(checkpban(getclientip(ci->clientnum))) disconnect_client(ci->clientnum, DISC_IPBAN);
         }
+
+        remod::writebans();
     }
 
     int allowconnect(clientinfo *ci, const char *pwd)

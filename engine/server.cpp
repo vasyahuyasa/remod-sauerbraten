@@ -3,6 +3,7 @@
 
 #include "engine.h"
 #include "rconmod.h"
+#include "remod.h"
 
 #ifdef IRC
 #include "irc.h"
@@ -839,12 +840,11 @@ void initserver(bool listen, bool dedicated)
             execfile(initcfg, true);
     }
 
-
-
     if(listen) setuplistenserver(dedicated);
 
-    //Remod
+    // remod
     remod::rcon::init(rconport);
+    remod::loadbans();
 
     server::serverinit();
 

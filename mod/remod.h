@@ -21,6 +21,8 @@ namespace remod
     bool isspectator(int *cn);
 
     char* concatpstring(char *d, const char *s);
+    void loadbans();
+    void writebans();
 
 }
 #endif
