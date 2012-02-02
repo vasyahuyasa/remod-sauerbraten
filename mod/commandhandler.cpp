@@ -332,10 +332,10 @@ int getperm_(int *cn) {
     int perm = 1; // no permission
 
     // default permission
-    if (ismaster(cn)) {
-		perm = 2;
-	} else if (isadmin(cn)) {
+    if (isadmin(cn)) {
 		perm = 3;
+	} else if (ismaster(cn)) {
+		perm = 2;
 	} else {
 		perm = 1;
 	}
