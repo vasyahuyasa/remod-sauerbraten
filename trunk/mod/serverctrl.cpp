@@ -928,6 +928,7 @@ ICOMMAND(looppermbans,
          "ssss",
          (char *ip, char *mask, char *reason, char *body),
          looppermbans(ip, mask, reason, body));
-ICOMMAND(delpermban, "i", (int *n), if(permbans.inrange(*n)) { permbans.remove(*n); remod::writebans(); });
+ICOMMAND(delpermban, "i", (int *n), if(permbans.inrange(*n)) { permbans.remove(*n); });
 COMMANDN(getextensions, getextensions, "");
+COMMAND(writebans, "");
 }

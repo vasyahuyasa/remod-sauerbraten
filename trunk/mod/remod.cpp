@@ -136,29 +136,31 @@ void writebans()
 
     if(f)
     {
-        fprintf(f, "// This file was generated automaticaly\n// Do not edit it while server running\n\n");
-
         union { uchar b[sizeof(enet_uint32)]; enet_uint32 i; } ip, mask;
+        string maskedip;
+
+        fprintf(f, "// This file was generated automaticaly\n// Do not edit it while server running\n\n");
 
         loopv(permbans)
         {
+            int count = 0;
+
             permban b = permbans[i];
 
             ip.i = b.ip;
             mask.i = b.mask;
 
-            char *maskedip = newstring("");
+            maskedip[0] = '\0';
 
             // generate masked ip (ex. 234.345.45)
             loopi(4)
             {
                 if(mask.b[i] != 0x00)
                 {
-                    if(i) concatpstring(maskedip, ".");
-                    concatpstring(maskedip, intstr(ip.b[i]));
-
+                    if(i) strcat(maskedip, ".");
+                    strcat(maskedip, intstr(ip.b[i]));
                 }
-                else break;
+                else  break;
             }
 
             fprintf(f,"permban %s \"%s\"\n", maskedip, b.reason);

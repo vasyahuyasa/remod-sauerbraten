@@ -1818,8 +1818,6 @@ namespace server
                 disconnect_client(ci->clientnum, DISC_IPBAN);
             }
         }
-
-        remod::writebans();
     }
 
     int allowconnect(clientinfo *ci, const char *pwd)
