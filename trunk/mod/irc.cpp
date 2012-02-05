@@ -66,6 +66,16 @@ void ircestablish(ircnet *n)
         conoutf("Irc: failed to bind connection socket: %s", n->ip);
         address.host = ENET_HOST_ANY;
     }
+
+    // Remod hack, sometimes irc bot block client connections
+    // set socket timeout to 1,5 seconds
+    struct timeval timeout;
+    timeout.tv_sec = 1;
+    timeout.tv_usec = 500000;
+    if(setsockopt(n->sock, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, sizeof(timeout)) < 0) conoutf("setsockopt SO_RCVTIMEO failed");
+    if(setsockopt(n->sock, SOL_SOCKET, SO_SNDTIMEO, (char *)&timeout, sizeof(timeout)) < 0) conoutf("setsockopt SO_SNDTIMEO failed");
+
+
     if(n->sock == ENET_SOCKET_NULL || connectwithtimeout(n->sock, n->serv, n->address) < 0)
     {
         conoutf(n->sock == ENET_SOCKET_NULL ? "Irc: could not open socket to %s:[%d]" : "could not connect to %s:[%d]", n->serv, n->port);
