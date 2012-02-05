@@ -143,8 +143,6 @@ void writebans()
 
         loopv(permbans)
         {
-            int count = 0;
-
             permban b = permbans[i];
 
             ip.i = b.ip;
