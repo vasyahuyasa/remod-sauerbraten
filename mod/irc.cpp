@@ -1,4 +1,10 @@
 #ifdef IRC
+
+#ifdef __FreeBSD__
+#include <sys/types.h>
+#include <sys/socket.h>
+#endif
+
 #include "irc.h"
 #include "remod.h"
 
