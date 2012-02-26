@@ -14,18 +14,31 @@
 				<Compiler>
 					<Add option="-fomit-frame-pointer" />
 					<Add option="-O2" />
+					<Add option="-Wall" />
 					<Add option="-DSTANDALONE" />
 					<Add option="-DIRC" />
 					<Add option="-DGEOIP" />
 					<Add option="-DSQLITE3" />
-					<Add directory="enet/include" />
+					<Add option="-DMYSQL" />
+					<Add option="-DUSE_MYSQL" />
+					<Add option="-DNO_OLDNAMES" />
+					<Add option="-DDBUG_OFF" />
+					<Add option="-DHAVE_ULONG" />
+					<Add directory="enet\include" />
 					<Add directory="shared" />
 					<Add directory="include" />
 					<Add directory="fpsgame" />
 					<Add directory="mod" />
-					<Add directory="mod/libGeoIP" />
-					<Add directory="mod/sqlite3" />
-					<Add directory="mod/hashlib2plus/src" />
+					<Add directory="mod\libGeoIP" />
+					<Add directory="mod\sqlite3" />
+					<Add directory="mod\hashlib2plus\src" />
+					<Add directory="mod\mysql\vio" />
+					<Add directory="mod\mysql\strings" />
+					<Add directory="mod\mysql\mysys" />
+					<Add directory="mod\mysql\libmysql" />
+					<Add directory="mod\mysql\include" />
+					<Add directory="mod\mysql\extlib" />
+					<Add directory="mod\mysql\extlib\regex" />
 				</Compiler>
 				<Linker>
 					<Add library="wsock32" />
@@ -49,14 +62,14 @@
 					<Add option="-DGEOIPDATADIR" />
 					<Add option="-DHAS_SOCKLEN_T" />
 					<Add option="-DSQLITE3" />
-					<Add directory="enet/include" />
+					<Add directory="enet\include" />
 					<Add directory="shared" />
 					<Add directory="include" />
 					<Add directory="fpsgame" />
 					<Add directory="mod" />
-					<Add directory="mod/libGeoIP" />
-					<Add directory="mod/sqlite3" />
-					<Add directory="mod/hashlib2plus/src" />
+					<Add directory="mod\libGeoIP" />
+					<Add directory="mod\sqlite3" />
+					<Add directory="mod\hashlib2plus\src" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -69,99 +82,738 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
-		<Unit filename="enet/callbacks.c">
+		<Unit filename="enet\callbacks.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="enet/compress.c">
+		<Unit filename="enet\compress.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="enet/host.c">
+		<Unit filename="enet\host.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="enet/include/enet/callbacks.h" />
-		<Unit filename="enet/include/enet/enet.h" />
-		<Unit filename="enet/include/enet/list.h" />
-		<Unit filename="enet/include/enet/protocol.h" />
-		<Unit filename="enet/include/enet/time.h" />
-		<Unit filename="enet/include/enet/types.h" />
-		<Unit filename="enet/include/enet/unix.h" />
-		<Unit filename="enet/include/enet/utility.h" />
-		<Unit filename="enet/include/enet/win32.h" />
-		<Unit filename="enet/list.c">
+		<Unit filename="enet\include\enet\callbacks.h" />
+		<Unit filename="enet\include\enet\enet.h" />
+		<Unit filename="enet\include\enet\list.h" />
+		<Unit filename="enet\include\enet\protocol.h" />
+		<Unit filename="enet\include\enet\time.h" />
+		<Unit filename="enet\include\enet\types.h" />
+		<Unit filename="enet\include\enet\unix.h" />
+		<Unit filename="enet\include\enet\utility.h" />
+		<Unit filename="enet\include\enet\win32.h" />
+		<Unit filename="enet\list.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="enet/packet.c">
+		<Unit filename="enet\packet.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="enet/peer.c">
+		<Unit filename="enet\peer.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="enet/protocol.c">
+		<Unit filename="enet\protocol.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="enet/unix.c">
+		<Unit filename="enet\unix.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="enet/win32.c">
+		<Unit filename="enet\win32.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="engine/command.cpp" />
-		<Unit filename="engine/engine.h" />
-		<Unit filename="engine/server.cpp" />
-		<Unit filename="fpsgame/ai.h" />
-		<Unit filename="fpsgame/aiman.h" />
-		<Unit filename="fpsgame/capture.h" />
-		<Unit filename="fpsgame/ctf.h" />
-		<Unit filename="fpsgame/extinfo.h" />
-		<Unit filename="fpsgame/fpsgame.h" />
-		<Unit filename="fpsgame/game.h" />
-		<Unit filename="fpsgame/server.cpp" />
-		<Unit filename="include/wincompat.h" />
-		<Unit filename="include/zconf.h" />
-		<Unit filename="include/zlib.h" />
-		<Unit filename="libGeoIP/GeoIP.h" />
-		<Unit filename="mod/commandev.cpp" />
-		<Unit filename="mod/commandev.h" />
-		<Unit filename="mod/commandhandler.cpp" />
-		<Unit filename="mod/commandhandler.h" />
-		<Unit filename="mod/cryptomod.cpp" />
-		<Unit filename="mod/db.cpp" />
-		<Unit filename="mod/db.h" />
-		<Unit filename="mod/geoipmod.cpp" />
-		<Unit filename="mod/geoipmod.h" />
-		<Unit filename="mod/hashlib2plus/src/hl_md5.cpp" />
-		<Unit filename="mod/hashlib2plus/src/hl_md5wrapper.cpp" />
-		<Unit filename="mod/hashlib2plus/src/hl_sha1.cpp" />
-		<Unit filename="mod/hashlib2plus/src/hl_sha1wrapper.cpp" />
-		<Unit filename="mod/hashlib2plus/src/hl_sha256.cpp" />
-		<Unit filename="mod/hashlib2plus/src/hl_sha256wrapper.cpp" />
-		<Unit filename="mod/hashlib2plus/src/hl_sha2ext.cpp" />
-		<Unit filename="mod/hashlib2plus/src/hl_sha384wrapper.cpp" />
-		<Unit filename="mod/hashlib2plus/src/hl_sha512wrapper.cpp" />
-		<Unit filename="mod/irc.cpp" />
-		<Unit filename="mod/irc.h" />
-		<Unit filename="mod/libGeoIP/GeoIP.c">
+		<Unit filename="engine\command.cpp" />
+		<Unit filename="engine\engine.h" />
+		<Unit filename="engine\server.cpp" />
+		<Unit filename="fpsgame\ai.h" />
+		<Unit filename="fpsgame\aiman.h" />
+		<Unit filename="fpsgame\capture.h" />
+		<Unit filename="fpsgame\ctf.h" />
+		<Unit filename="fpsgame\extinfo.h" />
+		<Unit filename="fpsgame\fpsgame.h" />
+		<Unit filename="fpsgame\game.h" />
+		<Unit filename="fpsgame\server.cpp" />
+		<Unit filename="include\wincompat.h" />
+		<Unit filename="include\zconf.h" />
+		<Unit filename="include\zlib.h" />
+		<Unit filename="libGeoIP\GeoIP.h" />
+		<Unit filename="mod\commandev.cpp" />
+		<Unit filename="mod\commandev.h" />
+		<Unit filename="mod\commandhandler.cpp" />
+		<Unit filename="mod\commandhandler.h" />
+		<Unit filename="mod\cryptomod.cpp" />
+		<Unit filename="mod\db.cpp" />
+		<Unit filename="mod\db.h" />
+		<Unit filename="mod\geoipmod.cpp" />
+		<Unit filename="mod\geoipmod.h" />
+		<Unit filename="mod\hashlib2plus\src\hl_md5.cpp" />
+		<Unit filename="mod\hashlib2plus\src\hl_md5wrapper.cpp" />
+		<Unit filename="mod\hashlib2plus\src\hl_sha1.cpp" />
+		<Unit filename="mod\hashlib2plus\src\hl_sha1wrapper.cpp" />
+		<Unit filename="mod\hashlib2plus\src\hl_sha256.cpp" />
+		<Unit filename="mod\hashlib2plus\src\hl_sha256wrapper.cpp" />
+		<Unit filename="mod\hashlib2plus\src\hl_sha2ext.cpp" />
+		<Unit filename="mod\hashlib2plus\src\hl_sha384wrapper.cpp" />
+		<Unit filename="mod\hashlib2plus\src\hl_sha512wrapper.cpp" />
+		<Unit filename="mod\irc.cpp" />
+		<Unit filename="mod\irc.h" />
+		<Unit filename="mod\libGeoIP\GeoIP.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="mod/rconmod.cpp" />
-		<Unit filename="mod/rconmod.h" />
-		<Unit filename="mod/remod.cpp" />
-		<Unit filename="mod/remod.h" />
-		<Unit filename="mod/serverctrl.cpp" />
-		<Unit filename="mod/sqlite3.cpp" />
-		<Unit filename="mod/sqlite3/sqlite3.c">
+		<Unit filename="mod\mysql\extlib\regex\cclass.h" />
+		<Unit filename="mod\mysql\extlib\regex\cname.h" />
+		<Unit filename="mod\mysql\extlib\regex\debug.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="shared/command.h" />
-		<Unit filename="shared/crypto.cpp" />
-		<Unit filename="shared/cube.h" />
-		<Unit filename="shared/ents.h" />
-		<Unit filename="shared/geom.h" />
-		<Unit filename="shared/iengine.h" />
-		<Unit filename="shared/igame.h" />
-		<Unit filename="shared/stream.cpp" />
-		<Unit filename="shared/tools.cpp" />
-		<Unit filename="shared/tools.h" />
+		<Unit filename="mod\mysql\extlib\regex\debug.h" />
+		<Unit filename="mod\mysql\extlib\regex\engine.h" />
+		<Unit filename="mod\mysql\extlib\regex\my_regex.h" />
+		<Unit filename="mod\mysql\extlib\regex\regcomp.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\extlib\regex\regcomp.h" />
+		<Unit filename="mod\mysql\extlib\regex\regerror.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\extlib\regex\regerror.h" />
+		<Unit filename="mod\mysql\extlib\regex\regex2.h" />
+		<Unit filename="mod\mysql\extlib\regex\regexec.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\extlib\regex\regfree.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\extlib\regex\reginit.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\extlib\regex\split.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\extlib\regex\utils.h" />
+		<Unit filename="mod\mysql\include\atomic\gcc_builtins.h" />
+		<Unit filename="mod\mysql\include\atomic\nolock.h" />
+		<Unit filename="mod\mysql\include\atomic\rwlock.h" />
+		<Unit filename="mod\mysql\include\atomic\x86-gcc.h" />
+		<Unit filename="mod\mysql\include\base64.h" />
+		<Unit filename="mod\mysql\include\config-win.h" />
+		<Unit filename="mod\mysql\include\decimal.h" />
+		<Unit filename="mod\mysql\include\errmsg.h" />
+		<Unit filename="mod\mysql\include\hash.h" />
+		<Unit filename="mod\mysql\include\keycache.h" />
+		<Unit filename="mod\mysql\include\lf.h" />
+		<Unit filename="mod\mysql\include\m_ctype.h" />
+		<Unit filename="mod\mysql\include\m_string.h" />
+		<Unit filename="mod\mysql\include\my_aes.h" />
+		<Unit filename="mod\mysql\include\my_alarm.h" />
+		<Unit filename="mod\mysql\include\my_alloc.h" />
+		<Unit filename="mod\mysql\include\my_atomic.h" />
+		<Unit filename="mod\mysql\include\my_attribute.h" />
+		<Unit filename="mod\mysql\include\my_base.h" />
+		<Unit filename="mod\mysql\include\my_bit.h" />
+		<Unit filename="mod\mysql\include\my_bitmap.h" />
+		<Unit filename="mod\mysql\include\my_charsets.h" />
+		<Unit filename="mod\mysql\include\my_config.h" />
+		<Unit filename="mod\mysql\include\my_dbug.h" />
+		<Unit filename="mod\mysql\include\my_dir.h" />
+		<Unit filename="mod\mysql\include\my_getopt.h" />
+		<Unit filename="mod\mysql\include\my_global.h" />
+		<Unit filename="mod\mysql\include\my_libwrap.h" />
+		<Unit filename="mod\mysql\include\my_list.h" />
+		<Unit filename="mod\mysql\include\my_md5.h" />
+		<Unit filename="mod\mysql\include\my_net.h" />
+		<Unit filename="mod\mysql\include\my_no_pthread.h" />
+		<Unit filename="mod\mysql\include\my_nosys.h" />
+		<Unit filename="mod\mysql\include\my_pthread.h" />
+		<Unit filename="mod\mysql\include\my_stacktrace.h" />
+		<Unit filename="mod\mysql\include\my_sys.h" />
+		<Unit filename="mod\mysql\include\my_time.h" />
+		<Unit filename="mod\mysql\include\my_tree.h" />
+		<Unit filename="mod\mysql\include\my_trie.h" />
+		<Unit filename="mod\mysql\include\my_uctype.h" />
+		<Unit filename="mod\mysql\include\my_vle.h" />
+		<Unit filename="mod\mysql\include\my_xml.h" />
+		<Unit filename="mod\mysql\include\myisampack.h" />
+		<Unit filename="mod\mysql\include\mysql.h" />
+		<Unit filename="mod\mysql\include\mysql_com.h" />
+		<Unit filename="mod\mysql\include\mysql_time.h" />
+		<Unit filename="mod\mysql\include\mysql_version.h" />
+		<Unit filename="mod\mysql\include\mysqld_error.h" />
+		<Unit filename="mod\mysql\include\mysys\rijndael.h" />
+		<Unit filename="mod\mysql\include\mysys_err.h" />
+		<Unit filename="mod\mysql\include\queues.h" />
+		<Unit filename="mod\mysql\include\service_versions.h" />
+		<Unit filename="mod\mysql\include\sha1.h" />
+		<Unit filename="mod\mysql\include\sha2.h" />
+		<Unit filename="mod\mysql\include\sql_common.h" />
+		<Unit filename="mod\mysql\include\sslopt-case.h" />
+		<Unit filename="mod\mysql\include\sslopt-longopts.h" />
+		<Unit filename="mod\mysql\include\sslopt-vars.h" />
+		<Unit filename="mod\mysql\include\t_ctype.h" />
+		<Unit filename="mod\mysql\include\thr_alarm.h" />
+		<Unit filename="mod\mysql\include\thr_lock.h" />
+		<Unit filename="mod\mysql\include\typelib.h" />
+		<Unit filename="mod\mysql\include\violite.h" />
+		<Unit filename="mod\mysql\include\waiting_threads.h" />
+		<Unit filename="mod\mysql\include\wqueue.h" />
+		<Unit filename="mod\mysql\libmysql\client.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\libmysql\client_settings.h" />
+		<Unit filename="mod\mysql\libmysql\conf_to_src.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\libmysql\errmsg.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\libmysql\get_password.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\libmysql\libmysql.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\libmysql\my_time.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\libmysql\net_serv.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\libmysql\pack.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\libmysql\password.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\libmysql\probes.h" />
+		<Unit filename="mod\mysql\mysys\array.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\base64.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\charset-def.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\charset.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\checksum.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\default.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\default_modify.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\errors.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\hash.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\list.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\md5.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\mf_arr_appstr.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\mf_brkhant.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\mf_cache.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\mf_dirname.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\mf_fn_ext.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\mf_format.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\mf_getdate.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\mf_iocache.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\mf_iocache2.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\mf_keycache.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\mf_keycaches.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\mf_loadpath.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\mf_pack.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\mf_path.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\mf_qsort.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\mf_qsort2.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\mf_radix.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\mf_same.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\mf_sort.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\mf_soundex.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\mf_strip.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\mf_tempdir.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\mf_tempfile.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\mf_unixpath.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\mf_util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\mf_wcomp.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\mf_wfile.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\mulalloc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_access.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_aes.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_alarm.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_alloc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_append.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_atomic.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_bit.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_bitmap.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_chmod.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_chsize.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_clock.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_compress.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_conio.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_copy.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_create.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_delete.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_div.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_dup.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_error.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_file.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_fopen.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_fstream.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_gethostbyname.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_gethwaddr.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_getncpus.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_getopt.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_getpagesize.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_getsystime.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_getwd.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_handler_errors.h" />
+		<Unit filename="mod\mysql\mysys\my_init.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_largepage.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_lib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_libwrap.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_lock.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_lockmem.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_malloc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_memmem.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_messnc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_mkdir.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_mmap.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_net.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_netware.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_new.cc" />
+		<Unit filename="mod\mysql\mysys\my_once.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_open.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_port.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_pread.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_pthread.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_quick.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_read.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_realloc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_redel.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_rename.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_rnd.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_safehash.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_safehash.h" />
+		<Unit filename="mod\mysql\mysys\my_seek.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_sleep.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_static.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_static.h" />
+		<Unit filename="mod\mysql\mysys\my_symlink.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_symlink2.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_sync.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_thr_init.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_uuid.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_vle.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_wincond.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_windac.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_winerr.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_winfile.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_winthread.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\my_write.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\mysys_priv.h" />
+		<Unit filename="mod\mysql\mysys\ptr_cmp.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\queues.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\rijndael.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\safemalloc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\sha1.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\stacktrace.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\string.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\thr_alarm.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\thr_lock.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\thr_mutex.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\thr_rwlock.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\tree.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\trie.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\typelib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\mysys\wqueue.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\strings\bchange.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\strings\bcmp.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\strings\bfill.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\strings\bmove.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\strings\bmove512.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\strings\bmove_upp.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\strings\ctype-bin.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\strings\ctype-extra.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\strings\ctype-latin1.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\strings\ctype-mb.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\strings\ctype-simple.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\strings\ctype-utf8.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\strings\ctype.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\strings\decimal.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\strings\dtoa.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\strings\int2str.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\strings\is_prefix.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\strings\llstr.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\strings\longlong2str.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\strings\my_strchr.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\strings\my_strtoll10.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\strings\my_vsnprintf.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\strings\r_strinstr.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\strings\str2int.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\strings\str_alloc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\strings\strappend.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\strings\strcend.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\strings\strcont.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\strings\strend.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\strings\strfill.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\strings\strings-not-used.h" />
+		<Unit filename="mod\mysql\strings\strinstr.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\strings\strmake.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\strings\strmov.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\strings\strnlen.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\strings\strnmov.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\strings\strstr.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\strings\strto.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\strings\strtol.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\strings\strtoll.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\strings\strtoul.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\strings\strtoull.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\strings\strxmov.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\strings\strxnmov.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\strings\t_ctype.h" />
+		<Unit filename="mod\mysql\strings\xml.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\vio\vio.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\mysql\vio\vio_priv.h" />
+		<Unit filename="mod\mysql\vio\viosocket.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod\rconmod.cpp" />
+		<Unit filename="mod\rconmod.h" />
+		<Unit filename="mod\remod.cpp" />
+		<Unit filename="mod\remod.h" />
+		<Unit filename="mod\serverctrl.cpp" />
+		<Unit filename="mod\sqlite3.cpp" />
+		<Unit filename="mod\sqlite3\sqlite3.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="shared\command.h" />
+		<Unit filename="shared\crypto.cpp" />
+		<Unit filename="shared\cube.h" />
+		<Unit filename="shared\ents.h" />
+		<Unit filename="shared\geom.h" />
+		<Unit filename="shared\iengine.h" />
+		<Unit filename="shared\igame.h" />
+		<Unit filename="shared\stream.cpp" />
+		<Unit filename="shared\tools.cpp" />
+		<Unit filename="shared\tools.h" />
 		<Extensions>
 			<code_completion />
 			<debugger />
