@@ -947,7 +947,7 @@ COMMAND(irc_dumpnicks, "");
 COMMAND(ircisop, "s");
 COMMAND(ircisvoice, "s");
 ICOMMAND(ircconns, "", (void), { int num = 0; loopv(ircnets) if(ircnets[i]->state >= IRC_ATTEMPT) num++; intret(num); });
-ICOMMAND(ircsay, "s", (const char *msg ), { ircoutf(0, msg); });
+ICOMMAND(ircsay, "s", (const char *msg ), { ircoutf(0, "%s", msg); });
 COMMAND(ircsayto, "ss");
 
 #endif
