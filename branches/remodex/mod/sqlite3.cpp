@@ -92,11 +92,12 @@ namespace db
     // open databse and return -1 or $db_id
     void cs_sqlite3_open(const char *name)
     {
+        const char *fname = findfile(name, "a"); // full path
         sqlite3 *db;
         int rc;
 
         // open DB
-        rc = sqlite3_open(name, &db);
+        rc = sqlite3_open(fname, &db);
         if(rc)
         {
             // error while opening DB

@@ -836,12 +836,12 @@ void looppermbans(const char *ip, const char *mask, const char *reason, const ch
     }
 }
 
-// Shitcode below
+// Shitcode below, get list of compiled in extensions
 void getextensions()
 {
     const extensionslist *extensions = getextensionslist();
 
-    vector<char> buf;
+    vector<char> buf; // damned vector
     string ext;
     int numext = 0;
     for(int i = 0; i<extensions->length(); i++) if(extensions->getbuf()[i]) // :`( - ugly
@@ -928,6 +928,7 @@ ICOMMAND(looppermbans,
          "ssss",
          (char *ip, char *mask, char *reason, char *body),
          looppermbans(ip, mask, reason, body));
-ICOMMAND(delpermban, "i", (int *n), if(permbans.inrange(*n)) permbans.remove(*n));
+ICOMMAND(delpermban, "i", (int *n), if(permbans.inrange(*n)) { permbans.remove(*n); });
 COMMANDN(getextensions, getextensions, "");
+COMMAND(writebans, "");
 }

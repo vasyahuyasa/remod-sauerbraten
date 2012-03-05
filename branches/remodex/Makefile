@@ -23,23 +23,24 @@ STRIP=
 PLATFORM=$(shell uname -s)
 
 #result file name
-PLATFORM_SUFFIX=.i386
+PLATFORM_SUFFIX=
 ifneq (,$(findstring x86_64,$(shell uname -a)))
-PLATFORM_SUFFIX=.x86_64
+PLATFORM_SUFFIX=64
 endif
 ifneq (,$(findstring amd64,$(shell uname -a)))
-PLATFORM_SUFFIX=.x86_64
+PLATFORM_SUFFIX=64
 endif
 
-SERVER_NAME=sauer_server
+SERVER_PREFIX=remodex
+SERVER_NAME=$(SERVER_PREFIX)
 ifneq (,$(findstring MINGW,$(PLATFORM)))
-SERVER_NAME=sauer_server$(PLATFORM_SUFFIX).exe
+SERVER_NAME=$(SERVER_NAME)$(PLATFORM_SUFFIX).exe
 endif
 ifneq (,$(findstring Linux,$(PLATFORM)))
-SERVER_NAME=sauer_server$(PLATFORM_SUFFIX)
+SERVER_NAME=$(SERVER_PREFIX)$(PLATFORM_SUFFIX)
 endif
 ifneq (,$(findstring FreeBSD,$(PLATFORM)))
-SERVER_NAME=sauer_server_freebsd$(PLATFORM_SUFFIX)
+SERVER_NAME=$(SERVER_PREFIX)_freebsd$(PLATFORM_SUFFIX)
 endif
 
 ### Folders, libraries, includes
@@ -237,15 +238,11 @@ ifneq (,$(findstring MINGW,$(PLATFORM)))
 server: $(SERVER_OBJS)
 	$(CXX) $(CXXFLAGS) -o $(SERVER_NAME) $(SERVER_OBJS) $(SERVER_LIBS)
 
-install: all
-	cp $(SERVER_NAME)	../bin/$(SERVER_NAME)
 else
 server:	libenet $(SERVER_OBJS)
 	$(CXX) $(CXXFLAGS) -o $(SERVER_NAME) $(SERVER_OBJS) $(SERVER_LIBS)  
 	
-install: all
-	cp $(SERVER_NAME)	../bin_unix/$(SERVER_NAME)
 ifneq (,$(STRIP))
-	$(STRIP) ../bin_unix/$(SERVER_NAME)
+	$(STRIP) $(SERVER_NAME)
 endif
 endif

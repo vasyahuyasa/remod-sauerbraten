@@ -330,26 +330,32 @@ vector<cmd_handler> cmd_handlers;
  */
 int getperm_(int *cn) {
 
-	//check if grantperm exists
+    int perm = 1; // no permission
+
+    // default permission
+    if (isadmin(cn)) {
+		perm = 3;
+	} else if (ismaster(cn)) {
+		perm = 2;
+	} else {
+		perm = 1;
+	}
+
+	//check if grantperm exists and above default permission
 	ident *i = getident("grantperm");
 	if (i && i->type == ID_ALIAS) {
 		char *cmd = newstring("grantperm ");
 		cmd = concatpstring(cmd, intstr(*cn));
-		int ret = execute(cmd);
+		int grantedperm = execute(cmd);
 		DELETEA(cmd);
-		return ret;
+		if(grantedperm>perm) perm = grantedperm;
 	}
-	if (isadmin(cn)) {
-		return 2;
-	} else if (ismaster(cn)) {
-		return 3;
-	} else {
-		return 1;
-	}
+
+    return perm;
 }
 
 void getperm(int *cn) {
-	result(intstr(getperm_(cn)));
+	intret(getperm_(cn));
 }
 
 /**
@@ -438,26 +444,40 @@ vector<cmd_handler> irc_cmd_handlers; //IRC command handlers
  * if function irc_grantperm is defined  uses it result
  */
 int irc_getperm_(char *usr) {
+
+    int perm = 0; // no permission at start
+
+    switch(irc_user_state(usr))
+    {
+        case OP:
+        case ADMIN:
+        case OWNER: perm = 2; break;
+
+        case VOICE:
+        case HALFOP: perm = 1; break;
+
+        case NONE:
+        case ERR:
+        default: perm = 0; break;
+    }
+
 	//check if irc_grantperm exists
 	ident *i = getident("irc_grantperm");
 	if (i && i->type == ID_ALIAS) {
 		char *cmd = newstring("irc_grantperm ");
 		cmd = concatpstring(cmd, usr);
-		int ret = execute(cmd);
+		int getperm = execute(cmd);
 		DELETEA(cmd);
-		return ret;
+
+		// assign if granted permission more than default
+		if(getperm>perm) perm = getperm;
 	}
-	if (irc_user_state(usr, VOICE)) {
-		return 1;
-	} else if (irc_user_state(usr, OP)) {
-		return 2;
-	} else {
-		return 0;
-	}
+
+    return perm;
 }
 
 void irc_getperm(char *usr) {
-	result(intstr(irc_getperm_(usr)));
+	intret(irc_getperm_(usr));
 }
 
 /**

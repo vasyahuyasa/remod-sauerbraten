@@ -119,4 +119,57 @@ char* concatpstring(char *d, const char *s) {
 	return d;
 }
 
+// Write permbans to disk
+SVAR(banfile, "permbans.cfg");
+
+void loadbans()
+{
+    execfile(banfile);
+}
+
+void writebans()
+{
+    const char *fname;
+    fname = findfile(banfile, "w");
+
+    FILE *f = fopen(fname, "w");
+
+    if(f)
+    {
+        union { uchar b[sizeof(enet_uint32)]; enet_uint32 i; } ip, mask;
+        string maskedip;
+
+        fprintf(f, "// This file was generated automaticaly\n// Do not edit it while server running\n\n");
+
+        loopv(permbans)
+        {
+            permban b = permbans[i];
+
+            ip.i = b.ip;
+            mask.i = b.mask;
+
+            maskedip[0] = '\0';
+
+            // generate masked ip (ex. 234.345.45)
+            loopi(4)
+            {
+                if(mask.b[i] != 0x00)
+                {
+                    if(i) strcat(maskedip, ".");
+                    strcat(maskedip, intstr(ip.b[i]));
+                }
+                else  break;
+            }
+
+            fprintf(f,"permban %s \"%s\"\n", maskedip, b.reason);
+        }
+
+        fclose(f);
+    }
+    else
+    {
+        conoutf("Can not open \"%s\" for writing bans");
+    }
+}
+
 }

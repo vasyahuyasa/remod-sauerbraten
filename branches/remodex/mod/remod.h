@@ -22,6 +22,8 @@ namespace remod
     void setteam(int *pcn, const char *team);
 
     char* concatpstring(char *d, const char *s);
+    void loadbans();
+    void writebans();
 
 }
 #endif

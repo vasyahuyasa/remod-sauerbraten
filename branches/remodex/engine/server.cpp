@@ -3,6 +3,7 @@
 
 #include "engine.h"
 #include "rconmod.h"
+#include "remod.h"
 
 #ifdef IRC
 #include "irc.h"
@@ -839,12 +840,11 @@ void initserver(bool listen, bool dedicated)
             execfile(initcfg, true);
     }
 
-
-
     if(listen) setuplistenserver(dedicated);
 
-    //Remod
+    // remod
     remod::rcon::init(rconport);
+    remod::loadbans();
 
     server::serverinit();
 
@@ -886,6 +886,66 @@ void stoplistenserver()
 COMMAND(stoplistenserver, "");
 #endif
 
+
+// remod
+#ifndef WIN32
+bool isdaemon = false;
+bool writepid = false;
+char *pidname;
+
+// can deamonize on posix systems
+void daemodize()
+{
+    pid_t pid;
+
+    // close consoles
+    close(STDIN_FILENO);
+    close(STDOUT_FILENO);
+    close(STDERR_FILENO);
+
+    // create child
+    pid = fork();
+
+    switch(pid)
+    {
+        case -1:
+            // fork error
+            conoutf("Error occoured with fork()");
+            exit(EXIT_FAILURE);
+
+        case 0:
+            // child process
+            setsid();
+            break;
+
+        default:
+            // parent process
+        	exit(0);
+    }
+
+}
+
+// write pid to file
+bool writepidfile(char *file)
+{
+    FILE *f;
+    pid_t pid;
+
+    // open
+    f = fopen(file, "w");
+
+    // write pid
+    if(f)
+    {
+        pid = getpid();
+        fprintf(f, "%i\n", pid);
+        fclose(f);
+    }
+    else return false;
+
+}
+#endif
+
 bool serveroption(char *opt)
 {
     switch(opt[1])
@@ -896,10 +956,14 @@ bool serveroption(char *opt)
         case 'j': setvar("serverport", atoi(opt+2)); return true;
         case 'm': setsvar("mastername", opt+2); setvar("updatemaster", mastername[0] ? 1 : 0); return true;
 #ifdef STANDALONE
-        case 'q': conoutf("Using home directory: %s\n", opt+2); sethomedir(opt+2); return true;
-        case 'k': conoutf("Adding package directory: %s\n", opt+2); addpackagedir(opt+2); return true;
-        case 'g': conoutf("Setting log file: %s\n", opt+2); setlogfile(opt+2); return true;
-        case 'f': conoutf("Using config file: %s\n", opt+2); setsvar("initcfg", opt+2); return true;
+        case 'q': conoutf("Using home directory: %s", opt+2); sethomedir(opt+2); return true;
+        case 'k': conoutf("Adding package directory: %s", opt+2); addpackagedir(opt+2); return true;
+        case 'g': conoutf("Setting log file: %s", opt+2); setlogfile(opt+2); return true;
+        case 'f': conoutf("Using config file: %s", opt+2); setsvar("initcfg", opt+2); return true;
+#ifndef WIN32
+        case 'd': conoutf("Run in daemon mode"); isdaemon = true; return true;
+        case 'p': conoutf("Pid file: %s", opt+2); pidname = newstring(opt+2); writepid = true; return true;
+#endif
 
 #endif
         default: return false;
@@ -917,6 +981,13 @@ int main(int argc, char* argv[])
     enet_time_set(0);
     for(int i = 1; i<argc; i++) if(argv[i][0]!='-' || !serveroption(argv[i])) gameargs.add(argv[i]);
     game::parseoptions(gameargs);
+
+    // remod
+#ifndef WIN32
+    if(isdaemon) daemodize();
+    if(writepid) writepidfile(pidname);
+#endif
+
     initserver(true, true);
     return EXIT_SUCCESS;
 }

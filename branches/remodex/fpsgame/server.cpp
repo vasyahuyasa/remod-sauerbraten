@@ -1827,7 +1827,11 @@ namespace server
         {
             clientinfo *ci = clients[i];
             if(ci->local || ci->privilege >= PRIV_ADMIN) continue;
-            if(checkgban(getclientip(ci->clientnum))) disconnect_client(ci->clientnum, DISC_IPBAN);
+            if(checkgban(getclientip(ci->clientnum)))
+            {
+                remod::onevent("onkick", "ii", -1, ci->clientnum);
+                disconnect_client(ci->clientnum, DISC_IPBAN);
+            }
         }
     }
 
@@ -1856,7 +1860,11 @@ namespace server
         {
             clientinfo *ci = clients[i];
             if(ci->local || ci->privilege >= PRIV_ADMIN) continue;
-            if(checkpban(getclientip(ci->clientnum))) disconnect_client(ci->clientnum, DISC_IPBAN);
+            if(checkpban(getclientip(ci->clientnum)))
+            {
+                remod::onevent("onkick", "ii", -1, ci->clientnum);
+                disconnect_client(ci->clientnum, DISC_IPBAN);
+            }
         }
     }
 
