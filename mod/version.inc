@@ -14,6 +14,8 @@
     #define REMOD_SYSTEM "BSD"
 #elif defined(__sun)
     #define REMOD_SYSTEM "Solaris"
+#elif defined(__APPLE__)
+    #define REMOD_SYSTEM "Mac"
 #else
     #define REMOD_SYSTEM "Unknown"
 #endif
@@ -26,4 +28,3 @@
 #else
     #define REMOD_ARCH "x??"
 #endif
-
