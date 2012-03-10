@@ -109,6 +109,23 @@ namespace remodex
         } else return 1;
     }
 
+    // wepon accuracy
+    int getwepaccuracy(int cn, int gun)
+    {
+        int acc = 0;
+
+        clientinfo *ci = (clientinfo *)getinfo(cn);
+        if(ci)
+        {
+            if(!((gun<0) && (gun>=NUMGUNS)))
+            {
+                acc = ci->state.wepdamage[gun]*100/max(ci->state.wepshotdamage[gun], 1);
+            }
+        }
+
+        return(acc);
+    }
+
     // bindings
     COMMANDN(ammo, setammo, "ii");
     COMMANDN(armourtype, setarmourtype, "i");
@@ -123,4 +140,5 @@ namespace remodex
     ICOMMAND(gethealth, "", (), intret(gethealth()));
     ICOMMAND(getgunselect, "", (), intret(getgunselect()));
     ICOMMAND(getdamagescale, "i", (int *wep), intret(getdamagescale(*wep)));
+    ICOMMAND(getwepaccuracy, "ii", (int *cn, int *gun), intret(getwepaccuracy(*cn, *gun)));
 }

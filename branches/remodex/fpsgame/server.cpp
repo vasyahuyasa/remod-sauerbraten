@@ -1344,6 +1344,9 @@ namespace server
         if(remodex::getdamagescale(gun)>-1)
             damage = damage*remodex::getdamagescale(gun);
 
+        // weapon accuracy
+        actor->state.wepdamage[gun] += damage;
+
         gamestate &ts = target->state;
         ts.dodamage(damage);
         actor->state.damage += damage;
@@ -1456,6 +1459,11 @@ namespace server
                 int(to.x*DMF), int(to.y*DMF), int(to.z*DMF),
                 ci->ownernum);
         gs.shotdamage += guns[gun].damage*(gs.quadmillis ? 4 : 1)*(gun==GUN_SG ? SGRAYS : 1);
+
+        // Remod
+        // weapon accurcy
+        gs.wepshotdamage[gun] += guns[gun].damage*(gs.quadmillis ? 4 : 1)*(gun==GUN_SG ? SGRAYS : 1);
+
         switch(gun)
         {
             case GUN_RL: gs.rockets.add(id); break;

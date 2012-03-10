@@ -112,6 +112,8 @@ namespace server
         int lasttimeplayed, timeplayed;
         float effectiveness;
         //remod
+        int wepshotdamage[NUMGUNS];
+        int wepdamage[NUMGUNS];
         bool muted;
         bool editmuted;
 
@@ -138,6 +140,12 @@ namespace server
             effectiveness = 0;
 
             //remod
+            loopi(NUMGUNS)
+            {
+                wepshotdamage[i] = 0;
+                wepdamage[i] = 0;
+            }
+
             muted = false;
             editmuted = false;
 
@@ -172,6 +180,8 @@ namespace server
         float effectiveness;
 
         //remod
+        int wepshotdamage[NUMGUNS];
+        int wepdamage[NUMGUNS];
         bool muted;
         bool editmuted;
 
@@ -188,6 +198,11 @@ namespace server
             effectiveness = gs.effectiveness;
 
             //remod
+            loopi(NUMGUNS)
+            {
+                wepshotdamage[i] = gs.wepshotdamage[i];
+                wepdamage[i] = gs.wepdamage[i];
+            }
             muted = gs.muted;
             editmuted = gs.editmuted;
         }
@@ -206,6 +221,11 @@ namespace server
             gs.effectiveness = effectiveness;
 
             //remod
+            loopi(NUMGUNS)
+            {
+                gs.wepshotdamage[i] = wepshotdamage[i];
+                gs.wepdamage[i] = wepdamage[i];
+            }
             gs.muted = muted;
             gs.editmuted = editmuted;
         }
