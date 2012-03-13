@@ -917,7 +917,7 @@ COMMAND(loadmap, "s");
 COMMAND(savemap, "s");
 COMMAND(listclients, "");
 ICOMMAND(identexists, "s", (const char *name), intret(identexists(name)));
-ICOMMAND(eval, "C", (char *s), result(executeret(s)));
+ICOMMAND(eval, "C", (char *s), execute(s));
 COMMAND(editmute, "ii");
 COMMAND(iseditmuted, "i");
 COMMAND(uptimef, "s");
