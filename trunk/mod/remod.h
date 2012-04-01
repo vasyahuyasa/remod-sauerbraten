@@ -6,6 +6,8 @@
 typedef vector<char *> extensionslist;
 extern bool addextension(const char *name);
 extern const extensionslist* getextensionslist();
+extern void explodelist(const char *s, vector<char *> &elems);
+extern char *conc(char **w, int n, bool space);
 
 #define EXTENSION(name) bool __dummyext_##name = addextension(#name)
 
