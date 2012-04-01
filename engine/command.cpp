@@ -1280,5 +1280,55 @@ void clearsleep_(int *clearoverrides)
 }
 
 COMMANDN(clearsleep, clearsleep_, "i");
+
+
+/**
+ * Replaces list's element at specified position with new one
+ */
+void listreplace(const char *list, int *index, const char *el) {
+	const char *before_index = 0;
+	int i = 0;
+	for(const char *s = list;;) {
+		if(!*s) {
+			break;
+		}
+
+		whitespaceskip;
+
+		if (i == *index) {
+			before_index = s;
+		}
+
+		elementskip;
+		if (i == *index) {
+			char *first_el = newstring(list, (size_t) (before_index-list));
+			char *pieces[] = {first_el, (char *) el, (char *) s};
+
+			char *r = conc(pieces, 3, false);
+			result(r);
+			DELETEA(r);
+			DELETEA(first_el);
+
+			break;
+		}
+		i++;
+
+	}
+	if (!before_index) {
+		//list index out of bounds
+		commandret = newstring(list);
+	}
+}
+
+/**
+ * Replaces list's element at specified position with new one
+ * @arg1 list
+ * @arg2 index of item to replace
+ * @arg3 new item
+ * @return new list with replaced item
+ * @example listreplace "a b c d" 2 "f" //returns "a b f d"
+ */
+COMMANDN(listreplace, listreplace, "sis");
+
 //#endif
 

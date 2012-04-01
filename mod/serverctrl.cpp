@@ -854,6 +854,85 @@ void getextensions()
     result(buf.getbuf());
 }
 
+
+
+//comparator for sortlist
+static inline int sortlist_compare(char **x, char **y) {
+	return strcmp(*x, *y);
+}
+
+/**
+ * Sorts list of strings
+ */
+void sortlist (char *values) {
+	vector<char*> values_list;
+	explodelist(values, values_list);
+	values_list.sort(sortlist_compare);
+
+	char *r = conc(values_list.buf, values_list.length(), true);
+	result(r);
+	DELETEA(r);
+	loopv(values_list) {
+		DELETEA(values_list[i]);
+	}
+}
+
+struct keyvalue {
+	char *key;
+	char *value;
+};
+
+//comparator for sorttwolists
+static inline int sorttwolists_compare(const void *x, const void *y) {
+	return strcmp(((keyvalue*) x)->key, ((keyvalue*) y)->key);
+}
+
+/**
+ * Rearranges items in values list to have the same order as sorted items in keys
+ */
+void sorttwolists(char *keys, char *values) {
+	vector<char*> keys_list;
+	explodelist(keys, keys_list);
+
+	vector<char*> values_list;
+	explodelist(values, values_list);
+
+
+
+	int len = (keys_list.length() > values_list.length()) ? values_list.length() : keys_list.length();
+	keyvalue kv[len];
+
+	loopi(len) {
+		kv[i].key = keys_list[i];
+		kv[i].value = values_list[i];
+	}
+
+	qsort(kv, (unsigned int) len, sizeof (keyvalue), sorttwolists_compare);
+
+
+	vector<char*> res;
+	loopi(len) {
+		res.add(kv[i].value);
+	}
+
+	char *r = conc(res.buf, res.length(), true);
+	result(r);
+	DELETEA(r);
+
+	loopi(len) {
+		DELETEA(res[i]);
+	}
+
+	loopv(keys_list) {
+		DELETEA(keys_list[i]);
+	}
+	loopv(values_list) {
+		DELETEA(values_list[i]);
+	}
+}
+
+
+
 //Cube script binds
 COMMAND(getname, "i");
 ICOMMAND(getmap, "", (), result(smapname));
@@ -915,20 +994,121 @@ COMMAND(setlogfile, "s");
 ICOMMAND(echo, "C", (char *s), conoutf("%s", s));
 COMMAND(loadmap, "s");
 COMMAND(savemap, "s");
+
+/**
+ * Returns list of client numbers of connected players
+ * @groups player
+ * @return list of cn
+ */
 COMMAND(listclients, "");
+
+/**
+ * Checks if ident with specified name exists (defined)
+ * @groups server
+ * @arg1 ident name (i.e. $var1)
+ * @return 1 if exists else 0
+ */
 ICOMMAND(identexists, "s", (const char *name), intret(identexists(name)));
+
+/**
+ * Evaluate string as cube script
+ * @groups server
+ * @arg1 body of function
+ * @return returned value
+ */
 ICOMMAND(eval, "C", (char *s), result(executeret(s)));
+
+/**
+ * need description for editmute
+ */
 COMMAND(editmute, "ii");
+
+/**
+ * need description for iseditmuted
+ */
 COMMAND(iseditmuted, "i");
+
+/**
+ * Formats server's uptime
+ * @groups server
+ * @arg1 format string
+ * @return string
+ */
 COMMAND(uptimef, "s");
+
+/**
+ * Get integer representation of ip (to save it in db for example)
+ * @groups server
+ * @arg1 ip as string (i.e. "192.168.1.1")
+ * @return integer
+ */
 COMMAND(ip2int, "s");
+
+/**
+ * Transforms integer representation of ip to string
+ * @groups server
+ * @arg1 integer representation of ip
+ * @return string ip (i.e. 192.168.1.2)
+ */
 COMMAND(int2ip, "i");
+
+/**
+ * Permanently ban player
+ * @groups player, ban
+ * @arg1 player's name
+ * @arg2 reason
+ */
 COMMANDN(permban, addpban, "ss");
+
+/**
+ * Loop permanent bans list
+ * @groups player, ban
+ * @arg1 banned ip variable
+ * @arg2 network mask variable
+ * @arg3 reason variable
+ * @arg4 body of function to execute while iterating the list
+ */
 ICOMMAND(looppermbans,
          "ssss",
          (char *ip, char *mask, char *reason, char *body),
          looppermbans(ip, mask, reason, body));
+
+/**
+ * Delete permanent ban with specified number
+ * @groups player, ban
+ * @arg1 number of record in permban list
+ */
 ICOMMAND(delpermban, "i", (int *n), if(permbans.inrange(*n)) { permbans.remove(*n); });
+
+/**
+ * Get list of compiled extensions in remod
+ * @groups server
+ * @return list of extensions as string
+ */
 COMMANDN(getextensions, getextensions, "");
+
+/**
+ * Save permbans writting them to file
+ * @groups server, ban
+ */
 COMMAND(writebans, "");
+
+
+/**
+ * Sort list
+ * @arg1 list
+ * @return sorted list
+ * @example sortlist "b a q k" // returns "a b k q"
+ */
+COMMANDN(sortlist, sortlist, "s");
+
+/**
+ * Returns values list items in the same order as sorted keys
+ * Uses bubble algorythm
+ * @arg1 keys list
+ * @arg2 values list
+ * @return rearranged values list
+ * @example sorttwolists "2 1 4 5" "b a q k" // returns "a b q k"
+ */
+COMMANDN(sorttwolists, sorttwolists, "ss");
 }

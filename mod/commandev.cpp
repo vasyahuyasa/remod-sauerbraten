@@ -206,8 +206,28 @@ bool onevent(const char *evt_type, const char *fmt, ...)
 
 }
 
+/**
+ * Add server event handler to specified event
+ * @groups server, events
+ * @arg1 event name
+ * @arg2 callback function
+ * @example addhandler "onconnect" [ echo (format "CONNECT %1(%3)" (getname $arg1) $arg1 ) ]
+ */
 COMMAND(addhandler, "ss");
+
+/**
+ * Add server event handler to specified event. Parameters to callback function depend of event
+ * @groups server, events
+ * @arg1 event name
+ * @arg2 callback function
+ * @example delhandler "onconnect" log_onconnect
+ */
 COMMAND(delhandler, "ss");
+
+/**
+ * Clear all server events handlers
+ * @groups server, events
+ */
 COMMAND(clearhandlers, "");
 
 }

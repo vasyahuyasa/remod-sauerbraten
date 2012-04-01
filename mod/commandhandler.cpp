@@ -419,8 +419,21 @@ void unregistercommand(const char* cmd_name)
 }
 
 
-
+/**
+ * Register server command. Registered command could be called  as #name param1 param2
+ * Before executing system checks permissions for player called this command and the correspondence of given arguments to declared type mask
+ * @groups commands
+ * @arg1 command name
+ * @arg2 function to execute when command is called
+ * @arg3 required permission level to execute this command: 1 for any player, 2 for admin, 3 for master (could be changed, see getperm function)
+ * @arg4 type mask, declares types of command arguments and their necessity
+ * @arg5 help string
+ */
 COMMAND(registercommand, "ssiss");
+
+/**
+ *
+ */
 COMMAND(unregistercommand, "s");
 COMMAND(commandhelp, "s");
 COMMAND(getperm, "i");
