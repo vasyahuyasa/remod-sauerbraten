@@ -1,7 +1,7 @@
 ﻿[UTF-8]
 General: +
 	geoip +
-	баны
+	баны +
 	статистика по игроку в конце игры (фраги, смерти, аккуратность) +
 	украденые флаги, возвращенные флаги - -
 	irc-бот +
@@ -170,7 +170,7 @@ Cube script:
 
 
 Databases: +
-	#sqlite3
+	#sqlite3 +
 	sqlite3_open [str] (db) +	return: -1 error othervise return db handle number
 	sqlite3_query [db]  [str] (req_handle) +	 return: -1 error, "" request is done do finalize othervise return $req_handle
 	sqlite3_colnames [req_handle] (col1 col2 col3 ...) +	return column names
@@ -179,7 +179,7 @@ Databases: +
 	sqlite3_error [db] (str) +	return last error or ""
 	sqlite3_close [db] +	close database
 
-	mysql -
+	mysql +
 	NoSQL -
 	otherDB -
 
@@ -211,7 +211,7 @@ IRC: +
 	ircrelaychan +
 	ircfriendlychan +
 	ircconns +
-	$ircflooddelay +          
+	$ircflooddelay -
 	
 	ircsayto [nick/chan] [msg] +	send private message or to channel
 	ircisop [nick] [0|1] +	return 1 if nick is OP       
@@ -279,7 +279,7 @@ IRC бот: +
 	возможность кика/бана +
 	перекидывание игрока в другую команду -
 	spect/unspec +
-	изменение режима игры и карты -
+	изменение режима игры и карты +
 	общение +
 	предупреждение -
 

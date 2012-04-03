@@ -931,7 +931,48 @@ void sorttwolists(char *keys, char *values) {
 	}
 }
 
+void setclientvar(int cn, const char *key, char *value)
+{
+    clientinfo *ci = (clientinfo *)getinfo(cn);
+    if(ci)
+    {
+        //ci->state.vars.access(key, val);
+        ci->vars[newstring(key)] = newstring(value);
+    }
+}
 
+void getclientvar(int cn, const char *key)
+{
+    clientinfo *ci = (clientinfo *)getinfo(cn);
+    if(ci)
+    {
+        /*
+        char **pval = ci->state.vars.access(key);
+        if(pval)
+        {
+            DELETEP(val);
+            val = *pval;
+        }
+        */
+        char *val;
+        val = ci->vars[key];
+        conoutf("val=%u", val);
+        if(val && val[0]) result(val);
+    }
+}
+
+void listclientvar(int cn)
+{
+    clientinfo *ci = (clientinfo *)getinfo(cn);
+    if(ci)
+    {
+        enumerate(ci->vars, char *, val, conoutf("vars[x]=%s", val));
+    }
+}
+
+//ICOMMAND(setvar, "iss", (int *cn, const char *key, char *value), setclientvar(*cn, key, value));
+//ICOMMAND(getvar, "is", (int *cn, const char *key), getclientvar(*cn, key));
+//ICOMMAND(listvar, "i", (int *cn), listclientvar(*cn));
 
 //Cube script binds
 COMMAND(getname, "i");
