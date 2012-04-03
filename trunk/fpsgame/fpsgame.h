@@ -236,6 +236,9 @@ namespace server
         ENetPacket *clipboard;
         int lastclipboard, needclipboard;
 
+        // remod
+        hashtable<const char *, char *> vars;
+
         clientinfo() : clipboard(NULL) { reset(); }
         ~clientinfo() { events.deletecontents(); cleanclipboard(); }
 
