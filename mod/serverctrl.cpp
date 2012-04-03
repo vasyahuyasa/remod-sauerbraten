@@ -1057,7 +1057,7 @@ ICOMMAND(identexists, "s", (const char *name), intret(identexists(name)));
  * @arg1 body of function
  * @return returned value
  */
-ICOMMAND(eval, "C", (char *s), result(executeret(s)));
+ICOMMAND(eval, "C", (char *s), executeret(s));
 
 /**
  * need description for editmute
