@@ -919,10 +919,6 @@ void sorttwolists(char *keys, char *values) {
 	result(r);
 	DELETEA(r);
 
-	loopi(len) {
-		DELETEA(res[i]);
-	}
-
 	loopv(keys_list) {
 		DELETEA(keys_list[i]);
 	}
