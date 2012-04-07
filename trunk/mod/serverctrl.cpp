@@ -1421,12 +1421,18 @@ ICOMMAND(identexists, "s", (const char *name), intret(identexists(name)));
 ICOMMAND(eval, "C", (char *s), executeret(s));
 
 /**
- * need description for editmute
+ * Ignore specified client changes in coop edit mode
+ * @group player
+ * @arg1 client number
+ * @arg2 1 or 0
  */
 COMMAND(editmute, "ii");
 
 /**
- * need description for iseditmuted
+ * Check if player is editmuted
+ * @group player
+ * @arg1 client number
+ * @return 1 if editmuted, 0 if not
  */
 COMMAND(iseditmuted, "i");
 
@@ -1490,7 +1496,7 @@ ICOMMAND(delpermban, "i", (int *n), if(permbans.inrange(*n)) { permbans.remove(*
 COMMANDN(getextensions, getextensions, "");
 
 /**
- * Save permbans writting them to file
+ * Save permbans, writting them to file
  * @group server
  */
 COMMAND(writebans, "");

@@ -235,6 +235,20 @@ void ircnewnet(int type, const char *name, const char *serv, int port, const cha
 ICOMMAND(ircaddclient, "ssisss", (const char *n, const char *s, int *p, const char *c, const char *h, const char *z), {
     ircnewnet(IRCT_CLIENT, n, s, *p, c, h, z);
 });
+
+
+
+/**
+ * Connect to IRC server
+ * @group irc
+ * @arg1 name of network
+ * @arg2 server
+ * @arg3 port
+ * @arg4 bot nick
+ * @arg5 server ip
+ * @arg6 server password
+ * @example ircaddrelay gamesurge GameConnect.NL.EU.GameSurge.net 6667 rb10 // connect to gamesurge network
+ */
 ICOMMAND(ircaddrelay, "ssisss", (const char *n, const char *s, int *p, const char *c, const char *h, const char *z), {
     ircnewnet(IRCT_RELAY, n, s, *p, c, h, z);
 });
@@ -347,6 +361,16 @@ bool ircnewchan(int type, const char *name, const char *channel, const char *fri
     return true;
 }
 
+/**
+ * Join channel on specified network
+ * @group irc
+ * @arg1 name of network
+ * @arg2 channel
+ * @arg3 friendly (useless Red eclipse legacy, should be 0)
+ * @arg4 channel password
+ * @arg5 relay (useless Red eclipse legacy, should be 0)
+ * @example ircaddchan gamesurge #my-servers 0 "hpass" // join password protected channel
+ */
 ICOMMAND(ircaddchan, "ssssi", (const char *n, const char *c, const char *f, const char *z, int *r), {
     ircnewchan(IRCCT_AUTO, n, c, f, z, *r);
 });
@@ -944,10 +968,41 @@ void irc_dumpnicks()
 COMMAND(irc_dumpnicks, "");
 #endif
 
+/**
+ * Check if specified nick in IRC have OP status
+ * @group irc
+ * @arg1 nick
+ * @return 1 or 0
+ * @example echo (ircisop "mib_4565") // check if guy have OP
+ */
 COMMAND(ircisop, "s");
+
+/**
+ * Check if specified nick in IRC have VOICE
+ * @group irc
+ * @arg1 nick
+ * @return 1 or 0
+ * @example echo (ircisvoice "mib_4565") // check if guy have VOICE
+ */
 COMMAND(ircisvoice, "s");
-ICOMMAND(ircconns, "", (void), { int num = 0; loopv(ircnets) if(ircnets[i]->state >= IRC_ATTEMPT) num++; intret(num); });
+
+// useless command
+//ICOMMAND(ircconns, "", (void), { int num = 0; loopv(ircnets) if(ircnets[i]->state >= IRC_ATTEMPT) num++; intret(num); });
+
+/**
+ * Send text to all IRC channels
+ * @group irc
+ * @arg1 text
+ */
 ICOMMAND(ircsay, "s", (const char *msg ), { ircoutf(0, "%s", msg); });
+
+/**
+ * Send text to specified destination (nick or channel)
+ * @group irc
+ * @arg1 destination
+ * @arg2 text
+ * @example ircsayto "mib_4564" "Go away mib_4564" // send private message
+ */
 COMMAND(ircsayto, "ss");
 
 #endif
