@@ -9,6 +9,10 @@ import os
 import os.path
 import re
 
+#constants
+SYSTEM_DEFAULT_GROUP = "system"
+CUSTOM_DEFAULT_GROUP = "server"
+
 ### extentions of files which can be parsed 
 CPP_EXTENSIONS = ('.cpp', '.h') # cpp files
 CS_EXTENSIONS = ('.cfg', '.cs') # cubescript files
@@ -101,23 +105,23 @@ def parse_cpp_file(file_path):
     """
     
     def format_result(name, arg_types, comments=None):
-        rs = {'name': name, 'path': file_path}
-        
+        rs = {}
         if comments:
+            rs = {'name': name, 'path': file_path, 'group': CUSTOM_DEFAULT_GROUP}
             cmnts = parse_comment(comments.split('\n')) 
             rs.update(cmnts)
         else:
             #if no comment it's system group
-            rs.update({'groups': ('system',)})         
+            rs = {'name': name, 'path': file_path, 'group': SYSTEM_DEFAULT_GROUP}         
             
         if not rs.get('args'):
             rs['args'] = {}
             
         for i in range(len(arg_types)):
-            if rs['args'].get(str(i)):
-                rs['args'][str(i)].update({'type': TYPE_NAMES.get(arg_types[i])})
+            if rs['args'].get(str(i+1)):
+                rs['args'][str(i+1)].update({'type': TYPE_NAMES.get(arg_types[i])})
             else:
-                rs['args'][str(i)] = {'type': TYPE_NAMES.get(arg_types[i])}
+                rs['args'][str(i+1)] = {'type': TYPE_NAMES.get(arg_types[i])}
         return rs
     
     result = []
@@ -187,7 +191,7 @@ def parse_cs_file(file_path):
             if (i < length):
                 r = REG_CS_FUNCTION_NAME.search(lines[i])
                 if r and r.group(1):
-                    doc_item = {'name': r.group(1)}
+                    doc_item = {'name': r.group(1), 'group': CUSTOM_DEFAULT_GROUP, 'path': file_path}
                     
                     cmnt = parse_comment(lines[k:i])
                     if cmnt: 
@@ -210,7 +214,7 @@ def parse_comment(comment_lines):
     /**
      * function description
      * @name my_function_name //name of function. If not defined uses system name (defined in CPP as COMMAND(function_name... or in CS as function_name = [...)
-     * @groups group1 group2  //if not defined uses "system" group
+     * @group group_name //if not defined uses CUSTOM_DEFAULT_GROUP
      * @arg1 argument 1 description //not required
      * @arg2 argument 2 description //not required
      * @return what this returns //not required
@@ -220,7 +224,7 @@ def parse_comment(comment_lines):
      or the same with //  :
      
      // function description
-     // @groups group1 group2
+     // @group group_name
      // .....
     """
     
@@ -239,10 +243,9 @@ def parse_comment(comment_lines):
             res['name'] = r.group(1)
             continue
     
-        r = re.search('^@groups? ?(.*?)$', line, re.I)
+        r = re.search('^@group? ?(.*?)$', line, re.I)
         if r:
-            groups = r.group(1)
-            res['groups'] = [x.strip() for x in re.split(', ', groups)]
+            res['group'] = r.group(1)
             continue
     
         r = re.search('^@example ?(.*?)$', line, re.I)
@@ -259,13 +262,13 @@ def parse_comment(comment_lines):
         if r:
             if not res.get('args'):
                 res['args'] = {}
-            res['args'][r.group(1)] = {'description': r.group(2)}
+            res['args'][r.group(1)] = {'descr': r.group(2)}
             continue      
         
-        if not res.get('comments'):
-            res['comments'] = line
+        if not res.get('descr'):
+            res['descr'] = line
         else:
-            res['comments'] += "\n"+line
+            res['descr'] += "\n"+line
         
     return res
 
@@ -289,7 +292,135 @@ def load_func_doc(path):
                 break
     return doc_list
             
+            
+            
+def parse_template(template, data):
+    "Simple template parser"
+    class Node:
+        ROOT="ROOT"
+        TEXT="TEXT"
+        LOOP="LOOP"
+        IF="IF"
+        TAGS = {"loop": LOOP, "if": IF}
+        PARSE_EXPRESSION = re.compile('\$\{([^\}]+)\}')
+        PARSE_VARIABLE = re.compile('var="([^"]+)"')
+        PARSE_VALUE = re.compile('value="\$\{([^\}]+)\}"')
+        
+        def __init__(self, parent, type, value):
+            self.parent = parent
+            self.type = type
+            self.value = value
+            self.children = []
+            
+        def add(self, type, value):
+            child = Node(self, type, value)
+            self.children.append(child)
+            return child
+        
+        def __str__(self):
+            s = '[Node:'+self.type+'\n'
+            s += self.value+"\n"
+            for c in self.children:
+               if c:
+                    s += c.__repr__()
+            s += ']\n'
+            return s
+    
+        def __repr__(self):
+            return self.__str__()
+        
+        def _render_children(self, data):
+            s = ""
+            for c in self.children:
+                s += c.render(data)
+            return s
+        
+        #render tree with data
+        def render(self, data):
+            s = ""
+            
+            
+            if self.type == Node.TEXT:
+                s = self.PARSE_EXPRESSION.sub(lambda x: eval(x.group(1), data), self.value)
+                
+            elif self.type == Node.LOOP:
+                var = self.PARSE_VARIABLE.search(self.value).group(1)
+                val = self.PARSE_VALUE.search(self.value).group(1)
+                loop_items = eval(val, data)
+                for l in loop_items:
+                    d = data
+                    d[var] = l
+                    s += self._render_children(d)
+                    
+            elif self.type == Node.IF:
+                val = self.PARSE_VALUE.search(self.value).group(1)
+                condition = eval(val, data)
+                if condition:
+                    s += self._render_children(data)
+            else:
+                s += self._render_children(data)
+            return s
+        
+    result = ""
+    
+    #parse template to find loop and condition tags
+    r = re.compile("<(\/?)py:(\w+)\s?([^>]*)>", re.I)
+    root = Node(None, Node.ROOT, "")
+    
+    start = 0
+    end = 0
+    node = root
+    for s in r.finditer(template):
+        is_closing = s.group(1) == "/"
+        start_reg = s.start(0)
+        end = s.end(0)
+        tag = s.group(2)
+        expression = s.group(3)
+        
+        text = template[start:start_reg]
+        node.add(Node.TEXT, text)
+        
+        if is_closing:
+            node = node.parent
+        else:
+            node = node.add(Node.TAGS[tag], expression)
+        
+        start = end
+    
+    node.add(Node.TEXT, template[end:])
+    
+    return root.render(data)
+            
 
 if __name__ == "__main__":
-    doc_list = load_func_doc('../../')
-    print(doc_list)
+    template_path = "template.html"
+    help_file_path = "tutorial.html"
+    cs_path = "../../"
+    
+    t = open(template_path)
+    template_content = t.read()
+    t.close()
+    
+    
+    ## resorting functions by groups
+    
+    data = {'functions': {}, 'groups': []}
+    
+    for f in load_func_doc(cs_path):
+        group = f['group']
+        if not data['groups'].count(group):
+            data['groups'].append(group)
+            data['functions'][group] = []
+        if 'descr' not in f:
+            f['descr'] = ""
+        data['functions'][group].append(f)
+
+    for group in data['groups']:
+        data['functions'][group].sort(key=lambda k: k['name'])
+        
+    help_file_content = parse_template(template_content, data)
+    
+    t = open(help_file_path, "w+")
+    t.write(help_file_content)
+    t.close()
+    

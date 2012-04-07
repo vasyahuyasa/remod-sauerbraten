@@ -63,6 +63,11 @@ void dumphandlers()
         conoutf("Handler %s = %s\n", evt_handlers[i].evt_type, evt_handlers[i].evt_cmd);
     }
 }
+/**
+ * Print all event handlers (debug mode only)
+ * @group event
+ * @example dumphandlers
+ */
 COMMAND(dumphandlers, "");
 #endif
 
@@ -208,7 +213,7 @@ bool onevent(const char *evt_type, const char *fmt, ...)
 
 /**
  * Add server event handler to specified event
- * @groups server, events
+ * @group event
  * @arg1 event name
  * @arg2 callback function
  * @example addhandler "onconnect" [ echo (format "CONNECT %1(%3)" (getname $arg1) $arg1 ) ]
@@ -217,7 +222,7 @@ COMMAND(addhandler, "ss");
 
 /**
  * Add server event handler to specified event. Parameters to callback function depend of event
- * @groups server, events
+ * @group event
  * @arg1 event name
  * @arg2 callback function
  * @example delhandler "onconnect" log_onconnect
@@ -226,7 +231,7 @@ COMMAND(delhandler, "ss");
 
 /**
  * Clear all server events handlers
- * @groups server, events
+ * @group event
  */
 COMMAND(clearhandlers, "");
 

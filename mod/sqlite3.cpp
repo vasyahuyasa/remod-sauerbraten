@@ -319,14 +319,70 @@ namespace db
         sqlite3_dbs.remove(*dbuid);
     }
 
-    // registering commands
-    COMMANDN(sqlite3_open,      cs_sqlite3_open,    "s");
-    COMMANDN(sqlite3_query,     cs_sqlite3_query,   "is");
-    COMMANDN(sqlite3_pquery,    cs_sqlite3_pquery,  "iss");
-    COMMANDN(sqlite3_colnames,  cs_sqlite3_colnames,"i");
-    COMMANDN(sqlite3_getrow,    cs_sqlite3_getrow,  "i");
-    COMMANDN(sqlite3_finalize,  cs_sqlite3_finalize,"i");
-    COMMANDN(sqlite3_error,     cs_sqlite3_error,   "i");
-    COMMANDN(sqlite3_close,     cs_sqlite3_close,   "i");
+
+/**
+ * Open SQLite database
+ * @group db
+ * @arg1 file path
+ * @return dbuid or -1 if fails
+ */
+COMMANDN(sqlite3_open, cs_sqlite3_open, "s");
+
+/**
+ * Execute SQL query at specified SQLite database
+ * @group db
+ * @arg1 dbuid
+ * @arg2 query
+ * @return result uid
+ */
+COMMANDN(sqlite3_query, cs_sqlite3_query, m"is");
+
+/**
+ * Execute SQL query with escaped parameters at specified SQLite database
+ * @group db
+ * @arg1 dbuid
+ * @arg2 query
+ * @arg3 parameters
+ * @return statement uid
+ */
+COMMANDN(sqlite3_pquery, cs_sqlite3_pquery, "iss");
+
+/**
+ * Load column names for query result
+ * @group db
+ * @arg1 result uid
+ * @return list of columns
+ */
+COMMANDN(sqlite3_colnames, cs_sqlite3_colnames,"i");
+
+/**
+ * Load row for specified statement id
+ * @group db
+ * @arg1 result uid
+ * @return list of row data
+ */
+COMMANDN(sqlite3_getrow, cs_sqlite3_getrow,  "i");
+
+/**
+ * Finalize result
+ * @group db
+ * @arg1 result id
+ */
+COMMANDN(sqlite3_finalize, cs_sqlite3_finalize,"i");
+
+/**
+ * Return last error for specified SQLite db
+ * @group db
+ * @arg1 db uid
+ * @return las error string
+ */
+COMMANDN(sqlite3_error, cs_sqlite3_error,   "i");
+
+/**
+ * Close connection to SQLite db
+ * @group db
+ * @arg1 db uid
+ */
+COMMANDN(sqlite3_close, cs_sqlite3_close,   "i");
 }
 }

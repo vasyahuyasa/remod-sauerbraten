@@ -396,7 +396,7 @@ void formatmillis(const char *fmt, int *millis)
     result(s.getbuf());
 }
 
-void setmastercmd(int *val, int *pcn)
+void setmastercmd(int *pcn, int *val)
 {
     bool v = (bool)*val;
     int cn = (int)*pcn;
@@ -971,77 +971,442 @@ void listclientvar(int cn)
 //ICOMMAND(listvar, "i", (int *cn), listclientvar(*cn));
 
 //Cube script binds
+
+/**
+ * Get name of player
+ * @group player
+ * @arg1 client number
+ */
 COMMAND(getname, "i");
+
+/**
+ * Return current map name
+ * @group server
+ */
 ICOMMAND(getmap, "", (), result(smapname));
+
+/**
+ * Get current mode
+ * @group server
+ * @return number of current mode. See $MODENAMES to get string
+ * @example (at $MODENAMES (getmode))
+ */
 ICOMMAND(getmode, "", (), intret(gamemode));
+
+/**
+ * Get player's ip as integer (see ip2int f converting to string)
+ * @group server
+ * @arg1 client number
+ * @return integer ip
+ * @example ip2int (getip $cn)
+ */
 COMMAND(getip, "i");
+
+/**
+ * Get frags count of player
+ * @group player
+ * @arg1 client number
+ */
 COMMAND(getfrags, "i");
+
+/**
+ * Get deaths count of player
+ * @group player
+ * @arg1 client number
+ */
 COMMAND(getdeaths, "i");
+
+/**
+ * Get count of player's teamkills
+ * @group player
+ * @arg1 client number
+ */
 COMMAND(getteamkills, "i");
+
+/**
+ * Get accuracy of player
+ * @group player
+ * @arg1 client number
+ */
 COMMAND(getaccuracy, "i");
+
+/**
+ * Get count of flags scored by player
+ * @group player
+ * @arg1 client number
+ */
 COMMAND(getflags, "i");
 //COMMAND(getretflags, "i"); unimplemented
+
+/**
+ * Get current mastermode as number
+ * @group server
+ * @return 0 (public) or 1 (vote) or 2 (locked) or 3 (private)
+ */
 ICOMMAND(getmastermode, "", (), intret(mastermode));
+
+/**
+ * Get current mastermode's name
+ * @group server
+ * @return "public" or "vote" or "locked" or "private"
+ */
 ICOMMAND(getmastermodename, "i", (int *mm), result(mastermodename((int)*mm, "unknown")));
 
+/**
+ * Check if specified player is master
+ * @group player
+ * @arg1 client number
+ * @return 0 or 1
+ */
 ICOMMAND(ismaster, "i", (int*cn), intret(ismaster(cn) ? 1 : 0));
+
+/**
+ * Check if specified player is admin
+ * @group player
+ * @arg1 client number
+ * @return 0 or 1
+ */
 ICOMMAND(isadmin, "i", (int *cn), intret(isadmin(cn) ? 1 : 0));
+
+/**
+ * Check if specified player is spectator
+ * @group player
+ * @arg1 client number
+ * @return 0 or 1
+ */
 ICOMMAND(isspectator, "i", (int *cn), intret(isspectator(cn) ? 1 : 0));
+
+/**
+ * Get this server's version
+ * @group server
+ */
 COMMAND(version, "");
+
+/**
+ * Get team of specified player
+ * @group player
+ * @arg1 client number
+ * @return mostly "good" or "evil"
+ */
 COMMAND(getteam,"i");
+
+/**
+ * Disconnect specified player
+ * @group player
+ * @arg1 client number
+ */
 ICOMMAND(disconnect, "i", (int *cn), disconnect_client(*cn, DISC_NONE));
+
+/**
+ * Kick player for specified time
+ * @group player
+ * @arg1 client number
+ * @arg2 ban's time in seconds
+ * @arg3 actor name (who kicked, to display in logs)
+ * @example kick "0" "100500" "irc-bot"
+ */
 COMMAND(kick, "iis");
+
+/**
+ * Spectate or unspectate player
+ * @group player
+ * @arg1 client number
+ * @arg2 1 to spectate, 0 to unspectate
+ */
 COMMAND(spectator, "ii");
+
+/**
+ * Change map
+ * @group server
+ * @arg1 map name
+ */
 ICOMMAND(map, "s", (char *name), sendf(-1, 1, "risii", N_MAPCHANGE, name, gamemode, 1); server::changemap(name, gamemode));
+
+/**
+ * Change map and mode
+ * @group server
+ * @arg1 map name
+ * @arg2 mode number (see: getmode and $MODENAMES)
+ */
 ICOMMAND(mapmode, "si", (char *name, int *mode), sendf(-1, 1, "risii", N_MAPCHANGE, name, *mode, 1); server::changemap(name, *mode));
+
+/**
+ * Force player to hate himself and to want to die
+ * @group player
+ * @arg1 client number
+ */
 COMMANDN(suicide, _suicide, "i");
+
+/**
+ * Add bot wih specified skills level
+ * @group server
+ * @arg1 skills level
+ * @example addbot "120" // yeah, try to beat it!
+ */
 ICOMMAND(addbot, "i", (int *s), aiman::addai(*s, -1));
+
+/**
+ * Delete last added bot
+ * @group server
+ */
 ICOMMAND(delbot, "", (), aiman::deleteai());
+
+/**
+ * Send server message (for all players to see)
+ * @group server
+ * @arg1 message
+ */
 ICOMMAND(say, "C", (char *msg), sendservmsg(msg));
+
+/**
+ * Send private message to player
+ * @group server
+ * @arg1 client number
+ * @arg2 message
+ */
 COMMAND(pm, "is");
+
+/**
+ * Say message to all unprivileged players
+ * @group server
+ * @arg1 message
+ */
 COMMAND(saytonormal, "C");
+
+/**
+ * Say message to the player connected as master if he exists
+ * @group server
+ * @arg1 message
+ */
 COMMAND(saytomaster, "C");
+
+/**
+ * Say message to the player connected as admin if he exists
+ * @group server
+ * @arg1 message
+ */
 COMMAND(saytoadmin, "C");
+
+/**
+ * Set master mode
+ * @group server
+ * @arg1 master mode number
+ */
 COMMANDN(mastermode, _mastermode, "i");
+
+/**
+ * is server paused or not
+ */
 VARF(pause, 0, 0, 1, server::pausegame(pause));
+
+/**
+ * Clear all player bans created by /kick or #kick (it's not the same as permbans)
+ * @group server
+ */
 ICOMMAND(clearbans, "", (), remod::onevent("onclearbans", "i", -1); bannedips.shrink(0); sendservmsg("cleared all bans"));
+
+/**
+ * Force the player to specified team
+ * @group player
+ * @arg1 client number
+ * @arg2 team (usually "good" or "evil")
+ */
 COMMAND(setteam, "is");
+
+/**
+ * Get ping of player
+ * @group player
+ * @arg1 client number
+ * @return ping
+ */
 COMMAND(getping, "i");
+
+/**
+ * Get player's connection time
+ * @group player
+ * @arg1 client number
+ * @return number of milliseconds
+ */
 COMMAND(getonline, "i");
+
+/**
+ * Get score of the team
+ * @group server
+ * @arg1 team
+ */
 COMMANDN(getteamscores, _getteamscore, "s");
+
+/**
+ * Get rank of player (based on his score)
+ * @group player
+ * @arg1 client number
+ * @return rank
+ */
 COMMAND(getrank, "i");
+
+/**
+ * Clear gbans (bans from masterserver)
+ * @group server
+ */
 COMMAND(cleargbans, "");
+
+/**
+ * Get count of connected players
+ * @group player
+ */
 ICOMMAND(numclients, "", (), intret(numclients(-1, false, true, false)));
+
+/**
+ * Check if player with specified cn exists
+ * @group player
+ * @arg1 client number
+ * @return 0 or 1
+ */
 ICOMMAND(playerexists, "i", (int *cn), intret(playerexists(cn)));
+
+/**
+ * Mute or unmute player
+ * @group player
+ * @arg1 client number
+ * @arg2 "1" for mute, "0" for unmute
+ */
 COMMAND(mute, "ii");
+
+/**
+ * Check if player is muted
+ * @group player
+ * @arg1 client number
+ * @return 1 if muted, 0 if unmuted
+ */
 COMMAND(ismuted, "i");
+
+/**
+ * Format milliseconds. Format string items:
+ * - %i - milliseconds
+ * - %s - seconds (with leading 0)
+ * - %m - minutes (with leading 0)
+ * - %h - hours (with leading 0)
+ * - %d - days
+ * @group server
+ * @arg1 format string
+ * @arg2 milliseconds
+ * @return time as string
+ * @example formatmillis "%d days, %h:%m:%s and %i milliseconds" $uptime
+ */
 COMMAND(formatmillis, "si");
+
+/**
+ * Search player by name and return his client number
+ * @group player
+ * @arg1 player's name
+ * @return player's cn or -1 if not found
+ * @example getcn "unnamed" // returns cn of the first unnamed it finds
+ */
 ICOMMAND(getcn, "s", (char *name), int cn = parseplayer(name); intret(cn));
+
+/**
+ * Halt the server with specified exit code
+ * @group server
+ * @arg1 error code
+ * @example halt 0
+ */
 ICOMMAND(halt, "i", (int *err), exit(*err));
+
+/**
+ * Set or unset master to specified player
+ * @group player
+ * @arg1 client number
+ * @arg1 1 to set, 2 to unset
+ */
 COMMANDN(setmaster, setmastercmd, "ii");
+
+/**
+ * Check if ip corresponds to ip mask
+ * @group server
+ * @arg1 ip (string)
+ * @arg2 ip mask (string)
+ * @return 0 or 1
+ * @example checkipbymask "192.168.0.1" "192.168.*.*" //returns 1
+ */
 ICOMMAND(checkipbymask, "ss", (char *ip, char *mask), intret(checkipbymask(ip, mask) ? 1 : 0));
+
+/**
+ * Loop through bans
+ * @group server
+ * @arg1 banned player name
+ * @arg2 player ip
+ * @arg3 time of expiration of ban
+ * @arg4 actor name
+ * @arg5 actor ip
+ * @arg6 body of function to loop
+ */
 ICOMMAND(loopbans,
          "ssssss",
          (char *name, char *ip, char *expire, char *actor, char *actorip, char *body),
          loopbans(name, ip, expire, actor, actorip, body));
+
+/**
+ * Delete ban with specified number (see loopbans)
+ * @group server
+ * @arg1 number of ban
+ */
 ICOMMAND(delban, "i", (int *n), if(bannedips.inrange(*n)) bannedips.remove(*n));
+
+/**
+ * Convert integer unix time to string due to format
+ * @group server
+ * @arg1 unix timestamp (number of milliseconds)
+ * @arg2 format string (as in C function strftime)
+ * @return string
+ */
 COMMAND(timef, "is");
+
+/**
+ * Return formatted system time )see timef)
+ * @group server
+ * @arg1 format string
+ * @return system time string
+ */
 COMMAND(systimef, "s");
+
+/**
+ * Set file to write logs
+ * @group server
+ * @arg1 file path
+ */
 COMMAND(setlogfile, "s");
+
+/**
+ * Write string to log
+ * @group server
+ * @arg1 string
+ */
 ICOMMAND(echo, "C", (char *s), conoutf("%s", s));
+
+/**
+ * Load saved from coopedit map
+ * @group server
+ * @arg1 map name
+ */
 COMMAND(loadmap, "s");
+
+/**
+ * Save current map on server (for coopedit)
+ * @group server
+ * @arg1 map name
+ */
 COMMAND(savemap, "s");
 
 /**
  * Returns list of client numbers of connected players
- * @groups player
+ * @group player
  * @return list of cn
  */
 COMMAND(listclients, "");
 
 /**
  * Checks if ident with specified name exists (defined)
- * @groups server
+ * @group server
  * @arg1 ident name (i.e. $var1)
  * @return 1 if exists else 0
  */
@@ -1049,7 +1414,7 @@ ICOMMAND(identexists, "s", (const char *name), intret(identexists(name)));
 
 /**
  * Evaluate string as cube script
- * @groups server
+ * @group server
  * @arg1 body of function
  * @return returned value
  */
@@ -1067,7 +1432,7 @@ COMMAND(iseditmuted, "i");
 
 /**
  * Formats server's uptime
- * @groups server
+ * @group server
  * @arg1 format string
  * @return string
  */
@@ -1075,7 +1440,7 @@ COMMAND(uptimef, "s");
 
 /**
  * Get integer representation of ip (to save it in db for example)
- * @groups server
+ * @group server
  * @arg1 ip as string (i.e. "192.168.1.1")
  * @return integer
  */
@@ -1083,7 +1448,7 @@ COMMAND(ip2int, "s");
 
 /**
  * Transforms integer representation of ip to string
- * @groups server
+ * @group server
  * @arg1 integer representation of ip
  * @return string ip (i.e. 192.168.1.2)
  */
@@ -1091,7 +1456,7 @@ COMMAND(int2ip, "i");
 
 /**
  * Permanently ban player
- * @groups player, ban
+ * @group player
  * @arg1 player's name
  * @arg2 reason
  */
@@ -1099,7 +1464,7 @@ COMMANDN(permban, addpban, "ss");
 
 /**
  * Loop permanent bans list
- * @groups player, ban
+ * @group player
  * @arg1 banned ip variable
  * @arg2 network mask variable
  * @arg3 reason variable
@@ -1112,28 +1477,29 @@ ICOMMAND(looppermbans,
 
 /**
  * Delete permanent ban with specified number
- * @groups player, ban
+ * @group player
  * @arg1 number of record in permban list
  */
 ICOMMAND(delpermban, "i", (int *n), if(permbans.inrange(*n)) { permbans.remove(*n); });
 
 /**
  * Get list of compiled extensions in remod
- * @groups server
+ * @group server
  * @return list of extensions as string
  */
 COMMANDN(getextensions, getextensions, "");
 
 /**
  * Save permbans writting them to file
- * @groups server, ban
+ * @group server
  */
 COMMAND(writebans, "");
 
 
 /**
  * Sort list
- * @arg1 list
+ * @group server
+ * @arg1 list to be sorted
  * @return sorted list
  * @example sortlist "b a q k" // returns "a b k q"
  */
@@ -1141,7 +1507,7 @@ COMMANDN(sortlist, sortlist, "s");
 
 /**
  * Returns values list items in the same order as sorted keys
- * Uses bubble algorythm
+ * @group server
  * @arg1 keys list
  * @arg2 values list
  * @return rearranged values list

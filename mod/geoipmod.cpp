@@ -42,8 +42,26 @@ void getcountry(char *ip)
     result(country);
 }
 
+/**
+ * Return country for specified ip
+ * @group server
+ * @arg1 ip
+ * @return country
+ */
 COMMAND(getcountry,"s");
+
+/**
+ * Load geoip database from specified path
+ * @group server
+ * @arg1 /path/to/geoip.db
+ */
 COMMANDN(geodb, loadgeoip, "s");
+
+/**
+ * Check if geoip is ready to use
+ * @group server
+ * @return 1 if is ready, otherwise 0
+ */
 ICOMMAND(isgeoip, "", (), intret(GIt->loaded()));
 
 }

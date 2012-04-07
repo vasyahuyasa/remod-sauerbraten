@@ -146,7 +146,20 @@ namespace db
 	}
 
 
+/**
+ * Escape ", ', \ and ` with slash in query string
+ * @group db
+ * @arg1 query string
+ * @return escaped query
+ */
 ICOMMAND(addslashes, "C", (char *s), char *c = addslashes(s); result(c); DELETEA(c));
+
+/**
+ * Delete escaping slashes in the string, e.g. \" -> ", \' -> ', \\ -> \, \` -> `
+ * @group db
+ * @arg1 escaped string
+ * @return simple string
+ */
 ICOMMAND(stripslashes, "C", (char *s), char *c = stripslashes(s); result(c); DELETEA(c));
 }
 }

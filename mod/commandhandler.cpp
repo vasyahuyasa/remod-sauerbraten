@@ -421,24 +421,65 @@ void unregistercommand(const char* cmd_name)
 
 /**
  * Register server command. Registered command could be called  as #name param1 param2
- * Before executing system checks permissions for player called this command and the correspondence of given arguments to declared type mask
- * @groups commands
+ * Before executing system checks permissions for player called this command and the correspondence of given arguments to declared type mask.
+ * The type mask contains of a sequence of declaring type chars that correspond to the arguments and a delimiter "|" to separate required arguments from not required
+ * Supported argument types:
+ * - "i" - argument must be integer
+ * - "s" - string, MUST BE the last argument! Otherwise system could not parse arguments string correctly
+ * - "w" - single word
+ * - "c" - client number or player name
+ * - "p" - client number or player name or "-1"
+ * - "b" - boolean ("0" or "1")
+ * - "f" - float
+ * - "t" - time  mm:ss or just integer count of seconds
+ * - "|" - delimiter between required and not required arguments
+ * If validating parameter string fails , oncommandusageerror event is triggered
+ * If system doesn't found the command , oncommandunknown event is triggered
+ * If permission check fails, oncommandpermerror event is triggered
+ * @group event
  * @arg1 command name
  * @arg2 function to execute when command is called
  * @arg3 required permission level to execute this command: 1 for any player, 2 for admin, 3 for master (could be changed, see getperm function)
  * @arg4 type mask, declares types of command arguments and their necessity
  * @arg5 help string
+ * @example registercommand "ban" cmd_ban 3 "w|s" "ban [cn|ip] [reason] ^f1Add permanent ban" // arg1 (cn or ip) is required, arg2 (reason) is not required
  */
 COMMAND(registercommand, "ssiss");
 
 /**
- *
+ * Unregister server command
+ * @group event
+ * @arg1 command name
+ * @example unregistercommand "ban"
  */
 COMMAND(unregistercommand, "s");
-COMMAND(commandhelp, "s");
-COMMAND(getperm, "i");
+
 /**
- * Loops through registered server commands with permission "permissions" for executing
+ * Return help string for command (see: registercommand)
+ * @group event
+ * @arg1 command_name
+ * @return help string
+ * @example commandhelp "bans" // return  "ban [cn|ip] [reason] ^f1Add permanent ban"
+ */
+COMMAND(commandhelp, "s");
+
+/**
+ * Return integer permission for player with specified cn
+ * Checks if cubescript function grantperm exists and calls it with cn (there the custom rules for special ip for instance could be set, e.g. player connected from "192.168.*.*" may always have master permissions)
+ * If no, default values are: 1 for any player, 2 for admin, 3 for master
+ * @group event
+ * @arg1 cn
+ * @return integer value for permission
+ */
+COMMAND(getperm, "i");
+
+/**
+ * Loops through registered server commands with specified permission for executing. Useful for displaying all available server commands
+ * @group event
+ * @arg1 iterator variable name
+ * @arg2 required permission value
+ * @arg3 code to execute
+ * @example loopcommands cmd 3 [ echo $cmd ] //echoes all commands available to master
  */
 ICOMMAND(loopcommands, "sis", (char *var, int *permissions, char *body), common_loopcommands(var, permissions, body, cmd_handlers));
 
@@ -551,12 +592,54 @@ void irc_unregistercommand(const char* cmd_name)
 	common_unregistercommand(irc_cmd_handlers, cmd_name);
 }
 
-COMMAND(irc_registercommand, "ssiss");
-COMMAND(irc_unregistercommand, "s");
-COMMAND(irc_commandhelp, "s");
-COMMAND(irc_getperm, "s");
 /**
- * Loops through registered irc commands with permission "permissions" for executing
+ * Register command for IRC bot, has the same behavior as registercommand
+ * Triggers irc_oncommandusageerror, irc_oncommandunknown or irc_oncommandpermerror event if fails
+ * @group event
+ * @arg1 command name
+ * @arg2 function to execute when command is called
+ * @arg3 required permission level (default: 0 for all, 1 for voiced user/half op, 2 for admin/op/owner) see irc_getperm
+ * @arg4 type mask, see registercommand
+ * @arg5 help string
+ * @example irc_registercommand "ban" irccmd_ban 2 "w|s" "ban [cn|ip] [reason]. Add permanent ban"
+ */
+
+COMMAND(irc_registercommand, "ssiss");
+
+/**
+ * Unregister irc command
+ * @group event
+ * @arg1 command name
+ * @example irc_unregistercommand "ban"
+ */
+COMMAND(irc_unregistercommand, "s");
+
+/**
+ * Return help string for irc command (see: irc_registercommand)
+ * @group event
+ * @arg1 command_name
+ * @return help string
+ * @example irc_commandhelp "bans" // return  "ban [cn|ip] [reason]. Add permanent ban"
+ */
+COMMAND(irc_commandhelp, "s");
+
+/**
+ * Return integer permission for irc user with specified connection_string
+ * Checks if cubescript function irc_grantperm exists and calls it with connection_string (there could be the custom rules for special users)
+ * If no, default values are:  0 for all, 1 for voiced user/half op, 2 for admin/op/owner
+ * @group event
+ * @arg1 connection_string
+ * @return integer value for permission
+ */
+COMMAND(irc_getperm, "s");
+
+/**
+ * Loops through registered irc commands with specified permission for executing. Useful for displaying all available server commands
+ * @group event
+ * @arg1 iterator variable name
+ * @arg2 required permission value
+ * @arg3 code to execute
+ * @example irc_loopcommands cmd 2 [ echo $cmd ] //echoes all commands available to op
  */
 ICOMMAND(irc_loopcommands, "sis", (char *var, int *permissions, char *body), common_loopcommands(var, permissions, body, irc_cmd_handlers));
 
