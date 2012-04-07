@@ -277,14 +277,73 @@ namespace db
 		mysql_dbs.remove(*dbuid);
 	}
 
-    // registering commands
-    COMMANDN(mysql_open,      cs_mysql_open,    "s");
-    COMMANDN(mysql_query,     cs_mysql_query,   "is");
-    COMMANDN(mysql_pquery,    cs_mysql_pquery,  "iss");
-    //COMMANDN(mysql_colnames,  cs_mysql_colnames,"i");
-    COMMANDN(mysql_getrow,    cs_mysql_getrow,  "i");
-    COMMANDN(mysql_finalize,  cs_mysql_finalize,"i");
-    COMMANDN(mysql_error,     cs_mysql_error,   "i");
-    COMMANDN(mysql_close,     cs_mysql_close,   "i");
+
+/**
+ * Open Mysql database connection
+ * @group db
+ * @arg1 connection string in format login:password@server:port/database
+ * @return dbuid or -1 if fails
+ * @example mysql_open "login:password@192.168.1.2:3306/db_name"
+ */
+COMMANDN(mysql_open,      cs_mysql_open,    "s");
+
+/**
+ * Execute SQL query at specified MySQL database
+ * @group db
+ * @arg1 dbuid
+ * @arg2 query
+ * @return result uid
+ */
+COMMANDN(mysql_query,     cs_mysql_query,   "is");
+
+/**
+ * Execute SQL query with escaped parameters at specified MySQL database
+ * @group db
+ * @arg1 dbuid
+ * @arg2 query
+ * @arg3 parameters
+ * @return statement uid
+ */
+COMMANDN(mysql_pquery,    cs_mysql_pquery,  "iss");
+
+
+/**
+ * Load column names for query result
+ * @group db
+ * @arg1 result uid
+ * @return list of columns
+ */
+//COMMANDN(mysql_colnames,  cs_mysql_colnames,"i");
+
+/**
+ * Load row for specified statement id
+ * @group db
+ * @arg1 result uid
+ * @return list of row data
+ */
+COMMANDN(mysql_getrow,    cs_mysql_getrow,  "i");
+
+/**
+ * Finalize result
+ * @group db
+ * @arg1 result id
+ */
+COMMANDN(mysql_finalize,  cs_mysql_finalize,"i");
+
+/**
+ * Return last error for specified MySQL db
+ * @group db
+ * @arg1 db uid
+ * @return las error string
+ */
+COMMANDN(mysql_error,     cs_mysql_error,   "i");
+
+/**
+ * Close connection to MySQL database
+ * @group db
+ * @arg1 db uid
+ */
+COMMANDN(mysql_close,     cs_mysql_close,   "i");
+
 }
 }
