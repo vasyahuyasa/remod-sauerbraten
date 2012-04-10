@@ -335,7 +335,7 @@ COMMANDN(sqlite3_open, cs_sqlite3_open, "s");
  * @arg2 query
  * @return result uid
  */
-COMMANDN(sqlite3_query, cs_sqlite3_query, m"is");
+COMMANDN(sqlite3_query, cs_sqlite3_query, "is");
 
 /**
  * Execute SQL query with escaped parameters at specified SQLite database
