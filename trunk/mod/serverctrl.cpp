@@ -933,27 +933,45 @@ void setclientvar(int cn, const char *key, char *value)
     if(ci)
     {
         //ci->state.vars.access(key, val);
-        ci->vars[newstring(key)] = newstring(value);
+        //ci->vars[newstring(key)] = newstring(value);
+        ci->vars.set(key, value);
     }
 }
 
 void getclientvar(int cn, const char *key)
 {
+    /*
     clientinfo *ci = (clientinfo *)getinfo(cn);
     if(ci)
     {
-        /*
         char **pval = ci->state.vars.access(key);
         if(pval)
         {
             DELETEP(val);
             val = *pval;
         }
-        */
+
         char *val;
         val = ci->vars[key];
         conoutf("val=%u", val);
         if(val && val[0]) result(val);
+    }
+    */
+
+    char *res = NULL;
+    clientinfo *ci = (clientinfo *)getinfo(cn);
+    if(ci)
+    {
+        res = ci->vars.get(key);
+    }
+
+    if(res)
+    {
+        result(res);
+    }
+    else
+    {
+        result("");
     }
 }
 
@@ -962,7 +980,18 @@ void listclientvar(int cn)
     clientinfo *ci = (clientinfo *)getinfo(cn);
     if(ci)
     {
-        enumerate(ci->vars, char *, val, conoutf("vars[x]=%s", val));
+        //enumerate(ci->vars, char *, val, conoutf("vars[x]=%s", val));
+        loopi(VARBOXMAXNODES)
+        {
+            if(ci->vars.nodes[i])
+            {
+                conoutf("vars[%s] = %s", ci->vars.nodes[i]->key, ci->vars.nodes[i]->val);
+            }
+            else
+            {
+                break;
+            }
+        }
     }
 }
 

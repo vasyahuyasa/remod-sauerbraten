@@ -2,6 +2,7 @@
 #define __FPSGAME_H__
 
 #include "game.h"
+#include "varbox.h"
 
 namespace server
 {
@@ -237,7 +238,8 @@ namespace server
         int lastclipboard, needclipboard;
 
         // remod
-        hashtable<const char *, char *> vars;
+        //hashtable<const char *, char *> vars;
+        varbox vars;
 
         clientinfo() : clipboard(NULL) { reset(); }
         ~clientinfo() { events.deletecontents(); cleanclipboard(); }
