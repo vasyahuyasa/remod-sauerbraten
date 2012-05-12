@@ -946,10 +946,11 @@ bool writepidfile(char *file)
         pid = getpid();
         fprintf(f, "%i\n", pid);
         fclose(f);
+        return true;
     }
     else return false;
-
 }
+
 #endif
 
 bool serveroption(char *opt)

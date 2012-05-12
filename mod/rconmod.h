@@ -16,8 +16,8 @@ struct rconpeer
 };
 
 void init(int port);
-void sendmsg(char *msg, int len);
-void sendmsg(char *msg);
+void sendmsg(const char *msg, int len);
+void sendmsg(const char *msg);
 void update();
 
 }

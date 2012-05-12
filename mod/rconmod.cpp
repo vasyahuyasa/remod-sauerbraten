@@ -188,7 +188,7 @@ void init(int port=27070)
 }
 
 // send message to all logined peers
-void sendmsg(char *msg, int len)
+void sendmsg(const char *msg, int len)
 {
     char *data;
 
@@ -217,7 +217,7 @@ void sendmsg(char *msg, int len)
 
 }
 
-void sendmsg(char *msg)
+void sendmsg(const char *msg)
 {
     sendmsg(msg, strlen(msg));
 }

@@ -80,6 +80,7 @@ SERVER_OBJS= \
 	mod/serverctrl-standalone.o \
 	mod/remod-standalone.o \
 	mod/cryptomod-standalone.o \
+	mod/varbox-standalone.o \
 	mod/hashlib2plus/src/hl_md5-standalone.o \
 	mod/hashlib2plus/src/hl_md5wrapper-standalone.o \
 	mod/hashlib2plus/src/hl_sha1-standalone.o \
