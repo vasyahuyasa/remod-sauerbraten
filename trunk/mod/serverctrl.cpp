@@ -995,9 +995,30 @@ void listclientvar(int cn)
     }
 }
 
-//ICOMMAND(setvar, "iss", (int *cn, const char *key, char *value), setclientvar(*cn, key, value));
-//ICOMMAND(getvar, "is", (int *cn, const char *key), getclientvar(*cn, key));
-//ICOMMAND(listvar, "i", (int *cn), listclientvar(*cn));
+/**
+ * Set client personal variable for session (limit of variables is 128)
+ * @group player
+ * @arg1 client number
+ * @arg2 key
+ * @arg3 value
+ */
+ICOMMAND(setvar, "iss", (int *cn, const char *key, char *value), setclientvar(*cn, key, value));
+
+/**
+ * Get client personal variable
+ * @group player
+ * @arg1 client number
+ * @arg2 key
+ * @return value
+ */
+ICOMMAND(getvar, "is", (int *cn, const char *key), getclientvar(*cn, key));
+
+/**
+ * Print all defined client variables
+ * @group player
+ * @return print list to console, can not be used in scripts
+ */
+ICOMMAND(listvar, "i", (int *cn), listclientvar(*cn));
 
 //Cube script binds
 
