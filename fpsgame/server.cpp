@@ -1463,7 +1463,12 @@ namespace server
     void clearevent(clientinfo *ci)
     {
         if(ci->events.length())
-            delete ci->events.remove(0);
+        {
+            // remod
+            gameevent *event = ci->events.remove(0);
+            if(event)
+                delete event;
+        }
     }
 
     void flushevents(clientinfo *ci, int millis)
