@@ -1,5 +1,5 @@
 :start
-sauer_server
+remod
 IF %ERRORLEVEL% EQU 0 goto end
 goto start
 :end
