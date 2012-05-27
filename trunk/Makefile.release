@@ -1,7 +1,3 @@
-#####
-# Crosscompile Linux->win32
-#####
-
 ########### CONFIGURATION ############
 
 #Use geoip module?  true|false 
@@ -19,17 +15,49 @@ USE_MYSQL=true
 ######################################
 
 ### Tools
-CXX=i486-mingw32-gcc
+CXX=gcc
 MV=mv
 STRIP=
 
-SERVER_NAME=remod.exe
 
-CXXFLAGS= -fpermissive -fomit-frame-pointer -Wall -fsigned-char -O2 -s -DSTANDALONE
-SERVER_INCLUDES= -Iinclude -I/usr/i486-mingw32/include $(INCLUDES)
-SERVER_LIBS= -lstdc++ -Llib -lzdll -lws2_32 -lwinmm
+PLATFORM=$(shell uname -s)
 
-#override CXXFLAGS+= -O0 -g -DDEBUG # uncomment for debugging
+#result file name
+PLATFORM_SUFFIX=
+ifneq (,$(findstring x86_64,$(shell uname -a)))
+PLATFORM_SUFFIX=64
+endif
+ifneq (,$(findstring amd64,$(shell uname -a)))
+PLATFORM_SUFFIX=64
+endif
+
+SERVER_PREFIX=remod
+SERVER_NAME=$(SERVER_PREFIX)
+ifneq (,$(findstring MINGW,$(PLATFORM)))
+SERVER_NAME=$(SERVER_NAME)$(PLATFORM_SUFFIX).exe
+endif
+ifneq (,$(findstring Linux,$(PLATFORM)))
+SERVER_NAME=$(SERVER_PREFIX)$(PLATFORM_SUFFIX)
+endif
+ifneq (,$(findstring FreeBSD,$(PLATFORM)))
+SERVER_NAME=$(SERVER_PREFIX)_freebsd$(PLATFORM_SUFFIX)
+endif
+
+### Folders, libraries, includes
+ifneq (,$(findstring MINGW,$(PLATFORM)))
+SERVER_INCLUDES+= -DSTANDALONE $(INCLUDES) -Iinclude
+SERVER_LIBS= -Llib -lzdll -lenet -lws2_32 -lwinmm -lstdc++
+else
+SERVER_INCLUDES+= -DSTANDALONE $(INCLUDES)
+SERVER_LIBS= -Lenet/.libs -L/usr/local/lib -lenet -lz -lstdc++
+endif
+
+ifeq ($(PLATFORM),SunOS)
+SERVER_LIBS+= -lsocket -lnsl
+endif
+
+CXXFLAGS= -O2 -s -fomit-frame-pointer -Wall -fsigned-char -DSTANDALONE
+#override CXXFLAGS+= -g -DDEBUG # uncomment for debugging
 
 ifeq (,$(findstring -g,$(CXXFLAGS)))
 ifeq (,$(findstring -pg,$(CXXFLAGS)))
@@ -40,14 +68,6 @@ endif
 INCLUDES= -Ishared -Iengine -Ifpsgame -Ienet/include -Imod -Imod/hashlib2plus/src 
 
 SERVER_OBJS= \
-	enet/callbacks-standalone.o \
-	enet/compress-standalone.o \
-	enet/host-standalone.o \
-	enet/list-standalone.o \
-	enet/packet-standalone.o \
-	enet/peer-standalone.o \
-	enet/protocol-standalone.o \
-	enet/win32-standalone.o \
 	shared/crypto-standalone.o \
 	shared/stream-standalone.o \
 	shared/tools-standalone.o \
@@ -72,8 +92,9 @@ SERVER_OBJS= \
 	mod/hashlib2plus/src/hl_sha512wrapper-standalone.o
 
 
-
 ### Options checks
+
+
 
 #geoip
 ifeq ($(USE_GEOIP),true)
@@ -108,6 +129,10 @@ endif
 ifeq ($(USE_SQLITE3),true)
 override CXXFLAGS+= -DSQLITE3
 override INCLUDES+= -Imod/sqlite3
+#linux-only libs
+ifeq ($(PLATFORM),Linux)
+override SERVER_LIBS+= -ldl -lpthread
+endif
 override SERVER_OBJS+= mod/sqlite3/sqlite3-standalone.o mod/sqlite3-standalone.o
 endif
 #end of sqlite3
@@ -117,10 +142,14 @@ endif
 #mysql
 ifeq ($(USE_MYSQL),true)
 override CXXFLAGS+= -DUSE_MYSQL -DDBUG_OFF
-override CXXFLAGS += -DNO_OLDNAMES
 override INCLUDES += -Imod/mysql/include -Imod/mysql/extlib/regex -Imod/mysql/mysys -Imod/mysql/vio
-override SERVER_LIBS += -lws2_32 
 
+ifeq (,$(findstring MINGW,$(PLATFORM)))
+override SERVER_LIBS += -lpthread -lm
+else
+override CXXFLAGS += -DNO_OLDNAMES
+override SERVER_LIBS += -lws2_32 
+endif
 MYSQL_STRINGS_DIR = strings
 MYSQL_STRINGS_OBJS = bchange-standalone.o bcmp-standalone.o bfill-standalone.o bmove512-standalone.o bmove_upp-standalone.o \
 				ctype-bin-standalone.o ctype-extra-standalone.o ctype-mb-standalone.o ctype-utf8-standalone.o ctype-latin1-standalone.o ctype-standalone.o ctype-simple-standalone.o \
@@ -178,6 +207,15 @@ ifneq "$(SVNVERSION)" " "
 override CXXFLAGS+= -DREMOD_VERSION="\"SVN build rev: $(SVNVERSION)\""
 endif
 
+enet/Makefile:
+	cd enet; chmod +x configure; ./configure --enable-shared=no --enable-static=yes
+	
+libenet: enet/Makefile
+	$(MAKE)	-C enet/ all
+
+clean-enet: enet/Makefile
+	$(MAKE) -C enet/ clean
+
 clean:
 	-$(RM) $(SERVER_OBJS) 
 
@@ -194,5 +232,15 @@ clean:
 
 $(SERVER_OBJS): CXXFLAGS += $(SERVER_INCLUDES)
 
+ifneq (,$(findstring MINGW,$(PLATFORM)))
 server: $(SERVER_OBJS)
 	$(CXX) $(CXXFLAGS) -o $(SERVER_NAME) $(SERVER_OBJS) $(SERVER_LIBS)
+
+else
+server:	libenet $(SERVER_OBJS)
+	$(CXX) $(CXXFLAGS) -o $(SERVER_NAME) $(SERVER_OBJS) $(SERVER_LIBS)  
+	
+ifneq (,$(STRIP))
+	$(STRIP) $(SERVER_NAME)
+endif
+endif
