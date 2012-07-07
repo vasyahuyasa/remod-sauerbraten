@@ -179,6 +179,7 @@ bool onevent(const char *evt_type, const char *fmt, ...)
                     }
                     evparams =  concatpstring(evparams, "\"");
                     break;
+                case 'f':
                 case 'd':
                 	evparams = concatpstring(evparams, floatstr(va_arg(vl, double)));
                     break;
