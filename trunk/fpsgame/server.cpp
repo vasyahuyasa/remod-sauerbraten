@@ -1362,6 +1362,9 @@ namespace server
         if(smode) smode->died(ci, NULL);
         gs.state = CS_DEAD;
         gs.respawn();
+
+	// remod
+	remod::onevent("onsuicide",  "i", ci->clientnum);
     }
 
     void suicideevent::process(clientinfo *ci)
