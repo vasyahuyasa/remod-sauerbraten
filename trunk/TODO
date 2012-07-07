@@ -37,9 +37,12 @@ Server events: +
 	onbotlimit [cn] [limit] +
 	onbotbalance [cn] [balance]
 	//onauth [cn] [name] = onsetmaster
-    @onpausegame [1|0] +   
-    onmodmap [cn] +  
-    onmute [1|0] [cn] +
+	@onpausegame [1|0] +   
+	onmodmap [cn] +  
+	onmute [1|0] [cn] +
+	ondeath [cn] +
+	onfrag [cn] +
+	onsuicide [cn] +
 
 	//flags
 	ontakeflag [cn] [flagteam] [frombase 1|0] 

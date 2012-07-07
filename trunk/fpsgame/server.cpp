@@ -1313,11 +1313,17 @@ namespace server
         }
         if(ts.health<=0)
         {
+            // remod
+            bool ondeath = (actor != target); // count suicides separately
+            bool onfrag = ondeath;
+            bool onsuicide = !ondeath;
             bool onteamkill = false;
+
             target->state.deaths++;
-            if(actor!=target && isteam(actor->team, target->team)) //Remod
+            if(actor!=target && isteam(actor->team, target->team)) // remod
             {
                 actor->state.teamkills++;
+                onfrag = false; // dont count teamkills as frags
                 onteamkill = true;
             }
             int fragvalue = smode ? smode->fragvalue(target, actor) : (target==actor || isteam(target->team, actor->team) ? -1 : 1);
@@ -1337,8 +1343,11 @@ namespace server
             // don't issue respawn yet until DEATHMILLIS has elapsed
             // ts.respawn();
 
-            // Remod
-            if(onteamkill) remod::onevent("onteamkill", "i", actor->clientnum);
+            // remod
+            if(onfrag)      remod::onevent("onfrag",     "i", actor->clientnum);
+            if(onteamkill)  remod::onevent("onteamkill", "i", actor->clientnum);
+            if(ondeath)     remod::onevent("ondeath",    "i", target->clientnum);
+            if(onsuicide)   remod::onevent("onsuicide",  "i", target->clientnum);
         }
     }
 
