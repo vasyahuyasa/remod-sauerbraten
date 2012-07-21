@@ -1,8 +1,8 @@
 #include "game.h"
 #include "fpsgame.h"
 
+#include "authmod.h"
 #include "commandev.h"
-
 #include "remod.h"
 
 namespace game
@@ -2671,7 +2671,8 @@ namespace server
                 string desc, name;
                 getstring(desc, p, sizeof(desc)); // unused for now
                 getstring(name, p, sizeof(name));
-                if(!desc[0]) tryauth(ci, name);
+                //if(!desc[0]) tryauth(ci, name);
+                remod::tryauth(ci, name, desc); // remod
                 break;
             }
 
@@ -2681,7 +2682,8 @@ namespace server
                 getstring(desc, p, sizeof(desc)); // unused for now
                 uint id = (uint)getint(p);
                 getstring(ans, p, sizeof(ans));
-                if(!desc[0]) answerchallenge(ci, id, ans);
+                //if(!desc[0]) answerchallenge(ci, id, ans);
+                remod::answerchallenge(ci, id, ans, desc); // remod
                 break;
             }
 

@@ -1,6 +1,7 @@
 // server.cpp: little more than enhanced multicaster
 // runs dedicated or as client coroutine
 
+#include "authmod.h"
 #include "engine.h"
 #include "rconmod.h"
 #include "remod.h"
@@ -851,6 +852,7 @@ void initserver(bool listen, bool dedicated)
     // remod
     remod::rcon::init(rconport);
     remod::loadbans();
+    authserv::reloadauth();
 
     server::serverinit();
 

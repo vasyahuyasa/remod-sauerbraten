@@ -131,6 +131,8 @@
 		<Unit filename="include/zconf.h" />
 		<Unit filename="include/zlib.h" />
 		<Unit filename="libGeoIP/GeoIP.h" />
+		<Unit filename="mod/authmod.cpp" />
+		<Unit filename="mod/authmod.h" />
 		<Unit filename="mod/commandev.cpp" />
 		<Unit filename="mod/commandev.h" />
 		<Unit filename="mod/commandhandler.cpp" />
