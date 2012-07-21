@@ -119,7 +119,7 @@ Cube script:
 	
 	getname [cn] [txt] +         
 	clearbans +
-	addgban [ip] -	add global ban     
+	addgban [ip] +	add global ban     
 	setteam [name] [team] +           
 	clearhandlers +       
 	delhandler [evt] [cmd] +  
@@ -157,6 +157,7 @@ Cube script:
 	iseditmuted (1|0) +	check if player editmuted
 	$masterpass [str] +	password for claim master instead of admin
 	uptimef [fmt] (str) +	formated output of up time (%s - seconds, %m - minutes, %h - hours, %d - days, %y - years, ex: uptimef "uptime %d days")
+	adduser [name] [pubkey] +	add local authkey
 	
 	# crypto
 	tiger192 [str] (str) +	tiger 192 bit 3 passes hash

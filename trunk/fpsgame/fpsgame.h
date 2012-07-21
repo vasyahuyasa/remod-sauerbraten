@@ -472,6 +472,12 @@ namespace server
     const char *colorname(clientinfo *ci, char *name);
     void addgban(const char *name);
     void cleargbans();
+    clientinfo *findauth(uint id);
+    void authfailed(uint id);
+    void authsucceeded(uint id);
+    void authchallenged(uint id, const char *val);
+    void tryauth(clientinfo *ci, const char *user);
+    void answerchallenge(clientinfo *ci, uint id, char *val);
 
 }
 #endif
