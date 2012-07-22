@@ -174,4 +174,10 @@ namespace authserv
     * @arg2 pubkey
     */
     COMMAND(adduser, "ss");
+
+    /**
+    * Reload authkeys (using $authfile variable)
+    * @group server
+    */
+    COMMAND(reloadauth, "");
 }
