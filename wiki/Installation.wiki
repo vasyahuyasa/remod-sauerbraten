@@ -1,0 +1,28 @@
+#labels Featured
+===Windows===
+Download the newest remod-rXXX.zip file
+Decompress the remod-rXXX-bin.zip
+(XXX is the revision number of your build)
+Open the remod-rXXX folder.
+Customize your server & start it with server.bat
+
+===Linux===
+It is recommed to fetch the newest svn version of remod.
+(You need to have the newest svn version installed)
+If you want to do a new server,simply type in:
+{{{
+ svn checkout http://remod-sauerbraten.googlecode.com/svn/trunk/ remod-sauerbraten-read-only 
+}}}
+
+If you want to update your old server,do it like this:
+{{{
+cd remod-rXXX/
+svn update
+make
+}}}
+
+After this,you can run the server: (You ma have to change the file(s) attribute)
+{{{
+chmod u+x remod
+./remod&
+}}}
