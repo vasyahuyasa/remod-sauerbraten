@@ -1,4 +1,4 @@
-#labels Featured
+#labels remodBasic
 ===Windows===
 Download the newest remod-rXXX.zip file
 Decompress the remod-rXXX-bin.zip
