@@ -43,7 +43,7 @@ ifneq (,$(findstring FreeBSD,$(PLATFORM)))
 SERVER_NAME=$(SERVER_PREFIX)_freebsd$(PLATFORM_SUFFIX)
 endif
 
-### Folders, libraries, includes
+### Directories, libraries, includes
 ifneq (,$(findstring MINGW,$(PLATFORM)))
 SERVER_INCLUDES+= -DSTANDALONE $(INCLUDES) -Iinclude
 SERVER_LIBS= -Llib -lzdll -lenet -lws2_32 -lwinmm -lstdc++
@@ -58,6 +58,7 @@ endif
 
 CXXFLAGS= -O0 -fomit-frame-pointer -Wall -fsigned-char -DSTANDALONE
 override CXXFLAGS+= -g -DDEBUG # uncomment for debugging
+override CXXFLAGS+= -DDEBUG_SQL # uncomment to see the time of sql queries in log
 
 ifeq (,$(findstring -g,$(CXXFLAGS)))
 ifeq (,$(findstring -pg,$(CXXFLAGS)))

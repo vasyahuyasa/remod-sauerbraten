@@ -134,8 +134,14 @@ namespace db
 
         // select database for work
         MYSQL *db = mysql_dbs[*dbuid];
-
-        if (mysql_query(db, query)) {
+#ifdef DEBUG_SQL
+       int start_time = totalmillis;
+#endif
+        int res = mysql_query(db, query);
+#ifdef DEBUG_SQL
+       conoutf("%s  -  %s ms", query, abs(totalmillis - start_time));
+#endif
+        if (res) {
         	conoutf("%s", mysql_error(db));
         	intret(-1);
         	return;
