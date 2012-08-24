@@ -135,8 +135,17 @@ namespace db
             return;
         }
 
-        // do request
-        rc = sqlite3_step(stmt);
+
+
+#ifdef DEBUG_SQL
+       int start_time = totalmillis;
+#endif
+       // do request
+       rc = sqlite3_step(stmt);
+#ifdef DEBUG_SQL
+       conoutf("%s  -  %s ms", query, abs(totalmillis - start_time));
+#endif
+
         switch(rc)
         {
             case SQLITE_ROW:
