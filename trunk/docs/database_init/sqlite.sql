@@ -1,3 +1,6 @@
+--auth
+CREATE TABLE auth (id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(30), pubkey VARCHAR(49), rights UNSIGNED TINYINT, enabled TINYINT, unique(id, name));
+
 --flagrun
 CREATE TABLE flagrun (mode UNSIGNED TINYINT, map VARCHAR(20), name VARCHAR(20), time UNSIGNED INTEGER, unique(mode, map));
 
