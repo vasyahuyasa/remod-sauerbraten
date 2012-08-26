@@ -222,12 +222,14 @@ namespace db
 		// return list of fields
 		vector<char> buf;
 
-		loopi(sqlite3_data_count(stmt))
+		int fieldcount = sqlite3_data_count(stmt);
+		loopi(fieldcount)
 		{
 			if(buf.length()) buf.add(' ');
 			defformatstring(field)("%s", sqlite3_column_text(stmt, i));
 			buf.put(field, strlen(field));
-			buf.add(' ');
+			if(i != (fieldcount-1))  // don't add extra space at end
+				buf.add(' ');
 		}
 		buf.add('\0');
 
