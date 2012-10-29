@@ -210,7 +210,8 @@ namespace db
 				for (int i = 0; i < num_fields; i++) {
 					defformatstring(field)("%s", row[i]);
 					buf.put(field, strlen(field));
-					buf.add(' ');
+					if(i != (num_fields-1))  // don't add extra space at end
+						buf.add(' ');
 				}
 				buf.add('\0');
 				char *res = stripslashes(buf.getbuf());
