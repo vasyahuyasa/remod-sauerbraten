@@ -1,0 +1,20 @@
+#labels login,nameprotection
+==Login System==
+You need the following scripts for login & nameprotection:
+ * login.cfg > scripts/other/login.cfg
+ * permissions.cfg > scripts/ (override btw copy the new version)
+Also you need a modifed db (check mysql/sqlite querys)
+
+When all is setted up, you can start nameprotection.
+Simply add an entry in your db with the following content:
+ * name : (Name which is going protected)
+ * pwd : (hashed password, depends on hash you use.)
+ * perms : (permission in backend (1 = guest / 2 = master / 3 = admin)
+ * state : (if is loggedin or not, DO NOT CHANGE)
+ * active : (if account is active or not, should be 1 by default)
+
+There you go, protection/permission are now active. Ingame you can login with #login password
+
+If you want to change encryption, modifiy the following part of login.cfg (line 53)
+ * {{{ if (=s (md5 $arg2) $tmp_pwd) }}} ->
+to an encription level you like.
