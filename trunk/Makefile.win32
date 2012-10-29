@@ -27,7 +27,7 @@ SERVER_NAME=remod.exe
 
 CXXFLAGS= -fpermissive -fomit-frame-pointer -Wall -fsigned-char -O2 -s -DSTANDALONE
 SERVER_INCLUDES= -Iinclude -I/usr/i486-mingw32/include $(INCLUDES)
-SERVER_LIBS= -lstdc++ -Llib -lzdll -lws2_32 -lwinmm
+SERVER_LIBS= -static -lstdc++ -Llib -lzdll -lws2_32 -lwinmm 
 
 #override CXXFLAGS+= -O0 -g -DDEBUG # uncomment for debugging
 
