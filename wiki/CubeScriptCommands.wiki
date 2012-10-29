@@ -27,7 +27,7 @@
 || addbot [skill] || add bot with specified skill ||
 || delbot || delete one bot ||
 || getteam [cn] (s) || return name of player team ||
-|| setteam [name] [team] || force move player to specified team ||
+|| setteam [cn] [team] || force move player to specified team ||
 || getping [name] (ping) || return player ping ||
 || getonline [cn] (millis) || return player time on server ||
 || getteamscores [team] (scores) || return scores of team in team modes ||
@@ -78,8 +78,8 @@
 || rconpass [s] || password for rcon ||
 
 ==IRC bot==
-|| ircsay || undocumented yet ||
-|| $verbose || undocumented yet ||
+|| ircsay [s] || say something in irc-channel ||
+|| $verbose || shows irc output yes/no ||
 || ircfilter || undocumented yet ||
 || ircaddclient || undocumented yet ||
 || ircaddrelay || undocumented yet ||
