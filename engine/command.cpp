@@ -1330,5 +1330,116 @@ void listreplace(const char *list, int *index, const char *el) {
  */
 COMMANDN(listreplace, listreplace, "sis");
 
+/**
+ * Routines from SVN
+ */
+static const char *liststart = NULL, *listend = NULL, *listquotestart = NULL, *listquoteend = NULL;
+
+static inline const char *parseword(const char *p)
+{
+    const int maxbrak = 100;
+    static char brakstack[maxbrak];
+    int brakdepth = 0;
+    for(;; p++)
+    {
+        p += strcspn(p, "\"/;@()[] \t\r\n\0");
+        switch(p[0])
+        {
+            case '"': case ';': case '@': case ' ': case '\t': case '\r': case '\n': case '\0': return p;
+            case '/': if(p[1] == '/') return p; break;
+            case '[': case '(': if(brakdepth >= maxbrak) return p; brakstack[brakdepth++] = p[0]; break;
+            case ']': if(brakdepth <= 0 || brakstack[--brakdepth] != '[') return p; break;
+            case ')': if(brakdepth <= 0 || brakstack[--brakdepth] != '(') return p; break;
+        }
+    }
+    return p;
+}
+
+static inline void skiplist(const char *&p)
+{
+    for(;;)
+    {
+        p += strspn(p, " \t\r\n");
+        if(p[0]!='/' || p[1]!='/') break;
+        p += strcspn(p, "\n\0");
+    }
+}
+
+static bool parselist(const char *&s, const char *&start = liststart, const char *&end = listend, const char *&quotestart = listquotestart, const char *&quoteend = listquoteend)
+{
+    skiplist(s);
+    switch(*s)
+    {
+        case '"': quotestart = s++; start = s; s = parsestring(s); end = s; if(*s == '"') s++; quoteend = s; break;
+        case '(': case '[':
+            quotestart = s;
+            start = s+1;
+            for(int braktype = *s++, brak = 1;;)
+            {
+                s += strcspn(s, "\"/;()[]\0");
+                int c = *s++;
+                switch(c)
+                {
+                    case '\0': s--; quoteend = end = s; return true;
+                    case '"': s = parsestring(s); if(*s == '"') s++; break;
+                    case '/': if(*s == '/') s += strcspn(s, "\n\0"); break;
+                    case '(': case '[': if(c == braktype) brak++; break;
+                    case ')': if(braktype == '(' && --brak <= 0) goto endblock; break;
+                    case ']': if(braktype == '[' && --brak <= 0) goto endblock; break;
+                }
+            }
+        endblock:
+            end = s-1;
+            quoteend = s;
+            break;
+        case '\0': case ')': case ']': return false;
+        default: quotestart = start = s; s = parseword(s); quoteend = end = s; break;
+    }
+    skiplist(s);
+    if(*s == ';') s++;
+    return true;
+}
+
+/**
+ * Insert values into list
+ */
+void listsplice(const char *s, const char *vals, int *skip, int *count, int *numargs)
+{
+    int offset = max(*skip, 0), len = *numargs >= 4 ? max(*count, 0) : -1;
+    const char *list = s, *start, *end, *qstart, *qend = s;
+    loopi(offset) if(!parselist(s, start, end, qstart, qend)) break;
+    vector<char> p;
+    if(qend > list) p.put(list, qend-list);
+    if(*vals)
+    {
+        if(!p.empty()) p.add(' ');
+        p.put(vals, strlen(vals));
+    }
+    while(len-- > 0) if(!parselist(s)) break;
+    skiplist(s);
+    switch(*s)
+    {
+        case '\0': case ')': case ']': break;
+        default:
+            if(!p.empty()) p.add(' ');
+            p.put(s, strlen(s));
+            break;
+    }
+    p.add('\0');
+    result(newstring(p.getbuf(), p.length()-1));
+}
+
+/**
+ * Replaces list's element at specified position with new one
+ * @arg1 list
+ * @arg2 object(s)
+ * @arg3 index
+ * @arg4 amount (if amount is 0 the object(s) will be added at given index without overwriting existing list objects)
+ * @arg5 numargs
+ * @return new list with inserted objects item
+ * @example listsplice "a b c d" 2 "e f" //returns "a b e f d"
+ */
+COMMAND(listsplice, "ssiiN");
+
 //#endif
 
