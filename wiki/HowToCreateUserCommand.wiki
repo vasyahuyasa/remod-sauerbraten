@@ -1,0 +1,52 @@
+#summary Instruction how to create a remod user command script.
+
+= How to create user command =
+
+== Introduction ==
+
+At start, if you want to create scripts for remod you should know cubescript, you can find good manual here http://www.sandboxgamemaker.com/wiki/index.php?title=Cubescript.
+
+=== Listing of our example command ===
+
+{{{
+// our callback function command
+cmd_example = [
+	// $arg1 - caller cn
+	// $arg2 - 1st parameter 
+
+	// get player name
+	pname = (getname $arg1)
+
+	// make formated and colored string
+	fstring = (format "Player ^f0%1 ^f7type ^f0%2" $pname $arg2)
+
+	// show string
+	say $fstring
+]
+// register our command
+registercommand "example" cmd_example 1 "s" "example [msg] ^f1Command example"
+}}}
+
+== Details ==
+At start we defined cube script function which will be executed when player type `#example test`. This function can have any name but for not confuse us in future we name it `cmd_example`. When player type comand some parameters passed to our function. For us `$arg1` is player `cn` and `$arg2` is parameter which player typed after command.
+
+After we wrote function we should register it as player command:
+{{{
+`registercommand "example" cmd_example 1 "s" "example [msg] ^f1Command example"`
+}}}
+
+Explanation of each parameter:
+
+_registercommand_ – function which register our command
+
+_"example"_ – command name which user should type 
+
+_cmd_example_ – function which executes when user call command
+
+_2_ – who can use that function (1 - any player, 2 -- masters, 3 - admins only)
+
+_s_ – parameters what user should pass (s - string, for full list of parameters mnemonics see /docs/guide.html)
+
+_"example [msg] ^f1Command example"_ – help string which user see whn type #help example.
+
+If you want unregister that player command you can use `unregistercommand "example"` in other script.
