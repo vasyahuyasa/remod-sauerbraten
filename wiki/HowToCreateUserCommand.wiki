@@ -1,6 +1,4 @@
-#summary Instruction how to create a remod user command script.
 #labels remod,command,manual
-
 = How to create user command =
 
 == Introduction ==
