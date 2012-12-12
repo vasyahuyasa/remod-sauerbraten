@@ -951,6 +951,19 @@ void ircsayto(char *to, char *msg)
     }
 }
 
+void ircaction(char *msg)
+{
+    loopv(ircnets)
+    {
+        loopvj(ircnets[i]->channels)
+        {
+            char *to = ircnets[i]->channels[j].name;
+            ircnet *in = ircnets[i];
+            ircsend(in, "PRIVMSG %s :%sACTION %s%s", to, "\001\0", msg, "\001\0");
+        }
+    }
+}
+
 #if 1
 void irc_dumpnicks()
 {
@@ -1004,5 +1017,13 @@ ICOMMAND(ircsay, "s", (const char *msg ), { ircoutf(0, "%s", msg); });
  * @example ircsayto "mib_4564" "Go away mib_4564" // send private message
  */
 COMMAND(ircsayto, "ss");
+
+/**
+ * The server is an action message.
+ * @group irc
+ * @arg1 message
+ * @example ircaction "waves hello", What it looks like: *server waves hello
+ */
+COMMAND(ircaction, "s");
 
 #endif
