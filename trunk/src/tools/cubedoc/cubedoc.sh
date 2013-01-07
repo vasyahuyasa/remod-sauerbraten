@@ -1,2 +1,2 @@
 #!/bin/sh
-python cubedoc.py ./templates ../../docs/ ../../
+python cubedoc.py ./templates ../../../docs/ ../../
