@@ -7,6 +7,7 @@
 
 
 
+#include "commandev.h"
 #include "remod.h"
 
 EXTENSION(REMOD);
@@ -24,6 +25,113 @@ bool addextension(const char *name)
 const extensionslist* getextensionslist()
 {
     return extensions;
+}
+
+char *conc(char **w, int n, bool space)
+{
+    int len = space ? max(n-1, 0) : 0;
+    loopj(n) len += (int)strlen(w[j]);
+    char *r = newstring("", len);
+    loopi(n)
+    {
+        strcat(r, w[i]);  // make string-list out of all arguments
+        if(i==n-1) break;
+        if(space) strcat(r, " ");
+    }
+    return r;
+}
+
+// local auth
+SVAR(authfile, "auth.cfg");
+
+void reloadauth()
+{
+    server::clearusers();
+    execfile(authfile);
+}
+
+namespace server
+{
+    void filtercstext(char *str)
+    {
+        for(char *c = str; c && *c; c++)
+        {
+            if (*c == '\"') { *c = '\''; }
+        }
+    }
+
+    bool checkpban(uint ip)
+    {
+        loopv(permbans) if((ip & permbans[i].mask) == permbans[i].ip) return true;
+        return false;
+    }
+
+    // remod implementation of addban
+    void addban(int cn, char* actorname, int expire)
+    {
+        int actor = remod::parseplayer(actorname);
+        clientinfo *vic = getinfo(cn);
+        clientinfo *act = getinfo(actor);
+        if(vic)
+        {
+            uint ip = getclientip(cn);
+            allowedips.removeobj(ip);
+            ban b;
+            b.ip = ip;
+            b.time = totalmillis;
+            b.expire = totalmillis + expire;
+            strcpy(b.name, vic->name);
+            b.actor[0] = '\0';
+            b.actorip = 0;
+
+            if(act)
+            {
+                strcpy(b.actor, act->name);
+                b.actorip = getclientip(cn);
+            }
+            else
+            	strcpy(b.actor, actorname);
+
+            loopv(bannedips) if(b.expire < bannedips[i].expire) { bannedips.insert(i, b); return; }
+            bannedips.add(b);
+        }
+    }
+
+    void addpban(const char *name, const char *reason)
+    {
+        union { uchar b[sizeof(enet_uint32)]; enet_uint32 i; } ip, mask;
+        ip.i = 0;
+        mask.i = 0;
+        loopi(4)
+        {
+            char *end = NULL;
+            int n = strtol(name, &end, 10);
+            if(!end) break;
+            if(end > name) { ip.b[i] = n; mask.b[i] = 0xFF; }
+            name = end;
+            while(*name && *name++ != '.');
+        }
+
+        allowedips.removeobj(ip.i);
+
+        permban b;
+        b.ip    = ip.i;
+        b.mask  = mask.i;
+        strcpy(b.reason, reason);
+        b.reason[MAXSTRLEN-1] = '\0'; // to avoid problems in future
+        permbans.add(b);
+
+        loopvrev(clients)
+        {
+            clientinfo *ci = clients[i];
+            if(ci->local || ci->privilege >= PRIV_ADMIN) continue;
+            if(checkpban(getclientip(ci->clientnum)))
+            {
+                remod::onevent("onkick", "ii", -1, ci->clientnum);
+                disconnect_client(ci->clientnum, DISC_IPBAN);
+            }
+        }
+    }
 }
 
 namespace remod

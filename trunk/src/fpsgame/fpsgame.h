@@ -6,8 +6,7 @@
 
 namespace server
 {
-
-   struct server_entity            // server side version of "entity" type
+    struct server_entity            // server side version of "entity" type
     {
         int type;
         int spawntime;
@@ -106,13 +105,13 @@ namespace server
     {
         vec o;
         int state, editstate;
-        int lastdeath, lastspawn, lifesequence;
+        int lastdeath, deadflush, lastspawn, lifesequence;
         int lastshot;
         projectilestate<8> rockets, grenades;
-        int frags, flags, deaths, teamkills, shotdamage, damage;
+        int frags, flags, deaths, teamkills, shotdamage, damage, tokens;
         int lasttimeplayed, timeplayed;
         float effectiveness;
-        //remod
+        // remod
         bool muted;
         bool editmuted;
 
@@ -142,7 +141,9 @@ namespace server
             muted = false;
             editmuted = false;
 
-            frags = flags = deaths = teamkills = shotdamage = damage = 0;
+            frags = flags = deaths = teamkills = shotdamage = damage = tokens = 0;
+
+            lastdeath = 0;
 
             respawn();
         }
@@ -151,9 +152,10 @@ namespace server
         {
             fpsstate::respawn();
             o = vec(-1e10f, -1e10f, -1e10f);
-            lastdeath = 0;
+            deadflush = 0;
             lastspawn = -1;
             lastshot = 0;
+            tokens = 0;
         }
 
         void reassign()
@@ -172,7 +174,7 @@ namespace server
         int timeplayed;
         float effectiveness;
 
-        //remod
+        // remod
         bool muted;
         bool editmuted;
 
@@ -188,7 +190,7 @@ namespace server
             timeplayed = gs.timeplayed;
             effectiveness = gs.effectiveness;
 
-            //remod
+            // remod
             muted = gs.muted;
             editmuted = gs.editmuted;
         }
@@ -206,7 +208,7 @@ namespace server
             gs.timeplayed = timeplayed;
             gs.effectiveness = effectiveness;
 
-            //remod
+            // remod
             gs.muted = muted;
             gs.editmuted = editmuted;
         }
@@ -226,23 +228,28 @@ namespace server
         gamestate state;
         vector<gameevent *> events;
         vector<uchar> position, messages;
-        int posoff, poslen, msgoff, msglen;
+        uchar *wsdata;
+        int wslen;
         vector<clientinfo *> bots;
-        uint authreq;
-        string authname;
         int ping, aireinit;
         string clientmap;
         int mapcrc;
         bool warned, gameclip;
-        ENetPacket *clipboard;
+        ENetPacket *getdemo, *getmap, *clipboard;
         int lastclipboard, needclipboard;
+        int connectauth;
+        uint authreq;
+        string authname, authdesc;
+        void *authchallenge;
+        int authkickvictim;
+        char *authkickreason;
 
         // remod
         //hashtable<const char *, char *> vars;
         varbox vars;
 
-        clientinfo() : clipboard(NULL) { reset(); }
-        ~clientinfo() { events.deletecontents(); cleanclipboard(); }
+        clientinfo() : getdemo(NULL), getmap(NULL), clipboard(NULL), authchallenge(NULL), authkickreason(NULL) { reset(); }
+        ~clientinfo() { events.deletecontents(); cleanclipboard(); cleanauth(); }
 
         void addevent(gameevent *e)
         {
@@ -293,6 +300,7 @@ namespace server
         void mapchange()
         {
             mapvote[0] = 0;
+            modevote = INT_MAX;
             state.reset();
             events.deletecontents();
             overflow = 0;
@@ -320,19 +328,33 @@ namespace server
             if(fullclean) lastclipboard = 0;
         }
 
+        void cleanauthkick()
+        {
+            authkickvictim = -1;
+            DELETEA(authkickreason);
+        }
+
+        void cleanauth(bool full = true)
+        {
+            authreq = 0;
+            if(authchallenge) { freechallenge(authchallenge); authchallenge = NULL; }
+            if(full) cleanauthkick();
+        }
+
         void reset()
         {
             name[0] = team[0] = 0;
             playermodel = -1;
             privilege = PRIV_NONE;
             connected = local = false;
-            authreq = 0;
+            connectauth = 0;
             position.setsize(0);
             messages.setsize(0);
             ping = 0;
             aireinit = 0;
             needclipboard = 0;
             cleanclipboard();
+            cleanauth();
             mapchange();
         }
 
@@ -348,15 +370,10 @@ namespace server
         }
     };
 
-    struct worldstate
-    {
-        int uses;
-        vector<uchar> positions, messages;
-    };
-
     struct ban
     {
         //Remod
+        int time;       // when ban was set
         int expire;     // when ban expire
         uint ip;        // victim ip
         string name;    // victim name
@@ -406,22 +423,19 @@ namespace server
 
     extern bool notgotitems;        // true when map has changed and waiting for clients to send item
     extern int gamemode;
-    extern int gamemillis, gamelimit, nextexceeded;
-    extern bool gamepaused;
+    extern int gamemillis, gamelimit, nextexceeded, gamespeed;
+    extern bool gamepaused, shouldstep;
 
     extern string smapname;
     extern int interm;
-    extern bool mapreload;
-    extern int mastermode;
-    extern int currentmaster;
+    extern enet_uint32 lastsend;
+    extern int mastermode, mastermask;
+    extern stream *mapdata;
 
     extern vector<uint> allowedips;
     extern vector<ban> bannedips;
     extern vector<clientinfo *> connects, clients, bots;
     extern vector<savedscore> scores;
-
-    //Remod
-    extern vector<permban> permbans;
 
     struct servmode
     {
@@ -443,7 +457,9 @@ namespace server
         virtual void changeteam(clientinfo *ci, const char *oldteam, const char *newteam) {}
         virtual void initclient(clientinfo *ci, packetbuf &p, bool connecting) {}
         virtual void update() {}
-        virtual void reset(bool empty) {}
+        virtual void cleanup() {}
+        virtual void setup() {}
+        virtual void newmap() {}
         virtual void intermission() {}
         virtual bool hidefrags() { return false; }
         virtual int getteamscore(const char *team) { return 0; }
@@ -453,31 +469,28 @@ namespace server
 
     extern servmode *smode;
 
-    // Remod
+    // remod
+    extern vector<permban> permbans;
     extern stream *mapdata;
-    void filtercstext(char *str);
-    void kick(int cn, char *actorname, int expire);
-    void addpban(const char *name, const char *reason);
 
+    void kickclients(uint ip, clientinfo *actor = NULL);
     clientinfo *getinfo(int n);
     const char *privname(int type);
-    void pausegame(bool val);
+    bool hasmap(clientinfo *ci);
+    void pausegame(bool val, clientinfo *ci = NULL);
+    void checkpausegame();
+    void clearusers();
     void revokemaster(clientinfo *ci);
     void changemap(const char *s, int mode);
+    void rotatemap(bool next);
     void suicide(clientinfo *ci);
-    void checkmaps(int req);
+    void checkmaps(int req = -1);
     void sendservmsg(const char *s);
     void srvmsgf(int cn, const char *s, ...);
     int numclients(int exclude , bool nospec, bool noai, bool priv);
-    const char *colorname(clientinfo *ci, char *name);
+    const char *colorname(clientinfo *ci, char *name = NULL);
     void addgban(const char *name);
     void cleargbans();
-    clientinfo *findauth(uint id);
-    void authfailed(uint id);
-    void authsucceeded(uint id);
-    void authchallenged(uint id, const char *val);
-    void tryauth(clientinfo *ci, const char *user);
-    void answerchallenge(clientinfo *ci, uint id, char *val);
-
 }
+
 #endif

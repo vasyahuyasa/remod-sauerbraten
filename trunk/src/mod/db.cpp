@@ -12,7 +12,6 @@
 
 
 extern char *strreplace(const char *s, const char *oldval, const char *newval);
-extern void explodelist(const char *s, vector<char *> &elems);
 
 namespace remod
 {

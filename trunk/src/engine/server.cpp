@@ -1,7 +1,6 @@
 // server.cpp: little more than enhanced multicaster
 // runs dedicated or as client coroutine
 
-#include "authmod.h"
 #include "engine.h"
 #include "rconmod.h"
 #include "remod.h"
@@ -9,6 +8,8 @@
 #ifdef IRC
 #include "irc.h"
 #endif
+
+#define LOGSTRLEN 512
 
 static FILE *logfile = NULL;
 
@@ -21,22 +22,25 @@ void closelogfile()
     }
 }
 
+FILE *getlogfile()
+{
+#ifdef WIN32
+    return logfile;
+#else
+    return logfile ? logfile : stdout;
+#endif
+}
+
 void setlogfile(const char *fname)
 {
     closelogfile();
     if(fname && fname[0])
     {
-        fname = findfile(fname, "a");
-        if(fname) logfile = fopen(fname, "a");
+        fname = findfile(fname, "w");
+        if(fname) logfile = fopen(fname, "w");
     }
-    setvbuf(logfile ? logfile : stdout, NULL, _IONBF, BUFSIZ);
-}
-
-void logoutfv(const char *fmt, va_list args)
-{
-    vfprintf(logfile ? logfile : stdout, fmt, args);
-    fputc('\n', logfile ? logfile : stdout);
-    //fflush(logfile ? logfile: stdout);
+    FILE *f = getlogfile();
+    if(f) setvbuf(f, NULL, _IOLBF, BUFSIZ);
 }
 
 void logoutf(const char *fmt, ...)
@@ -47,14 +51,32 @@ void logoutf(const char *fmt, ...)
     va_end(args);
 }
 
+static void writelog(FILE *file, const char *fmt, va_list args)
+{
+    static char buf[LOGSTRLEN];
+    static uchar ubuf[512];
+    vformatstring(buf, fmt, args, sizeof(buf));
+    int len = strlen(buf), carry = 0;
+    while(carry < len)
+    {
+        int numu = encodeutf8(ubuf, sizeof(ubuf)-1, &((uchar *)buf)[carry], len - carry, &carry);
+        if(carry >= len) ubuf[numu++] = '\n';
+        fwrite(ubuf, 1, numu, file);
+    }
+}
+
 #ifdef STANDALONE
-void fatal(const char *s, ...)
+void fatal(const char *fmt, ...)
 {
     void cleanupserver();
     cleanupserver();
-    defvformatstring(msg,s,s);
-    if(logfile) logoutf("%s", msg);
+	defvformatstring(msg,fmt,fmt);
+	if(logfile) logoutf("%s", msg);
+#ifdef WIN32
+	MessageBox(NULL, msg, "Cube 2: Sauerbraten fatal error", MB_OK|MB_SYSTEMMODAL);
+#else
     fprintf(stderr, "server error: %s\n", msg);
+#endif
     closelogfile();
     exit(EXIT_FAILURE);
 }
@@ -65,7 +87,7 @@ void conoutfv(int type, const char *fmt, va_list args)
     vformatstring(sf, fmt, args);
     filtertext(sp, sf);
     logoutf("%s", sp);
-    // Remod
+    // remod
     remod::rcon::sendmsg(sp);
 }
 
@@ -189,19 +211,14 @@ void getstring(char *text, ucharbuf &p, int len)
 
 void filtertext(char *dst, const char *src, bool whitespace, int len)
 {
-    for(int c = *src; c; c = *++src)
+    for(int c = uchar(*src); c; c = uchar(*++src))
     {
-        //switch(c)
-        //{
-        //case '\f': ++src; continue;
-        //}
-        // REMOD svn backport
         if(c == '\f')
         {
             if(!*++src) break;
             continue;
         }
-        if(isspace(c) ? whitespace : isprint(c))
+        if(iscubeprint(c) || (iscubespace(c) && whitespace))
         {
             *dst++ = c;
             if(!--len) break;
@@ -227,6 +244,53 @@ ENetHost *serverhost = NULL;
 int laststatus = 0;
 ENetSocket pongsock = ENET_SOCKET_NULL, lansock = ENET_SOCKET_NULL;
 
+int localclients = 0, nonlocalclients = 0;
+
+bool hasnonlocalclients() { return nonlocalclients!=0; }
+bool haslocalclients() { return localclients!=0; }
+
+client &addclient(int type)
+{
+    client *c = NULL;
+    loopv(clients) if(clients[i]->type==ST_EMPTY)
+    {
+        c = clients[i];
+        break;
+    }
+    if(!c)
+    {
+        c = new client;
+        c->num = clients.length();
+        clients.add(c);
+    }
+    c->info = server::newclientinfo();
+    c->type = type;
+    switch(type)
+    {
+        case ST_TCPIP: nonlocalclients++; break;
+        case ST_LOCAL: localclients++; break;
+    }
+    return *c;
+}
+
+void delclient(client *c)
+{
+    if(!c) return;
+    switch(c->type)
+    {
+        case ST_TCPIP: nonlocalclients--; if(c->peer) c->peer->data = NULL; break;
+        case ST_LOCAL: localclients--; break;
+        case ST_EMPTY: return;
+    }
+    c->type = ST_EMPTY;
+    c->peer = NULL;
+    if(c->info)
+    {
+        server::deleteclientinfo(c->info);
+        c->info = NULL;
+    }
+}
+
 void cleanupserver()
 {
     if(serverhost) enet_host_destroy(serverhost);
@@ -240,6 +304,7 @@ void cleanupserver()
 void process(ENetPacket *packet, int sender, int chan);
 //void disconnect_client(int n, int reason);
 
+int getservermtu() { return serverhost ? serverhost->mtu : -1; }
 void *getclientinfo(int i) { return !clients.inrange(i) || clients[i]->type==ST_EMPTY ? NULL : clients[i]->info; }
 ENetPeer *getclientpeer(int i) { return clients.inrange(i) && clients[i]->type==ST_TCPIP ? clients[i]->peer : NULL; }
 int getnumclients()        { return clients.length(); }
@@ -269,7 +334,7 @@ void sendpacket(int n, int chan, ENetPacket *packet, int exclude)
     }
 }
 
-void sendf(int cn, int chan, const char *format, ...)
+ENetPacket *sendf(int cn, int chan, const char *format, ...)
 {
     int exclude = -1;
     bool reliable = false;
@@ -312,21 +377,23 @@ void sendf(int cn, int chan, const char *format, ...)
         }
     }
     va_end(args);
-    sendpacket(cn, chan, p.finalize(), exclude);
+    ENetPacket *packet = p.finalize();
+    sendpacket(cn, chan, packet, exclude);
+    return packet->referenceCount > 0 ? packet : NULL;
 }
 
-void sendfile(int cn, int chan, stream *file, const char *format, ...)
+ENetPacket *sendfile(int cn, int chan, stream *file, const char *format, ...)
 {
     if(cn < 0)
     {
 #ifdef STANDALONE
-        return;
+        return NULL;
 #endif
     }
-    else if(!clients.inrange(cn)) return;
+    else if(!clients.inrange(cn)) return NULL;
 
-    int len = file->size();
-    if(len <= 0) return;
+    int len = (int)min(file->size(), stream::offset(INT_MAX));
+    if(len <= 0 || len > 16<<20) return NULL;
 
     packetbuf p(MAXTRANS+len, ENET_PACKET_FLAG_RELIABLE);
     va_list args;
@@ -352,21 +419,38 @@ void sendfile(int cn, int chan, stream *file, const char *format, ...)
 #ifndef STANDALONE
     else sendclientpacket(packet, chan);
 #endif
+    return packet->referenceCount > 0 ? packet : NULL;
 }
 
-const char *disc_reasons[] = { "normal", "end of packet", "client num", "kicked/banned", "tag type", "ip is banned", "server is in private mode", "server FULL", "connection timed out", "overflow" };
+const char *disconnectreason(int reason)
+{
+    switch(reason)
+    {
+        case DISC_EOP: return "end of packet";
+        case DISC_LOCAL: return "server is in local mode";
+        case DISC_KICK: return "kicked/banned";
+        case DISC_MSGERR: return "message error";
+        case DISC_IPBAN: return "ip is banned";
+        case DISC_PRIVATE: return "server is in private mode";
+        case DISC_MAXCLIENTS: return "server FULL";
+        case DISC_TIMEOUT: return "connection timed out";
+        case DISC_OVERFLOW: return "overflow";
+        case DISC_PASSWORD: return "invalid password";
+        default: return NULL;
+    }
+}
 
 void disconnect_client(int n, int reason)
 {
     if(!clients.inrange(n) || clients[n]->type!=ST_TCPIP) return;
     enet_peer_disconnect(clients[n]->peer, reason);
     server::clientdisconnect(n);
-    clients[n]->type = ST_EMPTY;
-    clients[n]->peer->data = NULL;
-    server::deleteclientinfo(clients[n]->info);
-    clients[n]->info = NULL;
-    defformatstring(s)("client (%s) disconnected because: %s", clients[n]->hostname, disc_reasons[reason]);
-    puts(s);
+    delclient(clients[n]);
+    const char *msg = disconnectreason(reason);
+    string s;
+    if(msg) formatstring(s)("client (%s) disconnected because: %s", clients[n]->hostname, msg);
+    else formatstring(s)("client (%s) disconnected", clients[n]->hostname);
+    logoutf("%s", s);
     server::sendservmsg(s);
 }
 
@@ -388,25 +472,6 @@ void localclienttoserver(int chan, ENetPacket *packet)
     loopv(clients) if(clients[i]->type==ST_LOCAL) { c = clients[i]; break; }
     if(c) process(packet, c->num, chan);
 }
-
-client &addclient()
-{
-    loopv(clients) if(clients[i]->type==ST_EMPTY)
-    {
-        clients[i]->info = server::newclientinfo();
-        return *clients[i];
-    }
-    client *c = new client;
-    c->num = clients.length();
-    c->info = server::newclientinfo();
-    clients.add(c);
-    return *c;
-}
-
-int localclients = 0, nonlocalclients = 0;
-
-bool hasnonlocalclients() { return nonlocalclients!=0; }
-bool haslocalclients() { return localclients!=0; }
 
 #ifdef STANDALONE
 bool resolverwait(const char *name, ENetAddress *address)
@@ -431,10 +496,11 @@ VARN(updatemaster, allowupdatemaster, 0, 1, 1);
 
 void disconnectmaster()
 {
-    if(mastersock == ENET_SOCKET_NULL) return;
-
-    enet_socket_destroy(mastersock);
-    mastersock = ENET_SOCKET_NULL;
+    if(mastersock != ENET_SOCKET_NULL)
+    {
+        enet_socket_destroy(mastersock);
+        mastersock = ENET_SOCKET_NULL;
+    }
 
     masterout.setsize(0);
     masterin.setsize(0);
@@ -456,7 +522,7 @@ ENetSocket connectmaster()
     if(masteraddress.host == ENET_HOST_ANY)
     {
 #ifdef STANDALONE
-        printf("looking up %s...\n", mastername);
+        logoutf("looking up %s...", mastername);
 #endif
         masteraddress.port = masterport;
         if(!resolverwait(mastername, &masteraddress)) return ENET_SOCKET_NULL;
@@ -470,7 +536,7 @@ ENetSocket connectmaster()
     if(sock == ENET_SOCKET_NULL || connectwithtimeout(sock, mastername, masteraddress) < 0)
     {
 #ifdef STANDALONE
-        printf(sock==ENET_SOCKET_NULL ? "could not open socket\n" : "could not connect\n");
+        logoutf(sock==ENET_SOCKET_NULL ? "could not open socket" : "could not connect");
 #endif
         return ENET_SOCKET_NULL;
     }
@@ -507,9 +573,9 @@ void processmasterinput()
         *end++ = '\0';
 
         const char *args = input;
-        while(args < end && !isspace(*args)) args++;
+        while(args < end && !iscubespace(*args)) args++;
         int cmdlen = args - input;
-        while(args < end && isspace(*args)) args++;
+        while(args < end && iscubespace(*args)) args++;
 
         if(!strncmp(input, "failreg", cmdlen))
             conoutf(CON_ERROR, "master server registration failed: %s", args);
@@ -555,7 +621,7 @@ void flushmasterinput()
         masterin.reserve(4096);
 
     ENetBuffer buf;
-    buf.data = &masterin[masterin.length()];
+    buf.data = masterin.getbuf() + masterin.length();
     buf.dataLength = masterin.capacity() - masterin.length();
     int recv = enet_socket_receive(mastersock, NULL, &buf, 1);
     if(recv > 0)
@@ -622,6 +688,7 @@ VARF(serverport, 0, server::serverport(), 0xFFFF, { if(!serverport) serverport =
 
 #ifdef STANDALONE
 int curtime = 0, lastmillis = 0;
+// remod
 _VAR(totalmillis, totalmillis, 0, 0, INT_MAX, IDF_READONLY);
 #endif
 
@@ -646,13 +713,6 @@ void updatetime()
 
 void serverslice(bool dedicated, uint timeout)   // main server update, called from main loop in sp, or from below in dedicated server
 {
-    localclients = nonlocalclients = 0;
-    loopv(clients) switch(clients[i]->type)
-    {
-        case ST_LOCAL: localclients++; break;
-        case ST_TCPIP: nonlocalclients++; break;
-    }
-
     if(!serverhost)
     {
         server::serverupdate();
@@ -664,10 +724,14 @@ void serverslice(bool dedicated, uint timeout)   // main server update, called f
 
     if(dedicated)
     {
-        int millis = (int)enet_time_get();
-        curtime = server::ispaused() ? 0 : millis - totalmillis;
-        totalmillis = millis;
+        int millis = (int)enet_time_get(), elapsed = millis - totalmillis;
+        static int timeerr = 0;
+        int scaledtime = server::scaletime(elapsed) + timeerr;
+        curtime = scaledtime/100;
+        timeerr = scaledtime%100;
+        if(server::ispaused()) curtime = 0;
         lastmillis += curtime;
+        totalmillis = millis;
         updatetime();
     }
     server::serverupdate();
@@ -681,7 +745,7 @@ void serverslice(bool dedicated, uint timeout)   // main server update, called f
     if(totalmillis-laststatus>60*1000)   // display bandwidth stats, useful for server ops
     {
         laststatus = totalmillis;
-        if(nonlocalclients || serverhost->totalSentData || serverhost->totalReceivedData) printf("status: %d remote clients, %.1f send, %.1f rec (K/sec)\n", nonlocalclients, serverhost->totalSentData/60.0f/1024, serverhost->totalReceivedData/60.0f/1024);
+        if(nonlocalclients || serverhost->totalSentData || serverhost->totalReceivedData) logoutf("status: %d remote clients, %.1f send, %.1f rec (K/sec)", nonlocalclients, serverhost->totalSentData/60.0f/1024, serverhost->totalReceivedData/60.0f/1024);
         serverhost->totalSentData = serverhost->totalReceivedData = 0;
     }
 
@@ -698,16 +762,14 @@ void serverslice(bool dedicated, uint timeout)   // main server update, called f
         {
             case ENET_EVENT_TYPE_CONNECT:
             {
-                client &c = addclient();
-                c.type = ST_TCPIP;
+                client &c = addclient(ST_TCPIP);
                 c.peer = event.peer;
                 c.peer->data = &c;
                 char hn[1024];
                 copystring(c.hostname, (enet_address_get_host_ip(&c.peer->address, hn, sizeof(hn))==0) ? hn : "unknown");
-                printf("client connected (%s)\n", c.hostname);
+                logoutf("client connected (%s)", c.hostname);
                 int reason = server::clientconnect(c.num, c.peer->address.host);
-                if(!reason) nonlocalclients++;
-                else disconnect_client(c.num, reason);
+                if(reason) disconnect_client(c.num, reason);
                 break;
             }
             case ENET_EVENT_TYPE_RECEIVE:
@@ -721,13 +783,9 @@ void serverslice(bool dedicated, uint timeout)   // main server update, called f
             {
                 client *c = (client *)event.peer->data;
                 if(!c) break;
-                printf("disconnected client (%s)\n", c->hostname);
+                logoutf("disconnected client (%s)", c->hostname);
                 server::clientdisconnect(c->num);
-                nonlocalclients--;
-                c->type = ST_EMPTY;
-                event.peer->data = NULL;
-                server::deleteclientinfo(c->info);
-                c->info = NULL;
+                delclient(c);
                 break;
             }
             default:
@@ -749,10 +807,7 @@ void localdisconnect(bool cleanup)
     loopv(clients) if(clients[i]->type==ST_LOCAL)
     {
         server::localdisconnect(i);
-        localclients--;
-        clients[i]->type = ST_EMPTY;
-        server::deleteclientinfo(clients[i]->info);
-        clients[i]->info = NULL;
+        delclient(clients[i]);
         disconnected = true;
     }
     if(!disconnected) return;
@@ -762,22 +817,311 @@ void localdisconnect(bool cleanup)
 
 void localconnect()
 {
-    client &c = addclient();
-    c.type = ST_LOCAL;
+    client &c = addclient(ST_LOCAL);
     copystring(c.hostname, "local");
-    localclients++;
     game::gameconnect(false);
     server::localconnect(c.num);
 }
 #endif
 
+#ifdef WIN32
+#include "shellapi.h"
+
+#define IDI_ICON1 1
+
+static string apptip = "";
+static HINSTANCE appinstance = NULL;
+static ATOM wndclass = 0;
+static HWND appwindow = NULL, conwindow = NULL;
+static HICON appicon = NULL;
+static HMENU appmenu = NULL;
+static HANDLE outhandle = NULL;
+static const int MAXLOGLINES = 200;
+struct logline { int len; char buf[LOGSTRLEN]; };
+static ringbuf<logline, MAXLOGLINES> loglines;
+
+static void cleanupsystemtray()
+{
+    NOTIFYICONDATA nid;
+    memset(&nid, 0, sizeof(nid));
+    nid.cbSize = sizeof(nid);
+    nid.hWnd = appwindow;
+    nid.uID = IDI_ICON1;
+    Shell_NotifyIcon(NIM_DELETE, &nid);
+}
+
+static bool setupsystemtray(UINT uCallbackMessage)
+{
+	NOTIFYICONDATA nid;
+	memset(&nid, 0, sizeof(nid));
+	nid.cbSize = sizeof(nid);
+	nid.hWnd = appwindow;
+	nid.uID = IDI_ICON1;
+	nid.uCallbackMessage = uCallbackMessage;
+	nid.uFlags = NIF_MESSAGE | NIF_ICON | NIF_TIP;
+	nid.hIcon = appicon;
+	strcpy(nid.szTip, apptip);
+	if(Shell_NotifyIcon(NIM_ADD, &nid) != TRUE)
+        return false;
+    atexit(cleanupsystemtray);
+    return true;
+}
+
+#if 0
+static bool modifysystemtray()
+{
+	NOTIFYICONDATA nid;
+	memset(&nid, 0, sizeof(nid));
+	nid.cbSize = sizeof(nid);
+	nid.hWnd = appwindow;
+	nid.uID = IDI_ICON1;
+	nid.uFlags = NIF_TIP;
+	strcpy(nid.szTip, apptip);
+	return Shell_NotifyIcon(NIM_MODIFY, &nid) == TRUE;
+}
+#endif
+
+static void cleanupwindow()
+{
+	if(!appinstance) return;
+	if(appmenu)
+	{
+		DestroyMenu(appmenu);
+		appmenu = NULL;
+	}
+	if(wndclass)
+	{
+		UnregisterClass(MAKEINTATOM(wndclass), appinstance);
+		wndclass = 0;
+	}
+}
+
+static BOOL WINAPI consolehandler(DWORD dwCtrlType)
+{
+    switch(dwCtrlType)
+    {
+        case CTRL_C_EVENT:
+        case CTRL_BREAK_EVENT:
+        case CTRL_CLOSE_EVENT:
+            exit(EXIT_SUCCESS);
+            return TRUE;
+    }
+    return FALSE;
+}
+
+static void writeline(logline &line)
+{
+    static uchar ubuf[512];
+    int len = strlen(line.buf), carry = 0;
+    while(carry < len)
+    {
+        int numu = encodeutf8(ubuf, sizeof(ubuf), &((uchar *)line.buf)[carry], len - carry, &carry);
+        DWORD written = 0;
+        WriteConsole(outhandle, ubuf, numu, &written, NULL);
+    }
+}
+
+static void setupconsole()
+{
+	if(conwindow) return;
+    if(!AllocConsole()) return;
+	SetConsoleCtrlHandler(consolehandler, TRUE);
+	conwindow = GetConsoleWindow();
+    SetConsoleTitle(apptip);
+	//SendMessage(conwindow, WM_SETICON, ICON_SMALL, (LPARAM)appicon);
+	SendMessage(conwindow, WM_SETICON, ICON_BIG, (LPARAM)appicon);
+    outhandle = GetStdHandle(STD_OUTPUT_HANDLE);
+    CONSOLE_SCREEN_BUFFER_INFO coninfo;
+    GetConsoleScreenBufferInfo(outhandle, &coninfo);
+    coninfo.dwSize.Y = MAXLOGLINES;
+    SetConsoleScreenBufferSize(outhandle, coninfo.dwSize);
+    SetConsoleCP(CP_UTF8);
+    SetConsoleOutputCP(CP_UTF8);
+    loopv(loglines) writeline(loglines[i]);
+}
+
+enum
+{
+	MENU_OPENCONSOLE = 0,
+	MENU_SHOWCONSOLE,
+	MENU_HIDECONSOLE,
+	MENU_EXIT
+};
+
+static LRESULT CALLBACK handlemessages(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	switch(uMsg)
+	{
+		case WM_APP:
+			SetForegroundWindow(hWnd);
+			switch(lParam)
+			{
+				//case WM_MOUSEMOVE:
+				//	break;
+				case WM_LBUTTONUP:
+				case WM_RBUTTONUP:
+				{
+					POINT pos;
+					GetCursorPos(&pos);
+					TrackPopupMenu(appmenu, TPM_CENTERALIGN|TPM_BOTTOMALIGN|TPM_RIGHTBUTTON, pos.x, pos.y, 0, hWnd, NULL);
+					PostMessage(hWnd, WM_NULL, 0, 0);
+					break;
+				}
+			}
+			return 0;
+		case WM_COMMAND:
+			switch(LOWORD(wParam))
+			{
+                case MENU_OPENCONSOLE:
+					setupconsole();
+					if(conwindow) ModifyMenu(appmenu, 0, MF_BYPOSITION|MF_STRING, MENU_HIDECONSOLE, "Hide Console");
+                    break;
+				case MENU_SHOWCONSOLE:
+					ShowWindow(conwindow, SW_SHOWNORMAL);
+					ModifyMenu(appmenu, 0, MF_BYPOSITION|MF_STRING, MENU_HIDECONSOLE, "Hide Console");
+					break;
+				case MENU_HIDECONSOLE:
+					ShowWindow(conwindow, SW_HIDE);
+					ModifyMenu(appmenu, 0, MF_BYPOSITION|MF_STRING, MENU_SHOWCONSOLE, "Show Console");
+					break;
+				case MENU_EXIT:
+					PostMessage(hWnd, WM_CLOSE, 0, 0);
+					break;
+			}
+			return 0;
+		case WM_CLOSE:
+			PostQuitMessage(0);
+			return 0;
+	}
+	return DefWindowProc(hWnd, uMsg, wParam, lParam);
+}
+
+static void setupwindow(const char *title)
+{
+	copystring(apptip, title);
+	//appinstance = GetModuleHandle(NULL);
+	if(!appinstance) fatal("failed getting application instance");
+	appicon = LoadIcon(appinstance, MAKEINTRESOURCE(IDI_ICON1));//(HICON)LoadImage(appinstance, MAKEINTRESOURCE(IDI_ICON1), IMAGE_ICON, 0, 0, LR_DEFAULTSIZE);
+	if(!appicon) fatal("failed loading icon");
+
+	appmenu = CreatePopupMenu();
+	if(!appmenu) fatal("failed creating popup menu");
+    AppendMenu(appmenu, MF_STRING, MENU_OPENCONSOLE, "Open Console");
+    AppendMenu(appmenu, MF_SEPARATOR, 0, NULL);
+	AppendMenu(appmenu, MF_STRING, MENU_EXIT, "Exit");
+	//SetMenuDefaultItem(appmenu, 0, FALSE);
+
+	WNDCLASS wc;
+	memset(&wc, 0, sizeof(wc));
+	wc.hCursor = NULL; //LoadCursor(NULL, IDC_ARROW);
+	wc.hIcon = appicon;
+	wc.lpszMenuName = NULL;
+	wc.lpszClassName = title;
+	wc.style = 0;
+	wc.hInstance = appinstance;
+	wc.lpfnWndProc = handlemessages;
+	wc.cbWndExtra = 0;
+	wc.cbClsExtra = 0;
+	wndclass = RegisterClass(&wc);
+	if(!wndclass) fatal("failed registering window class");
+
+	appwindow = CreateWindow(MAKEINTATOM(wndclass), title, 0, CW_USEDEFAULT, CW_USEDEFAULT, 0, 0, HWND_MESSAGE, NULL, appinstance, NULL);
+	if(!appwindow) fatal("failed creating window");
+
+	atexit(cleanupwindow);
+
+    if(!setupsystemtray(WM_APP)) fatal("failed adding to system tray");
+}
+
+static char *parsecommandline(const char *src, vector<char *> &args)
+{
+    char *buf = new char[strlen(src) + 1], *dst = buf;
+    for(;;)
+    {
+        while(isspace(*src)) src++;
+        if(!*src) break;
+        args.add(dst);
+		for(bool quoted = false; *src && (quoted || !isspace(*src)); src++)
+        {
+            if(*src != '"') *dst++ = *src;
+			else if(dst > buf && src[-1] == '\\') dst[-1] = '"';
+			else quoted = !quoted;
+		}
+		*dst++ = '\0';
+    }
+    args.add(NULL);
+    return buf;
+}
+
+
+int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR szCmdLine, int sw)
+{
+    vector<char *> args;
+    char *buf = parsecommandline(GetCommandLine(), args);
+	appinstance = hInst;
+#ifdef STANDALONE
+    int standalonemain(int argc, char **argv);
+    int status = standalonemain(args.length()-1, args.getbuf());
+    #define main standalonemain
+#else
+    SDL_SetModuleHandle(hInst);
+    int status = SDL_main(args.length()-1, args.getbuf());
+#endif
+    delete[] buf;
+    exit(status);
+    return 0;
+}
+
+void logoutfv(const char *fmt, va_list args)
+{
+    if(logfile) writelog(logfile, fmt, args);
+    if(appwindow)
+    {
+        logline &line = loglines.add();
+        vformatstring(line.buf, fmt, args, sizeof(line.buf));
+        line.len = min(strlen(line.buf), sizeof(line.buf)-2);
+        line.buf[line.len++] = '\n';
+        line.buf[line.len] = '\0';
+        if(outhandle) writeline(line);
+    }
+}
+
+#else
+
+void logoutfv(const char *fmt, va_list args)
+{
+    FILE *f = getlogfile();
+    if(f) writelog(f, fmt, args);
+}
+
+#endif
+
+static bool dedicatedserver = false;
+
+bool isdedicatedserver() { return dedicatedserver; }
+
 void rundedicatedserver()
 {
-    #ifdef WIN32
+    dedicatedserver = true;
+    logoutf("dedicated server started, waiting for clients...");
+#ifdef WIN32
     SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
-    #endif
-    printf("dedicated server started, waiting for clients...\nCtrl-C to exit\n\n");
-    //Remod
+	for(;;)
+	{
+		MSG msg;
+		while(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+		{
+			if(msg.message == WM_QUIT) exit(EXIT_SUCCESS);
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+		serverslice(true, 5);
+		remod::rcon::update();
+        #ifdef IRC
+        ircslice();
+        #endif
+	}
+#else
     for(;;)
     {
         serverslice(true, 5);
@@ -786,6 +1130,8 @@ void rundedicatedserver()
         ircslice();
         #endif
     }
+#endif
+    dedicatedserver = false;
 }
 
 bool servererror(bool dedicated, const char *desc)
@@ -804,7 +1150,7 @@ bool servererror(bool dedicated, const char *desc)
 
 bool setuplistenserver(bool dedicated)
 {
-    ENetAddress address = { ENET_HOST_ANY, serverport <= 0 ? server::serverport() : serverport };
+    ENetAddress address = { ENET_HOST_ANY, enet_uint16(serverport <= 0 ? server::serverport() : serverport) };
     if(*serverip)
     {
         if(enet_address_set_host(&address, serverip)<0) conoutf(CON_WARN, "WARNING: server ip not resolved");
@@ -833,7 +1179,8 @@ bool setuplistenserver(bool dedicated)
     else enet_socket_set_option(lansock, ENET_SOCKOPT_NONBLOCK, 1);
     return true;
 }
-//Remod
+
+// remod
 VAR(rconport, 0, 27070, 65535);
 SVAR(initcfg, "");
 
@@ -841,18 +1188,19 @@ void initserver(bool listen, bool dedicated)
 {
     if(dedicated)
     {
-        if(strcmp(initcfg, "") == 0)
-            execfile("server-init.cfg", false);
-        else
-            execfile(initcfg, true);
+#ifdef WIN32
+        setupwindow("Cube 2: Sauerbraten server");
+#endif
     }
+
+    execfile("server-init.cfg", false);
 
     if(listen) setuplistenserver(dedicated);
 
     // remod
     remod::rcon::init(rconport);
     remod::loadbans();
-    authserv::reloadauth();
+    //authserv::reloadauth();
 
     server::serverinit();
 
@@ -893,7 +1241,6 @@ void stoplistenserver()
 }
 COMMAND(stoplistenserver, "");
 #endif
-
 
 // remod
 #ifndef WIN32
@@ -965,15 +1312,9 @@ bool serveroption(char *opt)
         case 'j': setvar("serverport", atoi(opt+2)); return true;
         case 'm': setsvar("mastername", opt+2); setvar("updatemaster", mastername[0] ? 1 : 0); return true;
 #ifdef STANDALONE
-        case 'q': conoutf("Using home directory: %s", opt+2); sethomedir(opt+2); return true;
-        case 'k': conoutf("Adding package directory: %s", opt+2); addpackagedir(opt+2); return true;
-        case 'g': conoutf("Setting log file: %s", opt+2); setlogfile(opt+2); return true;
-        case 'f': conoutf("Using config file: %s", opt+2); setsvar("initcfg", opt+2); return true;
-#ifndef WIN32
-        case 'd': conoutf("Run in daemon mode"); isdaemon = true; return true;
-        case 'p': conoutf("Pid file: %s", opt+2); pidname = newstring(opt+2); writepid = true; return true;
-#endif
-
+        case 'q': logoutf("Using home directory: %s", opt); sethomedir(opt+2); return true;
+        case 'k': logoutf("Adding package directory: %s", opt); addpackagedir(opt+2); return true;
+        case 'g': logoutf("Setting log file: %s", opt); setlogfile(opt+2); return true;
 #endif
         default: return false;
     }
@@ -982,7 +1323,7 @@ bool serveroption(char *opt)
 vector<const char *> gameargs;
 
 #ifdef STANDALONE
-int main(int argc, char* argv[])
+int main(int argc, char **argv)
 {
     setlogfile(NULL);
     if(enet_initialize()<0) fatal("Unable to initialise network module");
@@ -992,10 +1333,10 @@ int main(int argc, char* argv[])
     game::parseoptions(gameargs);
 
     // remod
-#ifndef WIN32
+    #ifndef WIN32
     if(isdaemon) daemodize();
     if(writepid) writepidfile(pidname);
-#endif
+    #endif
 
     initserver(true, true);
     return EXIT_SUCCESS;

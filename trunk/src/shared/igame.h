@@ -7,7 +7,7 @@ namespace entities
     extern const char *entname(int i);
     extern int extraentinfosize();
     extern void writeent(entity &e, char *buf);
-    extern void readent(entity &e, char *buf);
+    extern void readent(entity &e, char *buf, int ver);
     extern float dropheight(entity &e);
     extern void fixentity(extentity &e);
     extern void entradius(extentity &e, bool color);
@@ -38,6 +38,8 @@ namespace game
     extern void changemap(const char *name);
     extern void forceedit(const char *name);
     extern bool ispaused();
+    extern int scaletime(int t);
+    extern bool allowmouselook();
 
     extern const char *gameident();
     extern const char *savedconfig();
@@ -70,6 +72,7 @@ namespace game
     extern int numdynents();
     extern void rendergame(bool mainpass);
     extern void renderavatar();
+    extern void renderplayerpreview(int model, int team, int weap);
     extern void writegamedata(vector<char> &extras);
     extern void readgamedata(vector<char> &extras);
     extern int clipconsole(int w, int h);
@@ -82,7 +85,7 @@ namespace game
     extern bool collidecamera();
     extern void adddynlights();
     extern void particletrack(physent *owner, vec &o, vec &d);
-    extern void dynlighttrack(physent *owner, vec &o);
+    extern void dynlighttrack(physent *owner, vec &o, vec &hud);
     extern bool serverinfostartcolumn(g3d_gui *g, int i);
     extern void serverinfoendcolumn(g3d_gui *g, int i);
     extern bool serverinfoentry(g3d_gui *g, int i, const char *name, int port, const char *desc, const char *map, int ping, const vector<int> &attr, int np);
@@ -115,5 +118,6 @@ namespace server
     extern int masterport();
     extern void processmasterinput(const char *cmd, int cmdlen, const char *args);
     extern bool ispaused();
+    extern int scaletime(int t);
 }
 

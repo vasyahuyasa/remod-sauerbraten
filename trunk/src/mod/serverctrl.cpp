@@ -7,9 +7,9 @@
 */
 
 #include <time.h>
-#include "fpsgame.h"
 #include "commandev.h"
 #include "commandhandler.h"
+#include "fpsgame.h"
 #include "remod.h"
 
 #ifndef WIN32
@@ -117,7 +117,10 @@ void kick(int *pcn, int *pexpire, char *actorname)
     expire += totalmillis;  //add current uptime
     remod::onevent("onkick", "ii", -1, cn);
     if(strlen(actorname) == 0) actorname = newstring("console");
-    server::kick(cn, actorname, expire);
+    //server::kick(cn, actorname, expire);
+    addban(cn, actorname, expire);
+    uint ip = getclientip(cn);
+    kickclients(ip);
 }
 
 void spectator(int *st, int *pcn)
@@ -126,6 +129,7 @@ void spectator(int *st, int *pcn)
     int val = (int)*st;
     clientinfo *spinfo = (clientinfo *)getclientinfo(spectator); // no bots
     if(!spinfo || (spinfo->state.state==CS_SPECTATOR ? val : !val)) return;
+
     if(spinfo->state.state!=CS_SPECTATOR && val)
     {
         if(spinfo->state.state==CS_ALIVE) suicide(spinfo);
@@ -140,11 +144,11 @@ void spectator(int *st, int *pcn)
         spinfo->state.respawn();
         spinfo->state.lasttimeplayed = lastmillis;
         aiman::addclient(spinfo);
-        if(spinfo->clientmap[0] || spinfo->mapcrc) checkmaps(-1);
-        sendf(-1, 1, "ri", N_MAPRELOAD);
+        if(spinfo->clientmap[0] || spinfo->mapcrc) checkmaps();
     }
     sendf(-1, 1, "ri3", N_SPECTATOR, spectator, val);
-    if(!val && mapreload && !spinfo->privilege && !spinfo->local) sendf(spectator, 1, "ri", N_MAPRELOAD);
+    if(!val && !hasmap(spinfo)) rotatemap(true);
+    return;
 }
 
 void _suicide(int *pcn)
@@ -416,7 +420,6 @@ void setmastercmd(int *pcn, int *val)
         else
         {
             if(ci->privilege>=PRIV_MASTER) return;
-            loopv(clients) if(clients[i]->privilege>PRIV_NONE) revokemaster(clients[i]);
             ci->privilege = PRIV_MASTER;
             name = privname(ci->privilege);
         }
@@ -424,13 +427,30 @@ void setmastercmd(int *pcn, int *val)
         remod::onevent("onsetmaster", "iiss", ci->clientnum, v ? 1:0, "", "");
 
         string msg;
-        formatstring(msg)("%s %s %s", colorname(ci, NULL), v ? "claimed" : "relinquished", name);
+        formatstring(msg)("%s %s %s", colorname(ci), v ? "claimed" : "relinquished", name);
         sendservmsg(msg);
 
-        mastermode = MM_OPEN;
-        allowedips.shrink(0);
-        currentmaster = val ? ci->clientnum : -1;
-        sendf(-1, 1, "ri4", N_CURRENTMASTER, currentmaster, currentmaster >= 0 ? ci->privilege : 0, mastermode);
+        bool hasmaster = false;
+        loopv(clients) if(clients[i]->local || clients[i]->privilege >= PRIV_MASTER) hasmaster = true;
+        if(!hasmaster)
+        {
+            mastermode = MM_OPEN;
+            allowedips.shrink(0);
+        }
+
+        packetbuf p(MAXTRANS, ENET_PACKET_FLAG_RELIABLE);
+        putint(p, N_SERVMSG);
+        sendstring(msg, p);
+        putint(p, N_CURRENTMASTER);
+        putint(p, mastermode);
+        loopv(clients) if(clients[i]->privilege >= PRIV_MASTER)
+        {
+            putint(p, clients[i]->clientnum);
+            putint(p, clients[i]->privilege);
+        }
+        putint(p, -1);
+        sendpacket(-1, 1, p.finalize());
+        checkpausegame();
     }
 }
 
@@ -492,51 +512,75 @@ bool checkipbymask(char *ip, char *mask)
     return b;
 }
 
+// based on looplist (command.cpp)
 void loopbans(const char *name, const char *ip, const char *expire, const char *actor, const char *actorip, const char *body)
 {
     ident* idents[5];
+    identstack stack[5];
+
     idents[0] = newident(name);
     idents[1] = newident(ip);
     idents[2] = newident(expire);
     idents[3] = newident(actor);
     idents[4] = newident(actorip);
 
-    loopi(5)
-    {
-        if (idents[i]->type != ID_ALIAS) return;
-    }
-    in_addr addr;
+    in_addr addr_victim;
+    in_addr addr_actor;
+
     loopv(bannedips)
     {
         ban b = bannedips[i];
-        if (i)
+
+        addr_victim.s_addr  = b.ip;
+        addr_actor.s_addr   = b.actorip;
+
+        if(i)
         {
-            aliasa(idents[0]->name, newstring(b.name));
-            addr.s_addr = b.ip;
-            aliasa(idents[1]->name, newstring(inet_ntoa(addr)));
-            aliasa(idents[2]->name, newstring(intstr(b.expire)));
-            aliasa(idents[3]->name, newstring(b.actor));
-            addr.s_addr = b.actorip;
-            aliasa(idents[4]->name, newstring(inet_ntoa(addr)));
+            // set ident values
+            loopi(5)
+            {
+                if(idents[i]->valtype == VAL_STR) delete[] idents[i]->val.s;
+                else idents[i]->valtype = VAL_STR;
+                cleancode(*idents[i]);
+            }
+
+            idents[0]->val.s = newstring(b.name);
+            idents[1]->val.s = newstring(inet_ntoa(addr_victim));
+            idents[2]->val.s = newstring(intstr(b.expire));
+            idents[3]->val.s = newstring(b.actor);
+            idents[4]->val.s = newstring(inet_ntoa(addr_actor));
         }
         else
         {
-            pushident(*idents[0], newstring(b.name));
-            addr.s_addr = b.ip;
-            pushident(*idents[1], newstring(inet_ntoa(addr)));
-            pushident(*idents[2], newstring(intstr(b.expire)));
-            pushident(*idents[3], newstring(b.actor));
-            addr.s_addr = b.actorip;
-            pushident(*idents[4], newstring(inet_ntoa(addr)));
+            // init idents
+            tagval t[5];
+
+            t[0].setstr(newstring(b.name));
+            t[1].setstr(newstring(inet_ntoa(addr_victim)));
+            t[2].setstr(newstring(intstr(b.expire)));
+            t[3].setstr(newstring(b.actor));
+            t[4].setstr(newstring(inet_ntoa(addr_actor)));
+
+            ::pusharg(*idents[0], t[0], stack[0]);
+            ::pusharg(*idents[1], t[1], stack[1]);
+            ::pusharg(*idents[2], t[2], stack[2]);
+            ::pusharg(*idents[3], t[3], stack[3]);
+            ::pusharg(*idents[4], t[4], stack[4]);
+
+            idents[0]->flags &= ~IDF_UNKNOWN;
+            idents[1]->flags &= ~IDF_UNKNOWN;
+            idents[2]->flags &= ~IDF_UNKNOWN;
+            idents[3]->flags &= ~IDF_UNKNOWN;
+            idents[4]->flags &= ~IDF_UNKNOWN;
         }
         execute(body);
     }
 
-    if (bannedips.length())
+    if(bannedips.length())
     {
         loopi(5)
         {
-            popident(*idents[i]);
+            poparg(*idents[i]);
         }
     }
 }
@@ -795,44 +839,58 @@ void int2ip(int *i) {
 void looppermbans(const char *ip, const char *mask, const char *reason, const char *body)
 {
     ident* idents[3];
+    identstack stack[3];
+
     idents[0] = newident(ip);
     idents[1] = newident(mask);
     idents[2] = newident(reason);
 
-    loopi(3)
-    {
-        if (idents[i]->type != ID_ALIAS) return;
-    }
+    in_addr addr_ip;
+    in_addr addr_mask;
 
-    in_addr addr;
     loopv(permbans)
     {
         permban b = permbans[i];
-        if (i)
+
+        addr_ip.s_addr = b.ip;
+        addr_mask.s_addr = b.mask;
+
+        if(i)
         {
-            addr.s_addr = b.ip;
-            aliasa(idents[0]->name, newstring(inet_ntoa(addr)));
-            addr.s_addr = b.mask;
-            aliasa(idents[1]->name, newstring(inet_ntoa(addr)));
-            aliasa(idents[2]->name, newstring(b.reason));
+            loopi(3)
+            {
+                if(idents[i]->valtype == VAL_STR) delete[] idents[i]->val.s;
+                else idents[i]->valtype = VAL_STR;
+                ::cleancode(*idents[i]);
+            }
+
+            idents[0]->val.s = inet_ntoa(addr_ip);
+            idents[1]->val.s = inet_ntoa(addr_mask);
+            idents[2]->val.s = b.reason;
         }
         else
         {
-            addr.s_addr = b.ip;
-            pushident(*idents[0], newstring(inet_ntoa(addr)));
-            addr.s_addr = b.mask;
-            pushident(*idents[1], newstring(inet_ntoa(addr)));
-            pushident(*idents[2], newstring(b.reason));
+            tagval t[3];
+
+            t[0].setstr(newstring(inet_ntoa(addr_ip)));
+            t[1].setstr(newstring(inet_ntoa(addr_mask)));
+            t[2].setstr(newstring(b.reason));
+
+            ::pusharg(*idents[0], t[0], stack[0]);
+            ::pusharg(*idents[1], t[1], stack[1]);
+            ::pusharg(*idents[2], t[2], stack[2]);
+
+            idents[0]->flags &= ~IDF_UNKNOWN;
+            idents[1]->flags &= ~IDF_UNKNOWN;
+            idents[2]->flags &= ~IDF_UNKNOWN;
         }
         execute(body);
     }
 
-    if (permbans.length())
+    if(permbans.length())
     {
         loopi(3)
-        {
-            popident(*idents[i]);
-        }
+            ::poparg(*idents[i]);
     }
 }
 
@@ -864,6 +922,7 @@ static inline int sortlist_compare(char **x, char **y) {
 /**
  * Sorts list of strings
  */
+ /*
 void sortlist (char *values) {
 	vector<char*> values_list;
 	explodelist(values, values_list);
@@ -876,6 +935,7 @@ void sortlist (char *values) {
 		DELETEA(values_list[i]);
 	}
 }
+*/
 
 struct keyvalue {
 	char *key;
@@ -883,6 +943,7 @@ struct keyvalue {
 };
 
 //comparator for sorttwolists
+
 static inline int sorttwolists_compare(const void *x, const void *y) {
 	return strcmp(((keyvalue*) x)->key, ((keyvalue*) y)->key);
 }
@@ -1559,7 +1620,9 @@ COMMAND(writebans, "");
  * @return sorted list
  * @example sortlist "b a q k" // returns "a b k q"
  */
+/*
 COMMANDN(sortlist, sortlist, "s");
+*/
 
 /**
  * Returns values list items in the same order as sorted keys
@@ -1570,4 +1633,10 @@ COMMANDN(sortlist, sortlist, "s");
  * @example sorttwolists "2 1 4 5" "b a q k" // returns "a b q k"
  */
 COMMANDN(sorttwolists, sorttwolists, "ss");
+
+/**
+* Reload authkeys (using $authfile variable)
+* @group server
+*/
+COMMAND(reloadauth, "");
 }
