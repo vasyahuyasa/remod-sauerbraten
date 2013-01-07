@@ -236,5 +236,5 @@ ifneq (,$(STRIP))
 	$(STRIP) $(SERVER_NAME)
 endif
 
-	(MV) $(SERVER_NAME) ../$(SERVER_NAME)
+	$(MV) $(SERVER_NAME) ../$(SERVER_NAME)
 endif

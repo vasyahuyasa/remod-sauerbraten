@@ -232,10 +232,5 @@ server: $(SERVER_OBJS)
 else
 server:	libenet $(SERVER_OBJS)
 	$(CXX) $(CXXFLAGS) -o $(SERVER_NAME) $(SERVER_OBJS) $(SERVER_LIBS)  
-	
-ifneq (,$(STRIP))
-	$(STRIP) $(SERVER_NAME)
-endif
-
 	$(MV) $(SERVER_NAME) ../$(SERVER_NAME)
 endif

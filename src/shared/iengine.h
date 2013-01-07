@@ -73,9 +73,9 @@ struct selinfo
         extern int worldsize;
         if(grid <= 0 || grid >= worldsize) return false;
         if(o.x >= worldsize || o.y >= worldsize || o.z >= worldsize) return false;
-        if(o.x < 0) { s.x -= (grid - 1 - o.x)/grid; o.x = 0; } 
-        if(o.y < 0) { s.y -= (grid - 1 - o.y)/grid; o.y = 0; } 
-        if(o.z < 0) { s.z -= (grid - 1 - o.z)/grid; o.z = 0; } 
+        if(o.x < 0) { s.x -= (grid - 1 - o.x)/grid; o.x = 0; }
+        if(o.y < 0) { s.y -= (grid - 1 - o.y)/grid; o.y = 0; }
+        if(o.z < 0) { s.z -= (grid - 1 - o.z)/grid; o.z = 0; }
         s.x = clamp(s.x, 0, (worldsize - o.x)/grid);
         s.y = clamp(s.y, 0, (worldsize - o.y)/grid);
         s.z = clamp(s.z, 0, (worldsize - o.z)/grid);
@@ -415,23 +415,6 @@ extern void flushserver(bool force);
 extern int getservermtu();
 extern int getnumclients();
 extern uint getclientip(int n);
-extern void putint(ucharbuf &p, int n);
-extern void putint(packetbuf &p, int n);
-extern void putint(vector<uchar> &p, int n);
-extern int getint(ucharbuf &p);
-extern void putuint(ucharbuf &p, int n);
-extern void putuint(packetbuf &p, int n);
-extern void putuint(vector<uchar> &p, int n);
-extern int getuint(ucharbuf &p);
-extern void putfloat(ucharbuf &p, float f);
-extern void putfloat(packetbuf &p, float f);
-extern void putfloat(vector<uchar> &p, float f);
-extern float getfloat(ucharbuf &p);
-extern void sendstring(const char *t, ucharbuf &p);
-extern void sendstring(const char *t, packetbuf &p);
-extern void sendstring(const char *t, vector<uchar> &p);
-extern void getstring(char *t, ucharbuf &p, int len = MAXTRANS);
-extern void filtertext(char *dst, const char *src, bool whitespace = true, int len = sizeof(string)-1);
 extern void localconnect();
 extern const char *disconnectreason(int reason);
 extern void disconnect_client(int n, int reason);
