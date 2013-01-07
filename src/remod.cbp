@@ -119,9 +119,11 @@
 		<Unit filename="engine/command.cpp" />
 		<Unit filename="engine/engine.h" />
 		<Unit filename="engine/server.cpp" />
+		<Unit filename="engine/worldio.cpp" />
 		<Unit filename="fpsgame/ai.h" />
 		<Unit filename="fpsgame/aiman.h" />
 		<Unit filename="fpsgame/capture.h" />
+		<Unit filename="fpsgame/collect.h" />
 		<Unit filename="fpsgame/ctf.h" />
 		<Unit filename="fpsgame/extinfo.h" />
 		<Unit filename="fpsgame/fpsgame.h" />
@@ -131,26 +133,14 @@
 		<Unit filename="include/zconf.h" />
 		<Unit filename="include/zlib.h" />
 		<Unit filename="libGeoIP/GeoIP.h" />
-		<Unit filename="mod/authmod.cpp" />
-		<Unit filename="mod/authmod.h" />
 		<Unit filename="mod/commandev.cpp" />
 		<Unit filename="mod/commandev.h" />
 		<Unit filename="mod/commandhandler.cpp" />
 		<Unit filename="mod/commandhandler.h" />
-		<Unit filename="mod/cryptomod.cpp" />
 		<Unit filename="mod/db.cpp" />
 		<Unit filename="mod/db.h" />
 		<Unit filename="mod/geoipmod.cpp" />
 		<Unit filename="mod/geoipmod.h" />
-		<Unit filename="mod/hashlib2plus/src/hl_md5.cpp" />
-		<Unit filename="mod/hashlib2plus/src/hl_md5wrapper.cpp" />
-		<Unit filename="mod/hashlib2plus/src/hl_sha1.cpp" />
-		<Unit filename="mod/hashlib2plus/src/hl_sha1wrapper.cpp" />
-		<Unit filename="mod/hashlib2plus/src/hl_sha256.cpp" />
-		<Unit filename="mod/hashlib2plus/src/hl_sha256wrapper.cpp" />
-		<Unit filename="mod/hashlib2plus/src/hl_sha2ext.cpp" />
-		<Unit filename="mod/hashlib2plus/src/hl_sha384wrapper.cpp" />
-		<Unit filename="mod/hashlib2plus/src/hl_sha512wrapper.cpp" />
 		<Unit filename="mod/irc.cpp" />
 		<Unit filename="mod/irc.h" />
 		<Unit filename="mod/libGeoIP/GeoIP.c">
@@ -265,6 +255,15 @@
 			<debugger />
 			<lib_finder disable_auto="1" />
 			<envvars />
+			<DoxyBlocks>
+				<comment_style block="0" line="0" />
+				<doxyfile_project />
+				<doxyfile_build />
+				<doxyfile_warnings />
+				<doxyfile_output />
+				<doxyfile_dot />
+				<general />
+			</DoxyBlocks>
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

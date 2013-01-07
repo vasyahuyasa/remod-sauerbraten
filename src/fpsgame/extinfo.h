@@ -16,7 +16,7 @@
     B: 0 EXT_PLAYERSTATS cn #a client number or -1 for all players#
     C: 0 EXT_TEAMSCORE
 
-    Server:
+    Server:  
     --------
     A: 0 EXT_UPTIME EXT_ACK EXT_VERSION uptime #in seconds#
     B: 0 EXT_PLAYERSTATS cn #send by client# EXT_ACK EXT_VERSION 0 or 1 #error, if cn was > -1 and client does not exist# ...
@@ -52,6 +52,14 @@
         sendserverinforeply(q);
     }
 
+    static inline void extinfoteamscore(ucharbuf &p, const char *team, int score)
+    {
+        sendstring(team, p);
+        putint(p, score);
+        if(!smode || !smode->extinfoteam(team, p))
+            putint(p,-1); //no bases follow
+    }
+
     void extinfoteams(ucharbuf &p)
     {
         putint(p, m_teammode ? 0 : 1);
@@ -60,44 +68,22 @@
         if(!m_teammode) return;
 
         vector<teamscore> scores;
-
-        //most taken from scoreboard.h
-        if(smode && smode->hidefrags())
+        if(smode && smode->hidefrags()) smode->getteamscores(scores);
+        loopv(clients)
         {
-            smode->getteamscores(scores);
-            loopv(clients) if(clients[i]->team[0])
+            clientinfo *ci = clients[i];
+            if(ci->state.state!=CS_SPECTATOR && ci->team[0] && scores.htfind(ci->team) < 0)
             {
-                clientinfo *ci = clients[i];
-                teamscore *ts = NULL;
-                loopvj(scores) if(!strcmp(scores[j].team, ci->team)) { ts = &scores[j]; break; }
-                if(!ts) scores.add(teamscore(ci->team, 0));
+                if(smode && smode->hidefrags()) scores.add(teamscore(ci->team, 0));
+                else { teaminfo *ti = teaminfos.access(ci->team); scores.add(teamscore(ci->team, ti ? ti->frags : 0)); }
             }
         }
-        else
-        {
-            loopv(clients) if(clients[i]->team[0])
-            {
-                clientinfo *ci = clients[i];
-                teamscore *ts = NULL;
-                loopvj(scores) if(!strcmp(scores[j].team, ci->team)) { ts = &scores[j]; break; }
-                if(!ts) scores.add(teamscore(ci->team, ci->state.frags));
-                else ts->score += ci->state.frags;
-            }
-        }
-
-        loopv(scores)
-        {
-            sendstring(scores[i].team, p);
-            putint(p, scores[i].score);
-
-            if(!smode || !smode->extinfoteam(scores[i].team, p))
-                putint(p,-1); //no bases follow
-        }
+        loopv(scores) extinfoteamscore(p, scores[i].team, scores[i].score);
     }
 
     void extserverinforeply(ucharbuf &req, ucharbuf &p)
     {
-        int extcmd = getint(req); // extended commands
+        int extcmd = getint(req); // extended commands  
 
         //Build a new packet
         putint(p, EXT_ACK); //send ack
@@ -107,7 +93,6 @@
         {
             case EXT_UPTIME:
             {
-                //putint(p, uint(millis)/1000); //in seconds
                 putint(p, totalsecs); //in seconds
                 break;
             }
@@ -115,7 +100,7 @@
             case EXT_PLAYERSTATS:
             {
                 int cn = getint(req); //a special player, -1 for all
-
+                
                 clientinfo *ci = NULL;
                 if(cn >= 0)
                 {
@@ -129,13 +114,13 @@
                 }
 
                 putint(p, EXT_NO_ERROR); //so far no error can happen anymore
-
+                
                 ucharbuf q = p; //remember buffer position
                 putint(q, EXT_PLAYERSTATS_RESP_IDS); //send player ids following
                 if(ci) putint(q, ci->clientnum);
                 else loopv(clients) putint(q, clients[i]->clientnum);
                 sendserverinforeply(q);
-
+            
                 if(ci) extinfoplayer(p, ci);
                 else loopv(clients) extinfoplayer(p, clients[i]);
                 return;

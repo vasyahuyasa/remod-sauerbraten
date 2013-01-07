@@ -1,6 +1,8 @@
 #ifndef __CUBE_H__
 #define __CUBE_H__
 
+#define _FILE_OFFSET_BITS 64
+
 #ifdef __GNUC__
 #define gamma __gamma
 #endif
@@ -21,15 +23,14 @@
 #include <stdarg.h>
 #include <limits.h>
 #include <assert.h>
-#ifdef __GNUC__
-#include <new>
-#else
-#include <new.h>
-#endif
 #include <time.h>
 
 #ifdef WIN32
   #define WIN32_LEAN_AND_MEAN
+  #ifdef _WIN32_WINNT
+  #undef _WIN32_WINNT
+  #endif
+  #define _WIN32_WINNT 0x0500
   #include "windows.h"
   #ifndef _WINDOWS
     #define _WINDOWS
@@ -44,13 +45,7 @@
 #ifndef STANDALONE
 #include <SDL.h>
 #include <SDL_image.h>
-
-#define GL_GLEXT_LEGACY
-#define __glext_h__
-#define NO_SDL_GLEXT
 #include <SDL_opengl.h>
-#undef __glext_h__
-#include "GL/glext.h"
 #endif
 
 #include <enet/enet.h>

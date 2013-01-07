@@ -6,10 +6,18 @@
 typedef vector<char *> extensionslist;
 extern bool addextension(const char *name);
 extern const extensionslist* getextensionslist();
-extern void explodelist(const char *s, vector<char *> &elems);
-extern char *conc(char **w, int n, bool space);
+char *conc(char **w, int n, bool space);
+void reloadauth();
 
 #define EXTENSION(name) bool __dummyext_##name = addextension(#name)
+
+namespace server
+{
+    void filtercstext(char *str);
+    bool checkpban(uint ip);
+    void addban(int cn, char* actorname, int expire);
+    void addpban(const char *name, const char *reason);
+}
 
 namespace remod
 {

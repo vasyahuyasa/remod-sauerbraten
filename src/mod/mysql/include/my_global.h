@@ -1493,7 +1493,7 @@ do { doubleget_union _tmp; \
  *  Include standard definitions of operator new and delete.
  */
 #ifdef __cplusplus
-#include <new>
+//#include <new>
 #endif
 #else
 /*

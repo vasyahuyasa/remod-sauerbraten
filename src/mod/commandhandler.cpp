@@ -222,23 +222,31 @@ void common_loopcommands(const char *var, int *permission, const char *body, vec
 	ident *id = newident(var);
 	if (id->type != ID_ALIAS)
 		return;
+
+    identstack stack;
 	int j = 0;
 	loopi(handlers.length())
 	{
 		cmd_handler handler = handlers[i];
 		if (handler.cmd_permissions <= *permission) {
-			char *st = newstring(handler.cmd_name);
+
 			if (j) {
-				aliasa(id->name, st);
+                if(id->valtype == VAL_STR) delete[] id->val.s;
+                else id->valtype = VAL_STR;
+                ::cleancode(*id);
+                id->val.s = handler.cmd_name;
 			} else {
-				pushident(*id, st);
+			    tagval t;
+			    t.setstr(newstring(handler.cmd_name));
+			    ::pusharg(*id, t, stack);
+			    id->flags &= ~IDF_UNKNOWN;
 			}
 			execute(body);
 			j++;
 		}
 	}
 	if (j)
-		popident(*id);
+		poparg(*id);
 }
 
 

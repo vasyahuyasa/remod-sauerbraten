@@ -22,6 +22,7 @@ USE_MYSQL=true
 CXX=i486-mingw32-gcc
 MV=mv
 STRIP=
+WINDRES=i486-mingw32-windres
 
 SERVER_NAME=remod.exe
 
@@ -51,26 +52,17 @@ SERVER_OBJS= \
 	shared/crypto-standalone.o \
 	shared/stream-standalone.o \
 	shared/tools-standalone.o \
+	engine/worldio-standalone.o \
 	engine/command-standalone.o \
 	engine/server-standalone.o \
+	fpsgame/entities-standalone.o \
 	fpsgame/server-standalone.o \
 	mod/commandev-standalone.o \
 	mod/commandhandler-standalone.o \
 	mod/rconmod-standalone.o \
 	mod/serverctrl-standalone.o \
 	mod/remod-standalone.o \
-	mod/cryptomod-standalone.o \
-	mod/varbox-standalone.o \
-	mod/authmod-standalone.o \
-	mod/hashlib2plus/src/hl_md5-standalone.o \
-	mod/hashlib2plus/src/hl_md5wrapper-standalone.o \
-	mod/hashlib2plus/src/hl_sha1-standalone.o \
-	mod/hashlib2plus/src/hl_sha1wrapper-standalone.o \
-	mod/hashlib2plus/src/hl_sha256-standalone.o \
-	mod/hashlib2plus/src/hl_sha256wrapper-standalone.o \
-	mod/hashlib2plus/src/hl_sha2ext-standalone.o \
-	mod/hashlib2plus/src/hl_sha384wrapper-standalone.o \
-	mod/hashlib2plus/src/hl_sha512wrapper-standalone.o
+	mod/varbox-standalone.o
 
 
 
@@ -196,4 +188,5 @@ clean:
 $(SERVER_OBJS): CXXFLAGS += $(SERVER_INCLUDES)
 
 server: $(SERVER_OBJS)
-	$(CXX) $(CXXFLAGS) -o $(SERVER_NAME) $(SERVER_OBJS) $(SERVER_LIBS)
+	$(WINDRES) -i mingw.rc -J rc -o mingw.res -O coff
+	$(CXX) $(CXXFLAGS) -o $(SERVER_NAME) mingw.res $(SERVER_OBJS) $(SERVER_LIBS)

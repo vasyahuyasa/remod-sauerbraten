@@ -58,7 +58,7 @@ endif
 
 CXXFLAGS= -O0 -fomit-frame-pointer -Wall -fsigned-char -DSTANDALONE
 override CXXFLAGS+= -g -DDEBUG # uncomment for debugging
-override CXXFLAGS+= -DDEBUG_SQL # uncomment to see the time of sql queries in log
+# override CXXFLAGS+= -DDEBUG_SQL # uncomment to see the time of sql queries in log
 
 ifeq (,$(findstring -g,$(CXXFLAGS)))
 ifeq (,$(findstring -pg,$(CXXFLAGS)))
@@ -72,26 +72,17 @@ SERVER_OBJS= \
 	shared/crypto-standalone.o \
 	shared/stream-standalone.o \
 	shared/tools-standalone.o \
+	engine/worldio-standalone.o \
 	engine/command-standalone.o \
 	engine/server-standalone.o \
+	fpsgame/entities-standalone.o \
 	fpsgame/server-standalone.o \
 	mod/commandev-standalone.o \
 	mod/commandhandler-standalone.o \
 	mod/rconmod-standalone.o \
 	mod/serverctrl-standalone.o \
 	mod/remod-standalone.o \
-	mod/cryptomod-standalone.o \
-	mod/varbox-standalone.o \
-	mod/authmod-standalone.o \
-	mod/hashlib2plus/src/hl_md5-standalone.o \
-	mod/hashlib2plus/src/hl_md5wrapper-standalone.o \
-	mod/hashlib2plus/src/hl_sha1-standalone.o \
-	mod/hashlib2plus/src/hl_sha1wrapper-standalone.o \
-	mod/hashlib2plus/src/hl_sha256-standalone.o \
-	mod/hashlib2plus/src/hl_sha256wrapper-standalone.o \
-	mod/hashlib2plus/src/hl_sha2ext-standalone.o \
-	mod/hashlib2plus/src/hl_sha384wrapper-standalone.o \
-	mod/hashlib2plus/src/hl_sha512wrapper-standalone.o
+	mod/varbox-standalone.o
 
 
 ### Options checks
