@@ -190,3 +190,4 @@ $(SERVER_OBJS): CXXFLAGS += $(SERVER_INCLUDES)
 server: $(SERVER_OBJS)
 	$(WINDRES) -i mingw.rc -J rc -o mingw.res -O coff
 	$(CXX) $(CXXFLAGS) -o $(SERVER_NAME) mingw.res $(SERVER_OBJS) $(SERVER_LIBS)
+	mv $(SERVER_NAME) ../$(SERVER_NAME)

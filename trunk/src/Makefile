@@ -236,4 +236,6 @@ server:	libenet $(SERVER_OBJS)
 ifneq (,$(STRIP))
 	$(STRIP) $(SERVER_NAME)
 endif
+
+	$(MV) $(SERVER_NAME) ../$(SERVER_NAME)
 endif
