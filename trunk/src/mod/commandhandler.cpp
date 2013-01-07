@@ -163,14 +163,22 @@ bool parsecommandparams(const char *descr, const char *params, vector<cmd_param>
 /**
  * Search command handler for cmd_name in handlers
  */
-int find_command_handler(const char *cmd_name, vector<cmd_handler> &handlers) {
+int find_command_handler(const char *cmd_name, vector<cmd_handler*> &handlers) {
 	//searching for command with name cmd_name in registered handlers
+	/*
 	int len = handlers.length();
 	for (int i = 0; i < len; i++)
 	{
 		if (strcmp(cmd_name, handlers[i].cmd_name) == 0) {
 			return i;
 		}
+	}
+	*/
+	loopv(handlers)
+	{
+	    cmd_handler *h = handlers[i];
+	    if(strcmp(cmd_name, h->cmd_name) == 0)
+            return i;
 	}
 	return -1;
 }
@@ -181,16 +189,16 @@ int find_command_handler(const char *cmd_name, vector<cmd_handler> &handlers) {
  * Executes command handler->cmd_func with parsed parameters
  * Returns returned by cmd_func value (usually 0) or -1 due to usage error or -2 due to permissions error
  */
-int execute_command(cmd_handler &handler, const char *caller, const char *cmd_params) {
+int execute_command(cmd_handler *handler, const char *caller, const char *cmd_params) {
 	//parsing params string
 	vector<cmd_param> params;
-	bool parsed = parsecommandparams(handler.cmd_descr, cmd_params, params);
+	bool parsed = parsecommandparams(handler->cmd_descr, cmd_params, params);
 	if (!parsed) {
 		return -1;
 	}
 	//creating cmd string
 	char* cmd = newstring("");
-	cmd = concatpstring(cmd, handler.cmd_func);
+	cmd = concatpstring(cmd, handler->cmd_func);
 	cmd = concatpstring(cmd, " ");
 	cmd = concatpstring(cmd, caller); //first parameter is always cn of player
 	loopv(params)
@@ -217,7 +225,7 @@ int execute_command(cmd_handler &handler, const char *caller, const char *cmd_pa
 /**
  * Loops through list of commands available for player/user with specified permission. Common for server and irc
  */
-void common_loopcommands(const char *var, int *permission, const char *body, vector<cmd_handler> &handlers)
+void common_loopcommands(const char *var, int *permission, const char *body, vector<cmd_handler*> &handlers)
 {
 	ident *id = newident(var);
 	if (id->type != ID_ALIAS)
@@ -225,19 +233,19 @@ void common_loopcommands(const char *var, int *permission, const char *body, vec
 
     identstack stack;
 	int j = 0;
-	loopi(handlers.length())
+	loopv(handlers)
 	{
-		cmd_handler handler = handlers[i];
-		if (handler.cmd_permissions <= *permission) {
+		cmd_handler *handler = handlers[i];
+		if (handler->cmd_permissions <= *permission) {
 
 			if (j) {
                 if(id->valtype == VAL_STR) delete[] id->val.s;
                 else id->valtype = VAL_STR;
                 ::cleancode(*id);
-                id->val.s = handler.cmd_name;
+                id->val.s = newstring(handler->cmd_name);
 			} else {
 			    tagval t;
-			    t.setstr(newstring(handler.cmd_name));
+			    t.setstr(newstring(handler->cmd_name));
 			    ::pusharg(*id, t, stack);
 			    id->flags &= ~IDF_UNKNOWN;
 			}
@@ -245,6 +253,7 @@ void common_loopcommands(const char *var, int *permission, const char *body, vec
 			j++;
 		}
 	}
+
 	if (j)
 		poparg(*id);
 }
@@ -253,69 +262,67 @@ void common_loopcommands(const char *var, int *permission, const char *body, vec
 /**
  * Return help string for command; Common for server and irc
  */
-void common_commandhelp(vector<cmd_handler> &handlers, const char* cmd_name)
+void common_commandhelp(vector<cmd_handler*> &handlers, const char* cmd_name)
 {
-	cmd_handler handler;
 	//searching for command with name cmd_name in registered handlers
-	int i = 0;
-	int len = handlers.length();
-	while (i < len)
+	loopv(handlers)
 	{
-		if (strcmp(cmd_name, handlers[i].cmd_name) == 0) {
-			handler = handlers[i];
-			result(handler.cmd_help);
-			return;
-		}
-		i++;
+	    cmd_handler *h = handlers[i];
+	    if(strcmp(cmd_name, h->cmd_name) == 0)
+        {
+            result(h->cmd_help);
+            return;
+        }
 	}
 }
 
 /**
  * Registers handler function for command; Common for server and irc
  */
-void common_registercommand(vector<cmd_handler> &handlers, const char* cmd_name, const char* cmd_func, int *cmd_perm, const char* cmd_descr, const char* cmd_help)
+void common_registercommand(vector<cmd_handler*> &handlers, const char* cmd_name, const char* cmd_func, int *cmd_perm, const char* cmd_descr, const char* cmd_help)
 {
 	if (cmd_name[0] && cmd_func[0]) {
-		cmd_handler cmd;
-		cmd.cmd_descr = newstring(cmd_descr);
-		cmd.cmd_name = newstring(cmd_name);
-		cmd.cmd_func = newstring(cmd_func);
-		cmd.cmd_help = newstring(cmd_help);
-		cmd.cmd_permissions = *cmd_perm;
+		cmd_handler *cmd = new cmd_handler;
+		cmd->cmd_descr = newstring(cmd_descr);
+		cmd->cmd_name = newstring(cmd_name);
+		cmd->cmd_func = newstring(cmd_func);
+		cmd->cmd_help = newstring(cmd_help);
+		cmd->cmd_permissions = *cmd_perm;
+
 		//find position to add command - for sorted list
-		int i = 0;
-		bool b = false;
-		while (i < handlers.length() && !b) {
-			if (strcmp(cmd_name, handlers[i].cmd_name) < 0) {
-				b = true;
-			} else {
-				i++;
-			}
+		loopv(handlers)
+		{
+		    if(strcmp(cmd_name, handlers[i]->cmd_name) < 0)
+            {
+                // we have registered command with such name
+                handlers.insert(i, cmd);
+                return;
+            }
 		}
-		if (b) {
-			handlers.insert(i, cmd);
-		} else {
-			handlers.add(cmd);
-		}
+
+		// register new command
+		handlers.add(cmd);
 	}
 }
 
 /**
  * Delete command; Common for server and irc
  */
-void common_unregistercommand(vector<cmd_handler> &handlers, const char* cmd_name)
+void common_unregistercommand(vector<cmd_handler*> &handlers, const char* cmd_name)
 {
 	//searching for command with name cmd_name in registered handlers
-	for (int i = 0; i < handlers.length(); i++)
+	loopv(handlers)
 	{
-		if (strcmp(cmd_name, handlers[i].cmd_name) == 0) {
-			DELETEA(handlers[i].cmd_descr);
-			DELETEA(handlers[i].cmd_name);
-			DELETEA(handlers[i].cmd_func);
-			DELETEA(handlers[i].cmd_help);
-			handlers.remove(i);
-			return;
-		}
+	    cmd_handler *h = handlers[i];
+	    if(strcmp(cmd_name, h->cmd_name))
+        {
+            DELETEA(h->cmd_descr);
+            DELETEA(h->cmd_func);
+            DELETEA(h->cmd_help);
+            DELETEA(h->cmd_name);
+            handlers.remove(i);
+            return;
+        }
 	}
 }
 
@@ -328,7 +335,7 @@ void common_unregistercommand(vector<cmd_handler> &handlers, const char* cmd_nam
 /**
  * Server command handlers
  */
-vector<cmd_handler> cmd_handlers;
+vector<cmd_handler*> cmd_handlers;
 
 
 /**
@@ -375,7 +382,6 @@ bool checkperm(int cn, int perm) {
 
 void oncommand(int cn, const char *cmd_name, const char *cmd_params)
 {
-
 	int found = find_command_handler(cmd_name, cmd_handlers);
 
 	if (found == -1) {
@@ -383,11 +389,10 @@ void oncommand(int cn, const char *cmd_name, const char *cmd_params)
 		remod::onevent("oncommandunknown", "is", cn, cmd_name);
 		return;
 	}
-	cmd_handler handler = cmd_handlers[found];
+	cmd_handler *handler = cmd_handlers[found];
 
 	//checking for permission
-
-	if (!checkperm(cn, handler.cmd_permissions))
+	if (!checkperm(cn, handler->cmd_permissions))
 	{
 		//permission error
 		remod::onevent("oncommandpermerror", "is", cn, cmd_name);
@@ -497,7 +502,7 @@ ICOMMAND(loopcommands, "sis", (char *var, int *permissions, char *body), common_
 
 #ifdef IRC
 
-vector<cmd_handler> irc_cmd_handlers; //IRC command handlers
+vector<cmd_handler*> irc_cmd_handlers; //IRC command handlers
 
 
 /**
@@ -558,12 +563,12 @@ void irc_oncommand(const char* user, const char* cmd_name, const char* cmd_param
 		return;
 	}
 
-	cmd_handler handler = irc_cmd_handlers[found];
+	cmd_handler *handler = irc_cmd_handlers[found];
 
 	//checking for permission
 	string usr;
 	strcpy(usr, user);
-	if (!irc_checkperm(usr, handler.cmd_permissions))
+	if (!irc_checkperm(usr, handler->cmd_permissions))
 	{
 		//permission error
 		remod::onevent("irc_oncommandpermerror", "ss", user, cmd_name);
