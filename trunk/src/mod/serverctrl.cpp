@@ -919,24 +919,6 @@ static inline int sortlist_compare(char **x, char **y) {
 	return strcmp(*x, *y);
 }
 
-/**
- * Sorts list of strings
- */
- /*
-void sortlist (char *values) {
-	vector<char*> values_list;
-	explodelist(values, values_list);
-	values_list.sort(sortlist_compare);
-
-	char *r = conc(values_list.buf, values_list.length(), true);
-	result(r);
-	DELETEA(r);
-	loopv(values_list) {
-		DELETEA(values_list[i]);
-	}
-}
-*/
-
 struct keyvalue {
 	char *key;
 	char *value;
@@ -1611,18 +1593,6 @@ COMMANDN(getextensions, getextensions, "");
  * @group server
  */
 COMMAND(writebans, "");
-
-
-/**
- * Sort list
- * @group server
- * @arg1 list to be sorted
- * @return sorted list
- * @example sortlist "b a q k" // returns "a b k q"
- */
-/*
-COMMANDN(sortlist, sortlist, "s");
-*/
 
 /**
  * Returns values list items in the same order as sorted keys
