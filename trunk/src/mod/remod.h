@@ -39,5 +39,6 @@ namespace remod
     void loadbans();
     void writebans();
     bool loadents(const char *fname, vector<entity> &ents, uint *crc);
+    bool writeents(const char *mapname, vector<entity> &ents, uint mapcrc)
 }
 #endif
