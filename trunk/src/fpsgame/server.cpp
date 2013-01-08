@@ -1586,7 +1586,8 @@ namespace server
     {
         resetitems();
         notgotitems = true;
-        if(m_edit || !loadents(smapname, ments, &mcrc))
+        // remod
+        if(m_edit || !remod::loadents(smapname, ments, &mcrc))
             return;
         loopv(ments) if(canspawnitem(ments[i].type))
         {

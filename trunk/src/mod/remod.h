@@ -3,6 +3,10 @@
 
 #include "fpsgame.h"
 
+// worlio.cpp
+extern void cutogz(char *s);
+
+// remod.cpp
 typedef vector<char *> extensionslist;
 extern bool addextension(const char *name);
 extern const extensionslist* getextensionslist();
@@ -23,16 +27,17 @@ namespace remod
 {
     using namespace server;
 
+    extern char *mapdir;
+
     clientinfo* findbest(vector<clientinfo *> &a);
     bool playerexists(int *pcn);
     int parseplayer(const char *arg);
     bool ismaster(int *cn);
     bool isadmin(int *cn);
     bool isspectator(int *cn);
-
     char* concatpstring(char *d, const char *s);
     void loadbans();
     void writebans();
-
+    bool loadents(const char *fname, vector<entity> &ents, uint *crc);
 }
 #endif

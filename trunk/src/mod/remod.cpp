@@ -280,4 +280,81 @@ void writebans()
     }
 }
 
+// hopmod entitys
+//--------------------
+// MAPENTS
+// uint CRC
+// int numents
+//     numents entytys
+//--------------------
+// (c) 2011 Thomas
+bool loadents(const char *fname, vector<entity> &ents, uint *crc)
+{
+    string mapname, ogzname, entsname;
+    copystring(mapname, fname, 100);
+    cutogz(mapname);
+    formatstring(ogzname)("%s/%s.ogz", remod::mapdir, mapname);
+    formatstring(entsname)("%s/%s.ents", remod::mapdir, mapname);
+    path(ogzname);
+    path(entsname);
+
+    // if map exists on server
+    // use vanilla server ents loader
+    if(fileexists(ogzname, "rb"))
+        return ::loadents(fname, ents, crc);
+
+    // if we don't have full map
+    // use hopmod short entyty files
+    stream *f = opengzfile(path(entsname), "r+b");
+        if (!f) return false;
+
+        if (f->getchar() != 'M' || f->getchar() != 'A' || f->getchar() != 'P' ||
+            f->getchar() != 'E' || f->getchar() != 'N' || f->getchar() != 'T' || f->getchar() != 'S')
+        {
+            delete f;
+            return false;
+        }
+
+        *crc = f->get<uint>();
+        int elen = f->get<int>();
+
+        if (f->get<int>() != 0)
+        {
+            delete f;
+            return false;
+        }
+
+        loopi(elen)
+        {
+            entity e;
+            e.type  = f->get<uchar>();
+            e.attr1 = f->get<short>();
+            e.attr2 = f->get<short>();
+            e.attr3 = f->get<short>();
+            e.attr4 = f->get<short>();
+            e.attr5 = f->get<short>();
+            e.reserved = f->get<uchar>();
+            loopk(3) e.o[k] = f->get<float>();
+
+            ents.add(e);
+
+            if (f->getlil<int>() != 0)
+            {
+                ents.shrink(0);
+                delete f;
+                return false;
+            }
+        }
+
+        if (f->get<int>() != 0 || f->get<int>() != elen)
+        {
+            ents.shrink(0);
+            delete f;
+            return false;
+        }
+
+        delete f;
+        return true;
+}
+
 }
