@@ -357,4 +357,42 @@ bool loadents(const char *fname, vector<entity> &ents, uint *crc)
         return true;
 }
 
+bool writeents(const char *mapname, vector<entity> &ents, uint mapcrc)
+{
+    string file;
+    formatstring(file)("mapinfo/%s.ents", mapname);
+
+    stream *mapi = opengzfile(path(file), "w+b");
+
+    if (!mapi) return false;
+
+    mapi->putstring("MAPENTS");
+    mapi->put(mapcrc);
+    mapi->put(ents.length());
+    mapi->put(0);
+
+    loopv(ents)
+    {
+        entity &e = ents[i];
+
+        mapi->put(e.type);
+        mapi->put(e.attr1);
+        mapi->put(e.attr2);
+        mapi->put(e.attr3);
+        mapi->put(e.attr4);
+        mapi->put(e.attr5);
+        mapi->put(e.reserved);
+        loopk(3) mapi->put(e.o[k]);
+
+        mapi->putlil(0);
+    }
+
+    mapi->put(0);
+    mapi->put(ents.length());
+
+    mapi->close();
+    delete mapi;
+    return true;
+}
+
 }
