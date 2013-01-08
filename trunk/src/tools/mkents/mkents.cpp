@@ -1,3 +1,8 @@
+//*****************/
+//   degrave 2013
+//   remod
+//*****************/
+
 #include "cube.h"
 #include "world.h"
 
@@ -146,10 +151,13 @@ bool loadents(const char *fname, vector<entity> &ents, uint *crc)
     return true;
 }
 
+// writeents
+// (c) 2011 Thomas
+// hopmod 
 bool writeents(const char *mapname, vector<entity> &ents, uint mapcrc)
 {
     string file;
-    formatstring(file)("%s.ents", mapname);
+    formatstring(file)("%s", mapname);
 
     stream *mapi = opengzfile(path(file), "w+b");
 
