@@ -17,10 +17,16 @@ USE_MYSQL=true
 ### Tools
 CXX=gcc
 MV=mv
-STRIP=
+STRIP=strip
 
 
 PLATFORM=$(shell uname -s)
+
+# Use clang on freebsd
+# Comment next lines if server not building or you want to use old GCC
+ifneq (,$(findstring FreeBSD,$(PLATFORM)))
+CXX=clang
+endif
 
 #result file name
 PLATFORM_SUFFIX=
