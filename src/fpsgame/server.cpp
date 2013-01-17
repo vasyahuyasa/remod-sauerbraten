@@ -2080,7 +2080,7 @@ namespace server
         // remod
         loopv(bannedips)
         {
-            if(totalmillis>bannedips[i].expire) bannedips.remove(i);
+            if(totalmillis>bannedips[i].expire-totalmillis <= 0) bannedips.remove(i);
         }
 
         loopv(connects) if(totalmillis-connects[i]->connectmillis>15000) disconnect_client(connects[i]->clientnum, DISC_TIMEOUT);
