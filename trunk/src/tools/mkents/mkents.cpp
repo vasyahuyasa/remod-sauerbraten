@@ -120,7 +120,8 @@ bool loadents(const char *fname, vector<entity> &ents, uint *crc)
         ushort nummru = f->getlil<ushort>();
         f->seek(nummru*sizeof(ushort), SEEK_CUR);
     }
-
+    // remod
+    samegame = true;
     loopi(min(hdr.numents, MAXENTS))
     {
         entity &e = ents.add();
