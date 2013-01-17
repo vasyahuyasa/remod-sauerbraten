@@ -1611,8 +1611,13 @@ COMMANDN(sorttwolists, sorttwolists, "ss");
 COMMAND(reloadauth, "");
 
 /**
-* Change game speed
+* Change game speed, can be used as variable
 * @group server
 */
-ICOMMAND(gamespeed, "i", (int *n), forcegamespeed(*n));
+ICOMMAND(gamespeed, "iN$", (int *val, int *numargs, ident *id),
+    {
+        if(*numargs > 0) forcegamespeed(clampvar(id, *val, 10, 1000));
+        else if(*numargs < 0) intret(server::gamespeed);
+        else printvar(id, server::gamespeed);
+    });
 }
