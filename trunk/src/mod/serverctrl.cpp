@@ -1609,4 +1609,10 @@ COMMANDN(sorttwolists, sorttwolists, "ss");
 * @group server
 */
 COMMAND(reloadauth, "");
+
+/**
+* Change game speed
+* @group server
+*/
+ICOMMAND(gamespeed, "i", (int *n), forcegamespeed(*n));
 }
