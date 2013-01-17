@@ -47,9 +47,21 @@ static void fixent(entity &e, int version)
     if(version <= 31 && e.type == ET_MAPMODEL) { int yaw = (int(e.attr1)%360 + 360)%360 + 7; e.attr1 = yaw - yaw%15; }
 }
 
+
+// remod
+namespace remod
+{
+    extern char* mapdir;
+}
+
 bool loadents(const char *fname, vector<entity> &ents, uint *crc)
 {
     string pakname, mapname, mcfgname, ogzname;
+
+    // remod
+    // getmapfilenames(fname, NULL, pakname, mapname, mcfgname);
+    formatstring(ogzname)("%s/%s.ogz", remod::mapdir, fname);
+
     getmapfilenames(fname, NULL, pakname, mapname, mcfgname);
     formatstring(ogzname)("packages/%s.ogz", mapname);
     path(ogzname);
