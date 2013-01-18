@@ -1074,7 +1074,11 @@ void initserver(bool listen, bool dedicated)
 #endif
     }
 
-    execfile("server-init.cfg", false);
+    // remod
+    if(strcmp(initcfg, "") == 0)
+        execfile("server-init.cfg", false);
+    else
+        execfile(initcfg, true);
 
     if(listen) setuplistenserver(dedicated);
 
@@ -1196,7 +1200,16 @@ bool serveroption(char *opt)
         case 'q': logoutf("Using home directory: %s", opt); sethomedir(opt+2); return true;
         case 'k': logoutf("Adding package directory: %s", opt); addpackagedir(opt+2); return true;
         case 'g': logoutf("Setting log file: %s", opt); setlogfile(opt+2); return true;
+        // remod
+        case 'f': conoutf("Using config file: %s", opt+2); setsvar("initcfg", opt+2); return true;
 #endif
+
+// remod
+#ifndef WIN32
+        case 'd': conoutf("Run in daemon mode"); isdaemon = true; return true;
+        case 'p': conoutf("Pid file: %s", opt+2); pidname = newstring(opt+2); writepid = true; return true;
+#endif
+
         default: return false;
     }
 }
