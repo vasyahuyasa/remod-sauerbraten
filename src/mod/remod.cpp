@@ -50,6 +50,76 @@ void reloadauth()
     execfile(authfile);
 }
 
+// sleep which not blocked by pause
+struct sleepcmd
+{
+    int delay, millis, flags;
+    char *command;
+};
+
+// not blocked by pause sleep command
+vector<sleepcmd> asleepcmds;
+
+extern int identflags;
+
+void addasleep(int *msec, char *cmd)
+{
+    sleepcmd &s = asleepcmds.add();
+    s.delay = max(*msec, 1);
+    s.millis = totalmillis;
+    s.command = newstring(cmd);
+    s.flags = identflags;
+}
+
+/**
+ * Wait certain milliseconds, not blocked by pause
+ * @group server
+ * @arg1 millis
+ */
+COMMANDN(asleep, addasleep, "is");
+
+void checkasleep(int millis)
+{
+    loopv(asleepcmds)
+    {
+        sleepcmd &s = asleepcmds[i];
+        if(millis - s.millis >= s.delay)
+        {
+            char *cmd = s.command; // execute might create more sleep commands
+            s.command = NULL;
+            int oldflags = identflags;
+            identflags = s.flags;
+            execute(cmd);
+            identflags = oldflags;
+            delete[] cmd;
+            if(asleepcmds.inrange(i) && !asleepcmds[i].command) asleepcmds.remove(i--);
+        }
+    }
+}
+
+void clearasleep(bool clearoverrides)
+{
+    int len = 0;
+    loopv(asleepcmds) if(asleepcmds[i].command)
+    {
+        if(clearoverrides && !(asleepcmds[i].flags&IDF_OVERRIDDEN)) asleepcmds[len++] = asleepcmds[i];
+        else delete[] asleepcmds[i].command;
+    }
+    asleepcmds.shrink(len);
+}
+
+void clearasleep_(int *clearoverrides)
+{
+    clearasleep(*clearoverrides!=0 || identflags&IDF_OVERRIDDEN);
+}
+
+/**
+ * Clear asleep queue
+ * @group server
+ * @arg1 clearoverrides
+ */
+COMMANDN(clearasleep, clearasleep_, "i");
+
 namespace server
 {
     void filtercstext(char *str)
