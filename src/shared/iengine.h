@@ -167,15 +167,15 @@ enum
     CON_ECHO  = 1<<5
 };
 
-extern void conoutf(const char *s, ...);
-extern void conoutf(int type, const char *s, ...);
+extern void conoutf(const char *s, ...) PRINTFARGS(1, 2);
+extern void conoutf(int type, const char *s, ...) PRINTFARGS(2, 3);
 extern void conoutfv(int type, const char *fmt, va_list args);
 
 extern FILE *getlogfile();
 extern void setlogfile(const char *fname);
 extern void closelogfile();
 extern void logoutfv(const char *fmt, va_list args);
-extern void logoutf(const char *fmt, ...);
+extern void logoutf(const char *fmt, ...) PRINTFARGS(1, 2);
 
 // menus
 extern vec menuinfrontofplayer();
@@ -214,7 +214,7 @@ extern void renderentsphere(const extentity &e, float radius);
 extern void renderentring(const extentity &e, float radius, int axis = 0);
 
 // main
-extern void fatal(const char *s, ...);
+extern void fatal(const char *s, ...) PRINTFARGS(1, 2);
 extern void keyrepeat(bool on);
 
 // rendertext
@@ -423,7 +423,7 @@ extern bool hasnonlocalclients();
 extern bool haslocalclients();
 extern void sendserverinforeply(ucharbuf &p);
 extern bool requestmaster(const char *req);
-extern bool requestmasterf(const char *fmt, ...);
+extern bool requestmasterf(const char *fmt, ...) PRINTFARGS(1, 2);
 extern bool isdedicatedserver();
 
 // client

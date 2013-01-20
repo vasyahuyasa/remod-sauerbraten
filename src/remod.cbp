@@ -125,6 +125,7 @@
 		<Unit filename="fpsgame/capture.h" />
 		<Unit filename="fpsgame/collect.h" />
 		<Unit filename="fpsgame/ctf.h" />
+		<Unit filename="fpsgame/entities.cpp" />
 		<Unit filename="fpsgame/extinfo.h" />
 		<Unit filename="fpsgame/fpsgame.h" />
 		<Unit filename="fpsgame/game.h" />
