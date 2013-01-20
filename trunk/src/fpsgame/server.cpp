@@ -22,6 +22,7 @@ extern ENetAddress masteraddress;
 
 // remod
 extern void checksleep(int millis);
+extern void checkasleep(int millis);
 
 namespace server
 {
@@ -2042,6 +2043,9 @@ namespace server
 
     void serverupdate()
     {
+        //remod
+        checksleep(totalmillis);
+
         if(shouldstep && !gamepaused)
         {
             gamemillis += curtime;
