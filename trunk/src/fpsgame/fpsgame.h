@@ -115,7 +115,7 @@ namespace server
         bool muted;
         bool editmuted;
 
-        gamestate() : state(CS_DEAD), editstate(CS_DEAD) {}
+        gamestate() : state(CS_DEAD), editstate(CS_DEAD), lifesequence(0) {}
 
         bool isalive(int gamemillis)
         {

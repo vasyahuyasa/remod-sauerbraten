@@ -246,17 +246,8 @@ static struct identlink
 
 VAR(dbgalias, 0, 4, 1000);
 
-static int nodebug = 0;
-
-static void debugcode(const char *fmt, ...)
+static void debugalias()
 {
-    if(nodebug) return;
-
-    va_list args;
-    va_start(args, fmt);
-    conoutfv(CON_ERROR, fmt, args);
-    va_end(args);
-
     if(!dbgalias) return;
     int total = 0, depth = 0;
     for(identlink *l = aliasstack; l != &noalias; l = l->next) total++;
@@ -267,6 +258,36 @@ static void debugcode(const char *fmt, ...)
         if(depth < dbgalias) conoutf(CON_ERROR, "  %d) %s", total-depth+1, id->name);
         else if(l->next == &noalias) conoutf(CON_ERROR, depth == dbgalias ? "  %d) %s" : "  ..%d) %s", total-depth+1, id->name);
     }
+}
+
+static int nodebug = 0;
+
+static void debugcode(const char *fmt, ...) PRINTFARGS(1, 2);
+
+static void debugcode(const char *fmt, ...)
+{
+    if(nodebug) return;
+
+    va_list args;
+    va_start(args, fmt);
+    conoutfv(CON_ERROR, fmt, args);
+    va_end(args);
+
+    debugalias();
+}
+
+static void debugcodeline(const char *p, const char *fmt, ...) PRINTFARGS(2, 3);
+
+static void debugcodeline(const char *p, const char *fmt, ...)
+{
+    if(nodebug) return;
+
+    va_list args;
+    va_start(args, fmt);
+    conoutfv(CON_ERROR, debugline(p, fmt), args);
+    va_end(args);
+
+    debugalias();
 }
 
 ICOMMAND(nodebug, "e", (uint *body), { nodebug++; executeret(body, *commandret); nodebug--; });
@@ -1071,7 +1092,7 @@ static void compileblock(vector<uint> &code, const char *&p, int wordtype)
         switch(c)
         {
             case '\0':
-                debugcode(debugline(line, "missing \"]\""));
+                debugcodeline(line, "missing \"]\"");
                 p--;
                 goto done;
             case '\"':
@@ -1089,7 +1110,7 @@ static void compileblock(vector<uint> &code, const char *&p, int wordtype)
                 while(*p == '@') p++;
                 int level = p - (esc - 1);
                 if(brak > level) continue;
-                else if(brak < level) debugcode(debugline(line, "too many @s"));
+                else if(brak < level) debugcodeline(line, "too many @s");
                 if(!concs) code.add(CODE_ENTER);
                 if(concs + 2 > MAXARGS)
                 {
@@ -1177,7 +1198,7 @@ retry:
             compileblock(code, p, wordtype);
             return true;
         case '@':
-            debugcode(debugline(p, "unexpected \"@\""));
+            debugcodeline(p, "unexpected \"@\"");
             do ++p; while(*p == '@');
             goto retry;
         default: word = cutword(p, wordlen); break;
@@ -1330,14 +1351,14 @@ static void compilestatements(vector<uint> &code, const char *&p, int rettype, i
         switch(c)
         {
             case '\0':
-                if(c != brak) debugcode(debugline(line, "missing \"%c\""), brak);
+                if(c != brak) debugcodeline(line, "missing \"%c\"", brak);
                 p--;
                 return;
 
             case ')':
             case ']':
                 if(c == brak) return;
-                debugcode(debugline(line, "unexpected \"%c\""), c);
+                debugcodeline(line, "unexpected \"%c\"", c);
                 break;
 
             case '/':
@@ -2116,7 +2137,7 @@ const char *escapestring(const char *s)
 
 const char *escapeid(const char *s)
 {
-    const char *end = s + strcspn(s, "\"/;()[] \f\t\r\n\0");
+    const char *end = s + strcspn(s, "\"/;()[]@ \f\t\r\n\0");
     return *end ? escapestring(s) : s;
 }
 
@@ -2132,7 +2153,7 @@ bool validateblock(const char *s)
         case ')': if(brakdepth <= 0 || brakstack[--brakdepth] != '(') return false; break;
         case '"': s = parsestring(s + 1); if(*s != '"') return false; break;
         case '/': if(s[1] == '/') return false; break;
-        case '\f': return false;
+        case '@': case '\f': return false;
     }
     return brakdepth == 0;
 }
@@ -2836,7 +2857,7 @@ ICOMMAND(>s, "ss", (char *a, char *b), intret(strcmp(a,b)>0));
 ICOMMAND(<=s, "ss", (char *a, char *b), intret(strcmp(a,b)<=0));
 ICOMMAND(>=s, "ss", (char *a, char *b), intret(strcmp(a,b)>=0));
 ICOMMAND(echo, "C", (char *s), conoutf("\f1%s", s));
-ICOMMAND(error, "C", (char *s), conoutf(CON_ERROR, s));
+ICOMMAND(error, "C", (char *s), conoutf(CON_ERROR, "%s", s));
 ICOMMAND(strstr, "ss", (char *a, char *b), { char *s = strstr(a, b); intret(s ? s-a : -1); });
 ICOMMAND(strlen, "s", (char *s), intret(strlen(s)));
 

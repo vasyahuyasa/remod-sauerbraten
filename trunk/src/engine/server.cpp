@@ -1020,7 +1020,7 @@ bool servererror(bool dedicated, const char *desc)
 #ifndef STANDALONE
     if(!dedicated)
     {
-        conoutf(CON_ERROR, desc);
+        conoutf(CON_ERROR, "%s", desc);
         cleanupserver();
     }
     else
