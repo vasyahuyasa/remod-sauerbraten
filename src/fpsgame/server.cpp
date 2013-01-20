@@ -2065,7 +2065,7 @@ namespace server
         if(shouldcheckteamkills) checkteamkills();
 
         //remod
-        checksleep(totalmillis);
+        checkasleep(totalmillis);
 
         if(shouldstep && !gamepaused)
         {
