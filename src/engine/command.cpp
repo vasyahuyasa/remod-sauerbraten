@@ -783,7 +783,7 @@ static inline const char *parseword(const char *p)
         p += strcspn(p, "\"/;@()[] \t\r\n\0");
         switch(p[0])
         {
-            case '"': case ';': case '@': case ' ': case '\t': case '\r': case '\n': case '\0': return p;
+            case '"': case ';': case ' ': case '\t': case '\r': case '\n': case '\0': return p;
             case '/': if(p[1] == '/') return p; break;
             case '[': case '(': if(brakdepth >= maxbrak) return p; brakstack[brakdepth++] = p[0]; break;
             case ']': if(brakdepth <= 0 || brakstack[--brakdepth] != '[') return p; break;
