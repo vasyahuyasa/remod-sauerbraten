@@ -10,6 +10,7 @@ extern void cutogz(char *s);
 typedef vector<char *> extensionslist;
 extern bool addextension(const char *name);
 extern const extensionslist* getextensionslist();
+extern char *authfile;
 char *conc(char **w, int n, bool space);
 void reloadauth();
 
