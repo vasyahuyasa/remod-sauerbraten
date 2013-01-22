@@ -1080,12 +1080,15 @@ void initserver(bool listen, bool dedicated)
     else
         execfile(initcfg, true);
 
+    // remod
+    if(authfile)
+        execfile(authfile);
+
     if(listen) setuplistenserver(dedicated);
 
     // remod
     remod::rcon::init(rconport);
     remod::loadbans();
-    //authserv::reloadauth();
 
     server::serverinit();
 
