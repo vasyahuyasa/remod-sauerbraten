@@ -780,7 +780,7 @@ static inline const char *parseword(const char *p)
     int brakdepth = 0;
     for(;; p++)
     {
-        p += strcspn(p, "\"/;@()[] \t\r\n\0");
+        p += strcspn(p, "\"/;()[] \t\r\n\0");
         switch(p[0])
         {
             case '"': case ';': case ' ': case '\t': case '\r': case '\n': case '\0': return p;
@@ -1177,7 +1177,6 @@ done:
 static bool compileword(vector<uint> &code, const char *&p, int wordtype, char *&word, int &wordlen)
 {
     skipcomments(p);
-retry:
     switch(*p)
     {
         case '\"': word = cutstring(p, wordlen); break;
@@ -1197,10 +1196,6 @@ retry:
             p++;
             compileblock(code, p, wordtype);
             return true;
-        case '@':
-            debugcodeline(p, "unexpected \"@\"");
-            do ++p; while(*p == '@');
-            goto retry;
         default: word = cutword(p, wordlen); break;
     }
     return word!=NULL;
