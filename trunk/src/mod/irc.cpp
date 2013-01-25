@@ -584,6 +584,10 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
     }
     else if(!strcasecmp(w[g], "NICK"))
     {
+	// remod
+        loopv(n->channels)
+            if(n->channels[i].rename(user[0], w[g+1])) break;
+
         if(numargs > g+1)
         {
             if(!strcasecmp(user[0], n->nick)) copystring(n->nick, w[g+1]);
