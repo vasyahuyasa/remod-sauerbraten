@@ -98,6 +98,20 @@ struct ircchan
         //loopv(users) delete(&users[i]); // posible crash
         users.shrink(0);
     }
+
+    bool rename(char *nick, char *newnick)
+    {
+        if(!nick || !newnick) return false;
+        loopv(users)
+            if(strcmp(users[i].nick, nick)==0)
+            {
+                strncpy(users[i].nick, newnick, 100);
+                users[i].nick[100] = '\0';
+                return true;
+            }
+
+        return false;
+    }
 };
 enum { IRCT_NONE = 0, IRCT_CLIENT, IRCT_RELAY, IRCT_MAX };
 enum { IRC_NEW = 0, IRC_DISC, IRC_ATTEMPT, IRC_CONN, IRC_ONLINE, IRC_MAX };
