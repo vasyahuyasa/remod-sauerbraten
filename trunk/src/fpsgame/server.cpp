@@ -87,18 +87,22 @@ namespace server
 
     struct maprotation
     {
+        static int exclude;
         int modes;
         string map;
 
+        int calcmodemask() const { return modes&(1<<NUMGAMEMODES) ? modes & ~exclude : modes; }
+        bool hasmode(int mode, int offset = STARTGAMEMODE) const { return (calcmodemask() & (1 << (mode-offset))) != 0; }
+
         int findmode(int mode) const
         {
-            if(!(modes&(1<<(mode-STARTGAMEMODE)))) loopi(NUMGAMEMODES) if(modes&(1<<i)) return i+STARTGAMEMODE;
+            if(!hasmode(mode)) loopi(NUMGAMEMODES) if(hasmode(i, 0)) return i+STARTGAMEMODE;
             return mode;
         }
 
         bool match(int reqmode, const char *reqmap) const
         {
-            return modes&(1<<(reqmode-STARTGAMEMODE)) && (!map[0] || !reqmap[0] || !strcmp(map, reqmap));
+            return hasmode(reqmode) && (!map[0] || !reqmap[0] || !strcmp(map, reqmap));
         }
 
         bool includes(const maprotation &rot) const
@@ -106,15 +110,17 @@ namespace server
             return rot.modes == modes ? rot.map[0] && !map[0] : (rot.modes & modes) == rot.modes;
         }
     };
+    int maprotation::exclude = 0;
     vector<maprotation> maprotations;
     int curmaprotation = 0;
 
-    VAR(lockmaprotation, 0, 0, 1);
+    VAR(lockmaprotation, 0, 0, 2);
 
     void maprotationreset()
     {
         maprotations.setsize(0);
         curmaprotation = 0;
+        maprotation::exclude = 0;
     }
 
     void nextmaprotation()
@@ -152,6 +158,29 @@ namespace server
         return best;
     }
 
+    bool searchmodename(const char *haystack, const char *needle)
+    {
+        if(!needle[0]) return true;
+        do
+        {
+            if(needle[0] != '.')
+            {
+                haystack = strchr(haystack, needle[0]);
+                if(!haystack) break;
+                haystack++;
+            }
+            const char *h = haystack, *n = needle+1;
+            for(; *h && *n; h++)
+            {
+                if(*h == *n) n++;
+                else if(*h != ' ') break;
+            }
+            if(!*n) return true;
+            if(*n == '.') return !*h;
+        } while(needle[0] != '.');
+        return false;
+    }
+
     int genmodemask(vector<char *> &modes)
     {
         int modemask = 0;
@@ -162,6 +191,7 @@ namespace server
             switch(mode[0])
             {
                 case '*':
+                    modemask |= 1<<NUMGAMEMODES;
                     loopk(NUMGAMEMODES) if(m_checknot(k+STARTGAMEMODE, M_DEMO|M_EDIT|M_LOCAL)) modemask |= 1<<k;
                     continue;
                 case '!':
@@ -169,7 +199,7 @@ namespace server
                     if(mode[0] != '?') break;
                 case '?':
                     mode++;
-                    loopk(NUMGAMEMODES) if(strstr(gamemodes[k].name, mode))
+                    loopk(NUMGAMEMODES) if(searchmodename(gamemodes[k].name, mode))
                     {
                         if(op == '!') modemask &= ~(1<<k);
                         else modemask |= 1<<k;
@@ -178,7 +208,7 @@ namespace server
             }
             int modenum = INT_MAX;
             if(isdigit(mode[0])) modenum = atoi(mode);
-            else loopk(NUMGAMEMODES) if(strstr(mode, gamemodes[k].name)) { modenum = k+STARTGAMEMODE; break; }
+            else loopk(NUMGAMEMODES) if(searchmodename(gamemodes[k].name, mode)) { modenum = k+STARTGAMEMODE; break; }
             if(!m_valid(modenum)) continue;
             switch(op)
             {
@@ -189,26 +219,27 @@ namespace server
         return modemask;
     }
 
-    void addmaprotation(tagval *args, int numargs)
+    bool addmaprotation(int modemask, const char *map)
+    {
+        if(!map[0]) loopk(NUMGAMEMODES) if(modemask&(1<<k) && !m_check(k+STARTGAMEMODE, M_EDIT)) modemask &= ~(1<<k);
+        if(!modemask) return false;
+        if(!(modemask&(1<<NUMGAMEMODES))) maprotation::exclude |= modemask;
+        maprotation &rot = maprotations.add();
+        rot.modes = modemask;
+        copystring(rot.map, map);
+        return true;
+    }
+
+    void addmaprotations(tagval *args, int numargs)
     {
         vector<char *> modes, maps;
         for(int i = 0; i + 1 < numargs; i += 2)
         {
             explodelist(args[i].getstr(), modes);
             explodelist(args[i+1].getstr(), maps);
-            if(modes.length() && maps.length())
-            {
-                int modemask = genmodemask(modes);
-                if(modemask) loopvj(maps)
-                {
-                    int rotmask = modemask;
-                    if(!maps[j][0]) loopk(NUMGAMEMODES) if(modemask&(1<<k) && !m_check(k+STARTGAMEMODE, M_EDIT)) rotmask &= ~(1<<k);
-                    if(!rotmask) continue;
-                    maprotation &rot = maprotations.add();
-                    rot.modes = modemask;
-                    copystring(rot.map, maps[j]);
-                }
-            }
+            int modemask = genmodemask(modes);
+            if(maps.length()) loopvj(maps) addmaprotation(modemask, maps[j]);
+            else addmaprotation(modemask, "");
             modes.deletearrays();
             maps.deletearrays();
         }
@@ -221,7 +252,7 @@ namespace server
     }
 
     COMMAND(maprotationreset, "");
-    COMMANDN(maprotation, addmaprotation, "ss2V");
+    COMMANDN(maprotation, addmaprotations, "ss2V");
 
     vector<demofile> demos;
 
@@ -1697,10 +1728,9 @@ namespace server
         }
         if(next)
         {
-            maprotation &rot = maprotations[curmaprotation];
-            if(!(rot.modes&(1<<(gamemode-STARTGAMEMODE))) || (rot.map[0] && strcmp(rot.map, smapname)))
-                curmaprotation = max(findmaprotation(gamemode, smapname), 0);
-            nextmaprotation();
+            curmaprotation = findmaprotation(gamemode, smapname);
+            if(curmaprotation >= 0) nextmaprotation();
+            else curmaprotation = smapname[0] ? max(findmaprotation(gamemode, ""), 0) : 0;
         }
         maprotation &rot = maprotations[curmaprotation];
         changemap(rot.map, rot.findmode(gamemode));
@@ -1753,16 +1783,10 @@ namespace server
         stopdemo();
         if(!map[0] && !m_check(mode, M_EDIT))
         {
-            if(smapname[0]) map = smapname;
-            else
-            {
-                int idx = findmaprotation(mode, "");
-                if(idx >= 0)
-                {
-                    curmaprotation = idx;
-                    map = maprotations[curmaprotation].map;
-                }
-            }
+            int idx = findmaprotation(mode, smapname);
+            if(idx < 0 && smapname[0]) idx = findmaprotation(mode, "");
+            if(idx < 0) return;
+            map = maprotations[idx].map;
         }
         if(hasnonlocalclients()) sendservmsgf("local player forced %s on map %s", modename(mode), map[0] ? map : "[new map]");
         changemap(map, mode);
@@ -1773,8 +1797,14 @@ namespace server
         clientinfo *ci = getinfo(sender);
         if(!ci || (ci->state.state==CS_SPECTATOR && !ci->privilege && !ci->local) || (!ci->local && !m_mp(reqmode))) return;
         if(!m_valid(reqmode)) return;
-        if(!map[0] && !m_check(reqmode, M_EDIT)) map = smapname;
-        if(lockmaprotation && !ci->privilege && !ci->local && findmaprotation(reqmode, map) < 0)
+        if(!map[0] && !m_check(reqmode, M_EDIT))
+        {
+            int idx = findmaprotation(reqmode, smapname);
+            if(idx < 0 && smapname[0]) idx = findmaprotation(reqmode, "");
+            if(idx < 0) return;
+            map = maprotations[idx].map;
+        }
+        if(lockmaprotation && !ci->local && ci->privilege < (lockmaprotation > 1 ? PRIV_ADMIN : PRIV_MASTER) && findmaprotation(reqmode, map) < 0)
         {
             sendf(sender, 1, "ris", N_SERVMSG, "This server has locked the map rotation.");
             return;
