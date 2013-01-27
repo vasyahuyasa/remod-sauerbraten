@@ -1438,6 +1438,7 @@ namespace server
             gs.armour, gs.armourtype,
             gs.gunselect, GUN_PISTOL-GUN_SG+1, &gs.ammo[GUN_SG]);
         gs.lastspawn = gamemillis;
+        remod::onevent("onspawn", "i", ci->clientnum);
     }
 
     void sendwelcome(clientinfo *ci)
