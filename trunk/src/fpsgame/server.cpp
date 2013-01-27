@@ -1812,9 +1812,6 @@ namespace server
         copystring(ci->mapvote, map);
         ci->modevote = reqmode;
 
-        // remod
-        remod::onevent("onmapvote", "isi", sender, map, reqmode);
-
         if(ci->local || (ci->privilege && mastermode>=MM_VETO))
         {
             if(demorecord) enddemorecord();
@@ -1824,6 +1821,9 @@ namespace server
         }
         else
         {
+            // remod
+            remod::onevent("onmapvote", "isi", sender, map, reqmode);
+
             sendservmsgf("%s suggests %s on map %s (select map to vote)", colorname(ci), modename(reqmode), map[0] ? map : "[new map]");
             checkvotes();
         }
