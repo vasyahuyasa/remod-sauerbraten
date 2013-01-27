@@ -231,7 +231,7 @@ bool mkents(char *fname)
 
 void usage(char *name)
 {
-    printf("Usage: %s FILE1.OGZ [FILE2.OGZ ...]\n", name);
+    printf("Usage: %s file1.ogz [file2.ogz ...]\n", name);
 }
 
 int main(int argc, char *argv[])
