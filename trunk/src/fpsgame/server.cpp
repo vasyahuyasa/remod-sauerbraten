@@ -964,7 +964,7 @@ namespace server
         if(gamepaused==val) return;
 
         // remod
-        if(remod::onevent("onpasegame", "i", val ? 1 : 0)) return;
+        if(remod::onevent("onpausegame", "i", val ? 1 : 0)) return;
 
         gamepaused = val;
         sendf(-1, 1, "riii", N_PAUSEGAME, gamepaused ? 1 : 0, ci ? ci->clientnum : -1);
