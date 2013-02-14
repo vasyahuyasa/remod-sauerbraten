@@ -1,0 +1,43 @@
+= Maprotation =
+The maprotation is controlled by maprotation rules, a rule can look like this:
+{{{
+maprotation "?mode " $maprotation
+}}} 
+
+== You need the following commands: ==
+
+  * lockmaprotation (0 not locked, 1 locked but master can change, 2 locked but admin can change)
+  * maprotationreset (reset all rotations at start)
+  * maprotation (define a rotation rule)
+
+== Example Rule ==
+Rules are built-on like this
+  * maprotationreset (first, reset all rotations)
+  * maprotation command
+  * mode rule (eg ?ffa)
+  * assigned maprotation (variable)
+
+Here are some example rules:
+
+_ Rule(s) for an InstaCTF Rotation (only allow InstaCTF on $ctfmaps) _
+{{{
+lockmaprotation 2
+maprotationreset
+maprotation "?instactf " $ctfmaps
+}}}
+
+_ Rule(s) for an Coop-Edit Server (only allow coop-edit, but on every map) _
+{{{
+lockmaprotation 2
+maprotationreset
+maprotation "?coop"
+}}}
+
+_ Rule(s) for an Duelserver (all maps / modes in default rotation, but no coop) _
+{{{
+lockmaprotation 2
+maprotationreset
+maprotation "?ffa ?insta ?effic ?tac" $ffamaps
+maprotation "?ctf ?hold ?protect" $ctfmaps
+maprotation "?regencapture ?capture" $capturemaps
+}}}
