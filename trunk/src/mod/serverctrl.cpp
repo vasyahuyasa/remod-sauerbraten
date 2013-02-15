@@ -674,15 +674,13 @@ void savemap(const char *name)
         else
         {
             // copy data
-            char *fbuf;
             long len = server::mapdata->size();
-            fbuf = new char[len];
+            uchar fbuf[len];
 
             server::mapdata->seek(0, SEEK_SET);
             server::mapdata->read(fbuf, len); // copy file to buffer
             data->seek(0, SEEK_SET);
             data->write(fbuf, len); // write buffer to file
-            DELETEA(fbuf);
 
             // close file
             data->close();
