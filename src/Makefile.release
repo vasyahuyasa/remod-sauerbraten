@@ -71,7 +71,7 @@ ifeq (,$(findstring -pg,$(CXXFLAGS)))
 endif
 endif
 
-INCLUDES= -Ishared -Iengine -Ifpsgame -Ienet/include -Imod -Imod/hashlib2plus/src -Imod/cryptomod
+INCLUDES= -Ishared -Iengine -Ifpsgame -Ienet/include -Imod -Imod/hashlib2plus/src -Imod/cryptomod/polarssl/include
 
 SERVER_OBJS= \
 	shared/crypto-standalone.o \
@@ -89,8 +89,10 @@ SERVER_OBJS= \
 	mod/remod-standalone.o \
 	mod/varbox-standalone.o \
 	mod/cryptomod-standalone.o \
-	mod/cryptomod/md5/md5-standalone.o
-
+	mod/cryptomod/polarssl/library/md5-standalone.o \
+	mod/cryptomod/polarssl/library/sha1-standalone.o \
+	mod/cryptomod/polarssl/library/sha2-standalone.o \
+	mod/cryptomod/polarssl/library/sha4-standalone.o
 
 ### Options checks
 
