@@ -6,8 +6,11 @@
 * some hash cubescript bindings
 */
 
-#include "md5/md5.h"
 #include "cube.h"
+#include "polarssl/md5.h"
+#include "polarssl/sha1.h"
+#include "polarssl/sha2.h"
+#include "polarssl/sha4.h"
 #include "remod.h"
 
 EXTENSION(CRYPTO);
@@ -28,6 +31,22 @@ namespace tiger
 
 namespace remod
 {
+    void digesttostr(char *dst, unsigned char *digest, size_t digestlen)
+    {
+        size_t i;
+        for(i = 0; i < digestlen; i++)
+        {
+            #if BYTE_ORDER == LITTLE_ENDIAN
+            dst[i*2]    = "0123456789abcdef"[((digest[i]>>4)&0xF)]; // Hi 4 bytes
+            dst[i*2+1] = "0123456789abcdef"[((digest[i])&0xF)   ]; // Low 4 bytes
+            #else
+            dst[di*2]     = "0123456789abcdef"[((digest[i])&0x0F)  ]; // Hight 4 bytes
+            dst[di*2+1]   = "0123456789abcdef"[((digest[i]>>4)&0xF)]; // Low 4 bytes
+            #endif // BYTE_ORDER
+        }
+        dst[digestlen*2] = '\0';
+    }
+
     // Return Tiger 192 bit hash
     void cs_tiger192(const char *str)
     {
@@ -84,29 +103,52 @@ namespace remod
         result(ref);
     }
 
-    // Return md5 hash
+    // cubescript md5 hash
     void cs_md5(const char *str)
     {
-        md5_state_t state;
-        md5_byte_t digest[16];
-        char hex_output[16*2 + 1];
-        int di;
+        unsigned char digest[16];
+        string res;
+        md5((const unsigned char*)str, strlen(str), digest);
+        digesttostr(res, digest, 16);
+        result(res);
+    }
 
-        md5_init(&state);
-        md5_append(&state, (const md5_byte_t *)str, strlen(str));
-        md5_finish(&state, digest);
-        for(di = 0; di < 16; di++)
-        {
-            #if BYTE_ORDER == LITTLE_ENDIAN
-            hex_output[di*2]     = "0123456789abcdef"[((digest[di]>>4)&0xF)]; // Hight 4 bytes
-            hex_output[di*2+1]   = "0123456789abcdef"[((digest[di])&0xF)   ]; // Low 4 bytes
-            #else
-            hex_output[di*2]     = "0123456789abcdef"[((digest[di])&0x0F)  ]; // Hight 4 bytes
-            hex_output[di*2+1]   = "0123456789abcdef"[((digest[di]>>4)&0xF)]; // Low 4 bytes
-            #endif
-        }
-        hex_output[16*2] = '\0';
-        result(hex_output);
+    // cubescript sha1 hash
+    void cs_sha1(const char *str)
+    {
+        unsigned char digest[20];
+        string res;
+        sha1((const unsigned char*)str, strlen(str), digest);
+        digesttostr(res, digest, 20);
+        result(res);
+    }
+
+    // cubescript sha2 256/348/512 bit hash
+    void cs_sha256(const char *str)
+    {
+        unsigned char digest[32];
+        string res;
+        sha2((const unsigned char*)str, strlen(str), digest, 0);
+        digesttostr(res, digest, 32);
+        result(res);
+    }
+
+    void cs_sha384(const char *str)
+    {
+        unsigned char digest[64];
+        string res;
+        sha4((const unsigned char*)str, strlen(str), digest, 1);
+        digesttostr(res, digest, 48);
+        result(res);
+    }
+
+    void cs_sha512(const char *str)
+    {
+        unsigned char digest[64];
+        string res;
+        sha4((const unsigned char*)str, strlen(str), digest, 0);
+        digesttostr(res, digest, 64);
+        result(res);
     }
 
     /**
@@ -125,4 +167,36 @@ namespace remod
     * @example echo (md5 "test") // 098f6bcd4621d373cade4e832627b4f6
     */
     COMMANDN(md5, cs_md5, "s");
+
+    /**
+    * Calculate the sha1 hash of a string
+    * @group crypto
+    * @arg1 string
+    * @return returns sha1 hash of string
+    */
+    COMMANDN(sha1, cs_sha1, "s");
+
+    /**
+    * Calculate the sha252 hash of a string
+    * @group crypto
+    * @arg1 string
+    * @return returns sha252 hash of string
+    */
+    COMMANDN(sha256, cs_sha256, "s");
+
+    /**
+    * Calculate the sha384 hash of a string
+    * @group crypto
+    * @arg1 string
+    * @return returns sha384 hash of string
+    */
+    COMMANDN(sha384, cs_sha384, "s");
+
+    /**
+    * Calculate the sha512 hash of a string
+    * @group crypto
+    * @arg1 string
+    * @return returns sha512 hash of string
+    */
+    COMMANDN(sha512, cs_sha512, "s");
 }
