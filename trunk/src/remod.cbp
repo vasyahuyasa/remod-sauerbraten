@@ -138,6 +138,25 @@
 		<Unit filename="mod/commandev.h" />
 		<Unit filename="mod/commandhandler.cpp" />
 		<Unit filename="mod/commandhandler.h" />
+		<Unit filename="mod/cryptomod.cpp" />
+		<Unit filename="mod/cryptomod/md5/md5.h" />
+		<Unit filename="mod/cryptomod/polarssl/include/polarssl/config.h" />
+		<Unit filename="mod/cryptomod/polarssl/include/polarssl/md5.h" />
+		<Unit filename="mod/cryptomod/polarssl/include/polarssl/sha1.h" />
+		<Unit filename="mod/cryptomod/polarssl/include/polarssl/sha2.h" />
+		<Unit filename="mod/cryptomod/polarssl/include/polarssl/sha4.h" />
+		<Unit filename="mod/cryptomod/polarssl/library/md5.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod/cryptomod/polarssl/library/sha1.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod/cryptomod/polarssl/library/sha2.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mod/cryptomod/polarssl/library/sha4.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="mod/db.cpp" />
 		<Unit filename="mod/db.h" />
 		<Unit filename="mod/geoipmod.cpp" />
