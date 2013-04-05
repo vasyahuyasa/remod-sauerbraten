@@ -322,11 +322,6 @@ namespace server
     COMMAND(teamkillkickreset, "");
     COMMANDN(teamkillkick, addteamkillkick, "sii");
 
-    struct teamkillinfo
-    {
-        uint ip;
-        int teamkills;
-    };
     vector<teamkillinfo> teamkills;
     bool shouldcheckteamkills = false;
 

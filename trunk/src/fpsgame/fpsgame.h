@@ -467,6 +467,13 @@ namespace server
         virtual bool extinfoteam(const char *team, ucharbuf &p) { return false; }
     };
 
+    struct teamkillinfo
+    {
+        uint ip;
+        int teamkills;
+    };
+
+    extern vector<teamkillinfo> teamkills;
     extern servmode *smode;
 
     // remod

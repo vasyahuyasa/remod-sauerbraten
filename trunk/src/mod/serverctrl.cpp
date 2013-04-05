@@ -1036,6 +1036,21 @@ void listclientvar(int cn)
     }
 }
 
+void resetteamkills(int *cn)
+{
+    clientinfo *ci = (clientinfo *)getclientinfo(*cn);
+    if(ci)
+    {
+        ci->state.teamkills = 0;
+        uint ip = getclientip(*cn);
+        loopv(teamkills) if(teamkills[i].ip == ip)
+        {
+            teamkills[i].teamkills = 0;
+            return;
+        }
+    }
+}
+
 /**
  * Set client personal variable for session (limit of variables is 128)
  * @group player
@@ -1618,4 +1633,12 @@ ICOMMAND(gamespeed, "iN$", (int *val, int *numargs, ident *id),
         else if(*numargs < 0) intret(server::gamespeed);
         else printvar(id, server::gamespeed);
     });
+
+/**
+ * Reset client teamkill counter
+ * @group server
+ * @arg1 client number
+ */
+COMMAND(resetteamkills, "i");
+
 }
