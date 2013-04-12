@@ -2731,6 +2731,10 @@ namespace server
                     ci->state.grenades.reset();
                 }
                 else ci->state.state = ci->state.editstate;
+
+                // remod
+                remod::onevent("oneditmode", "ii", ci->clientnum, val);
+
                 QUEUE_MSG;
                 break;
             }
