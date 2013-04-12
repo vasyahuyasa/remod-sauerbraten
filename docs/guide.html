@@ -93,7 +93,7 @@ div.clear {
 
 <body>
 	<h1>User guide</h1>
-	Generated: 2013-1-7
+	Generated: 2013-4-12
 	<hr>
 	
 	<!-- menu -->
@@ -249,8 +249,8 @@ div.clear {
 							<div class="clear"></div>
 						</div>
 					</td>
-					<td>returns sha256 hash of string</td>
-					<td>Calculate the sha256 hash of a string</td>
+					<td>returns sha252 hash of string</td>
+					<td>Calculate the sha252 hash of a string</td>
 					<td></td>
 					<td>mod/cryptomod.cpp</td>
 				</tr>
@@ -2057,6 +2057,32 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				
 				<tr class="even">
 					<td class="name">
+						<a name="#cs-func-asleep"></a>
+						asleep
+					</td>
+					<td>
+						<div class="arg">
+							<div class="argname">$arg1</div>
+							<div class="argtype">int</div>
+							<div class="argdescr">millis</div>
+							<div class="clear"></div>
+						</div>
+					
+						<div class="arg">
+							<div class="argname">$arg2</div>
+							<div class="argtype">string</div>
+							<div class="argdescr"></div>
+							<div class="clear"></div>
+						</div>
+					</td>
+					<td></td>
+					<td>Wait certain milliseconds, not blocked by pause</td>
+					<td></td>
+					<td>mod/remod.cpp</td>
+				</tr>
+				
+				<tr class="odd">
+					<td class="name">
 						<a name="#cs-func-checkipbymask"></a>
 						checkipbymask
 					</td>
@@ -2079,6 +2105,25 @@ If permission check fails, oncommandpermerror event is triggered</td>
 					<td>Check if ip corresponds to ip mask</td>
 					<td>checkipbymask "192.168.0.1" "192.168.*.*" //returns 1</td>
 					<td>mod/serverctrl.cpp</td>
+				</tr>
+				
+				<tr class="even">
+					<td class="name">
+						<a name="#cs-func-clearasleep"></a>
+						clearasleep
+					</td>
+					<td>
+						<div class="arg">
+							<div class="argname">$arg1</div>
+							<div class="argtype">int</div>
+							<div class="argdescr">clearoverrides</div>
+							<div class="clear"></div>
+						</div>
+					</td>
+					<td></td>
+					<td>Clear asleep queue</td>
+					<td></td>
+					<td>mod/remod.cpp</td>
 				</tr>
 				
 				<tr class="odd">
@@ -2207,6 +2252,39 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				
 				<tr class="even">
 					<td class="name">
+						<a name="#cs-func-gamespeed"></a>
+						gamespeed
+					</td>
+					<td>
+						<div class="arg">
+							<div class="argname">$arg1</div>
+							<div class="argtype">int</div>
+							<div class="argdescr"></div>
+							<div class="clear"></div>
+						</div>
+					
+						<div class="arg">
+							<div class="argname">$arg2</div>
+							<div class="argtype"></div>
+							<div class="argdescr"></div>
+							<div class="clear"></div>
+						</div>
+					
+						<div class="arg">
+							<div class="argname">$arg3</div>
+							<div class="argtype"></div>
+							<div class="argdescr"></div>
+							<div class="clear"></div>
+						</div>
+					</td>
+					<td></td>
+					<td>Change game speed, can be used as variable</td>
+					<td></td>
+					<td>mod/serverctrl.cpp</td>
+				</tr>
+				
+				<tr class="odd">
+					<td class="name">
 						<a name="#cs-func-geodb"></a>
 						geodb
 					</td>
@@ -2224,7 +2302,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 					<td>mod/geoipmod.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="#cs-func-getcountry"></a>
 						getcountry
@@ -2243,7 +2321,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 					<td>mod/geoipmod.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="#cs-func-getextensions"></a>
 						getextensions
@@ -2255,7 +2333,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="#cs-func-getip"></a>
 						getip
@@ -2274,7 +2352,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="#cs-func-getmap"></a>
 						getmap
@@ -2286,7 +2364,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="#cs-func-getmastermode"></a>
 						getmastermode
@@ -2298,7 +2376,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="#cs-func-getmastermodename"></a>
 						getmastermodename
@@ -2317,7 +2395,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="#cs-func-getmode"></a>
 						getmode
@@ -2329,7 +2407,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="#cs-func-getteamscores"></a>
 						getteamscores
@@ -2348,7 +2426,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="#cs-func-halt"></a>
 						halt
@@ -2367,7 +2445,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="#cs-func-identexists"></a>
 						identexists
@@ -2386,7 +2464,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="#cs-func-int2ip"></a>
 						int2ip
@@ -2405,7 +2483,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="#cs-func-ip2int"></a>
 						ip2int
@@ -2424,7 +2502,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="#cs-func-isgeoip"></a>
 						isgeoip
@@ -2436,7 +2514,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 					<td>mod/geoipmod.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="#cs-func-loadmap"></a>
 						loadmap
@@ -2455,7 +2533,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="#cs-func-loopbans"></a>
 						loopbans
@@ -2509,7 +2587,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="#cs-func-map"></a>
 						map
@@ -2528,7 +2606,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="#cs-func-mapmode"></a>
 						mapmode
@@ -2554,7 +2632,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="#cs-func-mastermode"></a>
 						mastermode
@@ -2573,7 +2651,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="#cs-func-pm"></a>
 						pm
@@ -2599,7 +2677,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="#cs-func-reloadauth"></a>
 						reloadauth
@@ -2607,6 +2685,25 @@ If permission check fails, oncommandpermerror event is triggered</td>
 					<td></td>
 					<td></td>
 					<td>Reload authkeys (using $authfile variable)</td>
+					<td></td>
+					<td>mod/serverctrl.cpp</td>
+				</tr>
+				
+				<tr class="even">
+					<td class="name">
+						<a name="#cs-func-resetteamkills"></a>
+						resetteamkills
+					</td>
+					<td>
+						<div class="arg">
+							<div class="argname">$arg1</div>
+							<div class="argtype">int</div>
+							<div class="argdescr">client number</div>
+							<div class="clear"></div>
+						</div>
+					</td>
+					<td></td>
+					<td>Reset client teamkill counter</td>
 					<td></td>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
@@ -6707,6 +6804,32 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				
 				<tr class="even">
 					<td class="name">
+						<a name="#cs-evt-oneditmode"></a>
+						oneditmode
+					</td>
+					<td>
+						<div class="arg">
+							<div class="argname">$arg1</div>
+							<div class="argtype">int</div>
+							<div class="argdescr">cn</div>
+							<div class="clear"></div>
+						</div>
+					
+						<div class="arg">
+							<div class="argname">$arg2</div>
+							<div class="argtype">int</div>
+							<div class="argdescr">1|0</div>
+							<div class="clear"></div>
+						</div>
+					</td>
+					<td></td>
+					<td>When player switch to editing</td>
+					<td>fpsgame/server.cpp</td>
+				</tr>
+				
+				
+				<tr class="odd">
+					<td class="name">
 						<a name="#cs-evt-oneditmute"></a>
 						oneditmute
 					</td>
@@ -6721,7 +6844,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 						<div class="arg">
 							<div class="argname">$arg2</div>
 							<div class="argtype">int</div>
-							<div class="argdescr"></div>
+							<div class="argdescr">cn</div>
 							<div class="clear"></div>
 						</div>
 					</td>
@@ -6731,7 +6854,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="#cs-evt-onfrag"></a>
 						onfrag
@@ -6750,7 +6873,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="#cs-evt-ongetdemo"></a>
 						ongetdemo
@@ -6776,7 +6899,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="#cs-evt-ongetmap"></a>
 						ongetmap
@@ -6795,7 +6918,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="#cs-evt-onimission"></a>
 						onimission
@@ -6807,7 +6930,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="#cs-evt-oninvisflag"></a>
 						oninvisflag
@@ -6826,7 +6949,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="#cs-evt-onkick"></a>
 						onkick
@@ -6852,7 +6975,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="#cs-evt-onlistdemos"></a>
 						onlistdemos
@@ -6871,7 +6994,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="#cs-evt-onmapstart"></a>
 						onmapstart
@@ -6883,7 +7006,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="#cs-evt-onmapvote"></a>
 						onmapvote
@@ -6916,7 +7039,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="#cs-evt-onmastermode"></a>
 						onmastermode
@@ -6942,7 +7065,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="#cs-evt-onmodmap"></a>
 						onmodmap
@@ -6961,7 +7084,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="#cs-evt-onmute"></a>
 						onmute
@@ -6987,7 +7110,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="#cs-evt-onmute (1|0)"></a>
 						onmute (1|0)
@@ -7006,7 +7129,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="#cs-evt-onnewmap"></a>
 						onnewmap
@@ -7025,25 +7148,6 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				</tr>
 				
 				
-				<tr class="odd">
-					<td class="name">
-						<a name="#cs-evt-onpasegame"></a>
-						onpasegame
-					</td>
-					<td>
-						<div class="arg">
-							<div class="argname">$arg1</div>
-							<div class="argtype">int</div>
-							<div class="argdescr"></div>
-							<div class="clear"></div>
-						</div>
-					</td>
-					<td>@</td>
-					<td></td>
-					<td>fpsgame/server.cpp</td>
-				</tr>
-				
-				
 				<tr class="even">
 					<td class="name">
 						<a name="#cs-evt-onpausegame"></a>
@@ -7052,14 +7156,14 @@ If permission check fails, oncommandpermerror event is triggered</td>
 					<td>
 						<div class="arg">
 							<div class="argname">$arg1</div>
-							<div class="argtype">string</div>
+							<div class="argtype">int</div>
 							<div class="argdescr">1|0</div>
 							<div class="clear"></div>
 						</div>
 					</td>
 					<td>@</td>
 					<td>Before game become paused/unpaused</td>
-					<td></td>
+					<td>fpsgame/server.cpp</td>
 				</tr>
 				
 				
@@ -7247,6 +7351,25 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				
 				<tr class="even">
 					<td class="name">
+						<a name="#cs-evt-onspawn"></a>
+						onspawn
+					</td>
+					<td>
+						<div class="arg">
+							<div class="argname">$arg1</div>
+							<div class="argtype">int</div>
+							<div class="argdescr"></div>
+							<div class="clear"></div>
+						</div>
+					</td>
+					<td></td>
+					<td></td>
+					<td>fpsgame/server.cpp</td>
+				</tr>
+				
+				
+				<tr class="odd">
+					<td class="name">
 						<a name="#cs-evt-onspectator"></a>
 						onspectator
 					</td>
@@ -7271,7 +7394,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="#cs-evt-onstopdemo"></a>
 						onstopdemo
@@ -7283,7 +7406,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="#cs-evt-onsuicide"></a>
 						onsuicide
@@ -7302,7 +7425,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="#cs-evt-onswitchmodel"></a>
 						onswitchmodel
@@ -7328,7 +7451,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="#cs-evt-onswitchname"></a>
 						onswitchname
@@ -7354,7 +7477,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="#cs-evt-onswitchteam"></a>
 						onswitchteam
@@ -7380,7 +7503,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="#cs-evt-ontakeflag"></a>
 						ontakeflag
@@ -7413,7 +7536,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="#cs-evt-onteamkill"></a>
 						onteamkill
@@ -7432,7 +7555,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="#cs-evt-ontext"></a>
 						ontext
@@ -7518,7 +7641,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="#cs-var-adminpass"></a>
 						adminpass
@@ -7534,7 +7657,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="#cs-var-authfile"></a>
 						authfile
@@ -7550,7 +7673,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="#cs-var-autodemo"></a>
 						autodemo
@@ -7566,7 +7689,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="#cs-var-autorepammo"></a>
 						autorepammo
@@ -7582,7 +7705,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="#cs-var-banfile"></a>
 						banfile
@@ -7598,7 +7721,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="#cs-var-basenumbers"></a>
 						basenumbers
@@ -7614,7 +7737,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="#cs-var-capturetether"></a>
 						capturetether
@@ -7630,7 +7753,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="#cs-var-commandchar"></a>
 						commandchar
@@ -7646,7 +7769,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="#cs-var-consoletimefmt"></a>
 						consoletimefmt
@@ -7662,7 +7785,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="#cs-var-ctftkpenalty"></a>
 						ctftkpenalty
@@ -7678,7 +7801,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="#cs-var-dbgalias"></a>
 						dbgalias
@@ -7694,7 +7817,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="#cs-var-dbggz"></a>
 						dbggz
@@ -7710,7 +7833,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="#cs-var-dbgvars"></a>
 						dbgvars
@@ -7726,7 +7849,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="#cs-var-demodir"></a>
 						demodir
@@ -7742,7 +7865,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="#cs-var-gamelimit"></a>
 						gamelimit
@@ -7758,7 +7881,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="#cs-var-gamemillis"></a>
 						gamemillis
@@ -7774,7 +7897,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="#cs-var-imissiontime"></a>
 						imissiontime
@@ -7790,7 +7913,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="#cs-var-initcfg"></a>
 						initcfg
@@ -7806,7 +7929,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="#cs-var-ircfilter"></a>
 						ircfilter
@@ -7822,7 +7945,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="#cs-var-lockmaprotation"></a>
 						lockmaprotation
@@ -7830,7 +7953,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 					<td>int</td>
 					<td>0</td>
 					<td>0</td>
-					<td>1</td>
+					<td>2</td>
 					<td>read/write</td>
 				
 					<td></td>
@@ -7838,7 +7961,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="#cs-var-mapdir"></a>
 						mapdir
@@ -7854,7 +7977,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="#cs-var-mastername"></a>
 						mastername
@@ -7870,7 +7993,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="#cs-var-masterpass"></a>
 						masterpass
@@ -7886,7 +8009,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="#cs-var-masterport"></a>
 						masterport
@@ -7902,7 +8025,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="#cs-var-maxclients"></a>
 						maxclients
@@ -7918,7 +8041,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="#cs-var-maxdemos"></a>
 						maxdemos
@@ -7934,7 +8057,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="#cs-var-maxdemosize"></a>
 						maxdemosize
@@ -7950,7 +8073,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="#cs-var-name"></a>
 						name
@@ -7987,7 +8110,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="#cs-var-numargs"></a>
 						numargs
@@ -8003,7 +8126,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="#cs-var-pause"></a>
 						pause
@@ -8019,7 +8142,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="#cs-var-persist"></a>
 						persist
@@ -8035,7 +8158,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="#cs-var-publicserver"></a>
 						publicserver
@@ -8051,7 +8174,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="#cs-var-rconenable"></a>
 						rconenable
@@ -8067,7 +8190,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="#cs-var-rconpass"></a>
 						rconpass
@@ -8083,7 +8206,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="#cs-var-rconport"></a>
 						rconport
@@ -8099,7 +8222,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="#cs-var-restrictdemos"></a>
 						restrictdemos
@@ -8115,7 +8238,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="#cs-var-restrictgamespeed"></a>
 						restrictgamespeed
@@ -8131,7 +8254,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="#cs-var-restrictpausegame"></a>
 						restrictpausegame
@@ -8147,7 +8270,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="#cs-var-roundtime"></a>
 						roundtime
@@ -8163,7 +8286,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="#cs-var-savebak"></a>
 						savebak
@@ -8179,7 +8302,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="#cs-var-savedemo"></a>
 						savedemo
@@ -8195,7 +8318,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="#cs-var-serverauth"></a>
 						serverauth
@@ -8211,7 +8334,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="#cs-var-serverbotbalance"></a>
 						serverbotbalance
@@ -8227,7 +8350,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="#cs-var-serverbotlimit"></a>
 						serverbotlimit
@@ -8243,7 +8366,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="#cs-var-serverdesc"></a>
 						serverdesc
@@ -8259,7 +8382,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="#cs-var-serverip"></a>
 						serverip
@@ -8275,7 +8398,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="#cs-var-servermotd"></a>
 						servermotd
@@ -8291,7 +8414,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="#cs-var-serverpass"></a>
 						serverpass
@@ -8307,7 +8430,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="#cs-var-serverport"></a>
 						serverport
@@ -8323,7 +8446,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="#cs-var-serveruprate"></a>
 						serveruprate
@@ -8339,7 +8462,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="#cs-var-setroundtime"></a>
 						setroundtime
@@ -8355,7 +8478,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="#cs-var-totalmillis"></a>
 						totalmillis
@@ -8371,7 +8494,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="#cs-var-triggerstate"></a>
 						triggerstate
@@ -8387,7 +8510,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="#cs-var-updatemaster"></a>
 						updatemaster
@@ -8403,7 +8526,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="#cs-var-verbose"></a>
 						verbose

@@ -206,4 +206,10 @@ When team scores the flag
 
 @event oneditmute
 @arg1 1|0 
+@arg2 cn
 When player editmuted/editunmuted
+
+@event oneditmode
+@arg1 cn
+@arg2 1|0
+When player switch to editing
