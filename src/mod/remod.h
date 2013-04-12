@@ -36,6 +36,7 @@ namespace remod
     bool ismaster(int *cn);
     bool isadmin(int *cn);
     bool isspectator(int *cn);
+    bool isediting(int *cn);
     char* concatpstring(char *d, const char *s);
     void loadbans();
     void writebans();
