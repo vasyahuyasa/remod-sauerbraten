@@ -284,6 +284,12 @@ bool isspectator(int *cn)
     return (ci && ci->state.state==CS_SPECTATOR);
 }
 
+bool isediting(int *cn)
+{
+    clientinfo *ci = (clientinfo *)getinfo((int)*cn);
+    return (ci && ci->state.state==CS_EDITING);
+}
+
 char* concatpstring(char *d, const char *s) {
 	char *tmp = newstring(d);
 	DELETEA(d);

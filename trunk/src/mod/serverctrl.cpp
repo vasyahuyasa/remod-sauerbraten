@@ -1183,6 +1183,14 @@ ICOMMAND(isadmin, "i", (int *cn), intret(isadmin(cn) ? 1 : 0));
 ICOMMAND(isspectator, "i", (int *cn), intret(isspectator(cn) ? 1 : 0));
 
 /**
+ * Check if specified player in edit mode
+ * @group player
+ * @arg1 client number
+ * @return 0 or 1
+ */
+ICOMMAND(isediting, "i", (int *cn), intret(isediting(cn) ? 1 : 0));
+
+/**
  * Get this server's version
  * @group server
  */
