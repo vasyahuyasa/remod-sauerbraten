@@ -313,25 +313,25 @@ void loadbans()
 
 void writebans()
 {
-    const char *fname;
-    fname = findfile(banfile, "w");
-
-    FILE *f = fopen(fname, "w");
+    const char *fname = findfile(banfile, "w");
+    stream *f = openutf8file(fname, "w");
 
     if(f)
     {
-        union { uchar b[sizeof(enet_uint32)]; enet_uint32 i; } ip, mask;
+        union
+        {
+            uchar b[sizeof(enet_uint32)];
+            enet_uint32 i;
+        } ip, mask;
         string maskedip;
 
-        fprintf(f, "// This file was generated automaticaly\n// Do not edit it while server running\n\n");
+        f->printf("// This file was generated automaticaly\n// Do not edit it while server running\n\n");
 
         loopv(permbans)
         {
             permban b = permbans[i];
-
             ip.i = b.ip;
             mask.i = b.mask;
-
             maskedip[0] = '\0';
 
             // generate masked ip (ex. 234.345.45)
@@ -344,11 +344,9 @@ void writebans()
                 }
                 else  break;
             }
-
-            fprintf(f,"permban %s \"%s\"\n", maskedip, b.reason);
+            f->printf("permban %s \"%s\"\n", maskedip, b.reason);
         }
-
-        fclose(f);
+        f->close();
     }
     else
     {

@@ -459,7 +459,7 @@ void setmastercmd(int *pcn, int *val)
  * checks if ip matches mask
  * ip = "127.0.0.1",	mask = "127.0.0.1"		--  true
  * ip = "192.168.1.23",	mask = "192.168.1.*"	--  true
- *  * ip = "192.168.1.23",	mask = "192.168.1.255"	--  true
+ * ip = "192.168.1.23",	mask = "192.168.1.255"	--  true
  * ip = "127.0.0.1",	mask = "128.0.0.1"		--  false
  */
 bool checkipbymask(char *ip, char *mask)
@@ -513,23 +513,23 @@ bool checkipbymask(char *ip, char *mask)
 }
 
 // based on looplist (command.cpp)
-void loopbans(const char *name, const char *ip, const char *expire, const char *actor, const char *actorip, const char *body)
+void loopbans(ident *name, ident *ip, ident *expire, ident *actor, ident *actorip, const uint *body)
 {
-    ident* idents[5];
+    ident *idents[5];
     identstack stack[5];
-
-    idents[0] = newident(name);
-    idents[1] = newident(ip);
-    idents[2] = newident(expire);
-    idents[3] = newident(actor);
-    idents[4] = newident(actorip);
 
     in_addr addr_victim;
     in_addr addr_actor;
 
+    idents[0] = name;
+    idents[1] = ip;
+    idents[2] = expire;
+    idents[3] = actor;
+    idents[4] = actorip;
+
     loopv(bannedips)
     {
-        ban b = bannedips[i];
+        ban &b = bannedips[i];
 
         addr_victim.s_addr  = b.ip;
         addr_actor.s_addr   = b.actorip;
@@ -580,7 +580,7 @@ void loopbans(const char *name, const char *ip, const char *expire, const char *
     {
         loopi(5)
         {
-            poparg(*idents[i]);
+            ::poparg(*idents[i]);
         }
     }
 }
@@ -834,61 +834,66 @@ void int2ip(int *i) {
 	result(ip);
 }
 
-void looppermbans(const char *ip, const char *mask, const char *reason, const char *body)
+void looppermbans(ident *ip, ident *mask, ident *reason, const uint *body)
 {
-    ident* idents[3];
     identstack stack[3];
-
-    idents[0] = newident(ip);
-    idents[1] = newident(mask);
-    idents[2] = newident(reason);
-
     in_addr addr_ip;
     in_addr addr_mask;
 
     loopv(permbans)
     {
-        permban b = permbans[i];
-
-        addr_ip.s_addr = b.ip;
+        permban &b = permbans[i];
+        addr_ip.s_addr   = b.ip;
         addr_mask.s_addr = b.mask;
 
         if(i)
         {
             loopi(3)
             {
-                if(idents[i]->valtype == VAL_STR) delete[] idents[i]->val.s;
-                else idents[i]->valtype = VAL_STR;
-                ::cleancode(*idents[i]);
-            }
+                if(ip->valtype == VAL_STR) delete[] ip->val.s;
+                else ip->valtype = VAL_STR;
 
-            idents[0]->val.s = inet_ntoa(addr_ip);
-            idents[1]->val.s = inet_ntoa(addr_mask);
-            idents[2]->val.s = b.reason;
+                if(mask->valtype == VAL_STR) delete[] mask->val.s;
+                else mask->valtype = VAL_STR;
+
+                if(reason->valtype == VAL_STR) delete[] reason->val.s;
+                else reason->valtype = VAL_STR;
+
+                ::cleancode(*ip);
+                ::cleancode(*mask);
+                ::cleancode(*reason);
+
+                ip->val.s     = newstring(inet_ntoa(addr_ip));
+                mask->val.s   = newstring(inet_ntoa(addr_mask));
+                reason->val.s = newstring(b.reason);
+            }
         }
         else
         {
+            // init idents
             tagval t[3];
 
             t[0].setstr(newstring(inet_ntoa(addr_ip)));
             t[1].setstr(newstring(inet_ntoa(addr_mask)));
             t[2].setstr(newstring(b.reason));
 
-            ::pusharg(*idents[0], t[0], stack[0]);
-            ::pusharg(*idents[1], t[1], stack[1]);
-            ::pusharg(*idents[2], t[2], stack[2]);
+            ::pusharg(*ip    , t[0], stack[0]);
+            ::pusharg(*mask  , t[1], stack[1]);
+            ::pusharg(*reason, t[2], stack[2]);
 
-            idents[0]->flags &= ~IDF_UNKNOWN;
-            idents[1]->flags &= ~IDF_UNKNOWN;
-            idents[2]->flags &= ~IDF_UNKNOWN;
+            ip    ->flags &= ~IDF_UNKNOWN;
+            mask  ->flags &= ~IDF_UNKNOWN;
+            reason->flags &= ~IDF_UNKNOWN;
         }
+
         execute(body);
     }
 
     if(permbans.length())
     {
-        loopi(3)
-            ::poparg(*idents[i]);
+        ::poparg(*ip);
+        ::poparg(*mask);
+        ::poparg(*reason);
     }
 }
 
@@ -923,7 +928,6 @@ struct keyvalue {
 };
 
 //comparator for sorttwolists
-
 static inline int sorttwolists_compare(const void *x, const void *y) {
 	return strcmp(((keyvalue*) x)->key, ((keyvalue*) y)->key);
 }
@@ -1455,8 +1459,8 @@ ICOMMAND(checkipbymask, "ss", (char *ip, char *mask), intret(checkipbymask(ip, m
  * @arg6 body of function to loop
  */
 ICOMMAND(loopbans,
-         "ssssss",
-         (char *name, char *ip, char *expire, char *actor, char *actorip, char *body),
+         "rrrrre",
+         (ident *name, ident *ip, ident *expire, ident *actor, ident *actorip, uint *body),
          loopbans(name, ip, expire, actor, actorip, body));
 
 /**
@@ -1591,8 +1595,8 @@ COMMANDN(permban, addpban, "ss");
  * @arg4 body of function to execute while iterating the list
  */
 ICOMMAND(looppermbans,
-         "ssss",
-         (char *ip, char *mask, char *reason, char *body),
+         "rrre",
+         (ident *ip, ident *mask, ident *reason, uint *body),
          looppermbans(ip, mask, reason, body));
 
 /**
