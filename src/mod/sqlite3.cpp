@@ -110,6 +110,7 @@ namespace db
         }
     }
 
+
     // make sql query -1 on error, "" request is done, req_uid need make steps
     void cs_sqlite3_query(int *dbuid, const char* query)
     {
@@ -117,8 +118,6 @@ namespace db
     	if (!sqlite3_dbs.exists(*dbuid)) {
     		intret(-1); return;
     	}
-
-        int rc;
 
         // statement for work
         sqlite3_stmt *stmt;
@@ -129,6 +128,8 @@ namespace db
         // compile SQL query to bytecode
         if(sqlite3_prepare(db, query, -1, &stmt, NULL))
         {
+        	conoutf("[ERROR] Error in SQL query: %s", query);
+        	conoutf("[ERROR] %s", sqlite3_errmsg(db));
             // error in query
             sqlite3_finalize(stmt);
             intret(-1);
@@ -141,9 +142,9 @@ namespace db
        int start_time = totalmillis;
 #endif
        // do request
-       rc = sqlite3_step(stmt);
+       int rc = sqlite3_step(stmt);
 #ifdef DEBUG_SQL
-       conoutf("%s  -  %s ms", query, abs(totalmillis - start_time));
+       conoutf("[DEBUG] Executed SQL query: %s   in %d ms (result: %d)", query, abs(totalmillis - start_time), rc);
 #endif
 
         switch(rc)
@@ -175,11 +176,19 @@ namespace db
     }
 
 
-    void cs_sqlite3_pquery(int *dbuid, const char *query, const char *params) {
-    	char *new_query = build_query(query, params);
-    	cs_sqlite3_query(dbuid, new_query);
-    	DELETEA(new_query);
-    }
+    void cs_sqlite3_pquery(tagval *args, int numargs)
+    {
+    	if (numargs < 2) {
+    		conoutf("[ERROR] incorrect usage of cs_sqlite3_pquery: should be at least %d params, given %d", 2, numargs);
+			intret(-1);
+			return;
+    	}
+
+    	int dbuid = parseint(args[0].getstr());
+		char *new_query = build_query(args, numargs, 1);
+		cs_sqlite3_query(&dbuid, new_query);
+		DELETEA(new_query);
+	}
 
     void cs_sqlite3_colnames(int *requid)
     {
@@ -227,7 +236,10 @@ namespace db
 		{
 			if(buf.length()) buf.add(' ');
 			defformatstring(field)("%s", sqlite3_column_text(stmt, i));
-			buf.put(field, strlen(field));
+			const char *stripped_field = stripslashes(&field[0]);
+			const char *escaped_field = escapestring(stripped_field);
+			DELETEA(stripped_field);
+			buf.put(escaped_field, strlen(escaped_field));
 			if(i != (fieldcount-1))  // don't add extra space at end
 				buf.add(' ');
 		}
@@ -353,10 +365,10 @@ COMMANDN(sqlite3_query, cs_sqlite3_query, "is");
  * @group db
  * @arg1 dbuid
  * @arg2 query
- * @arg3 parameters
+ * @arg3 , arg4, ..... parameters
  * @return statement uid
  */
-COMMANDN(sqlite3_pquery, cs_sqlite3_pquery, "iss");
+COMMANDN(sqlite3_pquery, cs_sqlite3_pquery, "V");
 
 /**
  * Load column names for query result

@@ -290,7 +290,32 @@ bool isediting(int *cn)
     return (ci && ci->state.state==CS_EDITING);
 }
 
-char* concatpstring(char *d, const char *s) {
+void concatpstring(char** str, int count, ...) {
+
+	size_t len = strlen(*str);
+	va_list ap;
+	va_start(ap, count);
+	for (int i = 0; i < count; i++) {
+		const char *s = va_arg(ap, const char*);
+		len += strlen(s);
+	}
+	va_end(ap);
+
+	char *res = newstring(*str, len);
+	va_start(ap, count);
+	char *p = res + strlen(*str);
+	for (int i = 0; i < count; i++) {
+		const char *s = va_arg(ap, const char*);
+		strcpy(p, s);
+		p += strlen(s);
+	}
+	va_end(ap);
+
+	DELETEA(*str);
+
+	*str = res;
+
+/*
 	char *tmp = newstring(d);
 	DELETEA(d);
 	size_t lt = strlen(tmp);
@@ -300,7 +325,12 @@ char* concatpstring(char *d, const char *s) {
 	strncpy(&d[lt], s, ls);
 	d[lt +ls] = '\0';
 	DELETEA(tmp);
-	return d;
+	return d;*/
+
+}
+
+void concatpstring(char** str, const char *piece) {
+	return concatpstring(str, 1, piece);
 }
 
 // Write permbans to disk
@@ -350,7 +380,7 @@ void writebans()
     }
     else
     {
-        conoutf("Can not open \"%s\" for writing bans");
+        conoutf("Can not open \"%s\" for writing bans", fname);
     }
 }
 

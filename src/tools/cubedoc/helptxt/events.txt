@@ -135,8 +135,13 @@ Before player request clearbans
 @greedy
 Before start demo recording
 
+@event onsavedemo
+@arg1 demo file name
+@arg2 demo time (numerical)
+Just after demo is saved
+
 @event onstopdemo
-Whed demo record is completed
+When demo record is completed
 
 @event oncleardemos 
 @arg1 demo's number

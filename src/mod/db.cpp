@@ -32,7 +32,7 @@ namespace db
 
 			if (found) {
 				while(s < found) buf.add(*s++);
-				buf.add('\\');
+				buf.add(*found == '\'' ? '\'' : '\\'); //for single quote ' use single quote ' as escape character, otherwise use back slash (\)
 				buf.add(*found);
 				s = found + 1;
 			} else {
@@ -66,24 +66,21 @@ namespace db
 		return newstring(buf.getbuf(), buf.length()-1);
 	}
 
-	char *build_query(const char* query, const char *params) {
-		vector<char*> p;
-		char *res = newstring(query);
+	char *build_query(tagval *args, int numargs, int startfrom) {
+    	vector<char> s;
 
-		explodelist(params, p);
-
-		loopv(p) {
-			char *newparam = remod::db::addslashes(p[i]);
-			char *ii = newstring(intstr(i));
-			char *c = concatpstring(newstring(":"), ii);
-			DELETEA(ii);
+		char *res = newstring(args[startfrom].getstr());
+		for (int i = startfrom+1; i < numargs; i++) {
+			char *newparam = addslashes((char *)args[i].getstr());
+			char *c = newstring(":");
+			concatpstring(&c, intstr(i-startfrom-1));
 			char *newres = strreplace(res, c, newparam);
 			DELETEA(res);
+			res = newres;
+
 			DELETEA(c);
 			DELETEA(newparam);
-			DELETEA(p[i]);
 
-			res = newres;
 		}
 		return res;
 	}

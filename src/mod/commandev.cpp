@@ -10,6 +10,9 @@
 #include "commandev.h"
 #include "commandhandler.h"
 #include "remod.h"
+
+extern char *strreplace(const char *s, const char *oldval, const char *newval);
+
 namespace remod
 {
 vector<evt_handler> evt_handlers; //Event handlers
@@ -76,6 +79,8 @@ void clearhandlers()
     evt_handlers.shrink(0);
 }
 
+
+
 //Return true - eat server handler, false allow server to handle
 bool onevent(const char *evt_type, const char *fmt, ...)
 {
@@ -86,22 +91,25 @@ bool onevent(const char *evt_type, const char *fmt, ...)
     	va_list vl;
 		va_start(vl, fmt);
 		int cn = va_arg(vl, int);
-		char *command_str = newstring(va_arg(vl, const char *));
+		const char *command_str = newstring(va_arg(vl, const char *));
 		va_end(vl);
 
 		//splitting command_string to command_name and command_params
 		char *command_name;
 		char *command_params;
 
-		char *spacepos = strstr(command_str, " ");
+
+
+		const char *spacepos = strstr(command_str, " ");
 		if (!spacepos) {
 			command_name = newstring(command_str);
 			command_params = newstring("");
 		} else {
 			command_params = newstring(spacepos+1);
-			spacepos[0] = '\0';
-			command_name = newstring(command_str);
+			command_name = newstring(command_str, (size_t) (spacepos - command_str));
 		}
+
+
 		//calling server command
 		remod::oncommand(cn, command_name, command_params);
 
@@ -119,23 +127,21 @@ bool onevent(const char *evt_type, const char *fmt, ...)
     	//getting username
     	va_list vl;
 		va_start(vl, fmt);
-		char *user = newstring(va_arg(vl, const char *));
-
-		char *command_str = newstring(va_arg(vl, const char *));
+		const char *user = newstring(va_arg(vl, const char *));
+		const char *command_str = newstring(va_arg(vl, const char *));
 		va_end(vl);
 
 		//splitting command_string to command_name and command_params
 		char *command_name;
 		char *command_params;
 
-		char *spacepos = strstr(command_str, " ");
+		const char *spacepos = strstr(command_str, " ");
 		if (!spacepos) {
 			command_name = newstring(command_str);
 			command_params = newstring("");
 		} else {
 			command_params = newstring(spacepos+1);
-			spacepos[0] = '\0';
-			command_name = newstring(command_str);
+			command_name = newstring(command_str, (size_t) (spacepos - command_str));
 		}
 
 		//calling irc command
@@ -164,24 +170,23 @@ bool onevent(const char *evt_type, const char *fmt, ...)
             //Convert params to string
             for(int i=0; i<paramcount; i++)
             {
-            	evparams = concatpstring(evparams, " ");
                 const char* p;
                 switch(fmt[i])
                 {
                 case 'i':
-                	evparams = concatpstring(evparams, intstr(va_arg(vl, int)));
+                	concatpstring(&evparams, 2, " ", intstr(va_arg(vl, int)));
                     break;
                 case 's':
-                	evparams = concatpstring(evparams, "\"");
                     p = va_arg(vl, const char *);
                     if (p) {
-                    	evparams = concatpstring(evparams, p);
+                    	concatpstring(&evparams, 2, " ", escapestring(p));
+                    } else {
+                    	concatpstring(&evparams, "\"\"");
                     }
-                    evparams =  concatpstring(evparams, "\"");
                     break;
                 case 'f':
                 case 'd':
-                	evparams = concatpstring(evparams, floatstr(va_arg(vl, double)));
+                	concatpstring(&evparams, 2, " ", floatstr(va_arg(vl, double)));
                     break;
                 default:
                     //Read and forgot
@@ -192,16 +197,17 @@ bool onevent(const char *evt_type, const char *fmt, ...)
             va_end(vl);
         }
 
-
-
         //Process handlers
         for(int i=0; i<evt_handlers.length(); i++)
         {
             if(strcmp(evt_type, evt_handlers[i].evt_type) == 0)
             {
             	char *evcmd = newstring(evt_handlers[i].evt_cmd);
-            	evcmd = concatpstring(evcmd, evparams);
+
+            	concatpstring(&evcmd, evparams);
+
                 execute(evcmd);
+
                 DELETEA(evcmd);
             }
         }
@@ -211,6 +217,7 @@ bool onevent(const char *evt_type, const char *fmt, ...)
     return false;
 
 }
+
 
 /**
  * Add server event handler to specified event

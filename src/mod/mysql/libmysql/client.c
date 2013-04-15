@@ -2233,7 +2233,7 @@ CLI_MYSQL_REAL_CONNECT(MYSQL *mysql,const char *host, const char *user,
     net->max_packet_size= mysql->options.max_allowed_packet;
 
   /* Get version info */
-  mysql->protocol_version= PROTOCOL_VERSION;	/* Assume this */
+  mysql->protocol_version= MYSQL_PROTOCOL_VERSION;	/* Assume this */
   if (mysql->options.connect_timeout &&
       vio_poll_read(net->vio, mysql->options.connect_timeout))
   {
@@ -2262,12 +2262,12 @@ CLI_MYSQL_REAL_CONNECT(MYSQL *mysql,const char *host, const char *user,
   mysql->protocol_version= net->read_pos[0];
   DBUG_DUMP("packet",(uchar*) net->read_pos,10);
   DBUG_PRINT("info",("mysql protocol version %d, server=%d",
-		     PROTOCOL_VERSION, mysql->protocol_version));
-  if (mysql->protocol_version != PROTOCOL_VERSION)
+		  MYSQL_PROTOCOL_VERSION, mysql->protocol_version));
+  if (mysql->protocol_version != MYSQL_PROTOCOL_VERSION)
   {
     set_mysql_extended_error(mysql, CR_VERSION_ERROR, unknown_sqlstate,
                              ER(CR_VERSION_ERROR), mysql->protocol_version,
-                             PROTOCOL_VERSION);
+                             MYSQL_PROTOCOL_VERSION);
     goto error;
   }
   end=strend((char*) net->read_pos+1);

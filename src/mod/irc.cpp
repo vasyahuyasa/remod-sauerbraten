@@ -146,7 +146,6 @@ void ircsend(ircnet *n, const char *msg, ...)
     if(n->sock == ENET_SOCKET_NULL) return;
 
     // remod
-    //if(verbose >= 2) console(0, "[%s] >>> %s", n->name, str);
     if(verbose >= 2) conoutf(0, "Irc: [%s] >>> %s", n->name, str);
 
     concatstring(str, "\n");
@@ -532,7 +531,7 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
             else if(ismsg)
             {
                 // remod
-                char *ftext; // command buffer
+                const char *ftext; // command buffer
 
                 if(n->type == IRCT_RELAY && g && strcasecmp(w[g+1], n->nick) && !strncasecmp(w[g+2], n->nick, strlen(n->nick)))
                 {
@@ -551,7 +550,7 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
 
                         //irc_oncommand "sender" "p a r a m s"
                         ftext = newstring(p);
-                        server::filtercstext(ftext);
+                        //server::filtercstext(ftext);
                         remod::onevent("irc_oncommand", "ss", user[0], ftext);
                         DELETEA(ftext);
                     }
@@ -570,8 +569,8 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
                     // w[2]='#rb-servers'
                     // w[3]='a'
 
-                    ftext = newstring(w[g+2]);
-                    server::filtercstext(ftext);
+                    //server::filtercstext(ftext);
+                	ftext = &w[g+2][strlen(n->nick)];
                     if(strcasecmp(w[g+1], n->nick)) // normal msg
                         remod::onevent("irc_onmsg", "ss", user[0], ftext);
                     else

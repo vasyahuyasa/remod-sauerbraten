@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS `auth` (
   `enabled` tinyint(4) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
 -- flagrun
@@ -18,11 +18,11 @@ CREATE TABLE IF NOT EXISTS `auth` (
 
 CREATE TABLE IF NOT EXISTS `flagrun` (
   `mode` tinyint(3) unsigned NOT NULL,
-  `map` varchar(20) COLLATE latin1_general_ci NOT NULL,
-  `name` varchar(20) COLLATE latin1_general_ci NOT NULL,
+  `map` varchar(20),
+  `name` varchar(20),
   `time` int(10) unsigned NOT NULL,
   PRIMARY KEY (`mode`,`map`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
 -- spy
@@ -30,7 +30,10 @@ CREATE TABLE IF NOT EXISTS `flagrun` (
 
 CREATE TABLE IF NOT EXISTS `spy` (
   `ip` int(4) NOT NULL,
-  `name` varchar(20) COLLATE latin1_general_ci NOT NULL,
+  `name` varchar(20) NOT NULL,
   `lastseen` int(10) unsigned NOT NULL,
-  PRIMARY KEY (`ip`,`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
+  `cnt` int(10) unsigned NOT NULL DEFAULT '1',
+  PRIMARY KEY (`ip`,`name`),
+  KEY `name` (`name`),
+  KEY `ip` (`ip`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;

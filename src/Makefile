@@ -58,7 +58,7 @@ endif
 
 CXXFLAGS= -O0 -fomit-frame-pointer -Wall -fsigned-char -DSTANDALONE
 override CXXFLAGS+= -g -DDEBUG # uncomment for debugging
-# override CXXFLAGS+= -DDEBUG_SQL # uncomment to see the time of sql queries in log
+override CXXFLAGS+= -DDEBUG_SQL # uncomment to see the time of sql queries in log
 
 ifeq (,$(findstring -g,$(CXXFLAGS)))
 ifeq (,$(findstring -pg,$(CXXFLAGS)))
