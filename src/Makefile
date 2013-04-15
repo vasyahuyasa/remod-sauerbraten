@@ -125,7 +125,7 @@ endif
 
 #sqlite3
 ifeq ($(USE_SQLITE3),true)
-override CXXFLAGS+= -DSQLITE3
+override CXXFLAGS+= -DSQLITE3 -DSQLITE_THREADSAFE=1
 override INCLUDES+= -Imod/sqlite3
 #linux-only libs
 ifeq ($(PLATFORM),Linux)
