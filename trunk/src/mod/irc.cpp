@@ -533,7 +533,7 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
                 // remod
                 const char *ftext; // command buffer
 
-                if(n->type == IRCT_RELAY && g && strcasecmp(w[g+1], n->nick) && !strncasecmp(w[g+2], n->nick, strlen(n->nick)))
+                if(n->type == IRCT_RELAY && g && strcasecmp(w[g+1], n->nick) && !strncasecmp(w[g+2], n->nick, strlen(n->nick)) && strchr(":;, .\t", w[g+2][strlen(n->nick)]))
                 {
                     const char *p = &w[g+2][strlen(n->nick)];
                     while(p && (*p == ':' || *p == ';' || *p == ',' || *p == '.' || *p == ' ' || *p == '\t')) p++;
@@ -570,11 +570,8 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
                     // w[3]='a'
 
                     //server::filtercstext(ftext);
-                	ftext = &w[g+2][strlen(n->nick)];
-                    if(strcasecmp(w[g+1], n->nick)) // normal msg
-                        remod::onevent("irc_onmsg", "ss", user[0], ftext);
-                    else
-                        remod::onevent("irc_onprivmsg", "ss", user[0], ftext);
+                	ftext = newstring(&w[g+2][strlen(n->nick)]);
+                    remod::onevent(strcasecmp(w[g+1], n->nick) ? "irc_onmsg" : "irc_onprivmsg", "ss", user[0], ftext);
                     DELETEA(ftext);
                 }
             }
