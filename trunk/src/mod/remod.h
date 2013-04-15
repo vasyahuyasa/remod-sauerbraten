@@ -6,12 +6,14 @@
 // worlio.cpp
 extern void cutogz(char *s);
 
+
 // remod.cpp
 typedef vector<char *> extensionslist;
 extern bool addextension(const char *name);
+char *conc(char **w, int n, bool space);
 extern const extensionslist* getextensionslist();
 extern char *authfile;
-char *conc(char **w, int n, bool space);
+
 void reloadauth();
 
 #define EXTENSION(name) bool __dummyext_##name = addextension(#name)
@@ -37,7 +39,8 @@ namespace remod
     bool isadmin(int *cn);
     bool isspectator(int *cn);
     bool isediting(int *cn);
-    char* concatpstring(char *d, const char *s);
+    void concatpstring(char** str, const char *piece);
+    void concatpstring(char** str, int count,  ...);
     void loadbans();
     void writebans();
     bool loadents(const char *fname, vector<entity> &ents, uint *crc);

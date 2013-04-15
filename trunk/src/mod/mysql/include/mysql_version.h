@@ -9,7 +9,7 @@
 #ifdef _CUSTOMCONFIG_
 # include <custom_conf.h>
 #else
-# define PROTOCOL_VERSION		10
+# define MYSQL_PROTOCOL_VERSION		10
 # define MYSQL_SERVER_VERSION		"6.0.0"
 # define MYSQL_VERSION_ID		60000
 # define MYSQL_PORT			3306

@@ -20,7 +20,7 @@ const char CHARACTERS[4] = {'\'', '"', '`', '\\'};
 
 char *addslashes(char *str);
 char *stripslashes(char *str);
-char *build_query(const char* query, const char *params);
+char *build_query(tagval *args, int numargs, int startfrom);
 
 /**
  * parses connection string

@@ -733,6 +733,16 @@ namespace server
             fsdemo->close();
             DELETEP(demotmp);
             conoutf("demo \"%s\" saved", demoname);
+
+            // remod
+            char* pdemoname = newstring(demoname);
+
+            defformatstring(demotime)("%d", t);
+            char* pdemotime = newstring(demotime);
+
+            remod::onevent("onsavedemo", "ss", pdemoname, pdemotime);
+            DELETEA(pdemoname);
+            DELETEA(pdemotime);
         }
         else conoutf("could not save demo to \"%s\"", demoname);
     }
@@ -2883,7 +2893,6 @@ namespace server
 
                 // remod
                 char* ftext = newstring(text);
-                filtercstext(ftext);
 
                 //Check for commandchar
                 if(strlen(ftext)>strlen(commandchar) && (strncmp(commandchar, ftext, strlen(commandchar)) == 0))

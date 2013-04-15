@@ -165,15 +165,6 @@ bool parsecommandparams(const char *descr, const char *params, vector<cmd_param>
  */
 int find_command_handler(const char *cmd_name, vector<cmd_handler*> &handlers) {
 	//searching for command with name cmd_name in registered handlers
-	/*
-	int len = handlers.length();
-	for (int i = 0; i < len; i++)
-	{
-		if (strcmp(cmd_name, handlers[i].cmd_name) == 0) {
-			return i;
-		}
-	}
-	*/
 	loopv(handlers)
 	{
 	    cmd_handler *h = handlers[i];
@@ -198,18 +189,16 @@ int execute_command(cmd_handler *handler, const char *caller, const char *cmd_pa
 	}
 	//creating cmd string
 	char* cmd = newstring("");
-	cmd = concatpstring(cmd, handler->cmd_func);
-	cmd = concatpstring(cmd, " ");
-	cmd = concatpstring(cmd, caller); //first parameter is always cn of player
+	concatpstring(&cmd, 3, handler->cmd_func, " ", escapestring(caller));//first parameter is always cn of player
+	//!!! escapestring should be used without DELETEA
+
 	loopv(params)
 	{
-		cmd = concatpstring(cmd, " ");
-		if (params[i].type == 's' || strlen(params[i].param) == 0) { //for correct string transition in list it should be escaped by "
-			cmd = concatpstring(cmd, "\"");
-			cmd = concatpstring(cmd, params[i].param);
-			cmd = concatpstring(cmd, "\"");
+		concatpstring(&cmd, " ");
+		if (params[i].type == 's' || params[i].type == 'w' || strlen(params[i].param) == 0) { //for correct string transition in list it should be escaped by "
+			concatpstring(&cmd, escapestring(params[i].param));
 		} else {
-			cmd = concatpstring(cmd, params[i].param);
+			concatpstring(&cmd, params[i].param);
 		}
 		DELETEA(params[i].param);
 	}
@@ -249,6 +238,7 @@ void common_loopcommands(const char *var, int *permission, const char *body, vec
 			    ::pusharg(*id, t, stack);
 			    id->flags &= ~IDF_UNKNOWN;
 			}
+
 			execute(body);
 			j++;
 		}
@@ -359,7 +349,8 @@ int getperm_(int *cn) {
 	ident *i = getident("grantperm");
 	if (i && i->type == ID_ALIAS) {
 		char *cmd = newstring("grantperm ");
-		cmd = concatpstring(cmd, intstr(*cn));
+		concatpstring(&cmd, intstr(*cn));
+
 		int grantedperm = execute(cmd);
 		DELETEA(cmd);
 		if(grantedperm>perm) perm = grantedperm;
@@ -531,7 +522,9 @@ int irc_getperm_(char *usr) {
 	ident *i = getident("irc_grantperm");
 	if (i && i->type == ID_ALIAS) {
 		char *cmd = newstring("irc_grantperm ");
-		cmd = concatpstring(cmd, usr);
+
+		concatpstring(&cmd, escapestring(usr));
+
 		int getperm = execute(cmd);
 		DELETEA(cmd);
 
@@ -566,9 +559,7 @@ void irc_oncommand(const char* user, const char* cmd_name, const char* cmd_param
 	cmd_handler *handler = irc_cmd_handlers[found];
 
 	//checking for permission
-	string usr;
-	strcpy(usr, user);
-	if (!irc_checkperm(usr, handler->cmd_permissions))
+	if (!irc_checkperm((char*) user, handler->cmd_permissions))
 	{
 		//permission error
 		remod::onevent("irc_oncommandpermerror", "ss", user, cmd_name);

@@ -690,7 +690,7 @@ void savemap(const char *name)
     }
     else
     {
-        formatstring(msg)("[no map to save]", fname);
+        formatstring(msg)("[no map to save]");
     }
     sendservmsg(msg);
 }
@@ -709,6 +709,11 @@ void listclients()
     }
     buf.add('\0');
     result(buf.getbuf());
+}
+
+void getvalue(const char* ident, const char* def) {
+	const char *alias = getalias(ident);
+	result(alias && strcmp("", alias) ? alias : def);
 }
 
 void editmute(int *pcn, int *val)
@@ -1054,6 +1059,13 @@ void resetteamkills(int *cn)
         }
     }
 }
+
+//void listconcat(tagval *v, int n) {
+//	loopi(n) {
+//		if (v[i].type == VAL_STR) v[i].s = escapestring(v[i].s);
+//	}
+//	conc(v, n, true);
+//}
 
 /**
  * Set client personal variable for session (limit of variables is 128)
@@ -1531,6 +1543,15 @@ COMMAND(listclients, "");
 ICOMMAND(identexists, "s", (const char *name), intret(identexists(name)));
 
 /**
+ * Returns value of variable with specified name or default value
+ * @group server
+ * @arg1 ident name (i.e. $var1)
+ * @arg2 default value
+ * @return $variable if it exists and not empty, otherwise default value
+ */
+COMMAND(getvalue, "ss");
+
+/**
  * Evaluate string as cube script
  * @group server
  * @arg1 body of function
@@ -1652,5 +1673,15 @@ ICOMMAND(gamespeed, "iN$", (int *val, int *numargs, ident *id),
  * @arg1 client number
  */
 COMMAND(resetteamkills, "i");
+
+
+///**
+// * Concat arguments in a list with escaping cubescript special characters
+// * @group server
+// * @arg1 .. argN  arguments
+// * @return list with escaped items
+// * @example  a = (listconcat "b" "c")
+// */
+//COMMAND(listconcat, "V");
 
 }

@@ -113,7 +113,7 @@ namespace db
         	intret(mysql_dbs.add(db));
         } else {
         	//print error to log
-        	conoutf("%s", mysql_error(db));
+        	conoutf("[ERROR] %s", mysql_error(db));
         	intret(-1);
         }
 
@@ -139,10 +139,11 @@ namespace db
 #endif
         int res = mysql_query(db, query);
 #ifdef DEBUG_SQL
-       conoutf("%s  -  %s ms", query, abs(totalmillis - start_time));
+       conoutf("[DEBUG] Executed SQL query: %s    in %d ms (result: %d)", query, abs(totalmillis - start_time), res);
 #endif
         if (res) {
-        	conoutf("%s", mysql_error(db));
+        	conoutf("[ERROR] Error in SQL query %s", query);
+        	conoutf("[ERROR] %s", mysql_error(db));
         	intret(-1);
         	return;
         }
@@ -152,9 +153,18 @@ namespace db
     }
 
 
-    void cs_mysql_pquery(int *dbuid, const char *query, const char *params) {
-    	char *new_query = build_query(query, params);
-    	cs_mysql_query(dbuid, new_query);
+    void cs_mysql_pquery(tagval *args, int numargs) {
+
+    	if (numargs < 2) {
+			conoutf("[ERROR] incorrect usage of cs_sqlite3_pquery: should be at least %d params, given %d", 2, numargs);
+			intret(-1);
+			return;
+		}
+
+		int dbuid = parseint(args[0].getstr());
+
+    	char *new_query = build_query(args, numargs, 1);
+    	cs_mysql_query(&dbuid, new_query);
     	DELETEA(new_query);
     }
 
@@ -209,14 +219,15 @@ namespace db
 				int num_fields = mysql_num_fields(stmt);
 				for (int i = 0; i < num_fields; i++) {
 					defformatstring(field)("%s", row[i]);
-					buf.put(field, strlen(field));
+					const char *stripped_field = stripslashes(&field[0]);
+					const char *escaped_field = escapestring(stripped_field);
+					DELETEA(stripped_field);
+					buf.put(escaped_field, strlen(escaped_field));
 					if(i != (num_fields-1))  // don't add extra space at end
 						buf.add(' ');
 				}
 				buf.add('\0');
-				char *res = stripslashes(buf.getbuf());
-				result(res);
-				DELETEA(res);
+				result(buf.getbuf());
 			} else {
 				result("");
 			}
@@ -308,10 +319,10 @@ COMMANDN(mysql_query,     cs_mysql_query,   "is");
  * @group db
  * @arg1 dbuid
  * @arg2 query
- * @arg3 parameters
+ * @arg3 , arg4, ..... parameters
  * @return statement uid
  */
-COMMANDN(mysql_pquery,    cs_mysql_pquery,  "iss");
+COMMANDN(mysql_pquery, cs_mysql_pquery,  "V");
 
 
 /**

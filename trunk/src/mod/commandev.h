@@ -7,8 +7,8 @@ namespace remod
 {
     struct evt_handler
     {
-        char* evt_type;
-        char* evt_cmd;
+        const char* evt_type;
+        const char* evt_cmd;
     };
 
     bool iseat(const char *evt_type);
