@@ -6,6 +6,10 @@
 // worlio.cpp
 extern void cutogz(char *s);
 
+//command.cpp
+extern void at(tagval *args, int numargs);
+extern void concat(tagval *v, int n);
+extern int unescapestring(char *dst, const char *src, const char *end);
 
 // remod.cpp
 typedef vector<char *> extensionslist;

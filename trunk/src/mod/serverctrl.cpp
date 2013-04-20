@@ -1060,12 +1060,44 @@ void resetteamkills(int *cn)
     }
 }
 
-//void listconcat(tagval *v, int n) {
-//	loopi(n) {
-//		if (v[i].type == VAL_STR) v[i].s = escapestring(v[i].s);
-//	}
-//	conc(v, n, true);
-//}
+void escapeitems(tagval *v, int n, int start) {
+	for (int i = start; i < n; i++)
+	    {
+	    	if (v[i].type == VAL_STR) {
+	    		char *s = v[i].s;
+	    		v[i].s = newstring(escapestring(s));
+	    		DELETEA(s);
+	    	}
+	    }
+}
+
+void listconcat(tagval *v, int n) {
+	escapeitems(v, n, 0);
+	concat(v, n);
+}
+
+void listadd(tagval *v, int n) {
+	escapeitems(v, n, 1);
+	concat(v, n);
+}
+
+char* unescape(char *s)
+{
+    int len = strlen(s);
+    char *d = newstring(len);
+    d[unescapestring(d, s, &s[len])] = '\0';
+    return d;
+}
+
+void listat(tagval *args, int numargs)
+{
+	at(args, numargs);
+
+	char *res = commandret->s;
+    commandret->setstr(unescape(res));
+    DELETEA(res);
+}
+
 
 /**
  * Set client personal variable for session (limit of variables is 128)
@@ -1675,13 +1707,33 @@ ICOMMAND(gamespeed, "iN$", (int *val, int *numargs, ident *id),
 COMMAND(resetteamkills, "i");
 
 
-///**
-// * Concat arguments in a list with escaping cubescript special characters
-// * @group server
-// * @arg1 .. argN  arguments
-// * @return list with escaped items
-// * @example  a = (listconcat "b" "c")
-// */
-//COMMAND(listconcat, "V");
+/**
+ * Concat arguments in a list with escaping cubescript special characters in variables (concat+escape)
+ * @group server
+ * @arg1 .. argN  arguments
+ * @return list with escaped items
+ * @example  a = (listconcat "b" "c")
+ */
+COMMAND(listconcat, "V");
+
+/**
+ * Concat arguments in a list with escaping cubescript special characters in variables (concat+escape)
+ * @group server
+ * @arg1 list
+ * @arg2 index
+ * @return unescaped list item
+ * @example  i = (listat $l "1")
+ */
+COMMAND(listat, "si1V");
+
+/**
+ * Add escaped elements to the list
+ * @group server
+ * @arg1 list
+ * @arg2 .. argN  arguments
+ * @return list with escaped items
+ * @example  a = (listadd $a "b" "c")
+ */
+COMMAND(listadd, "si1V");
 
 }
