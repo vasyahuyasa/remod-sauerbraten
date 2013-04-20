@@ -12,7 +12,7 @@
 EXTENSION(IRC);
 VAR(verbose, 0, 0, 6);
 SVAR(consoletimefmt, "%c");
-
+SVAR(irccommandchar, "");
 time_t clocktime = 0;
 
 char *gettime(char *format)
@@ -533,9 +533,17 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
                 // remod
                 const char *ftext; // command buffer
 
-                if(n->type == IRCT_RELAY && g && strcasecmp(w[g+1], n->nick) && !strncasecmp(w[g+2], n->nick, strlen(n->nick)) && strchr(":;, .\t", w[g+2][strlen(n->nick)]))
+                const char *p = w[g+2];
+                if (n->type == IRCT_RELAY && g &&
+                		((strcasecmp(w[g+1], n->nick) &&
+								!strncasecmp(w[g+2], n->nick, strlen(n->nick)) &&
+								strchr(":;, .\t", w[g+2][strlen(n->nick)]) &&
+								(p += strlen(n->nick))) ||
+                		(irccommandchar &&
+                				strlen(irccommandchar) &&
+                				!strncasecmp(w[g+2], irccommandchar, strlen(irccommandchar)) &&
+                				(p += strlen(irccommandchar)) )))
                 {
-                    const char *p = &w[g+2][strlen(n->nick)];
                     while(p && (*p == ':' || *p == ';' || *p == ',' || *p == '.' || *p == ' ' || *p == '\t')) p++;
 
                     // remod
