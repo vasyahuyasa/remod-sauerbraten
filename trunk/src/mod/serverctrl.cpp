@@ -1734,6 +1734,6 @@ COMMAND(listat, "si1V");
  * @return list with escaped items
  * @example  a = (listadd $a "b" "c")
  */
-COMMAND(listadd, "si1V");
+COMMAND(listadd, "V");
 
 }
