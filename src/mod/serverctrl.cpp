@@ -1098,6 +1098,34 @@ void listat(tagval *args, int numargs)
     DELETEA(res);
 }
 
+// set privelege PRIV_NONE, PRIV_MASTER, PRIV_ADMIN
+void setpriv(int *cn, char *s)
+{
+    clientinfo *ci = (clientinfo *)getclientinfo(*cn);
+    if(!cn) return;
+
+    int priv = PRIV_NONE;
+
+    if(isdigit(name[0]))
+    {
+        priv = clamp(parseint(s), PRIV_NONE, PRIV_ADMIN);
+    }
+    else
+    {
+        switch s[0]
+        {
+            case 'n': priv = PRIV_NONE; break;
+            case 'm': priv = PRIV_MASTER; break;
+            case 'a': priv = PRIV_ADMIN; brea;
+            default: priv = PRIV_NONE;
+        }
+    }
+
+    if(priv == PRIV_AUTH) priv = PRIV_MASTER;
+
+    setmaster(ci, true, "", NULL, NULL, priv, true);
+}
+
 
 /**
  * Set client personal variable for session (limit of variables is 128)
@@ -1736,4 +1764,11 @@ COMMAND(listat, "si1V");
  */
 COMMAND(listadd, "V");
 
+/**
+ * Set client's privelege
+ * @group server
+ * @arg1 cn
+ * @arg2 privelege: 0 or n - NONE, 1 or 2 or m - MASTER, 3 or a - ADMIN
+ */
+COMMAND(setpriv, "is");
 }
