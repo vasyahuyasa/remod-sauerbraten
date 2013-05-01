@@ -1108,7 +1108,7 @@ void setpriv(int *cn, char *s)
 
     if(isdigit(name[0]))
     {
-        priv = clamp(parseint(s), PRIV_NONE, PRIV_ADMIN);
+        priv = clamp(parseint(s), (int)PRIV_NONE, (int)PRIV_ADMIN);
     }
     else
     {
@@ -1116,7 +1116,7 @@ void setpriv(int *cn, char *s)
         {
             case 'n': priv = PRIV_NONE; break;
             case 'm': priv = PRIV_MASTER; break;
-            case 'a': priv = PRIV_ADMIN; brea;
+            case 'a': priv = PRIV_ADMIN; break;
             default: priv = PRIV_NONE;
         }
     }
