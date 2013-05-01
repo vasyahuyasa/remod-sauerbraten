@@ -499,4 +499,59 @@ bool writeents(const char *mapname, vector<entity> &ents, uint mapcrc)
     return true;
 }
 
+// set client's privelege
+void setmaster(clientinfo *ci, int priv)
+{
+    if(!ci || ci->privilege == priv) return;
+
+    string msg;
+    const char *name = "";
+
+    priv = clamp(priv, (int)PRIV_NONE, (int)PRIV_ADMIN);
+    if(ci->privilege != PRIV_NONE)
+    {
+        name = privname(ci->privilege);
+        formatstring(msg)("%s relinquished %s", colorname(ci), name);
+        sendservmsg(msg);
+        remod::onevent("onsetmaster", "iisss", ci->clientnum, 0, "", "", "");
+    }
+
+    ci->privilege = priv;
+
+    // check if anyone have priveledge
+    bool hasmaster = false;
+    bool modechanged = false;
+    loopv(clients) if(clients[i]->local || clients[i]->privilege >= PRIV_MASTER) hasmaster = true;
+    if(!hasmaster)
+    {
+        mastermode = MM_OPEN;
+        allowedips.shrink(0);
+        modechanged = true;
+    }
+
+    // send list of priveledges
+    packetbuf p(MAXTRANS, ENET_PACKET_FLAG_RELIABLE);
+    putint(p, N_CURRENTMASTER);
+    putint(p, mastermode);
+    loopv(clients) if(clients[i]->privilege >= PRIV_MASTER)
+    {
+        putint(p, clients[i]->clientnum);
+        putint(p, clients[i]->privilege);
+    }
+    putint(p, -1);
+    sendpacket(-1, 1, p.finalize());
+
+    if(modechanged) remod::onevent("onmastermode", "ii", -1, mastermode);
+
+    // check if client get any privelge
+    if(ci->privilege != PRIV_NONE)
+    {
+        name = privname(ci->privilege);
+        formatstring(msg)("%s claimed %s", colorname(ci), name);
+        sendservmsg(msg);
+        remod::onevent("onsetmaster", "iisss", ci->clientnum, ci->privilege, "", "", "");
+    }
+
+    checkpausegame();
+}
 }

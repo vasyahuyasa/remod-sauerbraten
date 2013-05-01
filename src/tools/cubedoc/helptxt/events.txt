@@ -89,7 +89,7 @@ Before player request getdemo
 
 @event onsetmaster 
 @arg1 cn
-@arg2 1|0
+@arg2 priv
 @arg3 pass 
 @arg4 authname
 When player claimed/revoke master or admin or auth
