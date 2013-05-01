@@ -1151,7 +1151,7 @@ namespace server
         sendpacket(-1, 1, p.finalize());
 
         // remod
-        remod::onevent("onsetmaster", "iisss", ci->clientnum, val ? 1:0, pass, authname ? authname:"", authdesc ? authdesc:"");
+        remod::onevent("onsetmaster", "iisss", ci->clientnum, ci->privilege, pass, authname ? authname:"", authdesc ? authdesc:"");
 
         checkpausegame();
         return true;

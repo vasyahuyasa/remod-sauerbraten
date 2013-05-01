@@ -400,60 +400,6 @@ void formatmillis(const char *fmt, int *millis)
     result(s.getbuf());
 }
 
-void setmastercmd(int *pcn, int *val)
-{
-    bool v = (bool)*val;
-    int cn = (int)*pcn;
-    clientinfo *ci = (clientinfo *)getinfo(cn);
-    if(ci)
-    {
-        const char *name = "";
-        if(!v)
-        {
-            if(ci->privilege>PRIV_NONE)
-            {
-                name = privname(ci->privilege);
-                revokemaster(ci);
-            }
-            else return;
-        }
-        else
-        {
-            if(ci->privilege>=PRIV_MASTER) return;
-            ci->privilege = PRIV_MASTER;
-            name = privname(ci->privilege);
-        }
-
-        remod::onevent("onsetmaster", "iiss", ci->clientnum, v ? 1:0, "", "");
-
-        string msg;
-        formatstring(msg)("%s %s %s", colorname(ci), v ? "claimed" : "relinquished", name);
-        sendservmsg(msg);
-
-        bool hasmaster = false;
-        loopv(clients) if(clients[i]->local || clients[i]->privilege >= PRIV_MASTER) hasmaster = true;
-        if(!hasmaster)
-        {
-            mastermode = MM_OPEN;
-            allowedips.shrink(0);
-        }
-
-        packetbuf p(MAXTRANS, ENET_PACKET_FLAG_RELIABLE);
-        putint(p, N_SERVMSG);
-        sendstring(msg, p);
-        putint(p, N_CURRENTMASTER);
-        putint(p, mastermode);
-        loopv(clients) if(clients[i]->privilege >= PRIV_MASTER)
-        {
-            putint(p, clients[i]->clientnum);
-            putint(p, clients[i]->privilege);
-        }
-        putint(p, -1);
-        sendpacket(-1, 1, p.finalize());
-        checkpausegame();
-    }
-}
-
 
 /**
  * checks if ip matches mask
@@ -1106,13 +1052,13 @@ void setpriv(int *cn, char *s)
 
     int priv = PRIV_NONE;
 
-    if(isdigit(name[0]))
+    if(isdigit(s[0]))
     {
         priv = clamp(parseint(s), (int)PRIV_NONE, (int)PRIV_ADMIN);
     }
     else
     {
-        switch s[0]
+        switch(s[0])
         {
             case 'n': priv = PRIV_NONE; break;
             case 'm': priv = PRIV_MASTER; break;
@@ -1123,7 +1069,7 @@ void setpriv(int *cn, char *s)
 
     if(priv == PRIV_AUTH) priv = PRIV_MASTER;
 
-    setmaster(ci, true, "", NULL, NULL, priv, true);
+    remod::setmaster(ci, priv);
 }
 
 
@@ -1501,14 +1447,6 @@ ICOMMAND(getcn, "s", (char *name), int cn = parseplayer(name); intret(cn));
  * @example halt 0
  */
 ICOMMAND(halt, "i", (int *err), exit(*err));
-
-/**
- * Set or unset master to specified player
- * @group player
- * @arg1 client number
- * @arg1 1 to set, 2 to unset
- */
-COMMANDN(setmaster, setmastercmd, "ii");
 
 /**
  * Check if ip corresponds to ip mask
