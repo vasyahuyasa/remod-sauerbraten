@@ -145,6 +145,33 @@ div.clear {
 		
 		Remod command line options
 		<ul class="dotlist">
+			<li><a name="-q" id="-q" class="cmdline_opt">-f</a> Sets your home directory.
+				If set, the engine will look for files in your home directory as well as the normal installation directory.
+				However, all files will be written to your home directory, instead of the normal installation directory.</li>			
+			
+			<li><a name="-k" id="-k" class="cmdline_opt">-f</a> Adds the mod directory to the list of directories the engine will search in for files.
+				Directories will be searched in the order listed on the command-line, and if not found, the engine looks in the installation directory.</li>			
+			
+			<li><a name="-u" id="-u" class="cmdline_opt">-f</a> Sets the server upstream bandwidth to N bytes per second.
+				Only set this parameter if you know what you are doing, specifying a wrong value is worse than not specifying it at all.</li>			
+			
+			<li><a name="-n" id="-n" class="cmdline_opt">-n</a> Same as serverdesc.</li>
+
+			<li><a name="-c" id="-c" class="cmdline_opt">-c</a> Same as maxclients.</li>
+
+			<li><a name="-i" id="-i" class="cmdline_opt">-i</a> Same as serverport.</li>
+
+			<li><a name="-j" id="-j" class="cmdline_opt">-j</a> Same as serverip.</li>
+			
+			<li><a name="-m" id="-m" class="cmdline_opt">-m</a> Sets the
+				master server to use for server (registering). (ex.: -msauerbraten.org).</li>
+
+			<li><a name="-p" id="-p" class="cmdline_opt">-p</a> Same as adminpass.</li>
+				
+			<li><a name="-y" id="-y" class="cmdline_opt">-y</a> Same as serverpass.</li>
+			
+			<li><a name="-o" id="-o" class="cmdline_opt">-o</a> Same as publicserver.</li>
+				
 			<li><a name="-f" id="-f" class="cmdline_opt">-f</a> Execute
 				config file instead of server-init.cfg (ex. -fserver2.cfg)</li>
 
