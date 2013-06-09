@@ -218,3 +218,13 @@ When player editmuted/editunmuted
 @arg1 cn
 @arg2 1|0
 When player switch to editing
+
+@event irc_onmsg
+@arg1 name
+@arg2 text
+When ircpublic message
+
+@event irc_onprivmsg
+@arg1 name
+@arg2 text
+When irc private message to bot
