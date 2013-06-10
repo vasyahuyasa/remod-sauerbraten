@@ -15,6 +15,9 @@ SVAR(consoletimefmt, "%c");
 SVAR(irccommandchar, "");
 time_t clocktime = 0;
 
+// remod
+VAR(ircpingdelay, 0, 60, 600); // delay in seconds between network ping
+
 char *gettime(char *format)
 {
     struct tm *t;
@@ -703,6 +706,11 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
             ircsend(n, "PONG %d", clocktime);
         }
     }
+    // remod
+    else if(!strcasecmp(w[g], "PONG"))
+    {
+        n->lastpong = clocktime;
+    }
     else
     {
         int numeric = *w[g] && *w[g] >= '0' && *w[g] <= '9' ? atoi(w[g]) : 0, off = 0;
@@ -963,6 +971,9 @@ void ircslice()
         }
         else if(!n->lastattempt || clocktime-n->lastattempt >= 60) ircestablish(n);
     }
+
+    // remod
+    ping();
 }
 
 // remod
@@ -1017,6 +1028,22 @@ void ircaction(char *msg)
             char *to = ircnets[i]->channels[j].name;
             ircnet *in = ircnets[i];
             ircsend(in, "PRIVMSG %s :%sACTION %s%s", to, "\001\0", msg, "\001\0");
+        }
+    }
+}
+
+void ping()
+{
+    // don't ping
+    if(ircpingdelay == 0) return;
+
+    loopv(ircnets)
+    {
+        ircnet *in = ircnets[i];
+        if(in->state == IRC_ONLINE && (clocktime - in->lastping) > ircpingdelay)
+        {
+            ircsend(in, "PING %u", clocktime);
+            in->lastping = clocktime;
         }
     }
 }

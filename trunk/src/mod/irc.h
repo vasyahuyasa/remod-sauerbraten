@@ -123,6 +123,9 @@ struct ircnet
     ENetSocket sock;
     vector<ircchan> channels;
     uchar input[4096];
+    
+    // remod
+    time_t lastping, lastpong;
 #ifndef STANDALONE
     int updated;
     ircbuf buffer;
@@ -139,6 +142,10 @@ struct ircnet
         port = lastattempt = 0;
         name[0] = serv[0] = nick[0] = ip[0] = passkey[0] = authname[0] = authpass[0] = 0;
         channels.shrink(0);
+	
+        // remod
+        lastping = 0;
+        lastpong = 0;
 #ifndef STANDALONE
         updated = 0;
         buffer.reset();
@@ -150,6 +157,7 @@ struct ircnet
 extern usermode irc_user_state(char *nick);
 extern int connectwithtimeout(ENetSocket sock, const char *hostname, const ENetAddress &remoteaddress);
 extern bool resolverwait(const char *name, ENetAddress *address);
+void ping();
 
 extern vector<ircnet *> ircnets;
 
