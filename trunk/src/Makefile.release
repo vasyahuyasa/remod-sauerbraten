@@ -12,6 +12,9 @@ USE_SQLITE3=true
 #Mysql support? true|false
 USE_MYSQL=true
 
+#Rcon mode udp/tcp
+RCON_MODE=udp
+
 ######################################
 
 ### Tools
@@ -84,7 +87,6 @@ SERVER_OBJS= \
 	fpsgame/server-standalone.o \
 	mod/commandev-standalone.o \
 	mod/commandhandler-standalone.o \
-	mod/rconmod-standalone.o \
 	mod/serverctrl-standalone.o \
 	mod/remod-standalone.o \
 	mod/varbox-standalone.o \
@@ -196,6 +198,16 @@ override SERVER_OBJS += $(foreach v,$(MYSQL_LIBMYSQL_OBJS),mod/mysql/$(MYSQL_LIB
 override SERVER_OBJS += mod/mysql-standalone.o
 endif
 #end of mysql
+
+
+
+#rcon	
+ifeq ($(RCON_MODE),tcp)
+override SERVER_OBJS+= mod/rconmod_tcp-standalone.o
+else
+override SERVER_OBJS+= mod/rconmod_udp-standalone.o
+endif
+#end of rcon
 
 
 

@@ -152,7 +152,7 @@ void init(int port=27070)
     if(!rconenable) { active = false; return; }
 
     sock=socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
-    if(sock<0)
+    if(sock < 0)
     {
         active=false;
         conoutf("Rcon: cannot create socket");
@@ -165,7 +165,7 @@ void init(int port=27070)
 
         if(bind(sock, (struct sockaddr *)&addr, sizeof(addr)) < 0)
         {
-            conoutf("Rcon: con not bind socket");
+            conoutf("Rcon: can not bind socket");
             active = false;
         }
         else
@@ -182,7 +182,7 @@ void init(int port=27070)
             {
                 rconpeers[i].logined=false;
             }
-            conoutf("Rcon: listen on port %d", port);
+            conoutf("Rcon: [udp] listen on port %d", port);
         }
     }
 }
