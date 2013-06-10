@@ -581,7 +581,7 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
                     // w[3]='a'
 
                     //server::filtercstext(ftext);
-                	ftext = newstring(&w[g+2][strlen(n->nick)]);
+                    ftext = newstring(w[g+2]);
                     remod::onevent(strcasecmp(w[g+1], n->nick) ? "irc_onmsg" : "irc_onprivmsg", "ss", user[0], ftext);
                     DELETEA(ftext);
                 }
