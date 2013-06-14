@@ -25,12 +25,8 @@
 
 #include "fpsgame.h"
 #include "rconmod.h"
+#include "rconmod_udp.h"
 #include "remod.h"
-
-#define MAXRCONPEERS 32
-#define MAXBUF 1024*60
-
-EXTENSION(RCON);
 
 extern int execute(const char *p);
 namespace remod
@@ -38,28 +34,8 @@ namespace remod
 
 namespace rcon
 {
-
-// state of rcon
-bool active;
-
-// wait connections
-VAR(rconenable, 0, 0, 1);
-
-// rcon password
-SVAR(rconpass, "");
-
-// list of peers
-rconpeer rconpeers[MAXRCONPEERS];
-
-// listen socket
-int sock;
-struct sockaddr_in addr;
-struct sockaddr_in fromaddr;
-int addrlen;
-char buf[MAXBUF];
-
 // check for \n in end of line
-bool havenl(char *msg)
+bool rconserver_udp::havenl(char *msg)
 {
     for(int c = *msg; c; c = *++msg)
     {
@@ -69,7 +45,7 @@ bool havenl(char *msg)
 }
 
 // add peer to broadcast list
-bool addpeer(struct sockaddr_in addr)
+bool rconserver_udp::addpeer(struct sockaddr_in addr)
 {
     char *ipstr;
     string msg;
@@ -80,7 +56,7 @@ bool addpeer(struct sockaddr_in addr)
             rconpeers[i].addr=addr;
             rconpeers[i].logined=true;
             ipstr = inet_ntoa(addr.sin_addr);
-            formatstring(msg)("Rcon: new peer [%s:%i]\n", ipstr, ntohs(addr.sin_port));
+            formatstring(msg)("Rcon: new peer [%s:%i]", ipstr, ntohs(addr.sin_port));
             conoutf(msg);
             return true;
         }
@@ -89,7 +65,7 @@ bool addpeer(struct sockaddr_in addr)
 }
 
 // update peer info when recive any data
-void uppeer(struct sockaddr_in addr)
+void rconserver_udp::uppeer(struct sockaddr_in addr)
 {
     // list all peers and update sockaddr information
     for(int i=0; i<MAXRCONPEERS; i++)
@@ -102,7 +78,7 @@ void uppeer(struct sockaddr_in addr)
 }
 
 // logout all peers
-void logout()
+void rconserver_udp::logout()
 {
     sendmsg("Logout due reach peer limit");
     // dont touch first 5 peers
@@ -113,7 +89,7 @@ void logout()
 }
 
 // check peer state
-bool logined(struct sockaddr_in addr, char *msg)
+bool rconserver_udp::logined(struct sockaddr_in addr, char *msg)
 {
     // check all connected peers by ip and login
     for(int i=0; i<MAXRCONPEERS; i++)
@@ -147,9 +123,13 @@ bool logined(struct sockaddr_in addr, char *msg)
 }
 
 //Init rcon module
-void init(int port=27070)
+rconserver_udp::rconserver_udp(int port=27070)
 {
-    if(!rconenable) { active = false; return; }
+    if(!rconenable)
+    {
+        active = false;
+        return;
+    }
 
     sock=socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
     if(sock < 0)
@@ -188,8 +168,10 @@ void init(int port=27070)
 }
 
 // send message to all logined peers
-void sendmsg(const char *msg, int len)
+void rconserver_udp::sendmsg(const char *msg, int len)
 {
+    if(!active) return;
+
     char *data;
 
     // message must ends with \n
@@ -217,26 +199,25 @@ void sendmsg(const char *msg, int len)
 
 }
 
-void sendmsg(const char *msg)
+void rconserver_udp::sendmsg(const char *msg)
 {
     sendmsg(msg, strlen(msg));
 }
 
 // update on every server frame
-void update()
+void rconserver_udp::update()
 {
-    if(active)
+    if(!active) return;
+
+    int recvlen;
+    // MAXBUF-1 for avoid buffer overflow
+    recvlen=recvfrom(sock, buf, MAXBUF-1, 0, (struct sockaddr*)&fromaddr, (socklen_t*)&addrlen);
+    if(recvlen>0)
     {
-        int recvlen;
-        // MAXBUF-1 for avoid buffer overflow
-        recvlen=recvfrom(sock, buf, MAXBUF-1, 0, (struct sockaddr*)&fromaddr, (socklen_t*)&addrlen);
-        if(recvlen>0)
+        if(logined(fromaddr, buf))
         {
-            if(logined(fromaddr, buf))
-            {
-                buf[recvlen] = '\0';
-                execute(buf);
-            }
+            buf[recvlen] = '\0';
+            execute(buf);
         }
     }
 }
