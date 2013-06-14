@@ -23,11 +23,8 @@
 
 #include "fpsgame.h"
 #include "rconmod.h"
+#include "rconmod_tcp.h"
 #include "remod.h"
-
-#define MAXBUF 1024*60
-
-EXTENSION(RCON);
 
 extern int execute(const char *p);
 namespace remod
@@ -36,36 +33,12 @@ namespace remod
 namespace rcon
 {
 
-// wait connections
-VAR(rconenable, 0, 0, 1);
-
-// rcon password
-SVAR(rconpass, "");
-
-// list of clients
-vector<rconpeer*> rconpeers;
-
-fd_set master;      // master file descriptor list
-fd_set read_fds;    // temp file descriptor list for select()
-struct sockaddr_in serveraddr; // server address
-struct sockaddr_in clientaddr; // client address
-int fdmax;          // maximum file descriptor number
-int listener;       // listening socket descriptor
-int newfd;          // newly accept()ed socket descriptor
-char buf[MAXBUF];   // buffer for client data
-int nbytes;
-// for setsockopt() SO_REUSEADDR, below
-#ifdef WIN32
-char yes = 1;
-#else
-int yes = 1;
-#endif
-
-int addrlen;
-
-void init(int port = 27070)
+rconserver_tcp::rconserver_tcp(int port = 27070)
 {
     if(rconenable == 0) return;
+
+    // for setsockopt() SO_REUSEADDR
+    yes = 1;
 
     // clear the master and temp sets
     FD_ZERO(&master);
@@ -115,7 +88,7 @@ void init(int port = 27070)
     conoutf("Rcon: [tcp] listen on port %d", port);
 }
 
-void update()
+void rconserver_tcp::update()
 {
     if(rconenable == 0) return;
 
@@ -176,11 +149,11 @@ void update()
                     rconenable = 0;
                 }
 
-                #ifdef WIN32
+#ifdef WIN32
                 closesocket(peer.socket);
-                #else
+#else
                 close(peer.socket);
-                #endif
+#endif
 
                 FD_CLR(peer.socket, &master);
                 rconpeers.remove(i);
@@ -209,7 +182,7 @@ void update()
 }
 
 // send message to peers
-void sendmsg(const char *msg, int len)
+void rconserver_tcp::sendmsg(const char *msg, int len)
 {
     char *data;
 
@@ -234,11 +207,6 @@ void sendmsg(const char *msg, int len)
     }
 
     DELETEA(data);
-}
-
-void sendmsg(const char *msg)
-{
-    sendmsg(msg, strlen(msg));
 }
 
 }
