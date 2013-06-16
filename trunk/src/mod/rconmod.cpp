@@ -14,6 +14,9 @@ namespace remod
 {
 namespace rcon
 {
+// listen address
+SVAR(rconip, "");
+
 // protocol 0-udp/1-tcp
 VAR(rconproto, RCON_UDP, 0, NUMPROTOS-1);
 

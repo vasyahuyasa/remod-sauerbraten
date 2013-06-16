@@ -19,7 +19,8 @@
 #endif
 
 #ifdef WIN32
-#include "windows.h"
+#include <windows.h>
+#include <winsock2.h>
 #define socklen_t int
 #endif
 
@@ -51,10 +52,10 @@ bool rconserver_udp::addpeer(struct sockaddr_in addr)
     string msg;
     for(int i=0; i<MAXRCONPEERS; i++)
     {
-        if(rconpeers[i].logined==false)
+        if(rconpeers[i].logined == false)
         {
-            rconpeers[i].addr=addr;
-            rconpeers[i].logined=true;
+            rconpeers[i].addr = addr;
+            rconpeers[i].logined = true;
             ipstr = inet_ntoa(addr.sin_addr);
             formatstring(msg)("Rcon: new peer [%s:%i]", ipstr, ntohs(addr.sin_port));
             conoutf(msg);
@@ -131,17 +132,33 @@ rconserver_udp::rconserver_udp(int port=27070)
         return;
     }
 
-    sock=socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
+    sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
     if(sock < 0)
     {
-        active=false;
-        conoutf("Rcon: cannot create socket");
+        active = false;
+        conoutf("Rcon: can not create socket");
     }
     else
     {
+        // bind
+        addr.sin_addr.s_addr = htonl(INADDR_ANY);
+
+        // listen interface
+        if(*rconip)
+        {
+#ifdef WIN32
+                // shitcode
+                if(addr.sin_addr.s_addr = (u_long)inet_addr(rconip) != INADDR_NONE)
+#else
+                if(inet_pton(AF_INET, rconip, &(addr.sin_addr)) == 1)
+#endif
+                conoutf("Rcon: listen on interface %s", rconip);
+            else
+                conoutf("Rcon: %s not a valid network address", rconip);
+        }
         addr.sin_family = AF_INET;
         addr.sin_port = htons(port);
-        addr.sin_addr.s_addr = htonl(INADDR_ANY);
+
 
         if(bind(sock, (struct sockaddr *)&addr, sizeof(addr)) < 0)
         {
@@ -157,10 +174,10 @@ rconserver_udp::rconserver_udp(int port=27070)
 #else
             fcntl(sock, F_SETFL, O_NONBLOCK);
 #endif
-            active=true;
+            active = true;
             for(int i=0; i<MAXRCONPEERS; i++)
             {
-                rconpeers[i].logined=false;
+                rconpeers[i].logined = false;
             }
             conoutf("Rcon: [udp] listen on port %d", port);
         }

@@ -20,6 +20,7 @@ namespace remod
 namespace rcon
 {
 
+extern char *rconip;
 extern int rconenable;
 extern char *rconpass;
 

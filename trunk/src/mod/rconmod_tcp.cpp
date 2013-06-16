@@ -17,7 +17,8 @@
 #endif
 
 #ifdef WIN32
-#include "windows.h"
+#include <windows.h>
+#include <winsock2.h>
 #define socklen_t int
 #endif
 
@@ -61,8 +62,22 @@ rconserver_tcp::rconserver_tcp(int port = 27070)
     }
 
     // bind
-    serveraddr.sin_family = AF_INET;
     serveraddr.sin_addr.s_addr = INADDR_ANY;
+
+    // listen interface
+    if(*rconip)
+    {
+#ifdef WIN32
+        // shitcode
+        if(serveraddr.sin_addr.s_addr = (u_long)inet_addr(rconip) != INADDR_NONE)
+#else
+        if(inet_pton(AF_INET, rconip, &(serveraddr.sin_addr)) == 1)
+#endif
+            conoutf("Rcon: listen on interface %s", rconip);
+        else
+            conoutf("Rcon: %s not a valid network address", rconip);
+    }
+    serveraddr.sin_family = AF_INET;
     serveraddr.sin_port = htons(port);
     memset(&(serveraddr.sin_zero), '\0', 8);
     if(bind(listener, (struct sockaddr *)&serveraddr, sizeof(serveraddr)) == -1)
