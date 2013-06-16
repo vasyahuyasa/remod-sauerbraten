@@ -25,6 +25,8 @@ struct rconserver_tcp : rconserver
     int newfd;          // newly accept()ed socket descriptor
     char buf[MAXBUF];   // buffer for client data
     int nbytes;
+    struct timeval tv;  // timeout for select
+
 // for setsockopt() SO_REUSEADDR, below
 #ifdef WIN32
     char yes;
