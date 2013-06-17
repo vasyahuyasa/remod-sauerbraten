@@ -7,6 +7,7 @@
 */
 
 #include <stdio.h>
+#include <errno.h>
 
 #ifndef WIN32
 #include <arpa/inet.h>
@@ -52,15 +53,16 @@ rconserver_tcp::rconserver_tcp(int port = 27070)
     // get the listener
     if((listener = socket(AF_INET, SOCK_STREAM, 0)) == -1)
     {
-        conoutf("Rcon: create socket error");
+        //conoutf("Rcon: create socket error");
+        conoutf("Rcon: %s", strerror(errno));
         rconenable = 0;
         return;
     }
 
-    // "address already in use" error message
     if(setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) == -1)
     {
-        conoutf("Rcon: address already in use");
+        //conoutf("Rcon: address already in use");
+        conoutf("Rcon: %s", strerror(errno));
         rconenable = 0;
         return;
     }
@@ -86,7 +88,8 @@ rconserver_tcp::rconserver_tcp(int port = 27070)
     memset(&(serveraddr.sin_zero), '\0', 8);
     if(bind(listener, (struct sockaddr *)&serveraddr, sizeof(serveraddr)) == -1)
     {
-        conoutf("Rcon: socket bind error");
+        //conoutf("Rcon: socket bind error");
+        conoutf("Rcon: %s", strerror(errno));
         rconenable = 0;
         return;
     }
@@ -94,7 +97,8 @@ rconserver_tcp::rconserver_tcp(int port = 27070)
     // listen
     if(listen(listener, 10) == -1)
     {
-        conoutf("Rcon: socket listen error");
+        //conoutf("Rcon: socket listen error");
+        conoutf("Rcon: %s", strerror(errno));
         rconenable = 0;
         return;
     }
@@ -114,7 +118,8 @@ void rconserver_tcp::update()
     read_fds = master;
     if(select(fdmax+1, &read_fds, NULL, NULL, &tv) == -1)
     {
-        conoutf("Rcon: select error");
+        //conoutf("Rcon: select error");
+        conoutf("Rcon: %s", strerror(errno));
         rconenable = 0;
         return;
     }
@@ -126,7 +131,8 @@ void rconserver_tcp::update()
         addrlen = sizeof(clientaddr);
         if((newfd = accept(listener, (struct sockaddr *)&clientaddr, (socklen_t *)&addrlen)) == -1)
         {
-            conoutf("Rcon: socket accept error");
+            //conoutf("Rcon: socket accept error");
+            conoutf("Rcon: %s", strerror(errno));
             rconenable = 0;
             return;
         }
@@ -157,17 +163,6 @@ void rconserver_tcp::update()
             // handle data from a client
             if((nbytes = recv(peer.socket, buf, sizeof(buf), 0)) <= 0)
             {
-                // got error or connection closed by client
-                if(nbytes == 0)
-                    // connection closed
-                    //printf("%s: socket %d hung up\n", argv[0], i);
-                    conoutf("Rcon: %s disconected", inet_ntoa(peer.addr.sin_addr));
-                else
-                {
-                    conoutf("Rcon: recv error");
-                    rconenable = 0;
-                }
-
 #ifdef WIN32
                 closesocket(peer.socket);
 #else
@@ -176,6 +171,17 @@ void rconserver_tcp::update()
 
                 FD_CLR(peer.socket, &master);
                 rconpeers.remove(i);
+
+                // got error or connection closed by client
+                if(nbytes == 0)
+                    // connection closed
+                    //printf("%s: socket %d hung up\n", argv[0], i);
+                    conoutf("Rcon: %s disconected", inet_ntoa(peer.addr.sin_addr));
+                else
+                {
+                    conoutf("Rcon: %s [%s]", strerror(errno), inet_ntoa(peer.addr.sin_addr));
+                    //rconenable = 0;
+                }
             }
             else
             {
