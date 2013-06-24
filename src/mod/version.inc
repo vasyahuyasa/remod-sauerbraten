@@ -3,6 +3,11 @@
 #define REMOD_VERSION "SVN build $Rev$"
 #endif
 
+// codename
+#ifndef REMOD_CODENAME
+#define REMOD_CODENAME "\"Sasha Grey\""
+#endif
+
 // system
 #if defined(_WIN32) || defined(_WIN64) || defined(__MINGW32__)
     #define REMOD_SYSTEM "Windows"

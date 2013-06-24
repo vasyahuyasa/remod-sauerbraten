@@ -95,7 +95,7 @@ void getflags(int *pcn)
 void version()
 {
     string txt;
-    formatstring(txt)("Remod %s (build %s %s) %s/%s", REMOD_VERSION, __DATE__, __TIME__, REMOD_SYSTEM, REMOD_ARCH);
+    formatstring(txt)("Remod %s %s (build %s %s) %s/%s", REMOD_CODENAME, REMOD_VERSION, __DATE__, __TIME__, REMOD_SYSTEM, REMOD_ARCH);
     result(txt);
 }
 
