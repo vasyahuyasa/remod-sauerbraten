@@ -1246,8 +1246,8 @@ COMMAND(kick, "iis");
 /**
  * Spectate or unspectate player
  * @group player
- * @arg1 client number
- * @arg2 1 to spectate, 0 to unspectate
+ * @arg1 1 to spectate, 0 to unspectate
+ * @arg2 client number
  */
 COMMAND(spectator, "ii");
 
