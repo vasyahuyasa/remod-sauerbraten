@@ -1001,7 +1001,7 @@ usermode irc_user_state(char *nick)
 
 void ircisop(char *name)
 {
-    intret(irc_user_state(name) == OP);
+    intret((irc_user_state(name) == OP) || (irc_user_state(name) == OWNER) || (irc_user_state(name) == ADMIN) || (irc_user_state(name) == HALFOP));
 }
 
 void ircisvoice(char *name)
