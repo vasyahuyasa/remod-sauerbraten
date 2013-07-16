@@ -763,11 +763,13 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
                 {
                     switch(nick[0])
                     {
+			case '~':
                         case '*': state = OWNER; break;
+			case '&':
                         case '!': state = ADMIN; break;
                         case '@': state = OP; break;
-                        case '+': state = VOICE; break;
                         case '%': state = HALFOP; break;
+                        case '+': state = VOICE; break;
                         default: state = NONE; break;
                     }
 
