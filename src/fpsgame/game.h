@@ -61,8 +61,8 @@ enum
 struct fpsentity : extentity
 {
     int triggerstate, lasttrigger;
-    
-    fpsentity() : triggerstate(TRIGGER_RESET), lasttrigger(0) {} 
+
+    fpsentity() : triggerstate(TRIGGER_RESET), lasttrigger(0) {}
 };
 
 enum { GUN_FIST = 0, GUN_SG, GUN_CG, GUN_RL, GUN_RIFLE, GUN_GL, GUN_PISTOL, GUN_FIREBALL, GUN_ICEBALL, GUN_SLIMEBALL, GUN_BITE, GUN_BARREL, NUMGUNS };
@@ -207,7 +207,7 @@ enum
     S_CHAINSAW_IDLE,
 
     S_HIT,
-    
+
     S_FLAGFAIL
 };
 
@@ -332,11 +332,11 @@ static struct itemstat { int add, max, sound; const char *name; int icon, info; 
     {5,     15,    S_ITEMAMMO,   "RI", HICON_RIFLE, GUN_RIFLE},
     {10,    30,    S_ITEMAMMO,   "GL", HICON_GL, GUN_GL},
     {30,    120,   S_ITEMAMMO,   "PI", HICON_PISTOL, GUN_PISTOL},
-    {25,    100,   S_ITEMHEALTH, "H", HICON_HEALTH},
-    {10,    1000,  S_ITEMHEALTH, "MH", HICON_HEALTH},
+    {25,    100,   S_ITEMHEALTH, "H", HICON_HEALTH, -1},
+    {10,    1000,  S_ITEMHEALTH, "MH", HICON_HEALTH, -1},
     {100,   100,   S_ITEMARMOUR, "GA", HICON_GREEN_ARMOUR, A_GREEN},
     {200,   200,   S_ITEMARMOUR, "YA", HICON_YELLOW_ARMOUR, A_YELLOW},
-    {20000, 30000, S_ITEMPUP,    "Q", HICON_QUAD},
+    {20000, 30000, S_ITEMPUP,    "Q", HICON_QUAD, -1},
 };
 
 #define MAXRAYS 20
@@ -495,7 +495,7 @@ struct fpsstate
         }
         else if(m_sp)
         {
-            if(m_dmsp) 
+            if(m_dmsp)
             {
                 armourtype = A_BLUE;
                 armour = 25;
@@ -842,4 +842,3 @@ namespace server
 }
 
 #endif
-
