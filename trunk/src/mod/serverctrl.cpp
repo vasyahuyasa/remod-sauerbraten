@@ -1048,7 +1048,7 @@ void listat(tagval *args, int numargs)
 void setpriv(int *cn, char *s)
 {
     clientinfo *ci = (clientinfo *)getclientinfo(*cn);
-    if(!cn) return;
+    if(!ci) return;
 
     int priv = PRIV_NONE;
 
@@ -1072,6 +1072,13 @@ void setpriv(int *cn, char *s)
     remod::setmaster(ci, priv);
 }
 
+void getpos(int *cn)
+{
+    clientinfo *ci = (clientinfo *)getclientinfo(*cn);
+    if(!ci || ci->state.state == CS_SPECTATOR) return;
+    defformatstring(pos)("%s %s %s", floatstr(ci->state.o.x), floatstr(ci->state.o.y), floatstr(ci->state.o.z));
+    result(pos);
+}
 
 /**
  * Set client personal variable for session (limit of variables is 128)
@@ -1709,4 +1716,12 @@ COMMAND(listadd, "V");
  * @arg2 privelege: 0 or n - NONE, 1 or 2 or m - MASTER, 3 or a - ADMIN
  */
 COMMAND(setpriv, "is");
+
+/**
+ * Get client position
+ * @group player
+ * @arg1 cn
+ * @return x,y,z coordinates in float format, return empty if client not exist or spectator
+ */
+COMMAND(getpos, "i");
 }
