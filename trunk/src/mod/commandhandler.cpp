@@ -304,7 +304,7 @@ void common_unregistercommand(vector<cmd_handler*> &handlers, const char* cmd_na
 	loopv(handlers)
 	{
 	    cmd_handler *h = handlers[i];
-	    if(strcmp(cmd_name, h->cmd_name))
+	    if(strcmp(cmd_name, h->cmd_name) == 0)
         {
             DELETEA(h->cmd_descr);
             DELETEA(h->cmd_func);
