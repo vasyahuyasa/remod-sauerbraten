@@ -81,11 +81,31 @@ void rconserver_udp::uppeer(struct sockaddr_in addr)
 // logout all peers
 void rconserver_udp::logout()
 {
-    sendmsg("Logout due reach peer limit");
+    sendmsg("Rcon: Logout all due reach peer limit");
     // dont touch first 5 peers
     for(int i=4; i<MAXRCONPEERS; i++)
     {
         rconpeers[i].logined = false;
+    }
+}
+
+// logout specified peer
+void rconserver_udp::logout(struct sockaddr_in addr)
+{
+    int i;
+    for(i = 0; i < MAXRCONPEERS; i++)
+    {
+        if(rconpeers[i].addr.sin_addr.s_addr == addr.sin_addr.s_addr && rconpeers[i].logined)
+        {
+            char *msg = newstring("Logout\n");
+            size_t len = strlen(msg);
+            int addrlen = sizeof(addr);
+            sendto(sock, msg, len, 0, (struct sockaddr *)&rconpeers[i].addr, addrlen);
+            rconpeers[i].logined = false;
+            defformatstring(quit_msg)("Rcon: quit [%s:%i]", inet_ntoa(addr.sin_addr), ntohs(addr.sin_port));
+            conoutf(quit_msg);
+            return;
+        }
     }
 }
 
@@ -228,13 +248,19 @@ void rconserver_udp::update()
 
     int recvlen;
     // MAXBUF-1 for avoid buffer overflow
-    recvlen=recvfrom(sock, buf, MAXBUF-1, 0, (struct sockaddr*)&fromaddr, (socklen_t*)&addrlen);
+    recvlen = recvfrom(sock, buf, MAXBUF-1, 0, (struct sockaddr*)&fromaddr, (socklen_t*)&addrlen);
     if(recvlen>0)
     {
         if(logined(fromaddr, buf))
         {
             buf[recvlen] = '\0';
-            execute(buf);
+
+            // check for "quit" command
+            if(strcmp(buf, "quit\n") == 0)
+            {
+                logout(fromaddr);
+            }
+            else execute(buf);
         }
     }
 }

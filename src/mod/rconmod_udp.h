@@ -32,6 +32,7 @@ private:
     bool addpeer(struct sockaddr_in addr);
     void uppeer(struct sockaddr_in addr);
     void logout();
+    void logout(struct sockaddr_in addr);
     bool logined(struct sockaddr_in addr, char *msg);
     void sendmsg(const char *msg);
 

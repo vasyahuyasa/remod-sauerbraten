@@ -176,7 +176,7 @@ void rconserver_tcp::update()
                 if(nbytes == 0)
                     // connection closed
                     //printf("%s: socket %d hung up\n", argv[0], i);
-                    conoutf("Rcon: %s disconected", inet_ntoa(peer.addr.sin_addr));
+                    conoutf("Rcon: disconected [%s]", inet_ntoa(peer.addr.sin_addr));
                 else
                 {
                     conoutf("Rcon: %s [%s]", strerror(errno), inet_ntoa(peer.addr.sin_addr));
@@ -189,7 +189,21 @@ void rconserver_tcp::update()
                 {
                     // execute command
                     buf[nbytes] = '\0';
-                    execute(buf);
+
+                    // check close connection request "quit"
+                    if(strcmp(buf, "quit\r\n") == 0)
+                    {
+#ifdef WIN32
+                        closesocket(peer.socket);
+#else
+                        close(peer.socket);
+#endif
+
+                        FD_CLR(peer.socket, &master);
+                        rconpeers.remove(i);
+                        conoutf("Rcon: quit [%s:%i]", inet_ntoa(peer.addr.sin_addr), ntohs(peer.addr.sin_port));
+                    }
+                    else execute(buf);
                 }
                 else
                 {
