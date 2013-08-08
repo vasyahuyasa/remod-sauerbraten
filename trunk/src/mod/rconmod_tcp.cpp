@@ -37,8 +37,6 @@ namespace rcon
 
 rconserver_tcp::rconserver_tcp(int port = 27070)
 {
-    if(rconenable == 0) return;
-
     // set select timeout for 1 usec
     tv.tv_sec = 0;
     tv.tv_usec = 1;
@@ -113,8 +111,6 @@ rconserver_tcp::rconserver_tcp(int port = 27070)
 
 void rconserver_tcp::update()
 {
-    if(rconenable == 0) return;
-
     read_fds = master;
     if(select(fdmax+1, &read_fds, NULL, NULL, &tv) == -1)
     {

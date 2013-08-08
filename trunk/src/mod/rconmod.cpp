@@ -56,7 +56,7 @@ void sendmsg(const char *msg)
 
 void update()
 {
-    if(srv)
+    if(rconenable && srv)
         srv->update();
 }
 
