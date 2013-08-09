@@ -44,7 +44,12 @@ namespace remod
     struct evt_param
     {
         char type;                  // i - int, s - string, f, d - float
-    	void* value;                // param value
+        union {                     // param value
+            int *value_i;
+            char *value_s;
+            double *value_d;
+            void *value;
+        };
     };
 
     struct event

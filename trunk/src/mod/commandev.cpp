@@ -61,26 +61,23 @@ event* storeevent(eventType etype, const char *custom, const char *fmt, va_list 
             {
                 case 'i':
                 {
-                    int *i = new int;
-                    *i = va_arg(vl, int);
-                    param->value = (void*)i;
+                    param->value_i = new int;
+                    *param->value_i = va_arg(vl, int);
                     break;
                 }
 
 
                 case 's':
                 {
-                    char *s = newstring(va_arg(vl, char*));
-                    param->value = (void*)s;
+                    param->value_s = newstring(va_arg(vl, char*));
                     break;
                 }
 
                 case 'f':
                 case 'd':
                 {
-                    double *d = new double;
-                    *d = va_arg(vl, double);
-                    param->value = (void*)d;
+                    param->value_d = new double;
+                    *param->value_d  = va_arg(vl, double);
                     break;
                 }
 
@@ -93,6 +90,51 @@ event* storeevent(eventType etype, const char *custom, const char *fmt, va_list 
             }
         }
     return e;
+}
+
+void *getarg(vector<evt_param *> &params)
+{
+    if(params.length())
+    {
+        void *value;
+        evt_param *param = params.remove(0);
+        switch(param->type)
+        {
+            case 'i':
+            {
+                int *i = new int;
+                value = i;
+                *i = *param->value_i;
+                break;
+            }
+
+            case 's':
+            {
+                value = newstring(param->value_s);
+                break;
+            }
+
+            case 'd':
+            case 'f':
+            {
+                double *d = new double;
+                value = d;
+                *d = *param->value_d;
+                break;
+            }
+
+            default:
+                value = NULL;
+                break;
+        }
+
+        // free resources
+        if(param->value) delete param->value;
+        delete param;
+
+        return value;
+    }
+    return NULL;
 }
 
 void addevent(eventType etype, const char *custom, const char *fmt, va_list vl)
@@ -162,15 +204,83 @@ void clearhandlers()
 }
 
 void triggerEvent(event *ev)
-{/*
+{
     switch(ev->evt_type)
     {
         case ONCOMMAND:
         {
-            int cn
+            int *cn = (int*)getarg(ev->params);
+            const char *command_str = (const char*)getarg(ev->params);;
+
+            //splitting command_string to command_name and command_params
+            char *command_name;
+            char *command_params;
+
+            const char *spacepos = strstr(command_str, " ");
+            if(!spacepos)
+            {
+                command_name = newstring(command_str);
+                command_params = newstring("");
+            }
+            else
+            {
+                command_params = newstring(spacepos+1);
+                command_name = newstring(command_str, (size_t) (spacepos - command_str));
+            }
+
+            // execute command
+            remod::oncommand(*cn, command_name, command_params);
+
+            delete(cn);
+            DELETEA(command_str);
+            DELETEA(command_name);
+            DELETEA(command_params);
+            return;
+        }
+
+        #ifdef IRC
+        case IRC_ONCOMMAND:
+        {
+            //getting username
+            const char *user = (const char*)getarg(ev->params);
+            const char *command_str = (const char*)getarg(ev->params);;
+
+            //splitting command_string to command_name and command_params
+            char *command_name;
+            char *command_params;
+
+            const char *spacepos = strstr(command_str, " ");
+            if(!spacepos)
+            {
+                command_name = newstring(command_str);
+                command_params = newstring("");
+            }
+            else
+                {
+                command_params = newstring(spacepos+1);
+                command_name = newstring(command_str, (size_t) (spacepos - command_str));
+            }
+
+            // execute irc command
+            remod::irc_oncommand(user, command_name, command_params);
+
+            DELETEA(user);
+            DELETEA(command_str);
+            DELETEA(command_name);
+            DELETEA(command_params);
+
+            return;
+        }
+        #endif
+
+        default:
+        {
+            if(ishandle(ev->evt_type))
+            {
+
+            }
         }
     }
-    */
 }
 
 //Trigger spescified event
