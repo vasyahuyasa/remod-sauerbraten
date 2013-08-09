@@ -15,56 +15,71 @@ extern char *strreplace(const char *s, const char *oldval, const char *newval);
 
 namespace remod
 {
-vector<evt_handler> evt_handlers; //Event handlers
 
+typedef vector<evt_handler> eventHandlers; //Event handlers
+eventHandlers handlers[NUMEVENTS];
 
+// Conver event name to string
+char *event2str(eventType type)
+{
+    if((type >= 0) && (type < NUMEVENTS))
+        return newstring(eventNames[type]);
+    else
+        return newstring("");
+}
+
+eventType str2event(const char *name)
+{
+    loopi(NUMEVENTS)
+        if(strcmp(name, eventNames[i]) == 0) return (eventType)i;
+    return CUSTOMEVENT;
+}
 
 //Add script callback to event
 void addhandler(const char *evt_type, const char *callbackcmd)
 {
     if(evt_type && evt_type[0] && callbackcmd && callbackcmd[0])
     {
+        eventType etype = str2event(evt_type);
         evt_handler eh;
+        eh.evt_type = etype;
+        if(etype == CUSTOMEVENT) eh.custom = newstring(evt_type);
         eh.evt_cmd = newstring(callbackcmd);
-        eh.evt_type = newstring(evt_type);
-        evt_handlers.add(eh);
+        handlers[etype].add(eh);
     }
-
 }
 
 void delhandler(const char* evt_type, const char *cmd)
 {
-    for(int i=0; i<evt_handlers.length(); i++)
+    eventType etype = str2event(evt_type);
+    loopv(handlers[etype])
     {
-    	evt_handler eh = evt_handlers[i];
-        if ((strcmp(eh.evt_type, evt_type) == 0) && (strcmp(eh.evt_cmd, cmd) == 0)) {
-        	DELETEA(eh.evt_cmd);
-        	DELETEA(eh.evt_type);
-            evt_handlers.remove(i);
+        evt_handler &eh = handlers[etype][i];
+        if(strcmp(cmd, eh.evt_cmd) == 0)
+        {
+            DELETEA(eh.evt_cmd);
+            if(etype == CUSTOMEVENT) DELETEA(eh.custom);
+            handlers[etype].remove(i);
         }
     }
 }
 
-bool ishandle(const char *evt_type)
+bool ishandle(eventType etype)
 {
-    for(int i=0; i<evt_handlers.length(); i++)
-    {
-        if(strcmp(evt_type, evt_handlers[i].evt_type) == 0)
-        {
-            return true;
-        }
-    }
-    return false;
+    return handlers[etype].length();
 }
 
 #if 1
 //Debug
 void dumphandlers()
 {
-    for(int i=0; i<evt_handlers.length(); i++)
-    {
-        conoutf("Handler %s = %s\n", evt_handlers[i].evt_type, evt_handlers[i].evt_cmd);
-    }
+    loopi(NUMEVENTS)
+        if(handlers[i].length())
+            loopvj(handlers[i])
+            {
+                evt_handler &eh = handlers[i][j];
+                conoutf("Handler %s = %s\n", event2str((eventType)eh.evt_type), eh.evt_cmd);
+            }
 }
 /**
  * Print all event handlers (debug mode only)
@@ -76,23 +91,19 @@ COMMAND(dumphandlers, "");
 
 void clearhandlers()
 {
-    evt_handlers.shrink(0);
+    loopi(NUMEVENTS)
+        handlers[i].shrink(0);
 }
 
-
-
-//Return true - eat server handler, false allow server to handle
-bool onevent(const char *evt_type, const char *fmt, ...)
+//Trigger spescified event
+void triggerEvent(eventType etype, const char *custom,  const char *fmt, va_list vl)
 {
     //if oncommand
-    if (strcmp(evt_type, "oncommand") == 0)
+    if(etype == ONCOMMAND)
     {
     	//getting cn
-    	va_list vl;
-		va_start(vl, fmt);
 		int cn = va_arg(vl, int);
 		const char *command_str = newstring(va_arg(vl, const char *));
-		va_end(vl);
 
 		//splitting command_string to command_name and command_params
 		char *command_name;
@@ -117,19 +128,15 @@ bool onevent(const char *evt_type, const char *fmt, ...)
 		DELETEA(command_params);
 		DELETEA(command_str);
 
-    	//eat it!
-    	return true;
+    	return;
 
     } //if irc_oncommand
     #ifdef IRC
-    else if (strcmp(evt_type, "irc_oncommand") == 0)
+    else if (etype == IRC_ONCOMMAND)
     {
     	//getting username
-    	va_list vl;
-		va_start(vl, fmt);
 		const char *user = newstring(va_arg(vl, const char *));
 		const char *command_str = newstring(va_arg(vl, const char *));
-		va_end(vl);
 
 		//splitting command_string to command_name and command_params
 		char *command_name;
@@ -151,22 +158,18 @@ bool onevent(const char *evt_type, const char *fmt, ...)
 		DELETEA(command_str);
 		DELETEA(command_name);
 		DELETEA(command_params);
-    	//eat it!
-    	return true;
 
+    	return;
     }
     #endif
     //If handler defined
-    else if (ishandle(evt_type))
+    else if (ishandle(etype))
     {
     	int paramcount = strlen(fmt);
     	char *evparams = newstring("");
         //Check params
         if(paramcount>0)
         {
-            va_list vl;
-            va_start(vl, fmt);
-
             //Convert params to string
             for(int i=0; i<paramcount; i++)
             {
@@ -194,30 +197,63 @@ bool onevent(const char *evt_type, const char *fmt, ...)
                     break;
                 }
             }
-            va_end(vl);
         }
 
         //Process handlers
-        for(int i=0; i<evt_handlers.length(); i++)
+        if(etype == CUSTOMEVENT)
         {
-            if(strcmp(evt_type, evt_handlers[i].evt_type) == 0)
+            loopv(handlers[etype])
             {
-            	char *evcmd = newstring(evt_handlers[i].evt_cmd);
-
-            	concatpstring(&evcmd, evparams);
-
+                evt_handler &eh = handlers[etype][i];
+                if(strcmp(custom, eh.custom) == 0)
+                {
+                    char *evcmd = newstring(eh.evt_cmd);
+                    concatpstring(&evcmd, evparams);
+                    execute(evcmd);
+                    DELETEA(evcmd);
+                }
+            }
+        }
+        else
+        {
+            loopv(handlers[etype])
+            {
+                evt_handler &eh = handlers[etype][i];
+                char *evcmd = newstring(eh.evt_cmd);
+                concatpstring(&evcmd, evparams);
                 execute(evcmd);
-
                 DELETEA(evcmd);
             }
         }
+
         DELETEA(evparams);
     }
-
-    return false;
-
 }
 
+void onevent(eventType etype, const char *fmt, ...)
+{
+    if((etype < 0) || (etype >= NUMEVENTS)) return;
+
+    va_list vl;
+    va_start(vl, fmt);
+    triggerEvent(etype, NULL, fmt, vl);
+    va_end(vl);
+}
+
+bool onevent(const char *evt_type, const char *fmt, ...)
+{
+    eventType etype = str2event(evt_type);
+    va_list vl;
+    va_start(vl, fmt);
+    if(etype != CUSTOMEVENT)
+    {
+        conoutf("remod::onevent(onevent(const char *evt_type, const char *fmt, ...)) is depricated, use remod::onevent(eventType etype, char *custom, const char *fmt, ...) instead");
+        triggerEvent(etype, evt_type, fmt, vl);
+    }
+    else triggerEvent(etype, NULL, fmt, vl);
+    va_end(vl);
+    return false;
+}
 
 /**
  * Add server event handler to specified event
