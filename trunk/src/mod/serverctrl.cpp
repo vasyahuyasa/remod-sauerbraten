@@ -115,7 +115,7 @@ void kick(int *pcn, int *pexpire, char *actorname)
     int expire = (int)*pexpire;
     if (!pexpire || expire<=0) expire = 4*60*60000; //4 hours - default
     expire += totalmillis;  //add current uptime
-    remod::onevent("onkick", "ii", -1, cn);
+    remod::onevent(ONKICK, "ii", -1, cn);
     if(strlen(actorname) == 0) actorname = newstring("console");
     //server::kick(cn, actorname, expire);
     addban(cn, actorname, expire);
@@ -214,7 +214,7 @@ void saytoadmin(char *msg)
 void _mastermode(int *mm)
 {
     mastermode = (int)*mm;
-    remod::onevent("onmastermode", "ii", -1, mastermode);
+    remod::onevent(ONMASTERMODE, "ii", -1, mastermode);
     if(mastermode>=MM_PRIVATE)
     {
         loopv(clients) allowedips.add(getclientip(clients[i]->clientnum));
@@ -227,7 +227,7 @@ void setteam(int *pcn, const char *team)
     int cn=(int)*pcn;
     clientinfo *ci = (clientinfo *)getinfo(cn);
     if(!ci && !strcmp(ci->team, team)) return;
-    remod::onevent("onsetteam", "is", cn, team);
+    remod::onevent(ONSETTEAM, "is", cn, team);
     if(!smode || smode->canchangeteam(ci, ci->team, team))
     {
         if(ci->state.state==CS_ALIVE) suicide(ci);
@@ -316,7 +316,7 @@ void mute(int *pcn, int *val)
         if(ci->state.muted != v)
         {
             ci->state.muted = v;
-            remod::onevent("onmute", "ii", v ? 1 : 0, cn);
+            remod::onevent(ONMUTE, "ii", v ? 1 : 0, cn);
         }
     }
 }
@@ -673,7 +673,7 @@ void editmute(int *pcn, int *val)
         if(ci->state.editmuted != v)
         {
             ci->state.editmuted = v;
-            remod::onevent("oneditmute", "ii", v ? 1 : 0, cn);
+            remod::onevent(ONEDITMUTE, "ii", v ? 1 : 0, cn);
         }
     }
 }
@@ -1346,7 +1346,7 @@ VARF(pause, 0, 0, 1, server::pausegame(pause));
  * Clear all player bans created by /kick or #kick (it's not the same as permbans)
  * @group server
  */
-ICOMMAND(clearbans, "", (), remod::onevent("onclearbans", "i", -1); bannedips.shrink(0); sendservmsg("cleared all bans"));
+ICOMMAND(clearbans, "", (), remod::onevent(ONCLEARBANS, "i", -1); bannedips.shrink(0); sendservmsg("cleared all bans"));
 
 /**
  * Force the player to specified team

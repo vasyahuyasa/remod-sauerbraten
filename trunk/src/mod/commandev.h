@@ -43,6 +43,6 @@ namespace remod
     };
 
     bool onevent(const char *evt_type, const char *fmt, ...); // depricated
-    void onevent( eventType etype, char *custom, const char *fmt, ...);
+    void onevent( eventType etype, const char *fmt, ...);
 }
 #endif

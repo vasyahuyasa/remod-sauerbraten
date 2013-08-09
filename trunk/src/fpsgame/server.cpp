@@ -725,7 +725,7 @@ namespace server
             int slen = strlen(buf);
             if(buf[slen] != '/' && buf[slen] != '\\' && slen+1 < (int)sizeof(buf)) { buf[slen] = '/'; buf[slen+1] = '\0'; }
         }
-        defformatstring(demoname)("%s%d.dmo", buf, t);
+        defformatstring(demoname)("%s%li.dmo", buf, t);
         stream *fsdemo = openfile(demoname, "wb");
         if(fsdemo)
         {
@@ -737,10 +737,10 @@ namespace server
             // remod
             char* pdemoname = newstring(demoname);
 
-            defformatstring(demotime)("%d", t);
+            defformatstring(demotime)("%li", t);
             char* pdemotime = newstring(demotime);
 
-            remod::onevent("onsavedemo", "ss", pdemoname, pdemotime);
+            remod::onevent(ONSAVEDEMO, "ss", pdemoname, pdemotime);
             DELETEA(pdemoname);
             DELETEA(pdemotime);
         }
@@ -756,7 +756,7 @@ namespace server
         if(!demotmp) return;
 
         // remod
-        remod::onevent("onstopdemo", "");
+        remod::onevent(ONSTOPDEMO, "");
 
         if(!maxdemos || !maxdemosize) { DELETEP(demotmp); return; }
 
@@ -787,7 +787,7 @@ namespace server
         if(!m_mp(gamemode) || m_edit) return;
 
         // remod
-        if(remod::onevent("onrecorddemo", "")) return;
+        remod::onevent(ONRECORDDEMO, "");
 
         demotmp = opentempfile("demorecord", "w+b");
         if(!demotmp) return;
@@ -814,7 +814,7 @@ namespace server
     void listdemos(int cn)
     {
         // remod
-        if(remod::onevent("onlistdemos", "i", cn)) return;
+        remod::onevent(ONLISTDEMOS, "i", cn);
 
         packetbuf p(MAXTRANS, ENET_PACKET_FLAG_RELIABLE);
         putint(p, N_SENDDEMOLIST);
@@ -826,7 +826,7 @@ namespace server
     void cleardemos(int n)
     {
         // remod
-        if(remod::onevent("oncleardemos", "i", n)) return;
+        remod::onevent(ONCLEARDEMOS, "i", n);
 
         if(!n)
         {
@@ -865,7 +865,7 @@ namespace server
         if(ci->getdemo) return;
 
         // remod
-        if(remod::onevent("ongetdemo", "ii", ci->clientnum, num)) return;
+        remod::onevent(ONGETDEMO, "ii", ci->clientnum, num);
 
         if(!num) num = demos.length();
         if(!demos.inrange(num-1)) return;
@@ -969,7 +969,7 @@ namespace server
         if(gamepaused==val) return;
 
         // remod
-        if(remod::onevent("onpausegame", "i", val ? 1 : 0)) return;
+        remod::onevent(ONPAUSEGAME, "i", val ? 1 : 0);
 
         gamepaused = val;
         sendf(-1, 1, "riii", N_PAUSEGAME, gamepaused ? 1 : 0, ci ? ci->clientnum : -1);
@@ -1151,7 +1151,7 @@ namespace server
         sendpacket(-1, 1, p.finalize());
 
         // remod
-        remod::onevent("onsetmaster", "iisss", ci->clientnum, ci->privilege, pass, authname ? authname:"", authdesc ? authdesc:"");
+        remod::onevent(ONSETMASTER, "iisss", ci->clientnum, ci->privilege, pass, authname ? authname:"", authdesc ? authdesc:"");
 
         checkpausegame();
         return true;
@@ -1183,7 +1183,7 @@ namespace server
                 uint ip = getclientip(victim);
 
                 //Remod
-                remod::onevent("onkick", "ii", ci->clientnum, vinfo->clientnum);
+                remod::onevent(ONKICK, "ii", ci->clientnum, vinfo->clientnum);
 
                 addban(ip, 4*60*60000);
                 kickclients(ip, ci);
@@ -1474,7 +1474,7 @@ namespace server
             gs.armour, gs.armourtype,
             gs.gunselect, GUN_PISTOL-GUN_SG+1, &gs.ammo[GUN_SG]);
         gs.lastspawn = gamemillis;
-        remod::onevent("onspawn", "i", ci->clientnum);
+        remod::onevent(ONSPAWN, "i", ci->clientnum);
     }
 
     void sendwelcome(clientinfo *ci)
@@ -1753,7 +1753,7 @@ namespace server
 
         // remod
         if(autodemo) demonextmatch = true;
-        remod::onevent("onmapstart", "");
+        remod::onevent(ONMAPSTART, "");
     }
 
     void rotatemap(bool next)
@@ -1859,7 +1859,7 @@ namespace server
         else
         {
             // remod
-            remod::onevent("onmapvote", "isi", sender, map, reqmode);
+            remod::onevent(ONMAPVOTE, "isi", sender, map, reqmode);
 
             sendservmsgf("%s suggests %s on map %s (select map to vote)", colorname(ci), modename(reqmode), map[0] ? map : "[new map]");
             checkvotes();
@@ -1879,7 +1879,7 @@ namespace server
             interm = gamemillis + imissiontime; // remod
 
             // remod
-            remod::onevent("onimission", "");
+            remod::onevent(ONIMISSION, "");
         }
     }
 
@@ -1942,10 +1942,10 @@ namespace server
             // ts.respawn();
 
             // remod
-            if(onfrag)      remod::onevent("onfrag",     "i", actor->clientnum);
-            if(onteamkill)  remod::onevent("onteamkill", "i", actor->clientnum);
-            if(ondeath)     remod::onevent("ondeath",    "i", target->clientnum);
-            if(onsuicide)   remod::onevent("onsuicide",  "i", target->clientnum);
+            if(onfrag)      remod::onevent(ONFRAG,     "i", actor->clientnum);
+            if(onteamkill)  remod::onevent(ONTEAMKILL, "i", actor->clientnum);
+            if(ondeath)     remod::onevent(ONDEATH,    "i", target->clientnum);
+            if(onsuicide)   remod::onevent(ONSUICIDE,  "i", target->clientnum);
         }
     }
 
@@ -1966,7 +1966,7 @@ namespace server
         gs.respawn();
 
         // remod
-        remod::onevent("onsuicide",  "i", ci->clientnum);
+        remod::onevent(ONSUICIDE,  "i", ci->clientnum);
     }
 
     void suicideevent::process(clientinfo *ci)
@@ -2172,7 +2172,7 @@ namespace server
         // remod
         loopv(bannedips)
         {
-            if(totalmillis>bannedips[i].expire-totalmillis <= 0) bannedips.remove(i);
+            if(totalmillis>bannedips[i].expire) bannedips.remove(i);
         }
 
         loopv(connects) if(totalmillis-connects[i]->connectmillis>15000) disconnect_client(connects[i]->clientnum, DISC_TIMEOUT);
@@ -2247,7 +2247,7 @@ namespace server
             formatstring(msg)("%s has modified map \"%s\"", colorname(ci), smapname);
 
             // remod
-            remod::onevent("onmodmap", "i", ci->clientnum);
+            remod::onevent(ONMODMAP, "i", ci->clientnum);
 
             sendf(req, 1, "ris", N_SERVMSG, msg);
             if(req < 0) ci->warned = true;
@@ -2325,7 +2325,7 @@ namespace server
             aiman::removeai(ci);
 
             // remod
-            remod::onevent("ondisconnect", "i", n);
+            remod::onevent(ONDISCONNECT, "i", n);
 
             if(!numclients(-1, false, true)) noclients(); // bans clear when server empties
             if(ci->local) checkpausegame();
@@ -2378,7 +2378,7 @@ namespace server
             if(checkgban(getclientip(ci->clientnum)))
             {
                 // remod
-                remod::onevent("onkick", "ii", -1, ci->clientnum);
+                remod::onevent(ONKICK, "ii", -1, ci->clientnum);
 
                 disconnect_client(ci->clientnum, DISC_IPBAN);
             }
@@ -2590,7 +2590,7 @@ namespace server
         if(m_demo) setupdemoplayback();
 
         // remod
-        remod::onevent("onconnect", "i", ci->clientnum);
+        remod::onevent(ONCONNECT, "i", ci->clientnum);
 
         if(servermotd[0]) sendf(ci->clientnum, 1, "ris", N_SERVMSG, servermotd);
     }
@@ -2639,7 +2639,7 @@ namespace server
                     getstring(desc, p, sizeof(desc));
                     uint id = (uint)getint(p);
                     getstring(ans, p, sizeof(ans));
-                    if(!answerchallenge(ci, id, ans, desc)) 
+                    if(!answerchallenge(ci, id, ans, desc))
                    {
                         disconnect_client(sender, ci->connectauth);
                         return;
@@ -2777,7 +2777,7 @@ namespace server
                 else ci->state.state = ci->state.editstate;
 
                 // remod
-                remod::onevent("oneditmode", "ii", ci->clientnum, val);
+                remod::onevent(ONEDITMODE, "ii", ci->clientnum, val);
 
                 QUEUE_MSG;
                 break;
@@ -2932,14 +2932,14 @@ namespace server
                 if(strlen(ftext)>strlen(commandchar) && (strncmp(commandchar, ftext, strlen(commandchar)) == 0))
                 {
                     ftext += strlen(commandchar);
-                    remod::onevent("oncommand", "is", sender, ftext);
+                    remod::onevent(ONCOMMAND, "is", sender, ftext);
                     //conoutf(ftextchf);
                     break;
                 }
 
                 if(ci->state.muted) break;
 
-                if(remod::onevent("ontext", "is", sender, ftext)) break;
+                remod::onevent(ONTEXT, "is", sender, ftext);
                 DELETEA(ftext);
                 QUEUE_AI;
                 QUEUE_INT(N_TEXT);
@@ -2957,7 +2957,7 @@ namespace server
 
                 // remod
                 if(ci->state.muted) break;
-                if(remod::onevent("onsayteam", "is", sender, text)) break;
+                remod::onevent(ONSAYTEAM, "is", sender, text);
 
                 loopv(clients)
                 {
@@ -2977,7 +2977,7 @@ namespace server
                 getstring(text, p);
 
                 // remod
-                if(remod::onevent("onswitchname", "is", sender, text)) break;
+                remod::onevent(ONSWITCHNAME, "is", sender, text);
 
                 filtertext(ci->name, text, false, MAXNAMELEN);
                 if(!ci->name[0]) copystring(ci->name, "unnamed");
@@ -2990,7 +2990,7 @@ namespace server
                 ci->playermodel = getint(p);
 
                 // remod
-                remod::onevent("onswitchmodel", "ii", sender, ci->playermodel);
+                remod::onevent(ONSWITCHMODEL, "ii", sender, ci->playermodel);
 
                 QUEUE_MSG;
                 break;
@@ -3002,12 +3002,13 @@ namespace server
                 filtertext(text, text, false, MAXTEAMLEN);
                 if(m_teammode && text[0] && strcmp(ci->team, text) && (!smode || smode->canchangeteam(ci, ci->team, text)) && addteaminfo(text))
                 {
-                    // remod
-                    if(ci->state.state!=CS_SPECTATOR && remod::onevent("onswitchteam", "is", sender, text)) break;
                     if(ci->state.state==CS_ALIVE) suicide(ci);
                     copystring(ci->team, text);
                     aiman::changeteam(ci);
                     sendf(-1, 1, "riisi", N_SETTEAM, sender, ci->team, ci->state.state==CS_SPECTATOR ? -1 : 0);
+
+                    // remod
+                    remod::onevent(ONSWITCHTEAM, "is", sender, text);
                 }
                 break;
             }
@@ -3109,7 +3110,7 @@ namespace server
                     if((ci->privilege>=PRIV_ADMIN || ci->local) || (mastermask&(1<<mm)))
                     {
                         // remod
-                        if(remod::onevent("onmastermode", "ii", sender, mm)) break;
+                        remod::onevent(ONMASTERMODE, "ii", sender, mm);
 
                         mastermode = mm;
                         allowedips.shrink(0);
@@ -3134,7 +3135,7 @@ namespace server
                 if(ci->privilege || ci->local)
                 {
                     // remod
-                    if(remod::onevent("onclearbans", "i", sender)) break;
+                    remod::onevent(ONCLEARBANS, "i", sender);
 
                     bannedips.shrink(0);
                     sendservmsg("cleared all bans");
@@ -3176,7 +3177,7 @@ namespace server
                 }
 
                 // remod
-                remod::onevent("onspectator", "ii", spectator, val ? 1 : 0);
+                remod::onevent(ONSPECTATOR, "ii", spectator, val ? 1 : 0);
 
                 sendf(-1, 1, "ri3", N_SPECTATOR, spectator, val);
                 if(!val && !hasmap(spinfo)) rotatemap(true);
@@ -3193,7 +3194,7 @@ namespace server
                 if(!m_teammode || !text[0] || !wi || !strcmp(wi->team, text)) break;
 
                 // remod
-                if(remod::onevent("onsetteam", "is", who, text)) break;
+                remod::onevent(ONSETTEAM, "is", who, text);
 
                 if((!smode || smode->canchangeteam(wi, wi->team, text)) && addteaminfo(text))
                 {
@@ -3257,7 +3258,7 @@ namespace server
                 else
                 {
                     // remod
-                    if(remod::onevent("ongetmap", "i", sender)) break;
+                    remod::onevent(ONGETMAP, "i", sender);
 
                     sendservmsgf("[%s is getting the map]", colorname(ci));
                     if((ci->getmap = sendfile(sender, 2, mapdata, "ri", N_SENDMAP)))
@@ -3273,7 +3274,7 @@ namespace server
 
                 // remod
                 if(ci->state.editmuted) break;
-                if(remod::onevent("onnewmap", "i", ci->clientnum)) break;
+                remod::onevent(ONNEWMAP, "i", ci->clientnum);
 
                 if(size>=0)
                 {
