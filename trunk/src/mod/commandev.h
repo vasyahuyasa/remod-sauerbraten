@@ -28,21 +28,38 @@ static const char * const eventNames[] = {
                  "onswitchteam", "ontakeflag", "onteamkill", "ontext",
                  "irc_oncommand", "irc_oncommandpermerror", "irc_oncommandunknown",
                  "irc_oncommandusageerror", "irc_onmsg", "irc_onprivmsg",
-                 "custom_event", "number of events" };
+                 "custom event", "number of events" };
 
 namespace remod
 {
-    char *event2str(eventType type);
-    eventType str2event(const char *name);
-
+    // event and its callback
     struct evt_handler
     {
-        eventType       evt_type;   // type of event
-        const char*     custom;     // custom named event, null by default
-        const char*     evt_cmd;    // callback command
+        eventType evt_type;   // type of event
+        const char *custom;     // custom named event, null by default
+        const char *evt_cmd;    // callback command
     };
 
-    bool onevent(const char *evt_type, const char *fmt, ...); // depricated
-    void onevent( eventType etype, const char *fmt, ...);
+    // events queue
+    struct evt_param
+    {
+        char type;                  // i - int, s - string, f, d - float
+    	void* value;                // param value
+    };
+
+    struct event
+    {
+        eventType evt_type;
+        const char *custom;
+        const char *fmt;
+        vector<evt_param *> params;
+    };
+
+    char *event2str(eventType type);
+    eventType str2event(const char *name);
+    bool onevent(const char *evt_type, const char *fmt, ...); // depricated or script events
+    void onevent(eventType etype, const char *fmt, ...);    // add event to queue
+    void oneventi(eventType etype, const char *fmt, ...);   // execute event instantly
+    void eventupdate();
 }
 #endif

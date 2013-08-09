@@ -16,6 +16,8 @@ extern char *strreplace(const char *s, const char *oldval, const char *newval);
 namespace remod
 {
 
+vector<event *> events;   // events queue
+
 typedef vector<evt_handler> eventHandlers; //Event handlers
 eventHandlers handlers[NUMEVENTS];
 
@@ -33,6 +35,70 @@ eventType str2event(const char *name)
     loopi(NUMEVENTS)
         if(strcmp(name, eventNames[i]) == 0) return (eventType)i;
     return CUSTOMEVENT;
+}
+
+event* storeevent(eventType etype, const char *custom, const char *fmt, va_list vl)
+{
+    event *e = new event;
+    e->evt_type = etype;
+
+    if(etype == CUSTOMEVENT)
+        if(custom && custom[0])
+            e->custom = newstring(custom);
+        else
+            // costom event not defined
+            return NULL;
+
+    e->fmt = newstring(fmt);
+
+    // store params
+    if(fmt)
+        while(char c = *(fmt++))
+        {
+            evt_param *param = new evt_param;
+            param->type = c;
+            switch(c)
+            {
+                case 'i':
+                {
+                    int *i = new int;
+                    *i = va_arg(vl, int);
+                    param->value = (void*)i;
+                    break;
+                }
+
+
+                case 's':
+                {
+                    char *s = newstring(va_arg(vl, char*));
+                    param->value = (void*)s;
+                    break;
+                }
+
+                case 'f':
+                case 'd':
+                {
+                    double *d = new double;
+                    *d = va_arg(vl, double);
+                    param->value = (void*)d;
+                    break;
+                }
+
+                default:
+                {
+                    conoutf("unknown format parameter \"%c\"", c);
+                    va_arg(vl, int);
+                    break;
+                }
+            }
+        }
+    return e;
+}
+
+void addevent(eventType etype, const char *custom, const char *fmt, va_list vl)
+{
+    if(event *e = storeevent(etype, NULL, fmt, vl))
+        events.add(e);
 }
 
 //Add script callback to event
@@ -95,9 +161,23 @@ void clearhandlers()
         handlers[i].shrink(0);
 }
 
+void triggerEvent(event *ev)
+{/*
+    switch(ev->evt_type)
+    {
+        case ONCOMMAND:
+        {
+            int cn
+        }
+    }
+    */
+}
+
 //Trigger spescified event
 void triggerEvent(eventType etype, const char *custom,  const char *fmt, va_list vl)
 {
+    if((etype < 0) || (etype >= NUMEVENTS)) return;
+
     //if oncommand
     if(etype == ONCOMMAND)
     {
@@ -108,7 +188,6 @@ void triggerEvent(eventType etype, const char *custom,  const char *fmt, va_list
 		//splitting command_string to command_name and command_params
 		char *command_name;
 		char *command_params;
-
 
 
 		const char *spacepos = strstr(command_str, " ");
@@ -200,7 +279,18 @@ void triggerEvent(eventType etype, const char *custom,  const char *fmt, va_list
         }
 
         //Process handlers
-        if(etype == CUSTOMEVENT)
+        if(etype != CUSTOMEVENT) // standart event
+        {
+            loopv(handlers[etype])
+            {
+                evt_handler &eh = handlers[etype][i];
+                char *evcmd = newstring(eh.evt_cmd);
+                concatpstring(&evcmd, evparams);
+                execute(evcmd);
+                DELETEA(evcmd);
+            }
+        }
+        else if(custom && custom[0]) // custom user script triggered event
         {
             loopv(handlers[etype])
             {
@@ -214,23 +304,25 @@ void triggerEvent(eventType etype, const char *custom,  const char *fmt, va_list
                 }
             }
         }
-        else
-        {
-            loopv(handlers[etype])
-            {
-                evt_handler &eh = handlers[etype][i];
-                char *evcmd = newstring(eh.evt_cmd);
-                concatpstring(&evcmd, evparams);
-                execute(evcmd);
-                DELETEA(evcmd);
-            }
-        }
 
         DELETEA(evparams);
     }
 }
 
+// add event to queue
 void onevent(eventType etype, const char *fmt, ...)
+{
+    if((etype < 0) || (etype >= NUMEVENTS)) return;
+
+    va_list vl;
+    va_start(vl, fmt);
+    //addevent(etype, NULL, fmt, vl);
+    triggerEvent(etype, NULL, fmt, vl);
+    va_end(vl);
+}
+
+// execute event instantly
+void oneventi(eventType etype, const char *fmt, ...)
 {
     if((etype < 0) || (etype >= NUMEVENTS)) return;
 
@@ -245,12 +337,13 @@ bool onevent(const char *evt_type, const char *fmt, ...)
     eventType etype = str2event(evt_type);
     va_list vl;
     va_start(vl, fmt);
-    if(etype != CUSTOMEVENT)
-    {
-        conoutf("remod::onevent(\"%s\" ...) is depricated", evt_type);
-        triggerEvent(etype, evt_type, fmt, vl);
-    }
-    else triggerEvent(etype, NULL, fmt, vl);
+
+    // depricated api usage
+    if(etype != CUSTOMEVENT) conoutf("remod::onevent(\"%s\" ...) is depricated", evt_type);
+
+    //addevent(etype, etype == CUSTOMEVENT ? evt_type : NULL, fmt, vl);
+    triggerEvent(etype, etype == CUSTOMEVENT ? evt_type : NULL, fmt, vl);
+
     va_end(vl);
     return false;
 }
