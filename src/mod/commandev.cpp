@@ -247,7 +247,7 @@ bool onevent(const char *evt_type, const char *fmt, ...)
     va_start(vl, fmt);
     if(etype != CUSTOMEVENT)
     {
-        conoutf("remod::onevent(onevent(const char *evt_type, const char *fmt, ...)) is depricated, use remod::onevent(eventType etype, char *custom, const char *fmt, ...) instead");
+        conoutf("remod::onevent(\"%s\" ...) is depricated", evt_type);
         triggerEvent(etype, evt_type, fmt, vl);
     }
     else triggerEvent(etype, NULL, fmt, vl);

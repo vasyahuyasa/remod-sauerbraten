@@ -562,7 +562,7 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
                         //irc_oncommand "sender" "p a r a m s"
                         ftext = newstring(p);
                         //server::filtercstext(ftext);
-                        remod::onevent("irc_oncommand", "ss", user[0], ftext);
+                        remod::onevent(IRC_ONCOMMAND, "ss", user[0], ftext);
                         DELETEA(ftext);
                     }
                 }
@@ -582,7 +582,7 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
 
                     //server::filtercstext(ftext);
                     ftext = newstring(w[g+2]);
-                    remod::onevent(strcasecmp(w[g+1], n->nick) ? "irc_onmsg" : "irc_onprivmsg", "ss", user[0], ftext);
+                    remod::onevent(strcasecmp(w[g+1], n->nick) ? IRC_ONMSG : IRC_ONPRIVMSG, "ss", user[0], ftext);
                     DELETEA(ftext);
                 }
             }
