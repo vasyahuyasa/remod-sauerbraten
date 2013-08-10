@@ -1,0 +1,83 @@
+#labels remod,database,authkeys,setup,instruction,cube2
+#This site is a short introduction, how authkeys work in collect version
+
+== Setup ==
+
+For setting up authkeys on your server you need to change the following things, step by step (I go into detail later).
+I'm going to describe it all with example keys / domains, please beware these are for demonstration and should neither be used nor be guaranted!
+ # Adding / changing your serverauth (your "domain")
+ # Adding authkeys through the auth.cfg file
+ # Add your authkey to your client
+
+
+== Setting up the server ==
+
+Open up the server-init.cfg in your server folder.
+Search the following line:
+{{{
+serverauth "" 
+}}} 
+and change it to a domain you like (lets say, our server is rb2.butchers.su)
+{{{ 
+serverauth "butchers.su" 
+}}}
+
+Now we need to add authkeys. You can generate authkey-pairs ingame (using the _/authkey_ command) or using external tools, which are also included in the source folder of remod.
+{{{
+//Some example key
+private key: 8bc7103dac2459f096e6dbc84239604315d870619dfa7b6a
+public key: +deb49b9c5a3c7fc3ba4c6ca33406cf06525cf38ee0760e40
+}}}
+Lets add the authkeys to server:
+ * On a vanilla server, open up server-init.cfg
+ * On a remod server, you can choose either server-init.cfg or auth.cfg (auth.cfg is prefferable)
+The syntax to add a key is as follows:
+_adduser NAME DOMAIN PUBLICKEY PERMISSION_
+{{{
+adduser butcher butchers.su +deb49b9c5a3c7fc3ba4c6ca33406cf06525cf38ee0760e40 a
+}}}
+Permissions are like following:
+ * m (2) = master
+ * a (3) = admin
+If you use a vanilla server, you probably need to use the numbers instead the alias.
+
+That's the server part for now, you can restart your server again.
+
+== Client setup ==
+Now open up your autoexec.cfg (config) and add your private key like this
+_authkey NAME PRIVKEY DOMAIN_
+{{{
+//You can probably leave the "" out, but it prevents from bugs with multiple servers
+authkey "butcher" "8bc7103dac2459f096e6dbc84239604315d870619dfa7b6a" "butchers.su"
+}}}
+
+After we saved autoexec.cfg, we can connect to the server and claim permissions via
+_/auth authdomain_
+{{{
+/auth butchers.su
+}}}
+
+----
+== Setup your authkeys with a database ==
+For setting up authkeys via a database, you need to do these steps:
+ # Set up a database (please check guide.html for instructions)
+ # Load syncauth module
+ # Add authkeys via database
+ # Reload authkeys (optionally)
+
+Load the syncauth module uncommenting the following lines in your server-init.cfg
+{{{
+
+// local file with authkeys
+// authfile "auth.cfg" THIS LINE SHOULD PROBABLY BE COMMENTED IF YOU USE DATABASE
+
+// set empty if you dont want load authkeys from database with #syncauth else set to "default", not recomended to use with sqlite
+auth_db = "default"
+
+// Execute module
+exec "scripts/modules/syncauth.cfg"
+}}}
+
+After restarting the server you should see an auth table in your database, values are the same as in the authfiles, the authdomain (specified in server-init.cfg / serverauth) gets appended automaticly.
+*Just insert key, name and privilige to your database.*
+Now you can reload all the authkeys in database via the #syncauth command (via irc / ingame). Authkeys get also reloaded when restarting the server.
