@@ -36,20 +36,23 @@ namespace remod
     struct evt_handler
     {
         eventType evt_type;   // type of event
-        const char *custom;     // custom named event, null by default
-        const char *evt_cmd;    // callback command
+        const char *custom;   // custom named event, null by default
+        const char *evt_cmd;  // callback command
     };
 
     // events queue
     struct evt_param
     {
-        char type;                  // i - int, s - string, f, d - float
-        union {                     // param value
+        char type;       // i - int, s - string, f, d - float;
+        union {          // param value
             int *value_i;
             char *value_s;
             double *value_d;
             void *value;
         };
+
+        evt_param();
+        ~evt_param();
     };
 
     struct event
@@ -58,13 +61,16 @@ namespace remod
         const char *custom;
         const char *fmt;
         vector<evt_param *> params;
+
+        event();
+        ~event();
     };
 
     char *event2str(eventType type);
     eventType str2event(const char *name);
-    bool onevent(const char *evt_type, const char *fmt, ...); // depricated or script events
+    //bool onevent(const char *evt_type, const char *fmt, ...); // depricated or script events
     void onevent(eventType etype, const char *fmt, ...);    // add event to queue
-    void oneventi(eventType etype, const char *fmt, ...);   // execute event instantly
-    void eventupdate();
+    //void oneventi(eventType etype, const char *fmt, ...);   // execute event instantly
+    void eventsupdate();
 }
 #endif

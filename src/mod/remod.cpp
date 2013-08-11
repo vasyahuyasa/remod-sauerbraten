@@ -197,7 +197,7 @@ namespace server
             if(ci->local || ci->privilege >= PRIV_ADMIN) continue;
             if(checkpban(getclientip(ci->clientnum)))
             {
-                remod::onevent("onkick", "ii", -1, ci->clientnum);
+                remod::onevent(ONKICK, "ii", -1, ci->clientnum);
                 disconnect_client(ci->clientnum, DISC_IPBAN);
             }
         }
@@ -513,7 +513,7 @@ void setmaster(clientinfo *ci, int priv)
         name = privname(ci->privilege);
         formatstring(msg)("%s relinquished %s", colorname(ci), name);
         sendservmsg(msg);
-        remod::onevent("onsetmaster", "iisss", ci->clientnum, 0, "", "", "");
+        remod::onevent(ONSETMASTER, "iisss", ci->clientnum, 0, "", "", "");
     }
 
     ci->privilege = priv;
@@ -541,7 +541,7 @@ void setmaster(clientinfo *ci, int priv)
     putint(p, -1);
     sendpacket(-1, 1, p.finalize());
 
-    if(modechanged) remod::onevent("onmastermode", "ii", -1, mastermode);
+    if(modechanged) remod::onevent(ONMASTERMODE, "ii", -1, mastermode);
 
     // check if client get any privelge
     if(ci->privilege != PRIV_NONE)
@@ -549,7 +549,7 @@ void setmaster(clientinfo *ci, int priv)
         name = privname(ci->privilege);
         formatstring(msg)("%s claimed %s", colorname(ci), name);
         sendservmsg(msg);
-        remod::onevent("onsetmaster", "iisss", ci->clientnum, ci->privilege, "", "", "");
+        remod::onevent(ONSETMASTER, "iisss", ci->clientnum, ci->privilege, "", "", "");
     }
 
     checkpausegame();

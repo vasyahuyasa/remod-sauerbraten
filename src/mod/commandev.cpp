@@ -16,10 +16,57 @@ extern char *strreplace(const char *s, const char *oldval, const char *newval);
 namespace remod
 {
 
-vector<event *> events;   // events queue
+evt_param::evt_param()
+{
+    type = 0;
+    value = NULL;
+}
 
-typedef vector<evt_handler> eventHandlers; //Event handlers
-eventHandlers handlers[NUMEVENTS];
+evt_param::~evt_param()
+{
+    if(value)
+    {
+        switch(type)
+        {
+            case 'i':
+                delete value_i;
+                break;
+
+            case 's':
+                DELETEA(value_s);
+                break;
+
+            case 'f':
+            case 'd':
+                delete value_d;
+                break;
+
+            default:
+                break;
+        }
+    }
+}
+
+event::event()
+{
+    custom = NULL;
+    fmt = NULL;
+}
+
+event::~event()
+{
+    DELETEA(custom);
+    DELETEA(fmt);
+    evt_param *param;
+    while(params.length())
+    {
+        param = params.remove(0);
+        delete param;
+    }
+}
+
+vector<event *> events; // events queue
+vector<evt_handler> handlers[NUMEVENTS]; //Event handlers
 
 // Conver event name to string
 char *event2str(eventType type)
@@ -43,21 +90,25 @@ event* storeevent(eventType etype, const char *custom, const char *fmt, va_list 
     e->evt_type = etype;
 
     if(etype == CUSTOMEVENT)
+    {
         if(custom && custom[0])
             e->custom = newstring(custom);
         else
             // costom event not defined
             return NULL;
+    }
 
     e->fmt = newstring(fmt);
 
     // store params
-    if(fmt)
-        while(char c = *(fmt++))
+    if(fmt && fmt[0])
+    {
+        const char *c = fmt;
+        while(*c)
         {
             evt_param *param = new evt_param;
-            param->type = c;
-            switch(c)
+            param->type = *c;
+            switch(*c++)
             {
                 case 'i':
                 {
@@ -83,53 +134,69 @@ event* storeevent(eventType etype, const char *custom, const char *fmt, va_list 
 
                 default:
                 {
-                    conoutf("unknown format parameter \"%c\"", c);
+                    conoutf("unknown format parameter \"%c\"", *c);
                     va_arg(vl, int);
                     break;
                 }
             }
+            e->params.add(param);
         }
+    }
     return e;
 }
 
-void *getarg(vector<evt_param *> &params)
+// debug information
+void listparams(vector<evt_param *> &params)
+{
+    evt_param *param;
+    loopv(params)
+    {
+        param = params[i];
+        printf("arg%i(%c)=", i, param->type);
+        switch(param->type)
+        {
+            case 'i': conoutf("%i", *param->value_i); break;
+            case 'f':
+            case 'd': conoutf("%f", *param->value_d); break;
+            case 's': conoutf("%s", param->value_s); break;
+            default: conoutf("unknown");
+        }
+    }
+}
+
+void eventinfo(event *ev)
+{
+    conoutf("eventinfo:");
+    conoutf("\tevent type: %s", event2str(ev->evt_type));
+    conoutf("\tparams(%i)", ev->params.length());
+    listparams(ev->params);
+}
+
+template <typename T>
+T *getarg(vector<evt_param *> &params)
 {
     if(params.length())
     {
-        void *value;
+        T *value = new T; // int *value = new int;
+        T *tmp;
         evt_param *param = params.remove(0);
-        switch(param->type)
-        {
-            case 'i':
-            {
-                int *i = new int;
-                value = i;
-                *i = *param->value_i;
-                break;
-            }
+        tmp = (T*)param->value;
+        *value = *tmp;
+        delete param;
 
-            case 's':
-            {
-                value = newstring(param->value_s);
-                break;
-            }
+        return value;
+    }
+    return NULL;
+}
 
-            case 'd':
-            case 'f':
-            {
-                double *d = new double;
-                value = d;
-                *d = *param->value_d;
-                break;
-            }
-
-            default:
-                value = NULL;
-                break;
-        }
-
-        // free resources
-        if(param->value) delete param->value;
+// Spezialization for char*
+template <>
+char *getarg<char>(vector<evt_param *> &params)
+{
+    if(params.length())
+    {
+        evt_param *param = params.remove(0);
+        char *value = newstring(param->value_s);
         delete param;
 
         return value;
@@ -139,7 +206,8 @@ void *getarg(vector<evt_param *> &params)
 
 void addevent(eventType etype, const char *custom, const char *fmt, va_list vl)
 {
-    if(event *e = storeevent(etype, NULL, fmt, vl))
+    event *e;
+    if((e = storeevent(etype, NULL, fmt, vl)))
         events.add(e);
 }
 
@@ -205,12 +273,15 @@ void clearhandlers()
 
 void triggerEvent(event *ev)
 {
-    switch(ev->evt_type)
+    if(!ev) return;
+
+    eventType etype = ev->evt_type;
+    switch(etype)
     {
         case ONCOMMAND:
         {
-            int *cn = (int*)getarg(ev->params);
-            const char *command_str = (const char*)getarg(ev->params);;
+            int *cn = getarg<int>(ev->params);
+            const char *command_str = getarg<char>(ev->params);
 
             //splitting command_string to command_name and command_params
             char *command_name;
@@ -242,8 +313,8 @@ void triggerEvent(event *ev)
         case IRC_ONCOMMAND:
         {
             //getting username
-            const char *user = (const char*)getarg(ev->params);
-            const char *command_str = (const char*)getarg(ev->params);;
+            const char *user = getarg<char>(ev->params);
+            const char *command_str = getarg<char>(ev->params);
 
             //splitting command_string to command_name and command_params
             char *command_name;
@@ -256,7 +327,7 @@ void triggerEvent(event *ev)
                 command_params = newstring("");
             }
             else
-                {
+            {
                 command_params = newstring(spacepos+1);
                 command_name = newstring(command_str, (size_t) (spacepos - command_str));
             }
@@ -275,14 +346,93 @@ void triggerEvent(event *ev)
 
         default:
         {
-            if(ishandle(ev->evt_type))
+            if(ishandle(etype))
             {
+                char *evparams = newstring("");
 
+                //Check params
+                if(ev->fmt && ev->fmt[0])
+                {
+                    //Convert params to string
+                    const char *c = ev->fmt;
+                    while(*c)
+                    {
+                        const char* p = NULL;
+                        switch(*c++)
+                        {
+                            case 'i':
+                            {
+                                int *i = getarg<int>(ev->params);
+                                concatpstring(&evparams, 2, " ", intstr(*i));
+                                delete i;
+                                break;
+                            }
+
+                            case 's':
+                            {
+                                p = getarg<char>(ev->params);
+                                if(p)
+                                    concatpstring(&evparams, 2, " ", escapestring(p));
+                                else
+                                     concatpstring(&evparams, "\"\"");
+                                DELETEA(p);
+                                break;
+                            }
+
+                            case 'f':
+                            case 'd':
+                            {
+                                double *d = getarg<double>(ev->params);
+                                concatpstring(&evparams, 2, " ", floatstr(*d));
+                                delete d;
+                                break;
+                            }
+
+                            default:
+                            {
+                                //Read and forgot
+                                int *i = getarg<int>(ev->params);
+                                delete i;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                //Process handlers
+                if(etype != CUSTOMEVENT) // standart event
+                {
+                    loopv(handlers[etype])
+                    {
+                        evt_handler &eh = handlers[etype][i];
+                        char *evcmd = newstring(eh.evt_cmd);
+                        concatpstring(&evcmd, evparams);
+                        execute(evcmd);
+                        DELETEA(evcmd);
+                    }
+                }
+                else if(ev->custom && ev->custom[0]) // custom user script triggered event
+                {
+                    loopv(handlers[etype])
+                    {
+                        evt_handler &eh = handlers[etype][i];
+                        if(strcmp(ev->custom, eh.custom) == 0)
+                        {
+                            char *evcmd = newstring(eh.evt_cmd);
+                            concatpstring(&evcmd, evparams);
+                            execute(evcmd);
+                            DELETEA(evcmd);
+                        }
+                    }
+                }
+
+                DELETEA(evparams);
             }
         }
     }
 }
 
+/*
 //Trigger spescified event
 void triggerEvent(eventType etype, const char *custom,  const char *fmt, va_list vl)
 {
@@ -418,6 +568,7 @@ void triggerEvent(eventType etype, const char *custom,  const char *fmt, va_list
         DELETEA(evparams);
     }
 }
+*/
 
 // add event to queue
 void onevent(eventType etype, const char *fmt, ...)
@@ -426,11 +577,15 @@ void onevent(eventType etype, const char *fmt, ...)
 
     va_list vl;
     va_start(vl, fmt);
+    addevent(etype, NULL, fmt, vl);
+    //event *e = storeevent(etype, NULL, fmt, vl);
+    //triggerEvent(e);
+    //delete e;
     //addevent(etype, NULL, fmt, vl);
-    triggerEvent(etype, NULL, fmt, vl);
     va_end(vl);
 }
 
+/*
 // execute event instantly
 void oneventi(eventType etype, const char *fmt, ...)
 {
@@ -438,10 +593,14 @@ void oneventi(eventType etype, const char *fmt, ...)
 
     va_list vl;
     va_start(vl, fmt);
-    triggerEvent(etype, NULL, fmt, vl);
+    //triggerEvent(etype, NULL, fmt, vl);
+    event *e = storeevent(etype, NULL, fmt, vl);
+    triggerEvent(e);
+    delete e;
     va_end(vl);
 }
 
+// user event
 bool onevent(const char *evt_type, const char *fmt, ...)
 {
     eventType etype = str2event(evt_type);
@@ -457,13 +616,28 @@ bool onevent(const char *evt_type, const char *fmt, ...)
     va_end(vl);
     return false;
 }
+*/
+
+void eventsupdate()
+{
+    event *e;
+    if(events.length())
+    {
+        while(events.length())
+        {
+            e = events.remove(0);
+            triggerEvent(e);
+            delete e;
+        }
+    }
+}
 
 /**
  * Add server event handler to specified event
  * @group event
  * @arg1 event name
  * @arg2 callback function
- * @example addhandler "onconnect" [ echo (format "CONNECT %1(%3)" (getname $arg1) $arg1 ) ]
+ * @example addhandler "onconnect" log_onconnect
  */
 COMMAND(addhandler, "ss");
 

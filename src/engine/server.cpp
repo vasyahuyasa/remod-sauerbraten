@@ -1017,6 +1017,7 @@ void rundedicatedserver()
         #ifdef IRC
         ircslice();
         #endif
+        remod::eventsupdate();
     }
 #endif
     dedicatedserver = false;

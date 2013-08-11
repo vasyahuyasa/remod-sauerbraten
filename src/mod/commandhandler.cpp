@@ -377,7 +377,7 @@ void oncommand(int cn, const char *cmd_name, const char *cmd_params)
 
 	if (found == -1) {
 		//unknown command
-		remod::onevent("oncommandunknown", "is", cn, cmd_name);
+		remod::onevent(ONCOMMANDUNKNOWN, "is", cn, cmd_name);
 		return;
 	}
 	cmd_handler *handler = cmd_handlers[found];
@@ -386,7 +386,7 @@ void oncommand(int cn, const char *cmd_name, const char *cmd_params)
 	if (!checkperm(cn, handler->cmd_permissions))
 	{
 		//permission error
-		remod::onevent("oncommandpermerror", "is", cn, cmd_name);
+		remod::onevent(ONCOMMANDPERMERROR, "is", cn, cmd_name);
 		return;
 	}
 
@@ -394,10 +394,10 @@ void oncommand(int cn, const char *cmd_name, const char *cmd_params)
 
 	if (ret == -1) {
 		//usage error - cannot parse cmd_params in accordance with cmd_descr
-		remod::onevent("oncommandusageerror", "is", cn, cmd_name);
+		remod::onevent(ONCOMMANDUSAGEERROR, "is", cn, cmd_name);
 	} else if(ret == -2) {
 		//permission error
-		remod::onevent("oncommandpermerror", "is", cn, cmd_name);
+		remod::onevent(ONCOMMANDPERMERROR, "is", cn, cmd_name);
 	}
 }
 
@@ -552,7 +552,7 @@ void irc_oncommand(const char* user, const char* cmd_name, const char* cmd_param
 
 	if (found == -1) {
 		//unknown command
-		remod::onevent("irc_oncommandunknown", "ss", user, cmd_name);
+		remod::onevent(IRC_ONCOMMANDUNKNOWN, "ss", user, cmd_name);
 		return;
 	}
 
@@ -562,17 +562,17 @@ void irc_oncommand(const char* user, const char* cmd_name, const char* cmd_param
 	if (!irc_checkperm((char*) user, handler->cmd_permissions))
 	{
 		//permission error
-		remod::onevent("irc_oncommandpermerror", "ss", user, cmd_name);
+		remod::onevent(IRC_ONCOMMANDPERMERROR, "ss", user, cmd_name);
 		return;
 	}
 
 	int ret = execute_command(handler, user, cmd_params);
 	if (ret == -1) {
 		//usage error - cannot parse cmd_params in accordance with cmd_descr
-		remod::onevent("irc_oncommandusageerror", "ss", user, cmd_name);
+		remod::onevent(IRC_ONCOMMANDUSAGEERROR, "ss", user, cmd_name);
 	} else if(ret == -2) {
 		//permission error
-		remod::onevent("irc_oncommandpermerror", "ss", user, cmd_name);
+		remod::onevent(IRC_ONCOMMANDPERMERROR, "ss", user, cmd_name);
 	}
 }
 

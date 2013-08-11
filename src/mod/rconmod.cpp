@@ -30,15 +30,17 @@ rconserver *srv;
 
 void init(int port)
 {
+    if(!rconenable) return;
+
     switch(rconproto)
     {
-    case RCON_TCP:
-        srv = new rconserver_tcp(port);
-        break;
+        case RCON_TCP:
+            srv = new rconserver_tcp(port);
+            break;
 
-    case RCON_UDP:
-    default:
-        srv = new rconserver_udp(port);
+        case RCON_UDP:
+        default:
+            srv = new rconserver_udp(port);
     }
 }
 
