@@ -290,7 +290,7 @@ struct ctfclientmode : clientmode
                 returnflag(i);
 
                 // remod
-                remod::onevent("onreturnflag", "is", ci->clientnum, ctfflagteam(f.team));
+                remod::onevent(ONRETURNFLAG, "is", ci->clientnum, ctfflagteam(f.team));
 
                 sendf(-1, 1, "ri4", N_RETURNFLAG, ci->clientnum, i, ++f.version);
             }
@@ -299,7 +299,7 @@ struct ctfclientmode : clientmode
                 ivec o(vec(ci->state.o).mul(DMF));
 
                 // remod
-                remod::onevent("ondropflag", "is", ci->clientnum, ctfflagteam(f.team));
+                remod::onevent(ONDROPFLAG, "is", ci->clientnum, ctfflagteam(f.team));
 
                 sendf(-1, 1, "ri7", N_DROPFLAG, ci->clientnum, i, ++f.version, o.x, o.y, o.z);
                 dropflag(i, o.tovec().div(DMF), lastmillis, dropper ? dropper->clientnum : ci->clientnum, dropper && dropper!=ci);
@@ -354,7 +354,7 @@ struct ctfclientmode : clientmode
         if(m_hold) spawnflag(goal);
 
         // remod
-        remod::onevent("onscoreflag", "is", ci->clientnum, ctfflagteam(team));
+        remod::onevent(ONSCOREFLAG, "is", ci->clientnum, ctfflagteam(team));
 
         sendf(-1, 1, "rii9", N_SCOREFLAG, ci->clientnum, relay, relay >= 0 ? ++flags[relay].version : -1, goal, ++flags[goal].version, flags[goal].spawnindex, team, score, ci->state.flags);
         if(score >= FLAGLIMIT) startintermission();
@@ -374,7 +374,7 @@ struct ctfclientmode : clientmode
             sendf(-1, 1, "ri4", N_TAKEFLAG, ci->clientnum, i, ++f.version);
 
             // remod
-            remod::onevent("ontakeflag", "isi", ci->clientnum, ctfflagteam(f.team), f.droptime? 0 : 1);
+            remod::onevent(ONTAKEFLAG, "isi", ci->clientnum, ctfflagteam(f.team), f.droptime? 0 : 1);
         }
         else if(m_protect)
         {
@@ -385,7 +385,7 @@ struct ctfclientmode : clientmode
             returnflag(i);
 
             // remod
-            remod::onevent("onreturnflag", "is", ci->clientnum, ctfflagteam(f.team));
+            remod::onevent(ONRETURNFLAG, "is", ci->clientnum, ctfflagteam(f.team));
 
             sendf(-1, 1, "ri4", N_RETURNFLAG, ci->clientnum, i, ++f.version);
         }
@@ -407,7 +407,7 @@ struct ctfclientmode : clientmode
                 if(m_hold) spawnflag(i);
 
                 // remod
-                remod::onevent("onresetflag", "s", ctfflagteam(f.team));
+                remod::onevent(ONRESETFLAG, "s", ctfflagteam(f.team));
 
                 sendf(-1, 1, "ri6", N_RESETFLAG, i, ++f.version, f.spawnindex, m_hold ? 0 : f.team, m_hold ? 0 : addscore(f.team, m_protect ? -1 : 0));
             }
@@ -416,7 +416,7 @@ struct ctfclientmode : clientmode
                 f.invistime = 0;
 
                 // remod
-                remod::onevent("oninvisflag", "s", ctfflagteam(f.team));
+                remod::onevent(ONINVISFLAG, "s", ctfflagteam(f.team));
 
                 sendf(-1, 1, "ri3", N_INVISFLAG, i, 0);
             }
@@ -429,7 +429,7 @@ struct ctfclientmode : clientmode
                     spawnflag(i);
 
                     // remod
-                    remod::onevent("onresetflag", "s", ctfflagteam(f.team));
+                    remod::onevent(ONRESETFLAG, "s", ctfflagteam(f.team));
 
                     sendf(-1, 1, "ri6", N_RESETFLAG, i, ++f.version, f.spawnindex, 0, 0);
                 }

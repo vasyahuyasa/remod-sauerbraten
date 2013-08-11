@@ -83,7 +83,7 @@ namespace aiman
 	bool addai(int skill, int limit)
 	{
 	    // remod
-	    if(remod::onevent("onaddbot", "i", skill)) return false;
+	   remod::onevent(ONADDBOT, "i", skill);
 
 		int numai = 0, cn = -1, maxai = limit >= 0 ? min(limit, MAXBOTS) : MAXBOTS;
 		loopv(bots)
@@ -132,7 +132,7 @@ namespace aiman
 	void deleteai(clientinfo *ci)
 	{
 	    // remod
-	    if(remod::onevent("ondelbot", "")) return;
+	    remod::onevent(ONDELBOT, "");
 
         int cn = ci->clientnum - MAXCLIENTS;
         if(!bots.inrange(cn)) return;
@@ -248,7 +248,7 @@ namespace aiman
         if(ci && !ci->local && ci->privilege < PRIV_ADMIN) return;
 
         // remod
-        if(remod::onevent("onbotlimit", "ii", ci->clientnum, clamp(limit, 0, MAXBOTS))) return;
+        remod::onevent(ONBOTLIMIT, "ii", ci->clientnum, clamp(limit, 0, MAXBOTS));
 
         botlimit = clamp(limit, 0, MAXBOTS);
         dorefresh = true;
