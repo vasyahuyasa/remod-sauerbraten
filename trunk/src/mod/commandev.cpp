@@ -211,6 +211,11 @@ void addevent(eventType etype, const char *custom, const char *fmt, va_list vl)
         events.add(e);
 }
 
+void addevent(event *e)
+{
+    events.add(e);
+}
+
 //Add script callback to event
 void addhandler(const char *evt_type, const char *callbackcmd)
 {
@@ -432,144 +437,6 @@ void triggerEvent(event *ev)
     }
 }
 
-/*
-//Trigger spescified event
-void triggerEvent(eventType etype, const char *custom,  const char *fmt, va_list vl)
-{
-    if((etype < 0) || (etype >= NUMEVENTS)) return;
-
-    //if oncommand
-    if(etype == ONCOMMAND)
-    {
-    	//getting cn
-		int cn = va_arg(vl, int);
-		const char *command_str = newstring(va_arg(vl, const char *));
-
-		//splitting command_string to command_name and command_params
-		char *command_name;
-		char *command_params;
-
-
-		const char *spacepos = strstr(command_str, " ");
-		if (!spacepos) {
-			command_name = newstring(command_str);
-			command_params = newstring("");
-		} else {
-			command_params = newstring(spacepos+1);
-			command_name = newstring(command_str, (size_t) (spacepos - command_str));
-		}
-
-
-		//calling server command
-		remod::oncommand(cn, command_name, command_params);
-
-		DELETEA(command_name);
-		DELETEA(command_params);
-		DELETEA(command_str);
-
-    	return;
-
-    } //if irc_oncommand
-    #ifdef IRC
-    else if (etype == IRC_ONCOMMAND)
-    {
-    	//getting username
-		const char *user = newstring(va_arg(vl, const char *));
-		const char *command_str = newstring(va_arg(vl, const char *));
-
-		//splitting command_string to command_name and command_params
-		char *command_name;
-		char *command_params;
-
-		const char *spacepos = strstr(command_str, " ");
-		if (!spacepos) {
-			command_name = newstring(command_str);
-			command_params = newstring("");
-		} else {
-			command_params = newstring(spacepos+1);
-			command_name = newstring(command_str, (size_t) (spacepos - command_str));
-		}
-
-		//calling irc command
-		remod::irc_oncommand(user, command_name, command_params);
-
-		DELETEA(user);
-		DELETEA(command_str);
-		DELETEA(command_name);
-		DELETEA(command_params);
-
-    	return;
-    }
-    #endif
-    //If handler defined
-    else if (ishandle(etype))
-    {
-    	int paramcount = strlen(fmt);
-    	char *evparams = newstring("");
-        //Check params
-        if(paramcount>0)
-        {
-            //Convert params to string
-            for(int i=0; i<paramcount; i++)
-            {
-                const char* p;
-                switch(fmt[i])
-                {
-                case 'i':
-                	concatpstring(&evparams, 2, " ", intstr(va_arg(vl, int)));
-                    break;
-                case 's':
-                    p = va_arg(vl, const char *);
-                    if (p) {
-                    	concatpstring(&evparams, 2, " ", escapestring(p));
-                    } else {
-                    	concatpstring(&evparams, "\"\"");
-                    }
-                    break;
-                case 'f':
-                case 'd':
-                	concatpstring(&evparams, 2, " ", floatstr(va_arg(vl, double)));
-                    break;
-                default:
-                    //Read and forgot
-                    va_arg(vl, int);
-                    break;
-                }
-            }
-        }
-
-        //Process handlers
-        if(etype != CUSTOMEVENT) // standart event
-        {
-            loopv(handlers[etype])
-            {
-                evt_handler &eh = handlers[etype][i];
-                char *evcmd = newstring(eh.evt_cmd);
-                concatpstring(&evcmd, evparams);
-                execute(evcmd);
-                DELETEA(evcmd);
-            }
-        }
-        else if(custom && custom[0]) // custom user script triggered event
-        {
-            loopv(handlers[etype])
-            {
-                evt_handler &eh = handlers[etype][i];
-                if(strcmp(custom, eh.custom) == 0)
-                {
-                    char *evcmd = newstring(eh.evt_cmd);
-                    concatpstring(&evcmd, evparams);
-                    execute(evcmd);
-                    DELETEA(evcmd);
-                }
-            }
-        }
-
-        DELETEA(evparams);
-    }
-}
-*/
-
 // add event to queue
 void onevent(eventType etype, const char *fmt, ...)
 {
@@ -578,14 +445,9 @@ void onevent(eventType etype, const char *fmt, ...)
     va_list vl;
     va_start(vl, fmt);
     addevent(etype, NULL, fmt, vl);
-    //event *e = storeevent(etype, NULL, fmt, vl);
-    //triggerEvent(e);
-    //delete e;
-    //addevent(etype, NULL, fmt, vl);
     va_end(vl);
 }
 
-/*
 // execute event instantly
 void oneventi(eventType etype, const char *fmt, ...)
 {
@@ -593,30 +455,40 @@ void oneventi(eventType etype, const char *fmt, ...)
 
     va_list vl;
     va_start(vl, fmt);
-    //triggerEvent(etype, NULL, fmt, vl);
     event *e = storeevent(etype, NULL, fmt, vl);
     triggerEvent(e);
     delete e;
     va_end(vl);
 }
 
-// user event
-bool onevent(const char *evt_type, const char *fmt, ...)
+void customEvent(tagval *v, int numargs)
 {
-    eventType etype = str2event(evt_type);
-    va_list vl;
-    va_start(vl, fmt);
+    if(!numargs) return;
 
-    // depricated api usage
-    if(etype != CUSTOMEVENT) conoutf("remod::onevent(\"%s\" ...) is depricated", evt_type);
+    event *e = new event;
+    const char *custom = v[0].getstr(); // custom event name
+    e->evt_type = CUSTOMEVENT;
+    e->custom = newstring(custom);
 
-    //addevent(etype, etype == CUSTOMEVENT ? evt_type : NULL, fmt, vl);
-    triggerEvent(etype, etype == CUSTOMEVENT ? evt_type : NULL, fmt, vl);
-
-    va_end(vl);
-    return false;
+    // event have args
+    if(numargs>1)
+    {
+        vector<char> fmt;
+        int argnum = 1;
+        while(argnum < numargs)
+        {
+            evt_param *param = new evt_param;
+            param->type = 's';
+            param->value_s = newstring(v[argnum].getstr());
+            e->params.add(param);
+            fmt.add('s');
+            argnum++;
+        }
+        e->fmt = newstring(fmt.getbuf());
+    }
+    addevent(e);
 }
-*/
+
 
 void eventsupdate()
 {
@@ -655,5 +527,14 @@ COMMAND(delhandler, "ss");
  * @group event
  */
 COMMAND(clearhandlers, "");
+
+/**
+ * Trigger custom event
+ * @group event
+ * @arg1 event name
+ * @arg2 .. argN  arguments
+ * @example event "onsomething" $cn $msg $ratio
+ */
+COMMANDN(event, customEvent, "V");
 
 }

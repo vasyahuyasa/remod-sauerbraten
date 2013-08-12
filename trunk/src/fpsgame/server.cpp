@@ -1183,7 +1183,7 @@ namespace server
                 uint ip = getclientip(victim);
 
                 //Remod
-                remod::onevent(ONKICK, "ii", ci->clientnum, vinfo->clientnum);
+                remod::oneventi(ONKICK, "ii", ci->clientnum, vinfo->clientnum);
 
                 addban(ip, 4*60*60000);
                 kickclients(ip, ci);
@@ -2325,7 +2325,7 @@ namespace server
             aiman::removeai(ci);
 
             // remod
-            remod::onevent(ONDISCONNECT, "i", n);
+            remod::oneventi(ONDISCONNECT, "i", n);
 
             if(!numclients(-1, false, true)) noclients(); // bans clear when server empties
             if(ci->local) checkpausegame();
@@ -2378,7 +2378,7 @@ namespace server
             if(checkgban(getclientip(ci->clientnum)))
             {
                 // remod
-                remod::onevent(ONKICK, "ii", -1, ci->clientnum);
+                remod::oneventi(ONKICK, "ii", -1, ci->clientnum);
 
                 disconnect_client(ci->clientnum, DISC_IPBAN);
             }
