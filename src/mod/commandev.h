@@ -68,9 +68,8 @@ namespace remod
 
     char *event2str(eventType type);
     eventType str2event(const char *name);
-    //bool onevent(const char *evt_type, const char *fmt, ...); // depricated or script events
     void onevent(eventType etype, const char *fmt, ...);    // add event to queue
-    //void oneventi(eventType etype, const char *fmt, ...);   // execute event instantly
+    void oneventi(eventType etype, const char *fmt, ...);   // execute event instantly
     void eventsupdate();
 }
 #endif

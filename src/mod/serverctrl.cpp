@@ -115,7 +115,7 @@ void kick(int *pcn, int *pexpire, char *actorname)
     int expire = (int)*pexpire;
     if (!pexpire || expire<=0) expire = 4*60*60000; //4 hours - default
     expire += totalmillis;  //add current uptime
-    remod::onevent(ONKICK, "ii", -1, cn);
+    remod::oneventi(ONKICK, "ii", -1, cn);
     if(strlen(actorname) == 0) actorname = newstring("console");
     //server::kick(cn, actorname, expire);
     addban(cn, actorname, expire);
@@ -1724,4 +1724,5 @@ COMMAND(setpriv, "is");
  * @return x,y,z coordinates in float format, return empty if client not exist or spectator
  */
 COMMAND(getpos, "i");
+
 }

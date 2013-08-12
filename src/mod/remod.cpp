@@ -197,7 +197,7 @@ namespace server
             if(ci->local || ci->privilege >= PRIV_ADMIN) continue;
             if(checkpban(getclientip(ci->clientnum)))
             {
-                remod::onevent(ONKICK, "ii", -1, ci->clientnum);
+                remod::oneventi(ONKICK, "ii", -1, ci->clientnum);
                 disconnect_client(ci->clientnum, DISC_IPBAN);
             }
         }
