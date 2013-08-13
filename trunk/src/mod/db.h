@@ -10,8 +10,19 @@
 
 #include "remod.h"
 
+enum databaseType { DB_NONE, DB_SQLITE3, DB_MYSQL, NUMDBS };
+
 namespace remod {
 namespace db {
+
+// Database connection interface
+struct Database
+{
+    uint id;
+    databaseType type;
+    virtual void query(const char *callback, const char *query);
+};
+
 
 /**
  * characters to escape
