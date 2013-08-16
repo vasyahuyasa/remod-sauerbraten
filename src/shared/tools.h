@@ -78,8 +78,8 @@ static inline T clamp(T a, U b, U c)
     return max(T(b), min(a, T(c)));
 }
 
-#define rnd(x) ((int)(randomMT()&0xFFFFFF)%(x))
-#define rndscale(x) (float((randomMT()&0xFFFFFF)*double(x)/double(0xFFFFFF)))
+#define rnd(x) ((int)(randomMT()&0x7FFFFFFF)%(x))
+#define rndscale(x) (float((randomMT()&0x7FFFFFFF)*double(x)/double(0x7FFFFFFF)))
 #define detrnd(s, x) ((int)(((((uint)(s))*1103515245+12345)>>16)%(x)))
 
 #define loop(v,m) for(int v = 0; v<int(m); v++)
@@ -189,7 +189,7 @@ struct databuf
 
     databuf subbuf(int sz)
     {
-        sz = min(sz, maxlen-len);
+        sz = clamp(sz, 0, maxlen-len);
         len += sz;
         return databuf(&buf[len-sz], sz);
     }
@@ -692,7 +692,7 @@ template <class T> struct vector
         return e;
     }
 
-    template<class K>
+    template<class K> 
     int htfind(const K &key)
     {
         loopi(ulen) if(htcmp(key, buf[i])) return i;
@@ -892,7 +892,7 @@ template<class K, class T> struct hashtable : hashset<hashtableentry<K, T> >
     const T &find(const K &key, const T &notfound)
     {
         HTFIND(key, c->elem.data, notfound);
-    }
+    }   
 
     static inline chain *getnext(void *i) { return ((chain *)i)->next; }
     static inline K &getkey(void *i) { return ((chain *)i)->elem.key; }
@@ -943,46 +943,6 @@ struct unionfind
     }
 };
 
-template <class T, int SIZE> struct ringbuf
-{
-    int index, len;
-    T data[SIZE];
-
-    ringbuf() { clear(); }
-
-    void clear()
-    {
-        index = len = 0;
-    }
-
-    bool empty() const { return !len; }
-
-    int length() const { return len; }
-
-    T &add()
-    {
-        T &t = data[index];
-        index++;
-        if(index >= SIZE) index -= SIZE;
-        if(len < SIZE) len++;
-        return t;
-    }
-
-    T &add(const T &e) { return add() = e; }
-
-    T &operator[](int i)
-    {
-        i += index - len;
-        return data[i < 0 ? i + SIZE : i%SIZE];
-    }
-
-    const T &operator[](int i) const
-    {
-        i += index - len;
-        return data[i < 0 ? i + SIZE : i%SIZE];
-    }
-};
-
 template <class T, int SIZE> struct queue
 {
     int head, tail, len;
@@ -996,29 +956,50 @@ template <class T, int SIZE> struct queue
     bool empty() const { return !len; }
     bool full() const { return len == SIZE; }
 
+    bool inrange(size_t i) const { return i<size_t(len); }
+    bool inrange(int i) const { return i>=0 && i<len; }
+
     T &added() { return data[tail > 0 ? tail-1 : SIZE-1]; }
     T &added(int offset) { return data[tail-offset > 0 ? tail-offset-1 : tail-offset-1 + SIZE]; }
     T &adding() { return data[tail]; }
     T &adding(int offset) { return data[tail+offset >= SIZE ? tail+offset - SIZE : tail+offset]; }
     T &add()
     {
-        ASSERT(len < SIZE);
         T &t = data[tail];
-        tail = (tail + 1)%SIZE;
-        len++;
+        tail++;
+        if(tail >= SIZE) tail -= SIZE;
+        if(len < SIZE) len++;
         return t;
+    }
+    T &add(const T &e) { return add() = e; }
+
+    T &pop()
+    {
+        tail--;
+        if(tail < 0) tail += SIZE;
+        len--;
+        return data[tail];
     }
 
     T &removing() { return data[head]; }
     T &removing(int offset) { return data[head+offset >= SIZE ? head+offset - SIZE : head+offset]; }
     T &remove()
     {
-        ASSERT(len > 0);
         T &t = data[head];
-        head = (head + 1)%SIZE;
-        len--;
+        head++;
+        if(head >= SIZE) head -= SIZE;
+        len--; 
         return t;
     }
+
+    T &operator[](int offset) { return removing(offset); }
+    const T &operator[](int offset) const { return removing(offset); }
+};
+
+template <class T, int SIZE> struct reversequeue : queue<T, SIZE>
+{
+    T &operator[](int offset) { return queue<T, SIZE>::added(offset); }
+    const T &operator[](int offset) const { return queue<T, SIZE>::added(offset); }
 };
 
 inline char *newstring(size_t l)                { return new char[l+1]; }
@@ -1100,7 +1081,7 @@ struct stream
     virtual int printf(const char *fmt, ...) PRINTFARGS(2, 3);
     virtual uint getcrc() { return 0; }
 
-    template<class T> int put(const T *v, int n) { return write(v, n*sizeof(T))/sizeof(T); }
+    template<class T> int put(const T *v, int n) { return write(v, n*sizeof(T))/sizeof(T); } 
     template<class T> bool put(T n) { return write(&n, sizeof(n)) == sizeof(n); }
     template<class T> bool putlil(T n) { return put<T>(lilswap(n)); }
     template<class T> bool putbig(T n) { return put<T>(bigswap(n)); }
@@ -1121,11 +1102,11 @@ struct streambuf
     stream *s;
 
     streambuf(stream *s) : s(s) {}
-
+    
     T get() { return s->get<T>(); }
     int get(T *vals, int numvals) { return s->get(vals, numvals); }
     void put(const T &val) { s->put(&val, 1); }
-    void put(const T *vals, int numvals) { s->put(vals, numvals); }
+    void put(const T *vals, int numvals) { s->put(vals, numvals); } 
     int length() { return s->size(); }
 };
 
@@ -1147,9 +1128,9 @@ static inline int iscubealnum(uchar c) { return cubectype[c]&(CT_ALPHA|CT_DIGIT)
 static inline int iscubelower(uchar c) { return cubectype[c]&CT_LOWER; }
 static inline int iscubeupper(uchar c) { return cubectype[c]&CT_UPPER; }
 static inline int cube2uni(uchar c)
-{
-    extern const int cube2unichars[256];
-    return cube2unichars[c];
+{ 
+    extern const int cube2unichars[256]; 
+    return cube2unichars[c]; 
 }
 static inline uchar uni2cube(int c)
 {
