@@ -135,12 +135,12 @@ div.clear {
 	
 	
 	<div>
-		<a name="#installation"></a>
+		<a name="installation"></a>
 		<h2>Installation</h2>
 	</div>
 	
 	<div>
-		<a name="#configuration"></a>
+		<a name="configuration"></a>
 		<h2>Configuration</h2>
 		
 		Remod command line options
@@ -187,12 +187,12 @@ div.clear {
 	</div>
 	
 	<div>
-		<a name="#cs"></a>
+		<a name="cs"></a>
 		<h2>Remod cubescript specifications</h2>
 	</div>
 	
 	<div>
-		<a name="#cs-info"></a>
+		<a name="cs-info"></a>
 		<h3>General cubescript info</h3>
 		<ul>
 			<li>Cubescript manual by Hirato: <a href="https://github.com/Hirato/lamiae/wiki/CubeScript">https://github.com/Hirato/lamiae/wiki/CubeScript</a></li>
@@ -202,7 +202,7 @@ div.clear {
 	
 	
 	<div>
-		<a name="#cs-functions"></a>
+		<a name="cs-functions"></a>
 		<h3>Cubescript functions</h3>
 		
 		Legend:
@@ -228,7 +228,7 @@ div.clear {
 			<py:if val="${group.hasFunctions()}">
 				<tr class="group">
 					<td colspan="6">
-						<a name="#cs-functions-${group.getName()}"></a>
+						<a name="cs-functions-${group.getName()}"></a>
 						Group: ${group.getName()}
 					</td>
 				</tr>
@@ -236,7 +236,7 @@ div.clear {
 				<py:loop val="${group.getFunctionsList()}" var="func">
 				<tr class="${evenOdd('even', 'odd')}">
 					<td class="name">
-						<a name="#cs-func-${func.getName()}"></a>
+						<a name="cs-func-${func.getName()}"></a>
 						${func.getName()}
 					</td>
 					<td><py:loop val="${func.getArgumentsList()}" var="arg">
@@ -264,7 +264,7 @@ div.clear {
 	</div>
 
 	<div>
-		<a name="#cs-events"></a>
+		<a name="cs-events"></a>
 		<h3>Remod events</h3>
 		
 		Legend:
@@ -287,7 +287,7 @@ div.clear {
 			<py:if val="${group.hasEvents()}">
 				<tr class="group">
 					<td colspan="5">
-						<a name="#cs-events-${group.getName()}"></a>
+						<a name="cs-events-${group.getName()}"></a>
 						Group: ${group.getName()}
 					</td>
 				</tr>
@@ -296,7 +296,7 @@ div.clear {
 				
 				<tr class="${evenOdd('even', 'odd')}">
 					<td class="name">
-						<a name="#cs-evt-${evt.getName()}"></a>
+						<a name="cs-evt-${evt.getName()}"></a>
 						${evt.getName()}
 					</td>
 					<td><py:loop val="${evt.getArgumentsList()}" var="arg">
@@ -324,7 +324,7 @@ div.clear {
 
 
 	<div>
-		<a name="#cs-variables"></a>
+		<a name="cs-variables"></a>
 		<h3>Server variables</h3>
 		
 		
@@ -346,7 +346,7 @@ div.clear {
 			<py:if val="${group.hasVariables()}">
 				<tr class="group">
 					<td colspan="8">
-						<a name="#cs-variables-${group.getName()}"></a>
+						<a name="cs-variables-${group.getName()}"></a>
 						Group: ${group.getName()}
 					</td>
 				</tr>
@@ -355,7 +355,7 @@ div.clear {
 				
 				<tr class="${evenOdd('even', 'odd')}">
 					<td class="name">
-						<a name="#cs-var-${v.getName()}"></a>
+						<a name="cs-var-${v.getName()}"></a>
 						${v.getName()}
 					</td>
 					<td>${v.getType()}</td>
