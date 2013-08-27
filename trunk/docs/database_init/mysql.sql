@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS `auth` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(30) NOT NULL,
   `pubkey` varchar(49) NOT NULL,
-  `rights` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `rights` VARCHAR(1) NOT NULL,
   `enabled` tinyint(4) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
