@@ -16,10 +16,18 @@ namespace remod {
 namespace db {
 
 // Database connection interface
-struct Database
+struct DatabaseEngine
 {
-    uint id;
-    databaseType type;
+    uint id; // database id
+    databaseType type; // database type sqlite3, mysql.
+    virtual void close(); // close connection
+    virtual char *error(); // return last error string
+    virtual void finalize(uint stmtid); // finalize statement id
+    virtual char *getrow(uint stmtid); // return string with row fields
+    virtual uint open(char *connstr); // open database
+    virtual char *colnames(uint smtid); // return statement columns names
+    virtual int last_insert_id(); // return id of last insert
+
     virtual void query(const char *callback, const char *query);
 };
 
