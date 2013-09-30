@@ -374,7 +374,7 @@ struct ctfclientmode : clientmode
             sendf(-1, 1, "ri4", N_TAKEFLAG, ci->clientnum, i, ++f.version);
 
             // remod
-            remod::onevent(ONTAKEFLAG, "isi", ci->clientnum, ctfflagteam(f.team), f.droptime? 0 : 1);
+            remod::onevent(ONTAKEFLAG, "isi", ci->clientnum, ci->team, f.droptime? 0 : 1);
         }
         else if(m_protect)
         {
@@ -385,7 +385,7 @@ struct ctfclientmode : clientmode
             returnflag(i);
 
             // remod
-            remod::onevent(ONRETURNFLAG, "is", ci->clientnum, ctfflagteam(f.team));
+            remod::onevent(ONRETURNFLAG, "is", ci->clientnum, ci->team);
 
             sendf(-1, 1, "ri4", N_RETURNFLAG, ci->clientnum, i, ++f.version);
         }
