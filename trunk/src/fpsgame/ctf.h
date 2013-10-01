@@ -385,7 +385,7 @@ struct ctfclientmode : clientmode
             returnflag(i);
 
             // remod
-            remod::onevent(ONRETURNFLAG, "is", ci->clientnum, ci->team);
+            remod::onevent(ONRETURNFLAG, "is", ci->clientnum, ctfflagteam(f.team));
 
             sendf(-1, 1, "ri4", N_RETURNFLAG, ci->clientnum, i, ++f.version);
         }
