@@ -122,7 +122,6 @@ event* storeevent(eventType etype, const char *custom, const char *fmt, va_list 
                 {
                     char *s = va_arg(vl, char*);
                     param->value_s = newstring(s ? s : "");
-
                     break;
                 }
 
