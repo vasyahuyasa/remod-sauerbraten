@@ -120,7 +120,9 @@ event* storeevent(eventType etype, const char *custom, const char *fmt, va_list 
 
                 case 's':
                 {
-                    param->value_s = newstring(va_arg(vl, char*));
+                    char *s = va_arg(vl, char*);
+                    param->value_s = newstring(s ? s : "");
+
                     break;
                 }
 
