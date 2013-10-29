@@ -206,7 +206,14 @@ namespace server
 
 namespace remod
 {
-using namespace server;
+
+    using namespace server;
+
+void extstate::reset()
+{
+    muted = false;
+    editmuted  = false;
+}
 
 // Find best frager
 clientinfo* findbest(vector<clientinfo *> &a)

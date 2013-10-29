@@ -2,7 +2,7 @@
 #define __FPSGAME_H__
 
 #include "game.h"
-#include "varbox.h"
+#include "remod.h"
 
 namespace server
 {
@@ -111,9 +111,9 @@ namespace server
         int frags, flags, deaths, teamkills, shotdamage, damage, tokens;
         int lasttimeplayed, timeplayed;
         float effectiveness;
+
         // remod
-        bool muted;
-        bool editmuted;
+        remod::extstate ext;
 
         gamestate() : state(CS_DEAD), editstate(CS_DEAD), lifesequence(0) {}
 
@@ -138,8 +138,7 @@ namespace server
             effectiveness = 0;
 
             //remod
-            muted = false;
-            editmuted = false;
+            ext.reset();
 
             frags = flags = deaths = teamkills = shotdamage = damage = tokens = 0;
 
@@ -175,8 +174,7 @@ namespace server
         float effectiveness;
 
         // remod
-        bool muted;
-        bool editmuted;
+        remod::extstate ext;
 
         void save(gamestate &gs)
         {
@@ -191,8 +189,7 @@ namespace server
             effectiveness = gs.effectiveness;
 
             // remod
-            muted = gs.muted;
-            editmuted = gs.editmuted;
+            ext = gs.ext;
         }
 
         void restore(gamestate &gs)
@@ -209,8 +206,7 @@ namespace server
             gs.effectiveness = effectiveness;
 
             // remod
-            gs.muted = muted;
-            gs.editmuted = editmuted;
+            gs.ext = ext;
         }
     };
 
@@ -246,7 +242,7 @@ namespace server
 
         // remod
         //hashtable<const char *, char *> vars;
-        varbox vars;
+        remod::extinfo ext;
 
         clientinfo() : getdemo(NULL), getmap(NULL), clipboard(NULL), authchallenge(NULL), authkickreason(NULL) { reset(); }
         ~clientinfo() { events.deletecontents(); cleanclipboard(); cleanauth(); }

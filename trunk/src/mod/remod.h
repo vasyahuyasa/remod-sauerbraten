@@ -1,7 +1,8 @@
 #ifndef __REMOD_H__
 #define __REMOD_H__
 
-#include "fpsgame.h"
+#include "game.h"
+#include "varbox.h"
 
 // worlio.cpp
 extern void cutogz(char *s);
@@ -24,6 +25,8 @@ void reloadauth();
 
 namespace server
 {
+    struct clientinfo;
+
     void filtercstext(char *str);
     bool checkpban(uint ip);
     void addban(int cn, char* actorname, int expire);
@@ -32,7 +35,20 @@ namespace server
 
 namespace remod
 {
-    using namespace server;
+    typedef server::clientinfo clientinfo;
+
+    struct extstate
+    {
+        bool muted;
+        bool editmuted;
+
+        void reset();
+    };
+
+    struct extinfo
+    {
+        varbox vars;
+    };
 
     extern char *mapdir;
 

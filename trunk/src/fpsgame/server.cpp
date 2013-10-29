@@ -2954,7 +2954,7 @@ namespace server
                     break;
                 }
 
-                if(ci->state.muted) break;
+                if(ci->state.ext.muted) break;
 
                 remod::onevent(ONTEXT, "is", sender, ftext);
                 DELETEA(ftext);
@@ -2973,7 +2973,7 @@ namespace server
                 if(!ci || !cq || (ci->state.state==CS_SPECTATOR && !ci->local && !ci->privilege) || !m_teammode || !cq->team[0]) break;
 
                 // remod
-                if(ci->state.muted) break;
+                if(ci->state.ext.muted) break;
                 remod::onevent(ONSAYTEAM, "is", sender, text);
 
                 loopv(clients)
@@ -3067,7 +3067,7 @@ namespace server
                 if(!ci || ci->state.state==CS_SPECTATOR) break;
 
                 // remod
-                if(ci->state.editmuted) break;
+                if(ci->state.ext.editmuted) break;
 
                 QUEUE_MSG;
                 bool canspawn = canspawnitem(type);
@@ -3097,7 +3097,7 @@ namespace server
                 }
 
                 // remod
-                if(ci->state.editmuted) break;
+                if(ci->state.ext.editmuted) break;
 
                 if(ci && ci->state.state!=CS_SPECTATOR) QUEUE_MSG;
                 break;
@@ -3290,7 +3290,7 @@ namespace server
                 if(!ci->privilege && !ci->local && ci->state.state==CS_SPECTATOR) break;
 
                 // remod
-                if(ci->state.editmuted) break;
+                if(ci->state.ext.editmuted) break;
                 remod::onevent(ONNEWMAP, "i", ci->clientnum);
 
                 if(size>=0)
@@ -3417,7 +3417,7 @@ namespace server
                 int unpacklen = getint(p), packlen = getint(p);
 
                 // remod
-                if(ci->state.editmuted) break;
+                if(ci->state.ext.editmuted) break;
 
                 ci->cleanclipboard(false);
                 if(ci->state.state==CS_SPECTATOR)
