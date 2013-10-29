@@ -21,6 +21,9 @@
 //Remod
 namespace remod
 {
+
+    using namespace server;
+
 void getname(int *cn)
 {
     clientinfo *ci = (clientinfo *)getinfo((int)*cn);
@@ -118,9 +121,9 @@ void kick(int *pcn, int *pexpire, char *actorname)
     remod::oneventi(ONKICK, "ii", -1, cn);
     if(strlen(actorname) == 0) actorname = newstring("console");
     //server::kick(cn, actorname, expire);
-    addban(cn, actorname, expire);
+    server::addban(cn, actorname, expire);
     uint ip = getclientip(cn);
-    kickclients(ip);
+    server::kickclients(ip);
 }
 
 void spectator(int *st, int *pcn)
@@ -313,9 +316,9 @@ void mute(int *pcn, int *val)
     clientinfo *ci = (clientinfo *)getinfo(cn);
     if(ci)
     {
-        if(ci->state.muted != v)
+        if(ci->state.ext.muted != v)
         {
-            ci->state.muted = v;
+            ci->state.ext.muted = v;
             remod::onevent(ONMUTE, "ii", v ? 1 : 0, cn);
         }
     }
@@ -325,7 +328,7 @@ void ismuted(int *icn)
 {
     int cn = (int)*icn;
     clientinfo *ci = (clientinfo *)getinfo(cn);
-    intret(ci && ci->state.muted);
+    intret(ci && ci->state.ext.muted);
 }
 
 void formatmillis(const char *fmt, int *millis)
@@ -670,9 +673,9 @@ void editmute(int *pcn, int *val)
     clientinfo *ci = (clientinfo *)getinfo(cn);
     if(ci)
     {
-        if(ci->state.editmuted != v)
+        if(ci->state.ext.editmuted != v)
         {
-            ci->state.editmuted = v;
+            ci->state.ext.editmuted = v;
             remod::onevent(ONEDITMUTE, "ii", v ? 1 : 0, cn);
         }
     }
@@ -681,7 +684,7 @@ void editmute(int *pcn, int *val)
 void iseditmuted(int *cn)
 {
     clientinfo *ci = (clientinfo *)getinfo(*cn);
-    intret(ci && ci->state.editmuted);
+    intret(ci && ci->state.ext.editmuted);
 }
 
 void uptimef(const char *fmt)
@@ -930,7 +933,7 @@ void setclientvar(int cn, const char *key, char *value)
     {
         //ci->state.vars.access(key, val);
         //ci->vars[newstring(key)] = newstring(value);
-        ci->vars.set(key, value);
+        ci->ext.vars.set(key, value);
     }
 }
 
@@ -958,7 +961,7 @@ void getclientvar(int cn, const char *key)
     clientinfo *ci = (clientinfo *)getinfo(cn);
     if(ci)
     {
-        res = ci->vars.get(key);
+        res = ci->ext.vars.get(key);
     }
 
     if(res)
@@ -979,9 +982,9 @@ void listclientvar(int cn)
         //enumerate(ci->vars, char *, val, conoutf("vars[x]=%s", val));
         loopi(VARBOXMAXNODES)
         {
-            if(ci->vars.nodes[i])
+            if(ci->ext.vars.nodes[i])
             {
-                conoutf("vars[%s] = %s", ci->vars.nodes[i]->key, ci->vars.nodes[i]->val);
+                conoutf("vars[%s] = %s", ci->ext.vars.nodes[i]->key, ci->ext.vars.nodes[i]->val);
             }
             else
             {
