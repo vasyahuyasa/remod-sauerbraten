@@ -1,5 +1,11 @@
-ENet 1.3.9 (August 16, 2013):
+ENet 1.3.10 (October 23, 2013);
 
+* doubled maximum reliable window size
+* fixed RCVTIMEO/SNDTIMEO socket options and also added NODELAY
+
+ENet 1.3.9 (August 19, 2013):
+
+* added duplicatePeers option to ENetHost which can limit the number of peers from duplicate IPs
 * added enet_socket_get_option() and ENET_SOCKOPT_ERROR
 * added enet_host_random_seed() platform stub
 
