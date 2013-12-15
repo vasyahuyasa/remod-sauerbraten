@@ -404,63 +404,6 @@ void formatmillis(const char *fmt, int *millis)
 }
 
 
-/**
- * checks if ip matches mask
- * ip = "127.0.0.1",	mask = "127.0.0.1"		--  true
- * ip = "192.168.1.23",	mask = "192.168.1.*"	--  true
- * ip = "192.168.1.23",	mask = "192.168.1.255"	--  true
- * ip = "127.0.0.1",	mask = "128.0.0.1"		--  false
- */
-bool checkipbymask(char *ip, char *mask)
-{
-    string istr;
-    string mstr;
-
-    strcpy(istr, ip);
-    strcpy(mstr, mask);
-
-    bool b = true;
-
-    while (b && strlen(istr) > 0)
-    {
-        char *idot = strchr(istr, '.');
-        string iseg;
-        if (idot)
-        {
-            int c = idot-istr;
-            strncpy(iseg, istr, c);
-            iseg[c] = '\0';
-            strcpy(istr, idot+1);
-        }
-        else
-        {
-            strcpy(iseg, istr);
-            istr[0] = '\0';
-        }
-
-        char *mdot = strchr(mstr, '.');
-        string mseg;
-        if (mdot)
-        {
-            int c = mdot-mstr;
-            strncpy(mseg, mstr, c);
-            mseg[c] = '\0';
-            strcpy(mstr, mdot+1);
-        }
-        else
-        {
-            strcpy(mseg, mstr);
-            mstr[0] = '\0';
-        }
-
-        if (strcmp(iseg, mseg) != 0 && strcmp(mseg, "*") != 0 && strcmp(mseg, "255") != 0)
-        {
-            b = false;
-        }
-    }
-    return b;
-}
-
 // based on looplist (command.cpp)
 void loopbans(ident *name, ident *ip, ident *expire, ident *actor, ident *actorip, const uint *body)
 {
@@ -764,18 +707,29 @@ void uptimef(const char *fmt)
 /**
  * converts string ip to integer value
  */
-void ip2int(char *ip) {
+int ip2int(char *ip) {
 	int i = 0;
 	for (int j = 0; j < 4; j++) {
-		char *dot = strchr(ip, '.');
-		size_t l = dot ? ((size_t) dot - (size_t) ip) : strlen(ip);
-		char *octet = newstring(ip, l);
-		short ioctet = atoi(octet);
+		short ioctet;
+		if (!ip) {
+			ioctet = 0xFF;
+		} else {
+			char *dot = strchr(ip, '.');
+
+			size_t l = dot ? ((size_t) dot - (size_t) ip) : strlen(ip);
+			char *octet = newstring(ip, l);
+
+			ioctet = atoi(octet);
+			if (ioctet == 0 && strcmp(octet, "0")) {
+				ioctet = 0xFF;
+			}
+
+			ip = dot ? dot + 1 : 0;
+			DELETEA(octet);
+		}
 		i = (i << 8) | ioctet;
-		ip = dot + 1;
-		DELETEA(octet);
 	}
-	intret(i);
+	return i;
 }
 
 /**
@@ -786,6 +740,32 @@ void int2ip(int *i) {
 	int ii = *i;
 	sprintf(ip, "%d.%d.%d.%d", (ii & 0xFF000000) >> 24, (ii & 0xFF0000) >> 16, (ii & 0xFF00) >> 8, ii & 0xFF);
 	result(ip);
+}
+
+
+
+/**
+ * checks if ip matches mask
+ * ip = "127.0.0.1",	mask = "127.0.0.1"		--  true
+ * ip = "192.168.1.23",	mask = "192.168.1.*"	--  true
+ * ip = "192.168.1.23",	mask = "192.168.1.255"	--  true
+ * ip = "192.168.1.23",	mask = "192.168.1."		--  true
+* ip = "192.168.1.23",	mask = "192.168."		--  true
+ * ip = "127.0.0.1",	mask = "128.0.0.1"		--  false
+ */
+bool checkipbymask(char *ip, char *mask)
+{
+	int ipint = ip2int(ip);
+	int maskint = ip2int(mask);
+
+	for(int i = 3; i >= 0; i--) {
+		short ip_octet = (ipint >> i*8) & 0xFF;
+		short mask_octet = (maskint >> i*8) & 0xFF;
+		if (mask_octet != 0xFF && (mask_octet != ip_octet)) {
+			return false;
+		}
+	}
+	return true;
 }
 
 void looppermbans(ident *ip, ident *mask, ident *reason, const uint *body)
@@ -1465,6 +1445,7 @@ ICOMMAND(halt, "i", (int *err), exit(*err));
  * @arg2 ip mask (string)
  * @return 0 or 1
  * @example checkipbymask "192.168.0.1" "192.168.*.*" //returns 1
+ * @example checkipbymask "192.168.0.1" "192.168." //returns 1
  */
 ICOMMAND(checkipbymask, "ss", (char *ip, char *mask), intret(checkipbymask(ip, mask) ? 1 : 0));
 
@@ -1597,7 +1578,7 @@ COMMAND(uptimef, "s");
  * @arg1 ip as string (i.e. "192.168.1.1")
  * @return integer
  */
-COMMAND(ip2int, "s");
+ICOMMAND(ip2int, "s", (char *ip), intret(ip2int(ip)));
 
 /**
  * Transforms integer representation of ip to string
