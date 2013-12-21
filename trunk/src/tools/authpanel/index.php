@@ -56,7 +56,7 @@ switch($_GET["action"])
         $id     = $_GET["id"];
         $val    = $_GET["val"];        
         setenable($mysqli, $id, $val);
-        header("Location: ".$_SERVER["DOCUMENT_URI"]);
+        header("Location: ".dirname($_SERVER["SCRIPT_NAME"])."/");
         exit;
         
     case "add":
@@ -74,7 +74,7 @@ switch($_GET["action"])
         if(!$adderrors)
         {
         	adduser($mysqli, $name, $pubkey, $rights, $enabled);
-        	header("Location: ".$_SERVER["DOCUMENT_URI"]);
+        	header("Location: ".dirname($_SERVER["SCRIPT_NAME"])."/");
         	exit;
         }
    		break;
@@ -86,7 +86,7 @@ switch($_GET["action"])
         if($confirm == "1")
         {
             deleteuser($mysqli, $id);
-            header("Location: ".$_SERVER["DOCUMENT_URI"]);
+            header("Location: ".dirname($_SERVER["SCRIPT_NAME"])."/");
         }
         else
         {
