@@ -1715,5 +1715,8 @@ COMMAND(getpos, "i");
  * @arg1 client number
  * @arg2 gun ("FI" = 0, "SG", "CG", "RL", "RI", "GL", "PI" = 6)
  */
-COMMAND(getwepaccuracy, "ii");
+ICOMMAND(getwepaccuracy, "ii", (int *cn, int *gun),
+    {
+        intret(getwepaccuracy(*cn, *gun));
+    });
 }
