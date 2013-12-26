@@ -213,6 +213,11 @@ void extstate::reset()
 {
     muted = false;
     editmuted  = false;
+    loopi(NUMGUNS)
+    {
+        guninfo[i].damage = 0;
+        guninfo[i].shotdamage = 0;
+    }
 }
 
 // Find best frager
@@ -561,4 +566,15 @@ void setmaster(clientinfo *ci, int priv)
 
     checkpausegame();
 }
+
+// wepon accuracy
+int getwepaccuracy(int cn, int gun)
+{
+    int acc = 0;
+    clientinfo *ci = (clientinfo *)getinfo(cn);
+    if(ci && gun>0 && gun<=NUMGUNS)
+        acc = ci->state.ext.guninfo[gun].damage*100/max(ci->state.ext.guninfo[gun].shotdamage, 1);
+    return(acc);
+}
+
 }

@@ -1709,4 +1709,11 @@ COMMAND(setpriv, "is");
  */
 COMMAND(getpos, "i");
 
+/**
+ * Get specified weapon accuracy
+ * @group player
+ * @arg1 client number
+ * @arg2 gun ("FI" = 0, "SG", "CG", "RL", "RI", "GL", "PI" = 6)
+ */
+COMMAND(getwepaccuracy, "ii");
 }

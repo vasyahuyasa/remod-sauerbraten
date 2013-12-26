@@ -42,6 +42,12 @@ namespace remod
         bool muted;
         bool editmuted;
 
+        struct
+        {
+            int shotdamage;
+            int damage;
+        } guninfo[NUMGUNS];
+
         void reset();
     };
 
@@ -66,5 +72,6 @@ namespace remod
     bool loadents(const char *fname, vector<entity> &ents, uint *crc);
     bool writeents(const char *mapname, vector<entity> &ents, uint mapcrc);
     void setmaster(clientinfo *ci, int priv);
+    int getwepaccuracy(int cn, int gun);
 }
 #endif

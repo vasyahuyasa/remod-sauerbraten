@@ -22,6 +22,12 @@ STRIP=
 
 PLATFORM=$(shell uname -s)
 
+# Use clang on freebsd
+# Comment next lines if server not building or you want to use old GCC
+ifneq (,$(findstring FreeBSD,$(PLATFORM)))
+CXX=clang
+endif
+
 #result file name
 PLATFORM_SUFFIX=
 ifneq (,$(findstring x86_64,$(shell uname -a)))
