@@ -3010,7 +3010,7 @@ namespace server
                 if(!ci->name[0]) copystring(ci->name, "unnamed");
 
                 // remod
-                remod::onevent(ONSWITCHNAME, "iss", sender, oldname, ci->name);
+                remod::onevent(ONSWITCHNAME, "iss", sender, ci->name, oldname);
 
                 QUEUE_STR(ci->name);
                 break;
