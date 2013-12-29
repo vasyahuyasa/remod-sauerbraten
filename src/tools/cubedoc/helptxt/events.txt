@@ -39,8 +39,9 @@ Send teamchat message
 @event onswitchname 
 @arg1 cn
 @arg2 newname
+@arg3 oldname
 @greedy
-Before player rename
+When player rename
 
 @event onswitchmodel 
 @arg1 cn

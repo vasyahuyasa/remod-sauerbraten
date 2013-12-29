@@ -3002,11 +3002,16 @@ namespace server
                 QUEUE_MSG;
                 getstring(text, p);
 
-                // remod
-                remod::onevent(ONSWITCHNAME, "is", sender, text);
+                //remod
+                string oldname;
+                copystring(oldname, ci->name);
 
                 filtertext(ci->name, text, false, MAXNAMELEN);
                 if(!ci->name[0]) copystring(ci->name, "unnamed");
+
+                // remod
+                remod::onevent(ONSWITCHNAME, "iss", sender, oldname, ci->name);
+
                 QUEUE_STR(ci->name);
                 break;
             }
