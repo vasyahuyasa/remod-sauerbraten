@@ -132,7 +132,10 @@ namespace server
 
     bool checkpban(uint ip)
     {
-        loopv(permbans) if((ip & permbans[i].mask) == permbans[i].ip) return true;
+        loopv(permbans)
+            if((ip & permbans[i].mask) == (permbans[i].ip & permbans[i].mask))
+            if((ip & permbans[i].mask) == (permbans[i].ip & permbans[i].mask))
+                return true;
         return false;
     }
 
@@ -167,21 +170,38 @@ namespace server
         }
     }
 
-    void addpban(const char *name, const char *reason)
+    void addpban(char *name, const char *reason)
     {
-        union { uchar b[sizeof(enet_uint32)]; enet_uint32 i; } ip, mask;
+        union
+        {
+            uchar b[sizeof(enet_uint32)];
+            enet_uint32 i;
+        } ip, mask;
         ip.i = 0;
         mask.i = 0;
+        char *next = name;
+        int n;
+
         loopi(4)
         {
-            char *end = NULL;
-            int n = strtol(name, &end, 10);
-            if(!end) break;
-            if(end > name) { ip.b[i] = n; mask.b[i] = 0xFF; }
-            name = end;
-            while(*name && *name++ != '.');
+            n = strtol(next, &next, 10);
+            if(!next) break;
+            ip.b[i] = n;
+            mask.b[i] = 0xFF;
+            if(*next && *next == '.') next++;
         }
 
+        // CIDR
+        if(*next && *next == '/' && next++)
+        {
+            n = strtol(next, NULL, 10);
+            conoutf("next = %s, n = %i", next, n);
+            mask.i = ~0;
+            mask.i <<= (32-n);
+            mask.i = htonl(mask.i);
+        }
+
+        // add ban and kick banned
         allowedips.removeobj(ip.i);
 
         permban b;
@@ -201,8 +221,10 @@ namespace server
                 disconnect_client(ci->clientnum, DISC_IPBAN);
             }
         }
+
     }
 }
+
 
 namespace remod
 {
@@ -364,7 +386,7 @@ void writebans()
         {
             uchar b[sizeof(enet_uint32)];
             enet_uint32 i;
-        } ip, mask;
+        } ip;
         string maskedip;
 
         f->printf("// This file was generated automaticaly\n// Do not edit it while server running\n\n");
@@ -373,19 +395,18 @@ void writebans()
         {
             permban b = permbans[i];
             ip.i = b.ip;
-            mask.i = b.mask;
             maskedip[0] = '\0';
 
-            // generate masked ip (ex. 234.345.45)
-            loopi(4)
+            // generate masked ip (ex. 234.345.45.2/32)
+            enet_uint32 tmsk = ntohl(b.mask);
+            int cidrmsk = 0;
+            while(tmsk)
             {
-                if(mask.b[i] != 0x00)
-                {
-                    if(i) strcat(maskedip, ".");
-                    strcat(maskedip, intstr(ip.b[i]));
-                }
-                else  break;
+                tmsk <<= 1;
+                cidrmsk++;
             }
+            formatstring(maskedip)("%i.%i.%i.%i/%i", ip.b[0], ip.b[1], ip.b[2], ip.b[3], cidrmsk);
+
             f->printf("permban %s \"%s\"\n", maskedip, b.reason);
         }
         f->close();
