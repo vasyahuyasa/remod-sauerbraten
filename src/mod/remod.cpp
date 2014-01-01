@@ -182,14 +182,14 @@ namespace server
         char *next = name;
         int n;
 
-        loopi(4)
-        {
-            n = strtol(next, &next, 10);
-            if(!next) break;
-            ip.b[i] = n;
-            mask.b[i] = 0xFF;
-            if(*next && *next == '.') next++;
-        }
+        if(*next)
+            loopi(4)
+            {
+                n = strtol(next, &next, 10);
+                ip.b[i] = n;
+                mask.b[i] = 0xFF;
+                if(*next && *next == '.') next++;
+            }
 
         // CIDR
         if(*next && *next == '/' && next++)
