@@ -30,7 +30,7 @@ namespace server
     void filtercstext(char *str);
     bool checkpban(uint ip);
     void addban(int cn, char* actorname, int expire);
-    void addpban(const char *name, const char *reason);
+    void addpban(char *name, const char *reason);
 }
 
 namespace remod

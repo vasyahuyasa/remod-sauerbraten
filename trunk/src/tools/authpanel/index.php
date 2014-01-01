@@ -33,7 +33,7 @@ if($protected)
 	else
 	{
 		// Check for valid login and password
-		if(strcmp($_SERVER['PHP_AUTH_USER'], $adminname) !== 0 || strcmp($_SERVER['PHP_AUTH_USER'], $adminname) !== 0)
+		if(strcmp($_SERVER['PHP_AUTH_USER'], $adminname) !== 0 || strcmp($_SERVER['PHP_AUTH_PW'], $adminpass) !== 0)
 		{
 			header('WWW-Authenticate: Basic realm="'.$title.'"');
 			header('HTTP/1.0 401 Unauthorized');
@@ -56,7 +56,7 @@ switch($_GET["action"])
         $id     = $_GET["id"];
         $val    = $_GET["val"];        
         setenable($mysqli, $id, $val);
-        header("Location: ".dirname($_SERVER["SCRIPT_NAME"])."/");
+        header("Location: ./");
         exit;
         
     case "add":
@@ -74,7 +74,7 @@ switch($_GET["action"])
         if(!$adderrors)
         {
         	adduser($mysqli, $name, $pubkey, $rights, $enabled);
-        	header("Location: ".dirname($_SERVER["SCRIPT_NAME"])."/");
+        	header("Location: ./");
         	exit;
         }
    		break;
@@ -86,7 +86,7 @@ switch($_GET["action"])
         if($confirm == "1")
         {
             deleteuser($mysqli, $id);
-            header("Location: ".dirname($_SERVER["SCRIPT_NAME"])."/");
+            header("Location: ./");
         }
         else
         {
