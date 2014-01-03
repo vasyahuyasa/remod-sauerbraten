@@ -59,7 +59,7 @@ namespace server
 
     vector<uint> allowedips;
     vector<ban> bannedips;
-    vector<permban> permbans; // remod
+    //vector<permban> permbans; // remod
 
     void addban(uint ip, int expire)
     {
@@ -1184,8 +1184,8 @@ namespace server
 
                 //Remod
                 remod::oneventi(ONKICK, "ii", ci->clientnum, vinfo->clientnum);
+                addban(victim, ci->name, 4*60*60000);
 
-                addban(ip, 4*60*60000);
                 kickclients(ip, ci);
             }
         }
