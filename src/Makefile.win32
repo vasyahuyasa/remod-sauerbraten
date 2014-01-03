@@ -69,7 +69,9 @@ SERVER_OBJS= \
 	mod/cryptomod/polarssl/library/md5-standalone.o \
 	mod/cryptomod/polarssl/library/sha1-standalone.o \
 	mod/cryptomod/polarssl/library/sha2-standalone.o \
-	mod/cryptomod/polarssl/library/sha4-standalone.o
+	mod/cryptomod/polarssl/library/sha4-standalone.o \
+      	mod/banlist-standalone.o \
+	mod/jsonbanlist-standalone.o
 
 
 

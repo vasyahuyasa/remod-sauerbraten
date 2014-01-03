@@ -377,13 +377,6 @@ namespace server
         uint actorip;  // baning player's ip (0.0.0.0 if by server)
     };
 
-    //Remod
-    struct permban
-    {
-        enet_uint32 ip, mask;
-        string reason;
-    };
-
     namespace aiman
     {
         //Remod
@@ -473,7 +466,7 @@ namespace server
     extern servmode *smode;
 
     // remod
-    extern vector<permban> permbans;
+    //extern vector<permban> permbans;
     extern stream *mapdata;
 
     void kickclients(uint ip, clientinfo *actor = NULL);

@@ -134,6 +134,8 @@
 		<Unit filename="include/zconf.h" />
 		<Unit filename="include/zlib.h" />
 		<Unit filename="libGeoIP/GeoIP.h" />
+		<Unit filename="mod/banlist.cpp" />
+		<Unit filename="mod/banlist.h" />
 		<Unit filename="mod/commandev.cpp" />
 		<Unit filename="mod/commandev.h" />
 		<Unit filename="mod/commandhandler.cpp" />
@@ -163,6 +165,8 @@
 		<Unit filename="mod/geoipmod.h" />
 		<Unit filename="mod/irc.cpp" />
 		<Unit filename="mod/irc.h" />
+		<Unit filename="mod/jsonbanlist.cpp" />
+		<Unit filename="mod/jsonbanlist.h" />
 		<Unit filename="mod/libGeoIP/GeoIP.c">
 			<Option compilerVar="CC" />
 		</Unit>

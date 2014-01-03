@@ -11,6 +11,7 @@
 #include "commandhandler.h"
 #include "fpsgame.h"
 #include "remod.h"
+#include "banlist.h"
 
 #ifndef WIN32
 #include <arpa/inet.h>
@@ -19,6 +20,8 @@
 #include "version.inc"
 
 //Remod
+extern remod::banlist::banmanager *bm;
+
 namespace remod
 {
 
@@ -768,17 +771,18 @@ bool checkipbymask(char *ip, char *mask)
 	return true;
 }
 
+
 void looppermbans(ident *ip, ident *mask, ident *reason, const uint *body)
 {
     identstack stack[3];
     in_addr addr_ip;
     in_addr addr_mask;
 
-    loopv(permbans)
+    loopv(bm->localbanlist()->bans)
     {
-        permban &b = permbans[i];
-        addr_ip.s_addr   = b.ip;
-        addr_mask.s_addr = b.mask;
+        remod::banlist::baninfo *b = bm->localbanlist()->bans[i];
+        addr_ip.s_addr   = b->ip;
+        addr_mask.s_addr = b->mask;
 
         if(i)
         {
@@ -799,7 +803,7 @@ void looppermbans(ident *ip, ident *mask, ident *reason, const uint *body)
 
                 ip->val.s     = newstring(inet_ntoa(addr_ip));
                 mask->val.s   = newstring(inet_ntoa(addr_mask));
-                reason->val.s = newstring(b.reason);
+                reason->val.s = newstring(b->reason);
             }
         }
         else
@@ -809,7 +813,7 @@ void looppermbans(ident *ip, ident *mask, ident *reason, const uint *body)
 
             t[0].setstr(newstring(inet_ntoa(addr_ip)));
             t[1].setstr(newstring(inet_ntoa(addr_mask)));
-            t[2].setstr(newstring(b.reason));
+            t[2].setstr(newstring(b->reason));
 
             ::pusharg(*ip    , t[0], stack[0]);
             ::pusharg(*mask  , t[1], stack[1]);
@@ -823,13 +827,14 @@ void looppermbans(ident *ip, ident *mask, ident *reason, const uint *body)
         execute(body);
     }
 
-    if(permbans.length())
+    if(bm->localbanlist()->length())
     {
         ::poparg(*ip);
         ::poparg(*mask);
         ::poparg(*reason);
     }
 }
+
 
 // Shitcode below, get list of compiled in extensions
 void getextensions()
@@ -1604,6 +1609,7 @@ COMMANDN(permban, addpban, "ss");
  * @arg3 reason variable
  * @arg4 body of function to execute while iterating the list
  */
+
 ICOMMAND(looppermbans,
          "rrre",
          (ident *ip, ident *mask, ident *reason, uint *body),
@@ -1614,7 +1620,7 @@ ICOMMAND(looppermbans,
  * @group player
  * @arg1 number of record in permban list
  */
-ICOMMAND(delpermban, "i", (int *n), if(permbans.inrange(*n)) { permbans.remove(*n); });
+ICOMMAND(delpermban, "i", (int *n), bm->localbanlist()->remove(*n));
 
 /**
  * Get list of compiled extensions in remod
@@ -1715,8 +1721,5 @@ COMMAND(getpos, "i");
  * @arg1 client number
  * @arg2 gun ("FI" = 0, "SG", "CG", "RL", "RI", "GL", "PI" = 6)
  */
-ICOMMAND(getwepaccuracy, "ii", (int *cn, int *gun),
-    {
-        intret(getwepaccuracy(*cn, *gun));
-    });
+ICOMMAND(getwepaccuracy, "ii", (int *cn, int *gun), intret(getwepaccuracy(*cn, *gun)));
 }

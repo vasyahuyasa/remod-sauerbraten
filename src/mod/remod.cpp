@@ -9,6 +9,7 @@
 
 #include "commandev.h"
 #include "remod.h"
+#include "banlist.h"
 
 EXTENSION(REMOD);
 
@@ -61,6 +62,7 @@ struct sleepcmd
 vector<sleepcmd> asleepcmds;
 
 extern int identflags;
+remod::banlist::banmanager *bm = new remod::banlist::banmanager;
 
 void addasleep(int *msec, char *cmd)
 {
@@ -132,11 +134,7 @@ namespace server
 
     bool checkpban(uint ip)
     {
-        loopv(permbans)
-            if((ip & permbans[i].mask) == (permbans[i].ip & permbans[i].mask))
-            if((ip & permbans[i].mask) == (permbans[i].ip & permbans[i].mask))
-                return true;
-        return false;
+        return bm->checkban(ip);
     }
 
     // remod implementation of addban
@@ -172,6 +170,26 @@ namespace server
 
     void addpban(char *name, const char *reason)
     {
+        enet_uint32 ip, mask;
+        bm->parseipstring(name, ip, mask);
+        bm->addban(NULL, ip, mask, 0, time(0), "server", reason);
+
+        loopvrev(clients)
+        {
+            clientinfo *ci = clients[i];
+            if(ci->local || ci->privilege >= PRIV_ADMIN) continue;
+            if(checkpban(getclientip(ci->clientnum)))
+            {
+                remod::oneventi(ONKICK, "ii", -1, ci->clientnum);
+                disconnect_client(ci->clientnum, DISC_IPBAN);
+            }
+        }
+    }
+
+    /*
+    void addpban(char *name, const char *reason)
+    {
+
         union
         {
             uchar b[sizeof(enet_uint32)];
@@ -189,6 +207,7 @@ namespace server
                 ip.b[i] = n;
                 mask.b[i] = 0xFF;
                 if(*next && *next == '.') next++;
+                if(!*next || *next == '/') break;
             }
 
         // CIDR
@@ -222,7 +241,8 @@ namespace server
             }
         }
 
-    }
+
+    }*/
 }
 
 
@@ -382,15 +402,10 @@ void writebans()
 
     if(f)
     {
-        union
-        {
-            uchar b[sizeof(enet_uint32)];
-            enet_uint32 i;
-        } ip;
         string maskedip;
 
         f->printf("// This file was generated automaticaly\n// Do not edit it while server running\n\n");
-
+/*
         loopv(permbans)
         {
             permban b = permbans[i];
@@ -409,6 +424,24 @@ void writebans()
 
             f->printf("permban %s \"%s\"\n", maskedip, b.reason);
         }
+        */
+        loopv(bm->localbanlist()->bans)
+        {
+            remod::banlist::baninfo *b = bm->localbanlist()->bans[i];
+            maskedip[0] = '\0';
+
+            // generate masked ip (ex. 234.345.45.2/32)
+            enet_uint32 tmsk = ntohl(b->mask);
+            int cidrmsk = 0;
+            while(tmsk)
+            {
+                tmsk <<= 1;
+                cidrmsk++;
+            }
+            formatstring(maskedip)("%i.%i.%i.%i/%i", b->ipoctet[0], b->ipoctet[1], b->ipoctet[2], b->ipoctet[3], cidrmsk);
+            f->printf("permban %s \"%s\"\n", maskedip, b->reason);
+        }
+
         f->close();
     }
     else
