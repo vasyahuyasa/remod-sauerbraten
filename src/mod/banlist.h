@@ -41,7 +41,7 @@ namespace remod
             banlist(char *listname);
 
             void add(baninfo *ban);
-            baninfo* remove(size_t n);
+            baninfo* remove(int n);
             size_t length();
         };
 
@@ -56,7 +56,7 @@ namespace remod
             baninfo* getban(char *listname, size_t n);
             bool banlistexists(char *name);
             void addban(char *listname, enet_uint32 ip, enet_uint32 mask, time_t expire, time_t time, const char *admin, const char *reason);
-            bool delban(char *listname, uint id);
+            bool delban(char *listname, int id);
             bool checkban(enet_uint32 ip);
             void parseipstring(char *ipstring, enet_uint32 &destip, enet_uint32 &destmask);
         };

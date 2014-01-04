@@ -32,10 +32,11 @@ namespace remod
                 bans.add(ban);
         }
 
-        baninfo* banlist::remove(size_t n)
+        baninfo* banlist::remove(int n)
         {
             if(bans.inrange(n))
-                bans.remove(n);
+                return bans.remove(n);
+            return NULL;
         }
 
         size_t banlist::length()
@@ -118,7 +119,7 @@ namespace remod
             bl->add(b);
         }
 
-        bool banmanager::delban(char *listname, uint id)
+        bool banmanager::delban(char *listname, int id)
         {
             if(banlistexists(listname))
             {
