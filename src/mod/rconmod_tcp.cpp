@@ -35,7 +35,7 @@ namespace remod
 namespace rcon
 {
 
-rconserver_tcp::rconserver_tcp(int port = 27070)
+rconserver_tcp::rconserver_tcp(int port)
 {
     // set select timeout for 1 usec
     tv.tv_sec = 0;
