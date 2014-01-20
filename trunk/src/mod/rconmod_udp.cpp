@@ -144,7 +144,7 @@ bool rconserver_udp::logined(struct sockaddr_in addr, char *msg)
 }
 
 //Init rcon module
-rconserver_udp::rconserver_udp(int port=27070)
+rconserver_udp::rconserver_udp(int port)
 {
     sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
     if(sock < 0)
