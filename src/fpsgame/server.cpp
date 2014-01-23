@@ -725,7 +725,17 @@ namespace server
             int slen = strlen(buf);
             if(buf[slen] != '/' && buf[slen] != '\\' && slen+1 < (int)sizeof(buf)) { buf[slen] = '/'; buf[slen+1] = '\0'; }
         }
-        defformatstring(demoname)("%s%li.dmo", buf, t);
+        char *name = NULL;
+        string demoname;
+        if(identexists("demoname"))
+            name = executestr("demoname");
+        if(name && name[0])
+        {
+            formatstring(demoname)("%s%s.dmo", buf, name); // script generated name
+        }
+        else formatstring(demoname)("%s%li.dmo", buf, t); // unix timestamp
+        DELETEA(name);
+
         stream *fsdemo = openfile(demoname, "wb");
         if(fsdemo)
         {
