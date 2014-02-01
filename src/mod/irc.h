@@ -123,9 +123,10 @@ struct ircnet
     ENetSocket sock;
     vector<ircchan> channels;
     uchar input[4096];
-    
+
     // remod
     time_t lastping, lastpong;
+    char *authcmd;
 #ifndef STANDALONE
     int updated;
     ircbuf buffer;
@@ -142,10 +143,11 @@ struct ircnet
         port = lastattempt = 0;
         name[0] = serv[0] = nick[0] = ip[0] = passkey[0] = authname[0] = authpass[0] = 0;
         channels.shrink(0);
-	
+
         // remod
         lastping = 0;
         lastpong = 0;
+        authcmd = NULL;
 #ifndef STANDALONE
         updated = 0;
         buffer.reset();

@@ -741,6 +741,9 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
                     n->state = IRC_ONLINE;
                     ircprintf(n, 4, NULL, "\fbnow connected to %s as %s", user[0], n->nick);
                     if(*n->authname && *n->authpass) ircsend(n, "PRIVMSG %s :%s", n->authname, n->authpass);
+
+                    // remod
+                    if(n->authcmd && n->authcmd[0]) ircsend(n, "%s", n->authcmd);
                 }
                 break;
             }
@@ -1050,6 +1053,14 @@ void ping()
     }
 }
 
+void ircauthcmd(char *name, char *cmd)
+{
+    ircnet *n = ircfind(name);
+    if(!n) { conoutf("no such ircnet: %s", name); return; }
+    if(n->authcmd) DELETEA(n->authcmd);
+    n->authcmd = newstring(cmd);
+}
+
 #if 1
 void irc_dumpnicks()
 {
@@ -1102,5 +1113,14 @@ COMMAND(ircsayto, "ss");
  * @example ircaction "waves hello", What it looks like: *server waves hello
  */
 COMMAND(ircaction, "s");
+
+/**
+ * Authenticate commmand after connect to the IRC network.
+ * @group irc
+ * @arg1 network name
+ * @arg2 command
+ * @example ircauthcmd "gamesurge" "authserv auth rbserver dJ84H8dh"
+ */
+COMMAND(ircauthcmd, "ss");
 
 #endif
