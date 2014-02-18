@@ -1,0 +1,6 @@
+// example script
+irccmd_example = [ 
+	...
+]
+
+irc_registercommand "example" irccmd_example 2 "cs" "example. example command"  

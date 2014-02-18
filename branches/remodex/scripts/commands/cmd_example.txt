@@ -1,0 +1,28 @@
+// command example, when player type "#example test12321" server will print "Player SOMEGUY type test12321"
+
+// our callback function command
+cmd_example = [
+	// $arg1 - caller cn
+	// $arg2 - 1st parameter 
+
+	// get player name
+	pname = (getname $arg1)
+
+	// make formated and colored string
+	fstring = (format "Player ^f0%1 ^f7type ^f0%2" $pname $arg2)
+
+	// show string
+	say $fstring
+]
+
+// register our command
+registercommand "example" cmd_example 1 "s" "example [msg] ^f1Command example"
+
+// if you want unregister that command from other script use unregistercommand "example"
+
+// registercommand
+// "example" - command name which user should type
+// cmd_example - function which executes when user call command
+// 2 - who can use that function (1 - any player, 2 - masters, 3 - admins only)
+// s - parameters what user should pass (s - string, for full list of parameters mnemonics see ../../docs/guide.html)
+// "example [msg] ^f1Command example" - help string which user see whn type #help example
