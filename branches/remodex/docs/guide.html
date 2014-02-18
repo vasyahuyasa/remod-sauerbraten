@@ -93,7 +93,7 @@ div.clear {
 
 <body>
 	<h1>User guide</h1>
-	Generated: 2014-2-1
+	Generated: 2014-2-19
 	<hr>
 	
 	<!-- menu -->
@@ -4723,6 +4723,68 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				
 				<tr class="even">
 					<td class="name">
+						<a name="cs-func-getammo"></a>
+						getammo
+					</td>
+					<td>
+						<div class="arg">
+							<div class="argname">$arg1</div>
+							<div class="argtype">int</div>
+							<div class="argdescr"></div>
+							<div class="clear"></div>
+						</div>
+					</td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td>mod/remodex.cpp</td>
+				</tr>
+				
+				<tr class="odd">
+					<td class="name">
+						<a name="cs-func-getarmour"></a>
+						getarmour
+					</td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td>mod/remodex.cpp</td>
+				</tr>
+				
+				<tr class="even">
+					<td class="name">
+						<a name="cs-func-getarmourtype"></a>
+						getarmourtype
+					</td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td>mod/remodex.cpp</td>
+				</tr>
+				
+				<tr class="odd">
+					<td class="name">
+						<a name="cs-func-getdamagescale"></a>
+						getdamagescale
+					</td>
+					<td>
+						<div class="arg">
+							<div class="argname">$arg1</div>
+							<div class="argtype">int</div>
+							<div class="argdescr"></div>
+							<div class="clear"></div>
+						</div>
+					</td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td>mod/remodex.cpp</td>
+				</tr>
+				
+				<tr class="even">
+					<td class="name">
 						<a name="cs-func-getfvarmax"></a>
 						getfvarmax
 					</td>
@@ -4757,6 +4819,30 @@ If permission check fails, oncommandpermerror event is triggered</td>
 					<td></td>
 					<td></td>
 					<td>engine/command.cpp</td>
+				</tr>
+				
+				<tr class="even">
+					<td class="name">
+						<a name="cs-func-getgunselect"></a>
+						getgunselect
+					</td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td>mod/remodex.cpp</td>
+				</tr>
+				
+				<tr class="odd">
+					<td class="name">
+						<a name="cs-func-gethealth"></a>
+						gethealth
+					</td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td>mod/remodex.cpp</td>
 				</tr>
 				
 				<tr class="even">
@@ -7976,6 +8062,38 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				
 				<tr class="odd">
 					<td class="name">
+						<a name="cs-var-arenamode"></a>
+						arenamode
+					</td>
+					<td>int</td>
+					<td>0</td>
+					<td>0</td>
+					<td>1</td>
+					<td>read/write</td>
+				
+					<td></td>
+					<td>fpsgame/server.cpp</td>
+				</tr>
+				
+				
+				<tr class="even">
+					<td class="name">
+						<a name="cs-var-arenaspawndelay"></a>
+						arenaspawndelay
+					</td>
+					<td>int</td>
+					<td>0</td>
+					<td>5000</td>
+					<td>INT_MAX</td>
+					<td>read/write</td>
+				
+					<td></td>
+					<td>mod/arena.cpp</td>
+				</tr>
+				
+				
+				<tr class="odd">
+					<td class="name">
 						<a name="cs-var-authfile"></a>
 						authfile
 					</td>
@@ -8195,6 +8313,38 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				
 					<td>Defines the custom demo name, should be defined like demoname = [ result (format "demo %1" (getmillis)) ]</td>
 					<td></td>
+				</tr>
+				
+				
+				<tr class="odd">
+					<td class="name">
+						<a name="cs-var-flaglimit"></a>
+						flaglimit
+					</td>
+					<td>int</td>
+					<td>1</td>
+					<td>10</td>
+					<td>INT_MAX</td>
+					<td>read/write</td>
+				
+					<td></td>
+					<td>fpsgame/ctf.h</td>
+				</tr>
+				
+				
+				<tr class="even">
+					<td class="name">
+						<a name="cs-var-friendlyfire"></a>
+						friendlyfire
+					</td>
+					<td>int</td>
+					<td>0</td>
+					<td>1</td>
+					<td>1</td>
+					<td>read/write</td>
+				
+					<td></td>
+					<td>fpsgame/server.cpp</td>
 				</tr>
 				
 				
@@ -8431,6 +8581,38 @@ If permission check fails, oncommandpermerror event is triggered</td>
 					<td>0</td>
 					<td>16</td>
 					<td>64</td>
+					<td>read/write</td>
+				
+					<td></td>
+					<td>fpsgame/server.cpp</td>
+				</tr>
+				
+				
+				<tr class="even">
+					<td class="name">
+						<a name="cs-var-midair"></a>
+						midair
+					</td>
+					<td>int</td>
+					<td>0</td>
+					<td>0</td>
+					<td>1</td>
+					<td>read/write</td>
+				
+					<td></td>
+					<td>fpsgame/server.cpp</td>
+				</tr>
+				
+				
+				<tr class="odd">
+					<td class="name">
+						<a name="cs-var-midairbase"></a>
+						midairbase
+					</td>
+					<td>int</td>
+					<td>0</td>
+					<td>0</td>
+					<td>INT_MAX</td>
 					<td>read/write</td>
 				
 					<td></td>
@@ -8717,6 +8899,22 @@ extern void renderlava(const materialsurface &m</td>
 				
 				<tr class="even">
 					<td class="name">
+						<a name="cs-var-selfdamage"></a>
+						selfdamage
+					</td>
+					<td>int</td>
+					<td>0</td>
+					<td>1</td>
+					<td>1</td>
+					<td>read/write</td>
+				
+					<td></td>
+					<td>fpsgame/server.cpp</td>
+				</tr>
+				
+				
+				<tr class="odd">
+					<td class="name">
 						<a name="cs-var-serverauth"></a>
 						serverauth
 					</td>
@@ -8731,7 +8929,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-serverbotbalance"></a>
 						serverbotbalance
@@ -8747,7 +8945,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-serverbotlimit"></a>
 						serverbotlimit
@@ -8763,7 +8961,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-serverdesc"></a>
 						serverdesc
@@ -8779,7 +8977,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-serverip"></a>
 						serverip
@@ -8795,7 +8993,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-servermotd"></a>
 						servermotd
@@ -8811,7 +9009,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-serverpass"></a>
 						serverpass
@@ -8827,7 +9025,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-serverport"></a>
 						serverport
@@ -8843,7 +9041,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-serveruprate"></a>
 						serveruprate
@@ -8859,7 +9057,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-setroundtime"></a>
 						setroundtime
@@ -8875,7 +9073,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-totalmillis"></a>
 						totalmillis
@@ -8891,7 +9089,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-triggerstate"></a>
 						triggerstate
@@ -8907,7 +9105,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-updatemaster"></a>
 						updatemaster
@@ -8923,7 +9121,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-verbose"></a>
 						verbose
@@ -8936,6 +9134,38 @@ extern void renderlava(const materialsurface &m</td>
 				
 					<td></td>
 					<td>mod/irc.cpp</td>
+				</tr>
+				
+				
+				<tr class="odd">
+					<td class="name">
+						<a name="cs-var-zombiehealth"></a>
+						zombiehealth
+					</td>
+					<td>int</td>
+					<td>0</td>
+					<td>0</td>
+					<td>INT_MAX</td>
+					<td>read/write</td>
+				
+					<td></td>
+					<td>mod/zombie.cpp</td>
+				</tr>
+				
+				
+				<tr class="even">
+					<td class="name">
+						<a name="cs-var-zombiemode"></a>
+						zombiemode
+					</td>
+					<td>int</td>
+					<td>0</td>
+					<td>0</td>
+					<td>1</td>
+					<td>read/write</td>
+				
+					<td></td>
+					<td>fpsgame/server.cpp</td>
 				</tr>
 				
 				
