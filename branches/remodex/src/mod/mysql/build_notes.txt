@@ -1,1 +1,0 @@
-Compiling on mingw requires <sys/times.h> which is <sys.time.h> in mingw. Just copy time.h to times.h  in mingw include directory:)

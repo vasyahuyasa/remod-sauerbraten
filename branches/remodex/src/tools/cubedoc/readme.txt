@@ -1,1 +1,0 @@
-This python script extracts documentation comments from cpp and cubescript files to generate the manual

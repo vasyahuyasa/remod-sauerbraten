@@ -1,7 +1,0 @@
-HTTP server with PHP support is required.
-Authpanel supports only MySQL database at the moment. Subscribe to Remod RSS to stay up to date: https://code.google.com/feeds/p/remod-sauerbraten/svnchanges/basic
-
-INSTALLATION:
-1. Run remod server with the correct database configuration. If it doesn't exist, it will be created automatically and the table "auth" with the structure "id, name, pubkey, rights, enabled" will be added.
-2. Configure database connection in the file "index.php".
-3. After you have added authkey to the database don't forget to run #syncauth on the server with admin privileges to reload authkeys from database.

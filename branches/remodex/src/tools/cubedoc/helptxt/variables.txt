@@ -1,8 +1,0 @@
-@variable commandchar
-Defines the character for command starts with (#command)
-
-@variable rconproto
-Rcon protocol 0 - udp, 1 - tcp
-
-@variable demoname
-Defines the custom demo name, should be defined like demoname = [ result (format "demo %1" (getmillis)) ]
