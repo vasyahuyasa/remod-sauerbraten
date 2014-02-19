@@ -1,0 +1,11 @@
+[Unit]
+Description=Sauerbraten server mod (remodex)
+After=network.target dhcpcd.service mysqld.service
+
+[Service]
+PIDFile=/run/remodex.pid
+ExecStartPre=/usr/bin/sleep 10
+ExecStart=/usr/bin/remodex -p/run/remodex.pid -q/home/degrave/remodex -gserver.log
+
+[Install]
+WantedBy=multi-user.target

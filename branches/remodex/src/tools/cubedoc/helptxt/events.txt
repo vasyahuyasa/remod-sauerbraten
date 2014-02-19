@@ -1,0 +1,231 @@
+@event onconnect
+@arg1 cn
+@group event
+After player connected
+
+@event ondisconnect
+@arg1 cn
+@group event
+Before player disconnect
+
+@event onteamkill
+@arg1 (int)
+When player do teamkill
+
+@event onfrag 
+@arg1 cn
+When player do frag (d@event on't count teamkills)
+
+@event ondeath 
+@arg1 cn
+When player die (d@event on't count suicides)
+
+@event onsuicide 
+@arg1 cn
+When player do suicide
+
+@event ontext 
+@arg1 cn
+@arg2 message 
+@greedy
+Send chat message
+
+@event onsayteam 
+@arg1 cn
+@arg2 message
+@greedy
+Send teamchat message
+
+@event onswitchname 
+@arg1 cn
+@arg2 newname
+@arg3 oldname
+@greedy
+When player rename
+
+@event onswitchmodel 
+@arg1 cn
+@arg2 new model
+Change player model
+
+@event onswitchteam 
+@arg1 cn
+@arg2 new team
+@greedy
+Before player switch team
+
+@event onmapvote 
+@arg1 cn
+@arg2 map
+@arg3 mode
+Map vote
+
+@event onkick 
+@arg1 cn
+@arg2 (int)victim's cn
+@greedy
+Before player get kicked
+
+@event onspectator 
+@arg1 cn
+@arg2 (1|0)
+When player became speced/unspeced
+
+@event onsetteam
+@arg1 cn
+@arg2 newteam
+@greedy
+Before setteam action
+
+@event onlistdemos 
+@arg1 cn
+@greedy
+Before request of list demos
+
+@event ongetdemo 
+@arg1 cn
+@arg2 demo's number
+@greedy
+Before player request getdemo
+
+@event onsetmaster 
+@arg1 cn
+@arg2 priv
+@arg3 pass 
+@arg4 authname
+When player claimed/revoke master or admin or auth
+
+@event onbotlimit 
+@arg1 cn
+@arg3 limit
+When changing bot limit
+
+@event ongetmap 
+@arg1 cn
+@greedy
+Before player request getmap
+
+@event onnewmap 
+@arg1 cn
+@greedy
+Before player request newmap
+
+@event onpausegame 
+@arg1 1|0
+@greedy
+Before game become paused/unpaused
+
+@event onmapstart
+Before new round begins
+
+@event onimission
+After intermission started
+
+@event onmastermode 
+@arg1 cn
+@arg2 mode
+@greedy
+Before changing mastermode
+
+@event onclearbans 
+@arg1 cn
+@greedy
+Before player request clearbans
+
+@event onrecorddemo
+@greedy
+Before start demo recording
+
+@event onsavedemo
+@arg1 demo file name
+@arg2 demo time (numerical)
+Just after demo is saved
+
+@event onstopdemo
+When demo record is completed
+
+@event oncleardemos 
+@arg1 demo's number
+@greedy
+Before player request cleardemos
+
+@event onaddbot
+@arg1 skills
+@greedy
+Before player request addbot
+
+@event ondelbot
+@greedy
+Before player request delete bot
+
+@event onmodmap 
+@arg1 cn
+Modified player map
+
+@event onmute (1|0) 
+@arg1 cn
+When player muted/unmuted
+
+@event oncommandpermerror 
+@arg1 cn
+@arg2 command
+When player not have permissions for executing #command
+
+@event oncommandusageerror 
+@arg1 cn
+@arg2 command
+When player has entered wrong #command parameters
+
+@event oncommandunknown 
+@arg1 cn
+@arg2 command
+When #command does not exist
+
+@event ontakeflag 
+@arg1 cn
+@arg2 flagteam what flag was stolen
+@arg3 1 was flag is picked up from base, 0 if flag was taken from someone
+When flag is taken
+
+@event onreturnflag 
+@arg1 cn
+@arg2 flagteam
+When someone returns flag
+
+@event onresetflag
+@arg2 flagteam
+When flag reset by time
+
+@event oninvisflag 
+@arg1 flagteam
+When flag becomes invisible (player suicides or flag falls down)
+
+@event ondropflag 
+@arg1 cn
+@arg2 flagteam
+When flag is dropped
+
+@event onscoreflag 
+@arg1 cn
+@arg2 scored team
+When team scores the flag
+
+@event oneditmute
+@arg1 1|0 
+@arg2 cn
+When player editmuted/editunmuted
+
+@event oneditmode
+@arg1 cn
+@arg2 1|0
+When player switch to editing
+
+@event irc_onmsg
+@arg1 name
+@arg2 text
+When ircpublic message
+
+@event irc_onprivmsg
+@arg1 name
+@arg2 text
+When irc private message to bot
