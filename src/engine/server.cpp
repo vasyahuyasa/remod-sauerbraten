@@ -327,6 +327,9 @@ const char *disconnectreason(int reason)
     }
 }
 
+// remod
+VAR(ipbanmsg, 0, 1, 1);
+
 void disconnect_client(int n, int reason)
 {
     if(!clients.inrange(n) || clients[n]->type!=ST_TCPIP) return;
@@ -338,7 +341,9 @@ void disconnect_client(int n, int reason)
     if(msg) formatstring(s)("client (%s) disconnected because: %s", clients[n]->hostname, msg);
     else formatstring(s)("client (%s) disconnected", clients[n]->hostname);
     logoutf("%s", s);
-    server::sendservmsg(s);
+
+    // remod
+    if(!(!ipbanmsg && reason == DISC_IPBAN)) server::sendservmsg(s);
 }
 
 void kicknonlocalclients(int reason)
