@@ -4,6 +4,8 @@
 #include "game.h"
 #include "varbox.h"
 
+
+
 // worlio.cpp
 extern void cutogz(char *s);
 
