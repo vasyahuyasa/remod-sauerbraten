@@ -224,7 +224,7 @@ libenet: enet/Makefile
 clean-enet: enet/Makefile
 	$(MAKE) -C enet/ clean
 
-clean:
+clean: clean-enet
 	-$(RM) $(SERVER_OBJS) 
 
 %.h.gch: %.h
