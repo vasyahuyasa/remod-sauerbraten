@@ -17,7 +17,7 @@ USE_MYSQL=true
 ### Tools
 CXX=gcc
 MV=mv
-STRIP=
+STRIP=strip
 
 
 PLATFORM=$(shell uname -s)
@@ -62,15 +62,7 @@ ifeq ($(PLATFORM),SunOS)
 SERVER_LIBS+= -lsocket -lnsl
 endif
 
-CXXFLAGS= -O0 -fomit-frame-pointer -Wall -fsigned-char -DSTANDALONE
-override CXXFLAGS+= -g -DDEBUG # uncomment for debugging
-override CXXFLAGS+= -DDEBUG_SQL # uncomment to see the time of sql queries in log
-
-ifeq (,$(findstring -g,$(CXXFLAGS)))
-ifeq (,$(findstring -pg,$(CXXFLAGS)))
-  STRIP=strip
-endif
-endif
+CXXFLAGS=-fomit-frame-pointer -Wall -fsigned-char -DSTANDALONE
 
 INCLUDES= -Ishared -Iengine -Ifpsgame -Ienet/include -Imod -Imod/hashlib2plus/src -Imod/cryptomod/polarssl/include
 
@@ -205,9 +197,18 @@ endif
 
 
 
-default: all
+default: release
 
-all: revision server
+release: release-flags 
+release-flags: override CXXFLAGS+=-O2 -s
+release-flags: build
+
+
+debug: debug-flags 
+debug-flags: override CXXFLAGS+=-O0 -g -DDEBUG -DDEBUG_SQL
+debug-flags: build
+
+build: revision server
 
 revision:
 SVNVERSION= $(shell svnversion -cn . 2>/dev/null | sed -e "s/.*://" -e "s/\([0-9]*\).*/\1/" | grep "[0-9]") 
