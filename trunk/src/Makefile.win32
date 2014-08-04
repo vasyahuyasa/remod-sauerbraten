@@ -19,10 +19,12 @@ USE_MYSQL=true
 ######################################
 
 ### Tools
-CXX=i486-mingw32-gcc
+CXX=i686-w64-mingw32-gcc
+#CXX=i486-mingw32-gcc
 MV=mv
 STRIP=
-WINDRES=i486-mingw32-windres
+#WINDRES=i486-mingw32-windres
+WINDRES=i686-w64-mingw32-windres
 
 SERVER_NAME=remod.exe
 
