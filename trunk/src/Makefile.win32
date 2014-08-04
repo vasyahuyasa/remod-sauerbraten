@@ -14,7 +14,7 @@ USE_IRCBOT=true
 USE_SQLITE3=true
 
 #Mysql support? true|false
-USE_MYSQL=true
+USE_MYSQL=false
 
 ######################################
 
@@ -29,8 +29,8 @@ WINDRES=i686-w64-mingw32-windres
 SERVER_NAME=remod.exe
 
 CXXFLAGS= -fpermissive -fomit-frame-pointer -Wall -fsigned-char -O2 -s -DSTANDALONE
-SERVER_INCLUDES= -Iinclude -I/usr/i486-mingw32/include $(INCLUDES)
-SERVER_LIBS= -static -lstdc++ -Llib -lzdll -lws2_32 -lwinmm 
+SERVER_INCLUDES= -I/usr/i686-w64-mingw32/include/ -Iinclude $(INCLUDES) 
+SERVER_LIBS= -Llib -Lenet/.libs -static -lstdc++  -lzdll -lwinmm  -lenet -lws2_32
 
 #override CXXFLAGS+= -O0 -g -DDEBUG # uncomment for debugging
 
@@ -43,14 +43,6 @@ endif
 INCLUDES= -Ishared -Iengine -Ifpsgame -Ienet/include -Imod -Imod/hashlib2plus/src -Imod/cryptomod/polarssl/include
 
 SERVER_OBJS= \
-	enet/callbacks-standalone.o \
-	enet/compress-standalone.o \
-	enet/host-standalone.o \
-	enet/list-standalone.o \
-	enet/packet-standalone.o \
-	enet/peer-standalone.o \
-	enet/protocol-standalone.o \
-	enet/win32-standalone.o \
 	shared/crypto-standalone.o \
 	shared/stream-standalone.o \
 	shared/tools-standalone.o \
@@ -82,8 +74,9 @@ SERVER_OBJS= \
 #geoip
 ifeq ($(USE_GEOIP),true)
 override CXXFLAGS+= -DGEOIPDATADIR -DGEOIP
-override INCLUDES+= -Imod/libGeoIP
-override SERVER_OBJS+= mod/geoipmod-standalone.o mod/libGeoIP/GeoIP-standalone.o
+override INCLUDES+= -Imod/GeoIP/libGeoIP/
+override SERVER_OBJS+= mod/geoipmod-standalone.o
+override SERVER_LIBS+= -Lmod/GeoIP/libGeoIP/.libs -lGeoIP
 endif
 #end of geoip
 
@@ -182,8 +175,26 @@ ifneq "$(SVNVERSION)" " "
 override CXXFLAGS+= -DREMOD_VERSION="\"SVN build rev: $(SVNVERSION)\""
 endif
 
-clean:
-	-$(RM) $(SERVER_OBJS) 
+enet/Makefile:
+	cd enet; chmod +x configure; ./configure --enable-shared=no --enable-static=yes --host=i686-w64-mingw32
+	
+libenet: enet/Makefile
+	$(MAKE)	-C enet/ all
+
+clean-enet: enet/Makefile
+	$(MAKE) -C enet/ clean
+
+geoip/Makefile:
+	cd mod/GeoIP; chmod +x configure; ./configure --enable-shared=no --enable-static=yes --host=i686-w64-mingw32
+
+libgeoip: geoip/Makefile
+	$(MAKE)	-C mod/GeoIP/libGeoIP/ all
+
+clean-geoip: geoip/Makefile
+	$(MAKE) -C mod/GeoIP/libGeoIP/ maintainer-clean
+
+clean: clean-enet clean-geoip
+	-$(RM) $(SERVER_OBJS)
 
 %.h.gch: %.h
 	$(CXX) $(CXXFLAGS) -o $@.tmp $(subst .h.gch,.h,$@)
@@ -198,7 +209,7 @@ clean:
 
 $(SERVER_OBJS): CXXFLAGS += $(SERVER_INCLUDES)
 
-server: $(SERVER_OBJS)
+server: libenet libgeoip $(SERVER_OBJS)
 	$(WINDRES) -I res -i res/mingw.rc -J rc -o res/mingw.res -O coff
 	$(CXX) $(CXXFLAGS) -o $(SERVER_NAME) res/mingw.res $(SERVER_OBJS) $(SERVER_LIBS)
 	$(MV) $(SERVER_NAME) ../$(SERVER_NAME)

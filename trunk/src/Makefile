@@ -98,9 +98,10 @@ SERVER_OBJS= \
 
 #geoip
 ifeq ($(USE_GEOIP),true)
-override CXXFLAGS+= -DGEOIPDATADIR -DGEOIP
-override INCLUDES+= -Imod/libGeoIP
-override SERVER_OBJS+= mod/geoipmod-standalone.o mod/libGeoIP/GeoIP-standalone.o
+override CXXFLAGS+= -DGEOIP
+override INCLUDES+= -Imod/GeoIP/libGeoIP/
+override SERVER_OBJS+= mod/geoipmod-standalone.o
+override SERVER_LIBS+= -Lmod/GeoIP/libGeoIP/.libs -lGeoIP
 endif
 #end of geoip
 
@@ -223,9 +224,18 @@ libenet: enet/Makefile
 	$(MAKE)	-C enet/ all
 
 clean-enet: enet/Makefile
-	$(MAKE) -C enet/ clean
+	$(MAKE) -C enet/ maintainer-clean
 
-clean: clean-enet
+geoip/Makefile:
+	cd mod/GeoIP; chmod +x configure; ./configure --enable-shared=no --enable-static=yes
+
+libgeoip: geoip/Makefile
+	$(MAKE)	-C mod/GeoIP/libGeoIP/ all
+
+clean-geoip: geoip/Makefile
+	$(MAKE) -C mod/GeoIP/libGeoIP/ maintainer-clean
+
+clean: clean-enet clean-geoip
 	-$(RM) $(SERVER_OBJS) 
 
 %.h.gch: %.h
@@ -246,7 +256,7 @@ server: $(SERVER_OBJS)
 	$(CXX) $(CXXFLAGS) -o $(SERVER_NAME) $(SERVER_OBJS) $(SERVER_LIBS)
 
 else
-server:	libenet $(SERVER_OBJS)
+server:	libenet libgeoip $(SERVER_OBJS)
 	$(CXX) $(CXXFLAGS) -o $(SERVER_NAME) $(SERVER_OBJS) $(SERVER_LIBS)  
 	$(MV) $(SERVER_NAME) ../$(SERVER_NAME)
 endif
