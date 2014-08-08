@@ -23,11 +23,12 @@ namespace geoip
 
     void loadgeoip(const char *path, bool isgeocity)
     {
-        GeoIP *gi = isgeocity ? geocity : geoip;
+        GeoIP *gi;
         const char *fname = findfile(path, "r"); // full path
         gi = GeoIP_open(fname, GEOIP_STANDARD | GEOIP_MEMORY_CACHE);
         if(gi)
         {
+            (isgeocity ? geocity : geoip) = gi;
             conoutf(CON_ERROR, "Geoip: %s loaded (db: \"%s\")", geocity ? "geocity" : "geoip", fname);
         }
         else
@@ -36,7 +37,7 @@ namespace geoip
         }
     }
 
-    const char *getcountry(char *addr)
+    const char *getcountry(const char *addr)
     {
         const char *country_name = NULL;
         if(geoip)
@@ -48,7 +49,7 @@ namespace geoip
         return country_name;
     }
 
-    const char *getcity(char *addr)
+    const char *getcity(const char *addr)
     {
         char *city = NULL;
         if(geocity)
@@ -91,7 +92,12 @@ namespace geoip
     * @arg1 ip
     * @return country
     */
-    COMMAND(getcountry, "s");
+    ICOMMAND(getcountry, "s", (const char *addr),
+             {
+
+                 const char *country = getcountry(addr);
+                 result(country != NULL ? country : addr);
+             });
 
     /**
     * Return city for specified ip
@@ -99,8 +105,25 @@ namespace geoip
     * @arg1 ip
     * @return city
     */
-    COMMAND(getcity, "s");
+    ICOMMAND(getcity, "s", (const char *addr),
+            {
+                const char *city = getcountry(addr);
+                result(city != NULL ? city : addr);
+            });
 
+    /**
+    * Check if geoip is ready to use
+    * @group server
+    * @return 1 if is ready, otherwise 0
+    */
+    ICOMMAND(isgeoip, "", (), intret(geoip != NULL));
+
+    /**
+    * Check if geoip city is ready to use
+    * @group server
+    * @return 1 if is ready, otherwise 0
+    */
+    ICOMMAND(isgeocity, "", (), intret(geocity != NULL));
 }
 }
 
