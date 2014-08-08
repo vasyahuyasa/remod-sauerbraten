@@ -73,14 +73,14 @@ SERVER_OBJS= \
 
 #geoip
 ifeq ($(USE_GEOIP),true)
-override CXXFLAGS+= -DGEOIPDATADIR -DGEOIP -DPACKAGE_VERSION=\"1.6.2\"
+override CXXFLAGS+= -DGEOIPDATADIR -DGEOIP -DPACKAGE_VERSION=\"1.6.2\" -DGEOIP_EXPORTS
 override INCLUDES+= -Imod/GeoIP/libGeoIP/
 override SERVER_OBJS+= \
-      	mod/geoipmod-standalone.o \
-      	mod/GeoIP/libGeoIP/GeoIP-standalone.o \
-      	mod/GeoIP/libGeoIP/regionName-standalone.o \
-      	mod/GeoIP/libGeoIP/timeZone-standalone.o \
-      	mod/GeoIP/libGeoIP/pread-standalone.o
+        mod/geoipmod2-standalone.o \
+	mod/GeoIP/libGeoIP/GeoIP-standalone.o \
+	mod/GeoIP/libGeoIP/GeoIPCity-standalone.o \
+	mod/GeoIP/libGeoIP/GeoIP_deprecated-standalone.o \
+        mod/GeoIP/libGeoIP/pread-standalone.o
 endif
 #end of geoip
 

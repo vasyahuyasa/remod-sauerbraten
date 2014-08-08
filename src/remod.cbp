@@ -126,6 +126,8 @@
 		<Unit filename="mod/db.h" />
 		<Unit filename="mod/geoipmod.cpp" />
 		<Unit filename="mod/geoipmod.h" />
+		<Unit filename="mod/geoipmod2.cpp" />
+		<Unit filename="mod/geoipmod2.h" />
 		<Unit filename="mod/irc.cpp" />
 		<Unit filename="mod/irc.h" />
 		<Unit filename="mod/jsonbanlist.cpp" />
