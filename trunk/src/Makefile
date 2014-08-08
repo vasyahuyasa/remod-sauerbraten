@@ -98,10 +98,13 @@ SERVER_OBJS= \
 
 #geoip
 ifeq ($(USE_GEOIP),true)
-override CXXFLAGS+= -DGEOIP
+override CXXFLAGS+= -DGEOIP -DGEOIPDATADIR -DPACKAGE_VERSION=\"1.6.2\"
 override INCLUDES+= -Imod/GeoIP/libGeoIP/
-override SERVER_OBJS+= mod/geoipmod-standalone.o
-override SERVER_LIBS+= -Lmod/GeoIP/libGeoIP/.libs -lGeoIP
+override SERVER_OBJS+= \
+        mod/geoipmod2-standalone.o \
+	mod/GeoIP/libGeoIP/GeoIP-standalone.o \
+	mod/GeoIP/libGeoIP/GeoIPCity-standalone.o \
+	mod/GeoIP/libGeoIP/GeoIP_deprecated-standalone.o
 endif
 #end of geoip
 
@@ -235,7 +238,7 @@ libgeoip: geoip/Makefile
 clean-geoip: geoip/Makefile
 	$(MAKE) -C mod/GeoIP/libGeoIP/ maintainer-clean
 
-clean: clean-enet clean-geoip
+clean: clean-enet
 	-$(RM) $(SERVER_OBJS) 
 
 %.h.gch: %.h
@@ -256,7 +259,7 @@ server: $(SERVER_OBJS)
 	$(CXX) $(CXXFLAGS) -o $(SERVER_NAME) $(SERVER_OBJS) $(SERVER_LIBS)
 
 else
-server:	libenet libgeoip $(SERVER_OBJS)
+server:	libenet $(SERVER_OBJS)
 	$(CXX) $(CXXFLAGS) -o $(SERVER_NAME) $(SERVER_OBJS) $(SERVER_LIBS)  
 	$(MV) $(SERVER_NAME) ../$(SERVER_NAME)
 endif
