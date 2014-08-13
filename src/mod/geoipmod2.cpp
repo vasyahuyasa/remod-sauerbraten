@@ -107,7 +107,7 @@ namespace geoip
     */
     ICOMMAND(getcity, "s", (const char *addr),
             {
-                const char *city = getcountry(addr);
+                const char *city = getcity(addr);
                 result(city != NULL ? city : addr);
             });
 
