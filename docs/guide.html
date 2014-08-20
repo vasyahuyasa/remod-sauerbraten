@@ -93,7 +93,7 @@ div.clear {
 
 <body>
 	<h1>User guide</h1>
-	Generated: 2014-3-5
+	Generated: 2014-8-20
 	<hr>
 	
 	<!-- menu -->
@@ -2411,6 +2411,25 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				
 				<tr class="odd">
 					<td class="name">
+						<a name="cs-func-geocitydb"></a>
+						geocitydb
+					</td>
+					<td>
+						<div class="arg">
+							<div class="argname">$arg1</div>
+							<div class="argtype">string</div>
+							<div class="argdescr">/path/to/geoipcity.db</div>
+							<div class="clear"></div>
+						</div>
+					</td>
+					<td></td>
+					<td>Load geoip city database from specified path</td>
+					<td></td>
+					<td>mod/geoipmod2.cpp</td>
+				</tr>
+				
+				<tr class="even">
+					<td class="name">
 						<a name="cs-func-geodb"></a>
 						geodb
 					</td>
@@ -2423,7 +2442,67 @@ If permission check fails, oncommandpermerror event is triggered</td>
 						</div>
 					</td>
 					<td></td>
-					<td>Load geoip database from specified path</td>
+					<td>Load geoip database from specified path<br/>
+Load geoip database from specified path</td>
+					<td></td>
+					<td>mod/geoipmod.cpp</td>
+				</tr>
+				
+				<tr class="odd">
+					<td class="name">
+						<a name="cs-func-geodb"></a>
+						geodb
+					</td>
+					<td>
+						<div class="arg">
+							<div class="argname">$arg1</div>
+							<div class="argtype">string</div>
+							<div class="argdescr">/path/to/geoip.db</div>
+							<div class="clear"></div>
+						</div>
+					</td>
+					<td></td>
+					<td>Load geoip database from specified path<br/>
+Load geoip database from specified path</td>
+					<td></td>
+					<td>mod/geoipmod.cpp</td>
+				</tr>
+				
+				<tr class="even">
+					<td class="name">
+						<a name="cs-func-getcity"></a>
+						getcity
+					</td>
+					<td>
+						<div class="arg">
+							<div class="argname">$arg1</div>
+							<div class="argtype">string</div>
+							<div class="argdescr">ip</div>
+							<div class="clear"></div>
+						</div>
+					</td>
+					<td>city</td>
+					<td>Return city for specified ip</td>
+					<td></td>
+					<td>mod/geoipmod2.cpp</td>
+				</tr>
+				
+				<tr class="odd">
+					<td class="name">
+						<a name="cs-func-getcountry"></a>
+						getcountry
+					</td>
+					<td>
+						<div class="arg">
+							<div class="argname">$arg1</div>
+							<div class="argtype">string</div>
+							<div class="argdescr">ip</div>
+							<div class="clear"></div>
+						</div>
+					</td>
+					<td>country</td>
+					<td>Return country for specified ip<br/>
+Return country for specified ip</td>
 					<td></td>
 					<td>mod/geoipmod.cpp</td>
 				</tr>
@@ -2442,7 +2521,8 @@ If permission check fails, oncommandpermerror event is triggered</td>
 						</div>
 					</td>
 					<td>country</td>
-					<td>Return country for specified ip</td>
+					<td>Return country for specified ip<br/>
+Return country for specified ip</td>
 					<td></td>
 					<td>mod/geoipmod.cpp</td>
 				</tr>
@@ -2656,12 +2736,38 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				
 				<tr class="odd">
 					<td class="name">
+						<a name="cs-func-isgeocity"></a>
+						isgeocity
+					</td>
+					<td></td>
+					<td>1 if is ready, otherwise 0</td>
+					<td>Check if geoip city is ready to use</td>
+					<td></td>
+					<td>mod/geoipmod2.cpp</td>
+				</tr>
+				
+				<tr class="even">
+					<td class="name">
 						<a name="cs-func-isgeoip"></a>
 						isgeoip
 					</td>
 					<td></td>
 					<td>1 if is ready, otherwise 0</td>
-					<td>Check if geoip is ready to use</td>
+					<td>Check if geoip is ready to use<br/>
+Check if geoip is ready to use</td>
+					<td></td>
+					<td>mod/geoipmod.cpp</td>
+				</tr>
+				
+				<tr class="odd">
+					<td class="name">
+						<a name="cs-func-isgeoip"></a>
+						isgeoip
+					</td>
+					<td></td>
+					<td>1 if is ready, otherwise 0</td>
+					<td>Check if geoip is ready to use<br/>
+Check if geoip is ready to use</td>
 					<td></td>
 					<td>mod/geoipmod.cpp</td>
 				</tr>

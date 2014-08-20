@@ -98,13 +98,13 @@ SERVER_OBJS= \
 
 #geoip
 ifeq ($(USE_GEOIP),true)
-override CXXFLAGS+= -DGEOIP -DGEOIPDATADIR -DPACKAGE_VERSION=\"1.6.2\"
-override INCLUDES+= -Imod/GeoIP/libGeoIP/
+override CXXFLAGS+= -DGEOIP -DGEOIPDATADIR -DPACKAGE_VERSION=\"1.5.1\"
+override INCLUDES+= -Imod/libGeoIP/
 override SERVER_OBJS+= \
         mod/geoipmod2-standalone.o \
-	mod/GeoIP/libGeoIP/GeoIP-standalone.o \
-	mod/GeoIP/libGeoIP/GeoIPCity-standalone.o \
-	mod/GeoIP/libGeoIP/GeoIP_deprecated-standalone.o
+	mod/libGeoIP/GeoIP-standalone.o \
+	mod/libGeoIP/GeoIPCity-standalone.o \
+        mod/libGeoIP/GeoIP_depreciated-standalone.o
 endif
 #end of geoip
 
