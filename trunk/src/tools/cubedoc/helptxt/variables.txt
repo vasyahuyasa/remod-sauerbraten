@@ -9,3 +9,6 @@ Defines the custom demo name, should be defined like demoname = [ result (format
 
 @variable ipbanmsg
 Show ban messages on server
+
+@variable mutemode
+0 - everyone can talk, 1 - evryone except scpectators can talk, 2 - only players with priveleges can talk, 3 - only admins can talk

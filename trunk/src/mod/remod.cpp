@@ -631,4 +631,45 @@ int getwepaccuracy(int cn, int gun)
     return(acc);
 }
 
+// current mutemode
+VAR(mutemode, 0, 0, NUMMUTEMODE-1);
+
+// return 1 if player can't talk, 0 if allowed
+bool checkmutemode(clientinfo *ci)
+{
+    bool muted = false;
+    switch(mutemode)
+    {
+    case MUTEMODE_SPECS:
+        {
+            if(ci->state.state == CS_SPECTATOR && !ci->privilege)
+            {
+                muted = true;
+            }
+            break;
+        }
+    case MUTEMODE_PLAYERS:
+        {
+            if(!ci->privilege)
+            {
+                muted = true;
+            }
+            break;
+        }
+    case MUTEMODE_MASTERS:
+        {
+            if(!ci->privilege != PRIV_ADMIN)
+            {
+                muted = true;
+            }
+            break;
+        }
+
+    case MUTEMODE_NONE:
+    default:
+        break;
+    }
+    return muted;
+}
+
 }
