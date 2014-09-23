@@ -37,6 +37,8 @@ namespace server
 
 namespace remod
 {
+    // mutemode
+    enum  { MUTEMODE_NONE = 0, MUTEMODE_SPECS, MUTEMODE_PLAYERS, MUTEMODE_MASTERS, NUMMUTEMODE };
     typedef server::clientinfo clientinfo;
 
     struct extstate
@@ -75,5 +77,6 @@ namespace remod
     bool writeents(const char *mapname, vector<entity> &ents, uint mapcrc);
     void setmaster(clientinfo *ci, int priv);
     int getwepaccuracy(int cn, int gun);
+    bool checkmutemode(clientinfo *ci);
 }
 #endif

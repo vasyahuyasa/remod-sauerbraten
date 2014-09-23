@@ -2973,6 +2973,11 @@ namespace server
                     break;
                 }
 
+                if(remod::checkmutemode(ci))
+                {
+                    remod::onevent(ONMUTEMODETRIGGER, "i", sender);
+                }
+
                 if(ci->state.ext.muted) break;
 
                 remod::onevent(ONTEXT, "is", sender, ftext);

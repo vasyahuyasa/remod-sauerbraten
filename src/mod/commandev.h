@@ -11,7 +11,7 @@ enum eventType { ONADDBOT = 0, ONBOTLIMIT, ONCLEARBANS, ONCLEARDEMOS, ONCOMMAND,
                  ONMODMAP, ONMUTE, ONNEWMAP, ONPAUSEGAME, ONRECORDDEMO, ONRESETFLAG,
                  ONRETURNFLAG, ONSAVEDEMO, ONSAYTEAM, ONSCOREFLAG, ONSETMASTER, ONSETTEAM,
                  ONSPAWN, ONSPECTATOR, ONSTOPDEMO, ONSUICIDE, ONSWITCHMODEL, ONSWITCHNAME,
-                 ONSWITCHTEAM, ONTAKEFLAG, ONTEAMKILL, ONTEXT,
+                 ONSWITCHTEAM, ONTAKEFLAG, ONTEAMKILL, ONTEXT, ONMUTEMODETRIGGER,
                  IRC_ONCOMMAND, IRC_ONCOMMANDPERMERROR, IRC_ONCOMMANDUNKNOWN,
                  IRC_ONCOMMANDUSAGEERROR, IRC_ONMSG, IRC_ONPRIVMSG,
                  CUSTOMEVENT, NUMEVENTS };
@@ -25,7 +25,7 @@ static const char * const eventNames[] = {
                  "onmodmap", "onmute", "onnewmap", "onpausegame", "onrecorddemo", "onresetflag",
                  "onreturnflag", "onsavedemo", "onsayteam", "onscoreflag", "onsetmaster", "onsetteam",
                  "onspawn", "onspectator", "onstopdemo", "onsuicide", "onswitchmodel", "onswitchname",
-                 "onswitchteam", "ontakeflag", "onteamkill", "ontext",
+                 "onswitchteam", "ontakeflag", "onteamkill", "ontext", "onmutemodetrigger",
                  "irc_oncommand", "irc_oncommandpermerror", "irc_oncommandunknown",
                  "irc_oncommandusageerror", "irc_onmsg", "irc_onprivmsg",
                  "custom event", "number of events" };
