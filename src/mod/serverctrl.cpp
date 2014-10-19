@@ -1062,10 +1062,128 @@ void setpriv(int *cn, char *s)
 
 void getpos(int *cn)
 {
-    clientinfo *ci = (clientinfo *)getclientinfo(*cn);
+    clientinfo *ci = (clientinfo *)getinfo(*cn);
     if(!ci || ci->state.state == CS_SPECTATOR) return;
     defformatstring(pos)("%s %s %s", floatstr(ci->state.o.x), floatstr(ci->state.o.y), floatstr(ci->state.o.z));
     result(pos);
+}
+
+void getdamage(int *cn)
+{
+    clientinfo *ci = (clientinfo *)getinfo(*cn);
+    if(!ci)
+    {
+        intret(0);
+    }
+    else
+    {
+        intret(ci->state.damage);
+    }
+}
+
+void getshotdamage(int *cn)
+{
+    clientinfo *ci = (clientinfo *)getinfo(*cn);
+    if(!ci)
+    {
+        intret(0);
+    }
+    else
+    {
+        intret(ci->state.shotdamage);
+    }
+}
+
+void getwepdamage(int *cn, int *wep)
+{
+    clientinfo *ci = (clientinfo *)getinfo(*cn);
+    if(!ci || *wep < 0 || *wep > GUN_PISTOL)
+    {
+        intret(0);
+    }
+    else
+    {
+        intret(ci->state.ext.guninfo[*wep].damage);
+    }
+}
+
+void getwepshotdamage(int *cn, int *wep)
+{
+    clientinfo *ci = (clientinfo *)getinfo(*cn);
+    if(!ci || !wep || *wep < 0 || *wep > GUN_PISTOL)
+    {
+        intret(0);
+    }
+    else
+    {
+        intret(ci->state.ext.guninfo[*wep].shotdamage);
+    }
+}
+
+void loopteams(ident *id, uint *body)
+{
+    if(id->type!=ID_ALIAS || !m_teammode) return;
+
+    vector<char*> teams;
+    if(m_ctf || m_collect)
+    {
+        teams.add("good");
+        teams.add("evil");
+    }
+    else
+    {
+        bool addteam;
+        loopv(clients)
+        {
+            clientinfo* c = clients[i];
+            if(c->state.state != CS_SPECTATOR)
+            {
+                if(teams.length())
+                {
+                    addteam = true;
+                    loopv(teams)
+                    {
+                        char *team = teams[i];
+                        if(strcmp(team, c->team) == 0)
+                        {
+                            addteam = false;
+                            break;
+                        }
+                    }
+                    if(addteam) teams.add(newstring(c->team));
+                }
+                else
+                {
+                    teams.add(newstring(c->team));
+                }
+            }
+        }
+    }
+
+    identstack stack;
+    loopv(teams)
+    {
+        char *teamstr = newstring(teams[i]);
+        if(i)
+        {
+            if(id->valtype == VAL_STR) delete[] id->val.s;
+            else id->valtype = VAL_STR;
+            id->val.s = teamstr;
+        }
+        else
+        {
+            tagval t;
+            t.setstr(teamstr);
+            pusharg(*id, t, stack);
+            id->flags &= ~IDF_UNKNOWN;
+        }
+        execute(body);
+    }
+    if(scores.length()) poparg(*id);
+    loopv(teams)
+    {
+        DELETEA(teams[i]);
+    }
 }
 
 /**
@@ -1386,6 +1504,12 @@ COMMAND(cleargbans, "");
  * @group player
  */
 ICOMMAND(numclients, "", (), intret(numclients(-1, false, true, false)));
+
+/**
+ * Get count of connected players except spectators and bots
+ * @group player
+ */
+ICOMMAND(numactiveclients, "", (), intret(numclients(-1, true, true, false)));
 
 /**
  * Check if player with specified cn exists
@@ -1720,6 +1844,51 @@ COMMAND(getpos, "i");
  * @group player
  * @arg1 client number
  * @arg2 gun ("FI" = 0, "SG", "CG", "RL", "RI", "GL", "PI" = 6)
+ * @return specified weapon accuracy
  */
 ICOMMAND(getwepaccuracy, "ii", (int *cn, int *gun), intret(getwepaccuracy(*cn, *gun)));
+
+/**
+ * Get dealt damage
+ * @group player
+ * @arg1 cn
+ * @return dealt damage
+ */
+COMMAND(getdamage, "i");
+
+/**
+ * Get wasted damage
+ * @group player
+ * @arg1 cn
+ * @return wasted damage
+ */
+COMMAND(getshotdamage, "i");
+
+/**
+ * Get weapon dealt damage
+ * @group player
+ * @arg1 cn
+ * @arg2 gun
+ * @return weapon dealt damage
+ */
+COMMAND(getwepdamage, "ii");
+
+/**
+ * Get weapon wasted damage
+ * @group player
+ * @arg1 cn
+ * @arg2 gun
+ * @return weapon wasted damage
+ */
+COMMAND(getwepshotdamage, "ii");
+
+/**
+ * Loop through team names
+ * @group server
+ * @arg1 team
+ * @arg2 body of function to loop
+ * @example  loopteams team [ echo $team ]
+ */
+COMMAND(loopteams, "re");
+
 }

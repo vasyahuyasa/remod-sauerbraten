@@ -93,7 +93,7 @@ div.clear {
 
 <body>
 	<h1>User guide</h1>
-	Generated: 2014-9-23
+	Generated: 2014-9-27
 	<hr>
 	
 	<!-- menu -->
@@ -117,10 +117,10 @@ div.clear {
 					<a href="#cs-functions">Cubescript functions</a>
 				</li>
 				<li>
-					<a href="#cs-functions">Remod events</a>
+					<a href="#cs-events">Remod events</a>
 				</li>
 				<li>
-					<a href="#cs-functions">Cubescript variables</a>
+					<a href="#cs-variables">Cubescript variables</a>
 				</li>
 			</ul>
 		</li>
@@ -460,6 +460,25 @@ div.clear {
 				
 				<tr class="odd">
 					<td class="name">
+						<a name="cs-func-mysql_last_insert_id"></a>
+						mysql_last_insert_id
+					</td>
+					<td>
+						<div class="arg">
+							<div class="argname">$arg1</div>
+							<div class="argtype">int</div>
+							<div class="argdescr">db uid</div>
+							<div class="clear"></div>
+						</div>
+					</td>
+					<td></td>
+					<td>Close connection to MySQL database</td>
+					<td></td>
+					<td>mod/mysql.cpp</td>
+				</tr>
+				
+				<tr class="even">
+					<td class="name">
 						<a name="cs-func-mysql_open"></a>
 						mysql_open
 					</td>
@@ -477,7 +496,7 @@ div.clear {
 					<td>mod/mysql.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-mysql_pquery"></a>
 						mysql_pquery
@@ -510,7 +529,7 @@ div.clear {
 					<td>mod/mysql.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-mysql_query"></a>
 						mysql_query
@@ -536,7 +555,7 @@ div.clear {
 					<td>mod/mysql.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-sqlite3_close"></a>
 						sqlite3_close
@@ -555,7 +574,7 @@ div.clear {
 					<td>mod/sqlite3.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-sqlite3_colnames"></a>
 						sqlite3_colnames
@@ -574,7 +593,7 @@ div.clear {
 					<td>mod/sqlite3.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-sqlite3_error"></a>
 						sqlite3_error
@@ -593,7 +612,7 @@ div.clear {
 					<td>mod/sqlite3.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-sqlite3_finalize"></a>
 						sqlite3_finalize
@@ -612,7 +631,7 @@ div.clear {
 					<td>mod/sqlite3.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-sqlite3_getrow"></a>
 						sqlite3_getrow
@@ -627,6 +646,25 @@ div.clear {
 					</td>
 					<td>list of row data</td>
 					<td>Load row for specified statement id</td>
+					<td></td>
+					<td>mod/sqlite3.cpp</td>
+				</tr>
+				
+				<tr class="even">
+					<td class="name">
+						<a name="cs-func-sqlite3_last_insert_rowid"></a>
+						sqlite3_last_insert_rowid
+					</td>
+					<td>
+						<div class="arg">
+							<div class="argname">$arg1</div>
+							<div class="argtype">int</div>
+							<div class="argdescr">db uid</div>
+							<div class="clear"></div>
+						</div>
+					</td>
+					<td>last inserted rowid</td>
+					<td>Return last inserted rowid (primary key) into database</td>
 					<td></td>
 					<td>mod/sqlite3.cpp</td>
 				</tr>
@@ -1502,6 +1540,25 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				
 				<tr class="odd">
 					<td class="name">
+						<a name="cs-func-getdamage"></a>
+						getdamage
+					</td>
+					<td>
+						<div class="arg">
+							<div class="argname">$arg1</div>
+							<div class="argtype">int</div>
+							<div class="argdescr">cn</div>
+							<div class="clear"></div>
+						</div>
+					</td>
+					<td>dealt damage</td>
+					<td>Get dealt damage</td>
+					<td></td>
+					<td>mod/serverctrl.cpp</td>
+				</tr>
+				
+				<tr class="even">
+					<td class="name">
 						<a name="cs-func-getdeaths"></a>
 						getdeaths
 					</td>
@@ -1519,7 +1576,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-getflags"></a>
 						getflags
@@ -1538,7 +1595,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-getfrags"></a>
 						getfrags
@@ -1557,7 +1614,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-getname"></a>
 						getname
@@ -1576,7 +1633,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-getonline"></a>
 						getonline
@@ -1595,7 +1652,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-getping"></a>
 						getping
@@ -1614,7 +1671,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-getpos"></a>
 						getpos
@@ -1633,7 +1690,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-getrank"></a>
 						getrank
@@ -1648,6 +1705,25 @@ If permission check fails, oncommandpermerror event is triggered</td>
 					</td>
 					<td>rank</td>
 					<td>Get rank of player (based on his score)</td>
+					<td></td>
+					<td>mod/serverctrl.cpp</td>
+				</tr>
+				
+				<tr class="even">
+					<td class="name">
+						<a name="cs-func-getshotdamage"></a>
+						getshotdamage
+					</td>
+					<td>
+						<div class="arg">
+							<div class="argname">$arg1</div>
+							<div class="argtype">int</div>
+							<div class="argdescr">cn</div>
+							<div class="clear"></div>
+						</div>
+					</td>
+					<td>wasted damage</td>
+					<td>Get wasted damage</td>
 					<td></td>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
@@ -1736,8 +1812,60 @@ If permission check fails, oncommandpermerror event is triggered</td>
 							<div class="clear"></div>
 						</div>
 					</td>
-					<td></td>
+					<td>specified weapon accuracy</td>
 					<td>Get specified weapon accuracy</td>
+					<td></td>
+					<td>mod/serverctrl.cpp</td>
+				</tr>
+				
+				<tr class="odd">
+					<td class="name">
+						<a name="cs-func-getwepdamage"></a>
+						getwepdamage
+					</td>
+					<td>
+						<div class="arg">
+							<div class="argname">$arg1</div>
+							<div class="argtype">int</div>
+							<div class="argdescr">cn</div>
+							<div class="clear"></div>
+						</div>
+					
+						<div class="arg">
+							<div class="argname">$arg2</div>
+							<div class="argtype">string</div>
+							<div class="argdescr">gun</div>
+							<div class="clear"></div>
+						</div>
+					</td>
+					<td>weapon dealt damage</td>
+					<td>Get weapon dealt damage</td>
+					<td></td>
+					<td>mod/serverctrl.cpp</td>
+				</tr>
+				
+				<tr class="even">
+					<td class="name">
+						<a name="cs-func-getwepshotdamage"></a>
+						getwepshotdamage
+					</td>
+					<td>
+						<div class="arg">
+							<div class="argname">$arg1</div>
+							<div class="argtype">int</div>
+							<div class="argdescr">cn</div>
+							<div class="clear"></div>
+						</div>
+					
+						<div class="arg">
+							<div class="argname">$arg2</div>
+							<div class="argtype">string</div>
+							<div class="argdescr">gun</div>
+							<div class="clear"></div>
+						</div>
+					</td>
+					<td>weapon wasted damage</td>
+					<td>Get weapon wasted damage</td>
 					<td></td>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
@@ -7182,7 +7310,7 @@ Check if geoip is ready to use</td>
 						</div>
 					</td>
 					<td></td>
-					<td>When player die (d@event on't count suicides)</td>
+					<td>When player die (don't count suicides)</td>
 					<td></td>
 				</tr>
 				
@@ -7310,7 +7438,7 @@ Check if geoip is ready to use</td>
 						</div>
 					</td>
 					<td></td>
-					<td>When player do frag (d@event on't count teamkills)</td>
+					<td>When player do frag (don't count teamkills)</td>
 					<td></td>
 				</tr>
 				
@@ -7547,6 +7675,25 @@ Check if geoip is ready to use</td>
 				
 				<tr class="odd">
 					<td class="name">
+						<a name="cs-evt-onmutemodetrigger"></a>
+						onmutemodetrigger
+					</td>
+					<td>
+						<div class="arg">
+							<div class="argname">$arg1</div>
+							<div class="argtype">string</div>
+							<div class="argdescr">cn</div>
+							<div class="clear"></div>
+						</div>
+					</td>
+					<td></td>
+					<td>When editmute variable don't allow the player speak</td>
+					<td></td>
+				</tr>
+				
+				
+				<tr class="even">
+					<td class="name">
 						<a name="cs-evt-onnewmap"></a>
 						onnewmap
 					</td>
@@ -7564,7 +7711,7 @@ Check if geoip is ready to use</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-evt-onpausegame"></a>
 						onpausegame
@@ -7583,7 +7730,7 @@ Check if geoip is ready to use</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-evt-onrecorddemo"></a>
 						onrecorddemo
@@ -7595,7 +7742,7 @@ Check if geoip is ready to use</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-evt-onresetflag"></a>
 						onresetflag
@@ -7614,7 +7761,7 @@ Check if geoip is ready to use</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-evt-onreturnflag"></a>
 						onreturnflag
@@ -7640,7 +7787,7 @@ Check if geoip is ready to use</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-evt-onsavedemo"></a>
 						onsavedemo
@@ -7666,7 +7813,7 @@ Check if geoip is ready to use</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-evt-onsayteam"></a>
 						onsayteam
@@ -7692,7 +7839,7 @@ Check if geoip is ready to use</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-evt-onscoreflag"></a>
 						onscoreflag
@@ -7718,7 +7865,7 @@ Check if geoip is ready to use</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-evt-onsetmaster"></a>
 						onsetmaster
@@ -7758,7 +7905,7 @@ Check if geoip is ready to use</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-evt-onsetteam"></a>
 						onsetteam
@@ -7784,7 +7931,7 @@ Check if geoip is ready to use</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-evt-onspectator"></a>
 						onspectator
@@ -7810,7 +7957,7 @@ Check if geoip is ready to use</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-evt-onstopdemo"></a>
 						onstopdemo
@@ -7822,7 +7969,7 @@ Check if geoip is ready to use</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-evt-onsuicide"></a>
 						onsuicide
@@ -7841,7 +7988,7 @@ Check if geoip is ready to use</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-evt-onswitchmodel"></a>
 						onswitchmodel
@@ -7867,7 +8014,7 @@ Check if geoip is ready to use</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-evt-onswitchname"></a>
 						onswitchname
@@ -7900,7 +8047,7 @@ Check if geoip is ready to use</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-evt-onswitchteam"></a>
 						onswitchteam
@@ -7926,7 +8073,7 @@ Check if geoip is ready to use</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-evt-ontakeflag"></a>
 						ontakeflag
@@ -7959,7 +8106,7 @@ Check if geoip is ready to use</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-evt-onteamkill"></a>
 						onteamkill
@@ -7978,7 +8125,7 @@ Check if geoip is ready to use</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-evt-ontext"></a>
 						ontext
@@ -8064,7 +8211,7 @@ Check if geoip is ready to use</td>
 				
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-adminpass"></a>
 						adminpass
@@ -8080,7 +8227,7 @@ Check if geoip is ready to use</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-authfile"></a>
 						authfile
@@ -8096,7 +8243,7 @@ Check if geoip is ready to use</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-autodemo"></a>
 						autodemo
@@ -8112,7 +8259,7 @@ Check if geoip is ready to use</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-autorepammo"></a>
 						autorepammo
@@ -8128,7 +8275,7 @@ Check if geoip is ready to use</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-banfile"></a>
 						banfile
@@ -8144,7 +8291,7 @@ Check if geoip is ready to use</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-basenumbers"></a>
 						basenumbers
@@ -8160,7 +8307,7 @@ Check if geoip is ready to use</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-capturetether"></a>
 						capturetether
@@ -8176,7 +8323,7 @@ Check if geoip is ready to use</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-commandchar"></a>
 						commandchar
@@ -8192,7 +8339,7 @@ Check if geoip is ready to use</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-consoletimefmt"></a>
 						consoletimefmt
@@ -8208,7 +8355,7 @@ Check if geoip is ready to use</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-ctftkpenalty"></a>
 						ctftkpenalty
@@ -8224,7 +8371,7 @@ Check if geoip is ready to use</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-dbgalias"></a>
 						dbgalias
@@ -8240,7 +8387,7 @@ Check if geoip is ready to use</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-dbggz"></a>
 						dbggz
@@ -8256,7 +8403,7 @@ Check if geoip is ready to use</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-dbgvars"></a>
 						dbgvars
@@ -8272,7 +8419,7 @@ Check if geoip is ready to use</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-demodir"></a>
 						demodir
@@ -8288,7 +8435,7 @@ Check if geoip is ready to use</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-demoname"></a>
 						demoname
@@ -8304,7 +8451,7 @@ Check if geoip is ready to use</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-gamelimit"></a>
 						gamelimit
@@ -8320,7 +8467,7 @@ Check if geoip is ready to use</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-gamemillis"></a>
 						gamemillis
@@ -8336,7 +8483,7 @@ Check if geoip is ready to use</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-imissiontime"></a>
 						imissiontime
@@ -8352,7 +8499,7 @@ Check if geoip is ready to use</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-initcfg"></a>
 						initcfg
@@ -8368,7 +8515,7 @@ Check if geoip is ready to use</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-ipbanmsg"></a>
 						ipbanmsg
@@ -8384,7 +8531,7 @@ Check if geoip is ready to use</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-irccommandchar"></a>
 						irccommandchar
@@ -8400,7 +8547,7 @@ Check if geoip is ready to use</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-ircfilter"></a>
 						ircfilter
@@ -8416,7 +8563,7 @@ Check if geoip is ready to use</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-ircpingdelay"></a>
 						ircpingdelay
@@ -8432,7 +8579,7 @@ Check if geoip is ready to use</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-lockmaprotation"></a>
 						lockmaprotation
@@ -8448,7 +8595,7 @@ Check if geoip is ready to use</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-mapdir"></a>
 						mapdir
@@ -8464,7 +8611,7 @@ Check if geoip is ready to use</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-mastername"></a>
 						mastername
@@ -8480,7 +8627,7 @@ Check if geoip is ready to use</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-masterpass"></a>
 						masterpass
@@ -8496,7 +8643,7 @@ Check if geoip is ready to use</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-masterport"></a>
 						masterport
@@ -8512,7 +8659,7 @@ Check if geoip is ready to use</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-maxclients"></a>
 						maxclients
@@ -8528,7 +8675,7 @@ Check if geoip is ready to use</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-maxdemos"></a>
 						maxdemos
@@ -8544,7 +8691,7 @@ Check if geoip is ready to use</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-maxdemosize"></a>
 						maxdemosize
@@ -8560,7 +8707,7 @@ Check if geoip is ready to use</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-mutemode"></a>
 						mutemode
@@ -8576,7 +8723,7 @@ Check if geoip is ready to use</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-name"></a>
 						name
@@ -8613,7 +8760,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-numargs"></a>
 						numargs
@@ -8629,7 +8776,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-pause"></a>
 						pause
@@ -8645,7 +8792,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-persist"></a>
 						persist
@@ -8661,7 +8808,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-publicserver"></a>
 						publicserver
@@ -8677,7 +8824,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-rconenable"></a>
 						rconenable
@@ -8693,7 +8840,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-rconip"></a>
 						rconip
@@ -8709,7 +8856,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-rconpass"></a>
 						rconpass
@@ -8725,7 +8872,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-rconport"></a>
 						rconport
@@ -8741,7 +8888,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-rconproto"></a>
 						rconproto
@@ -8757,7 +8904,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-restrictdemos"></a>
 						restrictdemos
@@ -8773,7 +8920,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-restrictgamespeed"></a>
 						restrictgamespeed
@@ -8789,7 +8936,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-restrictpausegame"></a>
 						restrictpausegame
@@ -8805,7 +8952,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-roundtime"></a>
 						roundtime
@@ -8821,7 +8968,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-savebak"></a>
 						savebak
@@ -8837,7 +8984,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-savedemo"></a>
 						savedemo
@@ -8853,7 +9000,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-serverauth"></a>
 						serverauth
@@ -8869,7 +9016,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-serverbotbalance"></a>
 						serverbotbalance
@@ -8885,7 +9032,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-serverbotlimit"></a>
 						serverbotlimit
@@ -8901,7 +9048,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-serverdesc"></a>
 						serverdesc
@@ -8917,7 +9064,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-serverip"></a>
 						serverip
@@ -8933,7 +9080,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-servermotd"></a>
 						servermotd
@@ -8949,7 +9096,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-serverpass"></a>
 						serverpass
@@ -8965,7 +9112,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-serverport"></a>
 						serverport
@@ -8981,7 +9128,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-serveruprate"></a>
 						serveruprate
@@ -8997,7 +9144,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-setroundtime"></a>
 						setroundtime
@@ -9013,7 +9160,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-totalmillis"></a>
 						totalmillis
@@ -9029,7 +9176,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-triggerstate"></a>
 						triggerstate
@@ -9045,7 +9192,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-updatemaster"></a>
 						updatemaster
@@ -9061,7 +9208,7 @@ extern void renderlava(const materialsurface &m</td>
 				</tr>
 				
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-verbose"></a>
 						verbose

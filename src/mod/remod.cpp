@@ -658,7 +658,7 @@ bool checkmutemode(clientinfo *ci)
         }
     case MUTEMODE_MASTERS:
         {
-            if(!ci->privilege != PRIV_ADMIN)
+            if(ci->privilege != PRIV_ADMIN)
             {
                 muted = true;
             }

@@ -14,11 +14,11 @@ When player do teamkill
 
 @event onfrag 
 @arg1 cn
-When player do frag (d@event on't count teamkills)
+When player do frag (don't count teamkills)
 
 @event ondeath 
 @arg1 cn
-When player die (d@event on't count suicides)
+When player die (don't count suicides)
 
 @event onsuicide 
 @arg1 cn
@@ -229,3 +229,7 @@ When ircpublic message
 @arg1 name
 @arg2 text
 When irc private message to bot
+
+@event onmutemodetrigger
+@arg1 cn
+When editmute variable don't allow the player speak

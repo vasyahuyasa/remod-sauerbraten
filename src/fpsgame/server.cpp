@@ -56,6 +56,7 @@ namespace server
     VAR(savedemo, 0, 0, 1);
     VAR(autodemo, 0, 0, 1 );
     SVAR(demodir, "");
+    VAR(packetdelay, 10, 33, 33);
 
     vector<uint> allowedips;
     vector<ban> bannedips;
@@ -1450,9 +1451,9 @@ namespace server
     {
         if(clients.empty() || (!hasnonlocalclients() && !demorecord)) return false;
         enet_uint32 curtime = enet_time_get()-lastsend;
-        if(curtime<33 && !force) return false;
+        if(curtime<packetdelay && !force) return false;
         bool flush = buildworldstate();
-        lastsend += curtime - (curtime%33);
+        lastsend += curtime - (curtime%packetdelay);
         return flush;
     }
 
@@ -2976,6 +2977,7 @@ namespace server
                 if(remod::checkmutemode(ci))
                 {
                     remod::onevent(ONMUTEMODETRIGGER, "i", sender);
+                    break;
                 }
 
                 if(ci->state.ext.muted) break;
@@ -2997,6 +2999,11 @@ namespace server
                 if(!ci || !cq || (ci->state.state==CS_SPECTATOR && !ci->local && !ci->privilege) || !m_teammode || !cq->team[0]) break;
 
                 // remod
+                if(remod::checkmutemode(ci))
+                {
+                    remod::onevent(ONMUTEMODETRIGGER, "i", sender);
+                    break;
+                }
                 if(ci->state.ext.muted) break;
                 remod::onevent(ONSAYTEAM, "is", sender, text);
 
