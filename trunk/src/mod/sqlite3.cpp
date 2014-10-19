@@ -342,6 +342,20 @@ namespace db
         sqlite3_dbs.remove(*dbuid);
     }
 
+    void cs_sqlite3_last_insert_rowid(int *dbuid)
+    {
+        // check if db uid in range
+		if (!sqlite3_dbs.exists(*dbuid)) {
+			intret(-1); return;
+		}
+
+		// select DB from list
+        sqlite3 *db = sqlite3_dbs[*dbuid];
+
+		// get last insert id
+        int rowid = sqlite3_last_insert_rowid(db);
+        intret(rowid);
+    }
 
 /**
  * Open SQLite database
@@ -407,5 +421,14 @@ COMMANDN(sqlite3_error, cs_sqlite3_error,   "i");
  * @arg1 db uid
  */
 COMMANDN(sqlite3_close, cs_sqlite3_close,   "i");
+
+/**
+ * Return last inserted rowid (primary key) into database
+ * @group db
+ * @arg1 db uid
+ * @return last inserted rowid
+ */
+COMMANDN(sqlite3_last_insert_rowid, cs_sqlite3_last_insert_rowid,   "i");
+
 }
 }

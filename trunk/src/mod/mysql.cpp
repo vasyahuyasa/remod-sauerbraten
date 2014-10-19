@@ -295,6 +295,21 @@ namespace db
 		mysql_dbs.remove(*dbuid);
 	}
 
+	// return last inserted id
+	void cs_mysql_last_insert_id(int *dbuid)
+	{
+	    // check if db uid in range
+		if (!mysql_dbs.exists(*dbuid)) {
+			intret(-1); return;
+		}
+
+		// select DB from list
+		MYSQL *db = mysql_dbs[*dbuid];
+
+        // get latest inserted id
+		intret(mysql_insert_id(db));
+	}
+
 
 /**
  * Open Mysql database connection
@@ -362,6 +377,13 @@ COMMANDN(mysql_error,     cs_mysql_error,   "i");
  * @arg1 db uid
  */
 COMMANDN(mysql_close,     cs_mysql_close,   "i");
+
+/**
+ * Close connection to MySQL database
+ * @group db
+ * @arg1 db uid
+ */
+COMMANDN(mysql_last_insert_id,     cs_mysql_last_insert_id,   "i");
 
 }
 }
