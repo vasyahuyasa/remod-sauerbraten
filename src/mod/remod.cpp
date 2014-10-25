@@ -672,4 +672,46 @@ bool checkmutemode(clientinfo *ci)
     return muted;
 }
 
+// delay in seconds before unpause game
+VAR(resumedelay, 0, 0, 100);
+
+int resumetime;
+_VAR(resumetimer, resumetimer, 0, 0, 1, IDF_READONLY);
+void pausegame(bool val, clientinfo *ci)
+{
+    // pause game if val = 1
+    if(val)
+    {
+        resumetimer = 0;
+        server::pausegame(val, ci);
+    }
+    else
+    {
+        if(resumedelay == 0)
+        {
+            server::pausegame(val, ci);
+            return;
+        }
+
+        if(resumetimer || !server::gamepaused) return;
+
+        // start resume game counter
+        resumetime = totalmillis + resumedelay*1000;
+        resumetimer = 1;
+        onevent(ONRESUMEGAME, "i", ci ? ci->clientnum : -1);
+    }
+}
+
+void checkresume()
+{
+    if(!server::gamepaused || (resumetimer == 0)) return;
+
+    // unpause game
+    if(resumetime <= totalmillis)
+    {
+        resumetimer = 0;
+        server::pausegame(false);
+    }
+}
+
 }

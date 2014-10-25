@@ -3427,7 +3427,9 @@ namespace server
             {
                 int val = getint(p);
                 if(ci->privilege < (restrictpausegame ? PRIV_ADMIN : PRIV_MASTER) && !ci->local) break;
-                pausegame(val > 0, ci);
+                // remod
+                //pausegame(val > 0, ci);
+                remod::pausegame(val > 0, ci);
                 break;
             }
 
