@@ -233,3 +233,7 @@ When irc private message to bot
 @event onmutemodetrigger
 @arg1 cn
 When editmute variable don't allow the player speak
+
+@event onresumegame
+@arg1 cn
+When client request unpause game

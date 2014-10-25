@@ -1053,6 +1053,7 @@ void rundedicatedserver()
         #ifdef IRC
         ircslice();
         #endif
+        remod::checkresume();
         remod::eventsupdate();
     }
 #endif

@@ -78,5 +78,7 @@ namespace remod
     void setmaster(clientinfo *ci, int priv);
     int getwepaccuracy(int cn, int gun);
     bool checkmutemode(clientinfo *ci);
+    void pausegame(bool val, clientinfo *ci = NULL);
+    void checkresume();
 }
 #endif
