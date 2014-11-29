@@ -18,3 +18,6 @@ Delay in seconds before unpause game on request
 
 @variable resumetimer
 0 - no unpause was requested, 1 - resume timer is started
+
+@variable overtime
+Overtime when teams are tied, 0 - disable overtime

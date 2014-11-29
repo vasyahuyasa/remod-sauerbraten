@@ -237,3 +237,6 @@ When editmute variable don't allow the player speak
 @event onresumegame
 @arg1 cn
 When client request unpause game
+
+@event onovertime
+When time's up and teams are tied

@@ -57,6 +57,7 @@ namespace server
     VAR(autodemo, 0, 0, 1 );
     SVAR(demodir, "");
     VAR(packetdelay, 10, 33, 33);
+    VAR(overtime, 0, 0, 600);
 
     vector<uint> allowedips;
     vector<ban> bannedips;
@@ -1886,6 +1887,18 @@ namespace server
     {
         if(gamemillis >= gamelimit && !interm)
         {
+            // remod
+            if(overtime && m_teammode && remod::isteamsequalscore())
+            {
+                if(m_timed && smapname[0])
+                {
+                    gamelimit += overtime * 1000;
+                    sendf(-1, 1, "ri2", N_TIMEUP, overtime);
+                    remod::onevent(ONOVERTIME, "");
+                }
+                return;
+            }
+
             sendf(-1, 1, "ri2", N_TIMEUP, 0);
             if(smode) smode->intermission();
             changegamespeed(100);

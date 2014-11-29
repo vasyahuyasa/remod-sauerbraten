@@ -714,4 +714,31 @@ void checkresume()
     }
 }
 
+int getteamscore(const char *team)
+{
+    int score = 0;
+    if(smode && smode->hidefrags())
+    {
+        score = smode->getteamscore(team);
+    }
+    else
+    {
+        loopv(clients)
+        if(clients[i]->state.state != CS_SPECTATOR && clients[i]->team[0])
+        {
+            clientinfo *ci = clients[i];
+            if(ci && (strcmp(team, ci->team) == 0))
+                score += ci->state.frags;
+        }
+    }
+    return score;
+}
+
+bool isteamsequalscore()
+{
+    int goodscore = getteamscore("good");
+    int evilscore = getteamscore("evil");
+    return (goodscore == evilscore);
+}
+
 }
