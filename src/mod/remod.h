@@ -80,5 +80,7 @@ namespace remod
     bool checkmutemode(clientinfo *ci);
     void pausegame(bool val, clientinfo *ci = NULL);
     void checkresume();
+    int getteamscore(const char *team);
+    bool isteamsequalscore();
 }
 #endif

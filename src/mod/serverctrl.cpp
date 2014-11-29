@@ -265,21 +265,7 @@ void getonline(int *pcn)
 
 void _getteamscore(char *team)
 {
-    if(smode && smode->hidefrags())
-    {
-        intret(smode->getteamscore(team));
-    }
-    else
-    {
-        int teamfrags = 0;
-        loopv(clients) if(clients[i]->team[0])
-        {
-            clientinfo *ci = clients[i];
-            if(ci && (strcmp(team, ci->team) == 0)) teamfrags+=ci->state.frags;
-        }
-        intret(teamfrags);
-    }
-
+        intret(getteamscore(team));
 }
 
 void getrank(int *pcn)
