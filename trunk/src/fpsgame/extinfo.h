@@ -94,6 +94,9 @@
             case EXT_UPTIME:
             {
                 putint(p, totalsecs); //in seconds
+
+                // Remod
+                if(req.remaining() && req.get() > 0) putint(p, -6);
                 break;
             }
 
