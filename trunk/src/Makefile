@@ -8,10 +8,14 @@ USE_IRCBOT=true
 
 #Sqlite3 support? true|false
 USE_SQLITE3=true
+SQLITE3_USE_SYSTEM_LIBS=false
 
 #Mysql support? true|false
 USE_MYSQL=true
+MYSQL_USE_SYSTEM_LIBS=false
 
+#Use ssytem enet libraryie
+ENET_USE_SYSTEM_LIBS=false
 ######################################
 
 ### Tools
@@ -55,7 +59,7 @@ SERVER_INCLUDES+= -DSTANDALONE $(INCLUDES) -Iinclude
 SERVER_LIBS= -Llib -lzdll -lenet -lws2_32 -lwinmm -lstdc++
 else
 SERVER_INCLUDES+= -DSTANDALONE $(INCLUDES)
-SERVER_LIBS= -Lenet/.libs -L/usr/local/lib -lenet -lz -lstdc++
+SERVER_LIBS= -L/usr/local/lib -lenet -lz -lstdc++ -lm
 endif
 
 ifeq ($(PLATFORM),SunOS)
@@ -64,7 +68,14 @@ endif
 
 CXXFLAGS=-fomit-frame-pointer -Wall -fsigned-char -DSTANDALONE
 
-INCLUDES= -Ishared -Iengine -Ifpsgame -Ienet/include -Imod -Imod/hashlib2plus/src -Imod/cryptomod/polarssl/include
+INCLUDES= -Ishared -Iengine -Ifpsgame -Imod -Imod/hashlib2plus/src -Imod/cryptomod/polarssl/include
+
+### Embended ENET
+ifeq ($(ENET_USE_SYSTEM_LIBS),true)
+else
+override INCLUDES += -Ienet/include
+override SERVER_LIBS += -Lenet/.libs
+endif
 
 SERVER_OBJS= \
 	shared/crypto-standalone.o \
@@ -131,20 +142,30 @@ endif
 
 #sqlite3
 ifeq ($(USE_SQLITE3),true)
+ifeq ($(SQLITE3_USE_SYSTEM_LIBS),true)
+override SERVER_LIBS+= -lsqlite3
+else
 override CXXFLAGS+= -DSQLITE3 -DSQLITE_THREADSAFE=1
 override INCLUDES+= -Imod/sqlite3
 #linux-only libs
 ifeq ($(PLATFORM),Linux)
 override SERVER_LIBS+= -ldl -lpthread
 endif
-override SERVER_OBJS+= mod/sqlite3/sqlite3-standalone.o mod/sqlite3-standalone.o
+override SERVER_OBJS+= mod/sqlite3/sqlite3-standalone.o
 endif
+override SERVER_OBJS+= mod/sqlite3-standalone.o
+endif
+
 #end of sqlite3
 
 
 
 #mysql
 ifeq ($(USE_MYSQL),true)
+ifeq ($(MYSQL_USE_SYSTEM_LIBS),true)
+override INCLUDES += -I/usr/include/mysql
+override SERVER_LIBS += -lmysqlclient
+else
 override CXXFLAGS+= -DUSE_MYSQL -DDBUG_OFF
 override INCLUDES += -Imod/mysql/include -Imod/mysql/extlib/regex -Imod/mysql/mysys -Imod/mysql/vio
 
@@ -195,6 +216,7 @@ override SERVER_OBJS += $(foreach v,$(MYSQL_REGEX_OBJS),mod/mysql/$(MYSQL_REGEX_
 override SERVER_OBJS += $(foreach v,$(MYSQL_MYSYS_OBJS),mod/mysql/$(MYSQL_MYSYS_DIR)/$(v))
 override SERVER_OBJS += $(foreach v,$(MYSQL_VIO_OBJS),mod/mysql/$(MYSQL_VIO_DIR)/$(v))
 override SERVER_OBJS += $(foreach v,$(MYSQL_LIBMYSQL_OBJS),mod/mysql/$(MYSQL_LIBMYSQL_DIR)/$(v))
+endif
 override SERVER_OBJS += mod/mysql-standalone.o
 endif
 #end of mysql
@@ -259,7 +281,13 @@ server: $(SERVER_OBJS)
 	$(CXX) $(CXXFLAGS) -o $(SERVER_NAME) $(SERVER_OBJS) $(SERVER_LIBS)
 
 else
+ifeq ($(ENET_USE_SYSTEM_LIBS),true)
+server:	$(SERVER_OBJS)
+	$(CXX) $(CXXFLAGS) -o $(SERVER_NAME) $(SERVER_OBJS) $(SERVER_LIBS)  
+	$(MV) $(SERVER_NAME) ../$(SERVER_NAME)
+else
 server:	libenet $(SERVER_OBJS)
 	$(CXX) $(CXXFLAGS) -o $(SERVER_NAME) $(SERVER_OBJS) $(SERVER_LIBS)  
 	$(MV) $(SERVER_NAME) ../$(SERVER_NAME)
+endif
 endif

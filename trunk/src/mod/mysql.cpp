@@ -73,7 +73,7 @@
 ***/
 
 #include "fpsgame.h"
-#include <my_global.h>
+//#include <my_global.h>
 #include <mysql.h>
 
 #include "db.h"
