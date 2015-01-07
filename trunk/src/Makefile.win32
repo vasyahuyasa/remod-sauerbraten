@@ -12,10 +12,14 @@ USE_IRCBOT=true
 
 #Sqlite3 support? true|false
 USE_SQLITE3=true
+SQLITE3_USE_SYSTEM_LIBS=true
 
 #Mysql support? true|false
-USE_MYSQL=false
+USE_MYSQL=true
+MYSQL_USE_SYSTEM_LIBS=true
 
+#Use ssytem enet libraryie
+ENET_USE_SYSTEM_LIBS=false
 ######################################
 
 ### Tools
@@ -30,7 +34,7 @@ SERVER_NAME=remod.exe
 
 CXXFLAGS= -fpermissive -fomit-frame-pointer -Wall -fsigned-char -DSTANDALONE
 SERVER_INCLUDES= -I/usr/i686-w64-mingw32/include/ -Iinclude $(INCLUDES) 
-SERVER_LIBS= -Llib -Lenet/.libs -static -lenet -lzdll -lwinmm -lstdc++ -lws2_32
+SERVER_LIBS= -Llib -lenet -lzdll -lwinmm -lstdc++
 
 #override CXXFLAGS+= -O0 -g -DDEBUG # uncomment for debugging
 
@@ -40,7 +44,14 @@ ifeq (,$(findstring -pg,$(CXXFLAGS)))
 endif
 endif
 
-INCLUDES= -Ishared -Iengine -Ifpsgame -Ienet/include -Imod -Imod/hashlib2plus/src -Imod/cryptomod/polarssl/include
+INCLUDES= -Ishared -Iengine -Ifpsgame -Imod -Imod/hashlib2plus/src -Imod/cryptomod/polarssl/include
+
+### Embended ENET
+ifeq ($(ENET_USE_SYSTEM_LIBS),true)
+else
+override INCLUDES += -Ienet/include
+override SERVER_LIBS += -Lenet/.libs
+endif
 
 SERVER_OBJS= \
 	shared/crypto-standalone.o \
@@ -64,7 +75,7 @@ SERVER_OBJS= \
 	mod/cryptomod/polarssl/library/sha1-standalone.o \
 	mod/cryptomod/polarssl/library/sha2-standalone.o \
 	mod/cryptomod/polarssl/library/sha4-standalone.o \
-      	mod/banlist-standalone.o \
+    mod/banlist-standalone.o \
 	mod/jsonbanlist-standalone.o
 
 
@@ -76,10 +87,10 @@ ifeq ($(USE_GEOIP),true)
 override CXXFLAGS+= -DGEOIPDATADIR -DGEOIP -DPACKAGE_VERSION=\"1.5.1\"
 override INCLUDES+= -Imod/libGeoIP/
 override SERVER_OBJS+= \
-        mod/geoipmod2-standalone.o \
+    mod/geoipmod2-standalone.o \
 	mod/libGeoIP/GeoIP-standalone.o \
 	mod/libGeoIP/GeoIPCity-standalone.o \
-        mod/libGeoIP/GeoIP_depreciated-standalone.o
+    mod/libGeoIP/GeoIP_depreciated-standalone.o
 endif
 #end of geoip
 
@@ -107,8 +118,16 @@ endif
 #sqlite3
 ifeq ($(USE_SQLITE3),true)
 override CXXFLAGS+= -DSQLITE3
+
+#system libs
+ifeq ($(SQLITE3_USE_SYSTEM_LIBS),true)
+override SERVER_LIBS+= -lsqlite3
+else
 override INCLUDES+= -Imod/sqlite3
-override SERVER_OBJS+= mod/sqlite3/sqlite3-standalone.o mod/sqlite3-standalone.o
+override SERVER_OBJS+= mod/sqlite3/sqlite3-standalone.o
+endif
+
+override SERVER_OBJS+= mod/sqlite3-standalone.o
 endif
 #end of sqlite3
 
@@ -116,6 +135,11 @@ endif
 
 #mysql
 ifeq ($(USE_MYSQL),true)
+
+ifeq ($(MYSQL_USE_SYSTEM_LIBS),true)
+override INCLUDES += -I/usr/i686-w64-mingw32/include/mariadb
+override SERVER_LIBS += -lws2_32 -lmysql -lssl
+else
 override CXXFLAGS+= -DUSE_MYSQL -DDBUG_OFF
 override CXXFLAGS += -DNO_OLDNAMES
 override INCLUDES += -Imod/mysql/include -Imod/mysql/extlib/regex -Imod/mysql/mysys -Imod/mysql/vio
@@ -162,6 +186,7 @@ override SERVER_OBJS += $(foreach v,$(MYSQL_REGEX_OBJS),mod/mysql/$(MYSQL_REGEX_
 override SERVER_OBJS += $(foreach v,$(MYSQL_MYSYS_OBJS),mod/mysql/$(MYSQL_MYSYS_DIR)/$(v))
 override SERVER_OBJS += $(foreach v,$(MYSQL_VIO_OBJS),mod/mysql/$(MYSQL_VIO_DIR)/$(v))
 override SERVER_OBJS += $(foreach v,$(MYSQL_LIBMYSQL_OBJS),mod/mysql/$(MYSQL_LIBMYSQL_DIR)/$(v))
+endif
 override SERVER_OBJS += mod/mysql-standalone.o
 endif
 #end of mysql
@@ -197,7 +222,7 @@ clean-enet: enet/Makefile
 	$(MAKE) -C enet/ clean
 
 geoip/Makefile:
-	cd mod/GeoIP; chmod +x configure; ac_cv_func_malloc_0_nonnull=yes ac_cv_func_realloc_0_nonnull=yes ac_cv_func_pread=yes ./configure --enable-shared=no --enable-static=yes --host=i686-w64-mingw32
+	cd mod/libGeoIP; chmod +x configure; ac_cv_func_malloc_0_nonnull=yes ac_cv_func_realloc_0_nonnull=yes ac_cv_func_pread=yes ./configure --enable-shared=no --enable-static=yes --host=i686-w64-mingw32
 
 libgeoip: geoip/Makefile
 	$(MAKE)	-C mod/GeoIP/libGeoIP/ all
@@ -205,7 +230,7 @@ libgeoip: geoip/Makefile
 clean-geoip: geoip/Makefile
 	$(MAKE) -C mod/GeoIP/libGeoIP/ maintainer-clean
 
-clean: clean-enet clean-geoip
+clean: clean-enet
 	-$(RM) $(SERVER_OBJS)
 
 %.h.gch: %.h
@@ -221,7 +246,14 @@ clean: clean-enet clean-geoip
 
 $(SERVER_OBJS): CXXFLAGS += $(SERVER_INCLUDES)
 
+ifeq ($(ENET_USE_SYSTEM_LIBS),true)
+server: $(SERVER_OBJS)
+	$(WINDRES) -I res -i res/mingw.rc -J rc -o res/mingw.res -O coff
+	$(CXX) $(CXXFLAGS) -o $(SERVER_NAME) res/mingw.res $(SERVER_OBJS) $(SERVER_LIBS)
+	$(MV) $(SERVER_NAME) ../$(SERVER_NAME)
+else
 server: libenet $(SERVER_OBJS)
 	$(WINDRES) -I res -i res/mingw.rc -J rc -o res/mingw.res -O coff
 	$(CXX) $(CXXFLAGS) -o $(SERVER_NAME) res/mingw.res $(SERVER_OBJS) $(SERVER_LIBS)
 	$(MV) $(SERVER_NAME) ../$(SERVER_NAME)
+endif

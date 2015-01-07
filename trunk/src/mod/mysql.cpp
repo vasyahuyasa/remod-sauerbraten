@@ -72,12 +72,12 @@
 *
 ***/
 
-#include "fpsgame.h"
+//#include "fpsgame.h"
 //#include <my_global.h>
 #include <mysql.h>
 
 #include "db.h"
-#include "remod.h"
+//#include "remod.h"
 
 #define inrange(n, _max) (n>=0 && n<_max)
 
