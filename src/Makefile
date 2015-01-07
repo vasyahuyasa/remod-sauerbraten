@@ -142,10 +142,12 @@ endif
 
 #sqlite3
 ifeq ($(USE_SQLITE3),true)
+override CXXFLAGS+= -DSQLITE3
+
 ifeq ($(SQLITE3_USE_SYSTEM_LIBS),true)
 override SERVER_LIBS+= -lsqlite3
 else
-override CXXFLAGS+= -DSQLITE3 -DSQLITE_THREADSAFE=1
+override CXXFLAGS+= -DSQLITE_THREADSAFE=1
 override INCLUDES+= -Imod/sqlite3
 #linux-only libs
 ifeq ($(PLATFORM),Linux)
@@ -153,6 +155,7 @@ override SERVER_LIBS+= -ldl -lpthread
 endif
 override SERVER_OBJS+= mod/sqlite3/sqlite3-standalone.o
 endif
+
 override SERVER_OBJS+= mod/sqlite3-standalone.o
 endif
 
@@ -162,6 +165,7 @@ endif
 
 #mysql
 ifeq ($(USE_MYSQL),true)
+
 ifeq ($(MYSQL_USE_SYSTEM_LIBS),true)
 override INCLUDES += -I/usr/include/mysql
 override SERVER_LIBS += -lmysqlclient
