@@ -247,7 +247,7 @@ override CXXFLAGS+= -DREMOD_VERSION="\"SVN build rev: $(SVNVERSION)\""
 endif
 
 enet/Makefile:
-	cd enet; chmod +x configure; ./configure --enable-shared=no --enable-static=yes
+	cd enet; autoreconf -vfi; ./configure --enable-shared=no --enable-static=yes
 	
 libenet: enet/Makefile
 	$(MAKE)	-C enet/ all
