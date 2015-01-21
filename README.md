@@ -12,14 +12,13 @@ Nightly builds (Linux and win32 packages) available here: http://rb3.butchers.su
   * SVN repository: http://code.google.com/p/remod-sauerbraten/source/checkout SVN repository (recomended).
 
 ##Installation notes and some guides
-  *
-    ```
-    git clone https://github.com/vasyahuyasa/remod-sauerbraten.git
-    git submodule init
-    git submodule update
-    cd remod-sauerbraten/src
-    make
-    ```
+```
+git clone https://github.com/vasyahuyasa/remod-sauerbraten.git
+git submodule init
+git submodule update
+cd remod-sauerbraten/src
+make
+```
   * Check our https://github.com/vasyahuyasa/remod-sauerbraten/wiki/Installation wiki page
 
 ##Implemented features
