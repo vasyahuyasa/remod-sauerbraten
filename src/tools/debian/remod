@@ -1,0 +1,48 @@
+#!/bin/bash
+### BEGIN INIT INFO
+# Provides:          remod
+# Required-Start:    $local_fs $remote_fs $network $syslog $named
+# Required-Stop:     $local_fs $remote_fs $network $syslog $named
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# X-Interactive:     true
+# Short-Description: Start/stop remod server
+### END INIT INFO
+
+REMOD_HOME="/home/remod/remod" # !!! CHANGE THIS TO THE CORRECT PATH
+
+. /lib/lsb/init-functions
+
+REMOD_BIN="${REMOD_HOME}/remod"
+REMOD_CONFIG="${REMOD_HOME}/my-server.cfg" # !!! CHANGE THIS TO YOUR VALID CONFIGURATION FILE
+REMOD_PID="/var/run/remod.pid"
+REMOD_USER=remod  # !!! Create a separate user for remod, don't forget to set and ownersip of $REMOD_HOME directory (it's a bad idea to run everything from root)
+
+
+case "$1" in
+  start)
+        log_daemon_msg "Starting Remod server"
+        start-stop-daemon --start --quiet  --chuid ${REMOD_USER} --chdir ${REMOD_HOME}  --make-pidfile --pidfile ${REMOD_PID} --background --exec ${REMOD_BIN} -- -f${REMOD_CONFIG}
+        log_end_msg 0
+
+        ;;
+  stop)
+        log_daemon_msg "Stopping Remod server"
+        start-stop-daemon --stop --pidfile ${REMOD_PID}
+        log_end_msg 0
+        ;;
+  status)
+        status="0"
+        status_of_proc -p ${REMOD_PID} || status=$?
+        exit $status
+        ;;
+  restart|reload|condrestart|force-reload)
+        $0 stop
+        sleep 1
+        $0 start
+        ;;
+  *)
+        echo "Usage: $0 {start|stop|restart|reload|status}"
+        exit 1
+esac
+exit 0
