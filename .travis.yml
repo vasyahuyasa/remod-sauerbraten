@@ -3,12 +3,12 @@ language: c
 before_install:
   # Install dependencies
   - sudo apt-get update
-  - sudo apt-get install -y automake build-essential zlib1g-dev lib32z1 lib32gcc1 lib32stdc++6 
+  - sudo apt-get install -y automake build-essential zlib1g-dev
  
 compiler:
   - clang
   - gcc
 
 script:
-  - cd src && make && make install
+  - cd src && make
 
