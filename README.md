@@ -1,4 +1,6 @@
 # ![](https://github.com/vasyahuyasa/remod-sauerbraten/blob/master/src/res/remod.png) Remod
+[![Build Status](https://travis-ci.org/vasyahuyasa/remod-sauerbraten.svg?branch=master)](https://travis-ci.org/vasyahuyasa/remod-sauerbraten)
+
 Lightweight crossplatform sauerbraten server mod.
 
 The goal of project is create lightweight crossplatform (FreeBSD, Linux, Windows and others) mod for replacement of official sauerbraten server.
