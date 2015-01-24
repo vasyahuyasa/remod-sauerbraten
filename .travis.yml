@@ -6,7 +6,6 @@ before_install:
   - sudo apt-get install -y automake build-essential zlib1g-dev
  
 compiler:
-  - clang
   - gcc
 
 script:
