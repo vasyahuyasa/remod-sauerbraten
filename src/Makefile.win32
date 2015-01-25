@@ -34,7 +34,7 @@ SERVER_NAME=remod.exe
 
 CXXFLAGS= -fpermissive -fomit-frame-pointer -Wall -fsigned-char -DSTANDALONE -static -Wl,-subsystem,windows
 SERVER_INCLUDES= -I/usr/i686-w64-mingw32/include/ $(INCLUDES) 
-SERVER_LIBS= -lenet -lz.dll -lwinmm -lgcc -lstdc++ -lws2_32
+SERVER_LIBS= -lz.dll -lgcc -lstdc++
 
 #override CXXFLAGS+= -O0 -g -DDEBUG # uncomment for debugging
 
@@ -50,7 +50,7 @@ INCLUDES= -Ishared -Iengine -Ifpsgame -Imod -Imod/hashlib2plus/src -Imod/cryptom
 ifeq ($(ENET_USE_SYSTEM_LIBS),true)
 else
 override INCLUDES += -Ienet/include
-override SERVER_LIBS += -Lenet/.libs
+override SERVER_LIBS += -Lenet/.libs -lenet -lws2_32 -lwinmm
 endif
 
 SERVER_OBJS= \
@@ -219,7 +219,7 @@ libenet: enet/Makefile
 	$(MAKE)	-C enet/ all
 
 clean-enet: enet/Makefile
-	$(MAKE) -C enet/ clean
+	$(MAKE) -C enet/ maintainer-clean
 
 geoip/Makefile:
 	cd mod/libGeoIP; chmod +x configure; ac_cv_func_malloc_0_nonnull=yes ac_cv_func_realloc_0_nonnull=yes ac_cv_func_pread=yes ./configure --enable-shared=no --enable-static=yes --host=i686-w64-mingw32
