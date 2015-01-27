@@ -1,17 +1,16 @@
-# ![](https://github.com/vasyahuyasa/remod-sauerbraten/blob/master/src/res/remod.png) Remod
-[![Build Status](https://travis-ci.org/vasyahuyasa/remod-sauerbraten.svg?branch=master)](https://travis-ci.org/vasyahuyasa/remod-sauerbraten)
+# ![](https://github.com/vasyahuyasa/remod-sauerbraten/blob/master/src/res/remod.png) Remod [![Build Status](https://travis-ci.org/vasyahuyasa/remod-sauerbraten.svg?branch=master)](https://travis-ci.org/vasyahuyasa/remod-sauerbraten)
 
 Lightweight crossplatform sauerbraten server mod.
 
 The goal of project is create lightweight crossplatform (FreeBSD, Linux, Windows and others) mod for replacement of official sauerbraten server.
 
-Nightly builds (Linux and win32 packages) available here: http://rb3.butchers.su/ftp/sauer/remod/ (currently offline).
+Nightly builds (Linux and win32 packages) available here: http://remod.butchers.su/.
 
 ##Download
-  * Latest development version: http://rb3.butchers.su/ftp/sauer/remod/ (currently offline)
+  * Latest development version: http://remod.butchers.su/
   * Old realeses: http://code.google.com/p/remod-sauerbraten/downloads/list
   * GIT repository: https://github.com/vasyahuyasa/remod-sauerbraten (recomended).
-  * SVN repository: http://code.google.com/p/remod-sauerbraten/source/checkout SVN repository (recomended).
+  * SVN repository: http://code.google.com/p/remod-sauerbraten/source/checkout old SVN repository.
 
 ##Installation notes and some guides
 ```
