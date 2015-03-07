@@ -1043,6 +1043,7 @@ void rundedicatedserver()
         #ifdef IRC
         ircslice();
         #endif
+        remod::checkresume();
         remod::eventsupdate();
 	}
 #else
@@ -1126,7 +1127,7 @@ void initserver(bool listen, bool dedicated)
         // show error message and stop server
         if(!execfile("server-init.cfg", false))
         {
-            conoutf("Fatal error: could not read file \"server-init.cfg\". Rename \"server-init.cfg.default\" to \"server-init.cfg\", or specify the name of the config file by using the command line parameter ./remod -f<filename> (i.e. ./remod -fmyconfig.cfg)");
+            fatal("%s", "Fatal error: could not read file \"server-init.cfg\". Rename \"server-init.cfg.default\" to \"server-init.cfg\", or specify the name of the config file by using the command line parameter ./remod -f<filename> (i.e. ./remod -fmyconfig.cfg)");
             exit(1);
         }
     }
