@@ -207,9 +207,9 @@ debug-flags: build
 build: revision server
 
 revision:
-SVNVERSION= $(shell svnversion -cn . 2>/dev/null | sed -e "s/.*://" -e "s/\([0-9]*\).*/\1/" | grep "[0-9]") 
-ifneq "$(SVNVERSION)" " "
-override CXXFLAGS+= -DREMOD_VERSION="\"SVN build rev: $(SVNVERSION)\""
+GITVERSION= $(shell git rev-parse HEAD)
+ifneq "$(GITVERSION)" " "
+override CXXFLAGS+= -DREMOD_VERSION="\"at commit $(GITVERSION)\""
 endif
 
 enet/Makefile:
