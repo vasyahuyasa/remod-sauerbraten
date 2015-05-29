@@ -240,3 +240,7 @@ When client request unpause game
 
 @event onovertime
 When time's up and teams are tied
+
+@event onspawn
+@arg1 cn
+When player spawn
