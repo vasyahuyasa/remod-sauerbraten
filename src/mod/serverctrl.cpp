@@ -1050,7 +1050,7 @@ void getpos(int *cn)
 {
     clientinfo *ci = (clientinfo *)getinfo(*cn);
     if(!ci || ci->state.state == CS_SPECTATOR) return;
-    defformatstring(pos)("%s %s %s", floatstr(ci->state.o.x), floatstr(ci->state.o.y), floatstr(ci->state.o.z));
+    defformatstring(pos)("%s %s %s", floatstr(ci->state.o.x), floatstr(ci->state.o.y), floatstr(ci->state.o.z + 14.0f)); // 14.0f camera height
     result(pos);
 }
 
