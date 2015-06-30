@@ -682,7 +682,10 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
                 {
                     switch(w[g+2][1])   // +o +v
                     {
+                        case 'q': c->setusermode(w[g+3], OWNER); break;
+                        case 'a': c->setusermode(w[g+3], ADMIN); break;
                         case 'o': c->setusermode(w[g+3], OP); break;
+                        case 'h': c->setusermode(w[g+3], HALFOP); break;
                         case 'v': c->setusermode(w[g+3], VOICE); break;
                         case 'm': break; // moderated channel >_<
                         default: c->setusermode(w[g+3], NONE); break;
