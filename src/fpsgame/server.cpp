@@ -58,6 +58,7 @@ namespace server
     SVAR(demodir, "");
     VAR(packetdelay, 10, 33, 33);
     VAR(overtime, 0, 0, 600);
+    VAR(nodamage, 0, 0, 1);
 
     vector<uint> allowedips;
     vector<ban> bannedips;
@@ -1914,6 +1915,7 @@ namespace server
     void dodamage(clientinfo *target, clientinfo *actor, int damage, int gun, const vec &hitpush = vec(0, 0, 0))
     {
         // remod
+        if(m_edit && nodamage == 1) return;
         actor->state.ext.guninfo[gun].damage += damage;
 
         gamestate &ts = target->state;
