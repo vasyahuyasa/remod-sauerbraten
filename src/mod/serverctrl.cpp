@@ -297,7 +297,7 @@ void getrank(int *pcn)
     intret(-1);
 }
 
-void mute(int *pcn, int *val)
+void mute(int *pcn, int *val, const char *reason)
 {
     int cn = (int)*pcn;
     bool v = (bool)*val;
@@ -1876,5 +1876,13 @@ COMMAND(getwepshotdamage, "ii");
  * @example  loopteams team [ echo $team ]
  */
 COMMAND(loopteams, "re");
+
+/**
+ * Rename player
+ * @group player
+ * @arg1 client number
+ * @arg2 name
+ */
+ICOMMAND(rename, "is", (int *cn, const char *name), rename(*cn, name));
 
 }

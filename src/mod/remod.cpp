@@ -741,4 +741,39 @@ bool isteamsequalscore()
     return (goodscore == evilscore);
 }
 
+void rename(int cn, const char* name)
+{
+    // don't rename bots
+    if(cn < 0 || cn >= 128) return;
+
+    clientinfo *ci = (clientinfo *)getinfo(cn);
+
+    // invalid cn or empty new name
+    if(!ci || name == NULL || name[0] == 0) return;
+
+    char newname[MAXNAMELEN + 1];
+    newname[MAXNAMELEN] = 0;
+    filtertext(newname, name, false, MAXNAMELEN);
+
+    putuint(ci->messages, N_SWITCHNAME);
+    sendstring(newname, ci->messages);
+
+    vector<uchar> buf;
+    putuint(buf, N_SWITCHNAME);
+    sendstring(newname, buf);
+
+    packetbuf p(MAXTRANS, ENET_PACKET_FLAG_RELIABLE);
+    putuint(p, N_CLIENT);
+    putint(p, ci->clientnum);
+    putint(p, buf.length());
+    p.put(buf.getbuf(), buf.length());
+    sendpacket(ci->clientnum, 1, p.finalize(), -1);
+
+    string oldname;
+    copystring(oldname, ci->name);
+    copystring(ci->name, newname);
+
+    remod::onevent(ONSWITCHNAME, "iss", ci->clientnum, ci->name, oldname);
+}
+
 }

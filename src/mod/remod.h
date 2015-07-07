@@ -82,5 +82,6 @@ namespace remod
     void checkresume();
     int getteamscore(const char *team);
     bool isteamsequalscore();
+    void rename(int cn, const char* name);
 }
 #endif
