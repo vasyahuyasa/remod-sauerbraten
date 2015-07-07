@@ -776,4 +776,32 @@ void rename(int cn, const char* name)
     remod::onevent(ONSWITCHNAME, "iss", ci->clientnum, ci->name, oldname);
 }
 
+static void freegetmap(ENetPacket *packet)
+{
+    loopv(clients)
+    {
+        clientinfo *ci = clients[i];
+        if(ci->getmap == packet) ci->getmap = NULL;
+    }
+}
+
+void sendmapto(int cn)
+{
+    clientinfo *ci = (clientinfo *)getinfo(cn);
+    if(!ci || !m_edit) return;
+
+    if(!mapdata) conoutf("no map to send to %s(%i)", ci->name, cn);
+    else if(ci->getmap) conoutf("already sending map to %s(%i)", ci->name, cn);
+    else
+    {
+        // remod
+        remod::onevent(ONGETMAP, "i", cn);
+
+        sendservmsgf("[%s is getting the map]", colorname(ci));
+        if((ci->getmap = sendfile(cn, 2, mapdata, "ri", N_SENDMAP)))
+            ci->getmap->freeCallback = freegetmap;
+        ci->needclipboard = totalmillis ? totalmillis : 1;
+    }
+}
+
 }

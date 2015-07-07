@@ -33,6 +33,7 @@ namespace server
     bool checkpban(uint ip);
     void addban(int cn, char* actorname, int expire);
     void addpban(char *name, const char *reason);
+    void sendservmsgf(const char *fmt, ...);
 }
 
 namespace remod
@@ -83,5 +84,6 @@ namespace remod
     int getteamscore(const char *team);
     bool isteamsequalscore();
     void rename(int cn, const char* name);
+    void sendmapto(int cn);
 }
 #endif

@@ -1885,4 +1885,11 @@ COMMAND(loopteams, "re");
  */
 ICOMMAND(rename, "is", (int *cn, const char *name), rename(*cn, name));
 
+/**
+ * Force send map to client
+ * @group server
+ * @arg1 client number
+ */
+ICOMMAND(sendmap, "i", (int *cn), sendmapto(*cn));
+
 }
