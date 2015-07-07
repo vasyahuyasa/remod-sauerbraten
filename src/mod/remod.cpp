@@ -835,6 +835,7 @@ void ghost(int cn, bool v)
     clientinfo *ci = getinfo(cn);
     if(!ci) return;
     ci->state.ext.ghost = v;
+    onevent(ONGHOST, "ii", cn, v ? 1 : 0);
 }
 
 }

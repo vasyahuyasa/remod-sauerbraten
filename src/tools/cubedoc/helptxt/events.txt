@@ -244,3 +244,16 @@ When time's up and teams are tied
 @event onspawn
 @arg1 cn
 When player spawn
+
+@event onghost
+@arg1 cn
+@arg2 1|0
+When player in ghost mode
+
+@event onmutetrigger
+@arg1 cn
+Call when player write with mute flag
+
+@event onghosttrigger
+@arg1 cn
+When player edit in ghost mode
