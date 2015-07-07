@@ -3,8 +3,7 @@
 * date:     2007
 * author:   degrave
 *
-* remot control
-* remot control
+* remote control via netcat
 */
 
 #include <stdio.h>
@@ -217,17 +216,19 @@ void rconserver_udp::sendmsg(const char *msg, int len)
         data = newstring(msg);
     }
 
+    char utfbuf[MAXBUF];
+    len = encodeutf8((uchar*)utfbuf, MAXBUF, (uchar*)data, len, 0);
+
     // send text to all peers
     for(int i=0; i<MAXRCONPEERS; i++)
     {
         if(rconpeers[i].logined)
         {
-            sendto(sock, data, len, 0, (struct sockaddr *)&rconpeers[i].addr, addrlen);
+            sendto(sock, utfbuf, len, 0, (struct sockaddr *)&rconpeers[i].addr, addrlen);
         }
     }
 
     DELETEA(data);
-
 }
 
 void rconserver_udp::sendmsg(const char *msg)
@@ -254,7 +255,12 @@ void rconserver_udp::update()
             {
                 logout(fromaddr);
             }
-            else execute(buf);
+            else
+            {
+                char cubebuf[MAXBUF];
+                decodeutf8((uchar*)cubebuf, MAXBUF, (uchar*)buf, recvlen, 0);
+                execute(cubebuf);
+            }
         }
     }
 }
