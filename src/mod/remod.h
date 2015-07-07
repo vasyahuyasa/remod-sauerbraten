@@ -45,7 +45,10 @@ namespace remod
     struct extstate
     {
         bool muted;
-        bool editmuted;
+        bool ghost;
+
+        int lastmutetrigger;
+        int lastghosttrigger;
 
         struct
         {
@@ -85,5 +88,7 @@ namespace remod
     bool isteamsequalscore();
     void rename(int cn, const char* name);
     void sendmapto(int cn);
+    bool iseditcommand(int type);
+    void ghost(int cn, bool v);
 }
 #endif

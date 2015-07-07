@@ -597,28 +597,6 @@ void getvalue(const char* ident, const char* def) {
 	result(alias && strcmp("", alias) ? alias : def);
 }
 
-void editmute(int *pcn, int *val)
-{
-    int cn = (int)*pcn;
-    bool v = (bool)*val;
-
-    clientinfo *ci = (clientinfo *)getinfo(cn);
-    if(ci)
-    {
-        if(ci->state.ext.editmuted != v)
-        {
-            ci->state.ext.editmuted = v;
-            remod::onevent(ONEDITMUTE, "ii", v ? 1 : 0, cn);
-        }
-    }
-}
-
-void iseditmuted(int *cn)
-{
-    clientinfo *ci = (clientinfo *)getinfo(*cn);
-    intret(ci && ci->state.ext.editmuted);
-}
-
 void uptimef(const char *fmt)
 {
     // max correct uptime 134 years
@@ -1664,22 +1642,6 @@ COMMAND(getvalue, "ss");
 ICOMMAND(eval, "C", (char *s), executeret(s));
 
 /**
- * Ignore specified client changes in coop edit mode
- * @group player
- * @arg1 client number
- * @arg2 1 or 0
- */
-COMMAND(editmute, "ii");
-
-/**
- * Check if player is editmuted
- * @group player
- * @arg1 client number
- * @return 1 if editmuted, 0 if not
- */
-COMMAND(iseditmuted, "i");
-
-/**
  * Formats server's uptime
  * @group server
  * @arg1 format string
@@ -1892,4 +1854,22 @@ ICOMMAND(rename, "is", (int *cn, const char *name), rename(*cn, name));
  */
 ICOMMAND(sendmap, "i", (int *cn), sendmapto(*cn));
 
+/**
+ * Make player ghost
+ * @group player
+ * @arg1 1 to make ghost, 0 to unghost
+ * @arg2 client number
+ */
+ICOMMAND(ghost, "ii", (int *val, int*cn), ghost(*cn, (bool)*val));
+
+/**
+ * Check if specified player is ghost
+ * @group player
+ * @arg1 client number
+ * @return 0 or 1
+ */
+ICOMMAND(isghost, "i", (int *cn), {
+            clientinfo *ci = getinfo(*cn);
+            intret(ci ? (ci->state.ext.ghost ? 1 : 0) : 0);
+         });
 }

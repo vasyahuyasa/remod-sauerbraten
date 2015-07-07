@@ -2753,6 +2753,7 @@ namespace server
                     p.get(); if(flags&(1<<5)) p.get();
                     if(flags&(1<<6)) loopk(2) p.get();
                 }
+
                 if(cp)
                 {
                     if((!ci->local || demorecord || hasnonlocalclients()) && (cp->state.state==CS_ALIVE || cp->state.state==CS_EDITING))
@@ -2995,7 +2996,16 @@ namespace server
                     break;
                 }
 
-                if(ci->state.ext.muted) break;
+                if(ci->state.ext.muted)
+                {
+                    // call event not often that every 5 seconds
+                    if(totalmillis - ci->state.ext.lastmutetrigger >= 5*1000)
+                    {
+                        remod::onevent(ONMUTETRIGGER, "i", ci->clientnum);
+                        ci->state.ext.lastmutetrigger = totalmillis;
+                    }
+                    break;
+                }
 
                 remod::onevent(ONTEXT, "is", sender, ftext);
                 DELETEA(ftext);
@@ -3019,7 +3029,16 @@ namespace server
                     remod::onevent(ONMUTEMODETRIGGER, "i", sender);
                     break;
                 }
-                if(ci->state.ext.muted) break;
+                if(ci->state.ext.muted)
+                {
+                    // call event not often that every 5 seconds
+                    if(totalmillis - ci->state.ext.lastmutetrigger >= 5*1000)
+                    {
+                        remod::onevent(ONMUTETRIGGER, "i", ci->clientnum);
+                        ci->state.ext.lastmutetrigger = totalmillis;
+                    }
+                    break;
+                }
                 remod::onevent(ONSAYTEAM, "is", sender, text);
 
                 loopv(clients)
@@ -3118,7 +3137,7 @@ namespace server
                 if(!ci || ci->state.state==CS_SPECTATOR) break;
 
                 // remod
-                if(ci->state.ext.editmuted) break;
+                if(ci->state.ext.ghost) break;
 
                 QUEUE_MSG;
                 bool canspawn = canspawnitem(type);
@@ -3148,7 +3167,7 @@ namespace server
                 }
 
                 // remod
-                if(ci->state.ext.editmuted) break;
+                if(ci->state.ext.ghost) break;
 
                 if(ci && ci->state.state!=CS_SPECTATOR) QUEUE_MSG;
                 break;
@@ -3341,7 +3360,7 @@ namespace server
                 if(!ci->privilege && !ci->local && ci->state.state==CS_SPECTATOR) break;
 
                 // remod
-                if(ci->state.ext.editmuted) break;
+                if(ci->state.ext.ghost) break;
                 remod::onevent(ONNEWMAP, "i", ci->clientnum);
 
                 if(size>=0)
@@ -3470,7 +3489,11 @@ namespace server
                 int unpacklen = getint(p), packlen = getint(p);
 
                 // remod
-                if(ci->state.ext.editmuted) break;
+                if(ci->state.ext.ghost)
+                {
+                        if(packlen > 0) p.subbuf(packlen);
+                        break;
+                }
 
                 ci->cleanclipboard(false);
                 if(ci->state.state==CS_SPECTATOR)
@@ -3517,6 +3540,17 @@ namespace server
                 int size = server::msgsizelookup(type);
                 if(size<=0) { disconnect_client(sender, DISC_MSGERR); return; }
                 loopi(size-1) getint(p);
+
+                //remod
+                if(ci && m_edit && ci->state.ext.ghost && remod::iseditcommand(type))
+                {
+                    // call event not often that every 5 seconds
+                    if(totalmillis - ci->state.ext.lastghosttrigger >= 5*1000)
+                    {
+                        remod::onevent(ONGHOSTTRIGGER, "i", ci->clientnum);
+                        ci->state.ext.lastghosttrigger = totalmillis;
+                    }
+                } else
                 if(ci && cq && (ci != cq || ci->state.state!=CS_SPECTATOR)) { QUEUE_AI; QUEUE_MSG; }
                 break;
             }

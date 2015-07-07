@@ -254,7 +254,11 @@ namespace remod
 void extstate::reset()
 {
     muted = false;
-    editmuted  = false;
+    ghost = false;
+
+    lastmutetrigger= 0;
+    lastghosttrigger = 0;
+
     loopi(NUMGUNS)
     {
         guninfo[i].damage = 0;
@@ -802,6 +806,35 @@ void sendmapto(int cn)
             ci->getmap->freeCallback = freegetmap;
         ci->needclipboard = totalmillis ? totalmillis : 1;
     }
+}
+
+bool iseditcommand(int type)
+{
+    switch(type)
+    {
+        case N_EDITF:
+        case N_EDITT:
+        case N_EDITM:
+        case N_FLIP:
+        case N_COPY:
+        case N_PASTE:
+        case N_ROTATE:
+        case N_REPLACE:
+        case N_DELCUBE:
+        case N_REMIP:
+        case N_SENDMAP:
+            return true;
+
+        default:
+            return false;
+    }
+}
+
+void ghost(int cn, bool v)
+{
+    clientinfo *ci = getinfo(cn);
+    if(!ci) return;
+    ci->state.ext.ghost = v;
 }
 
 }

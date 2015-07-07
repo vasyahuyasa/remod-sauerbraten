@@ -202,6 +202,7 @@ void rconserver_tcp::update()
                     else
                     {
                         char cubebuf[MAXBUF];
+                        memset(cubebuf, 0, MAXBUF);
                         decodeutf8((uchar*)cubebuf, MAXBUF, (uchar*)buf, nbytes, 0);
                         execute(buf);
                     }
@@ -239,6 +240,7 @@ void rconserver_tcp::sendmsg(const char *msg, int len)
     }
 
     char utfbuf[MAXBUF];
+    memset(utfbuf, 0, MAXBUF);
     len = encodeutf8((uchar*)utfbuf, MAXBUF, (uchar*)data, len, 0);
 
     // send text
