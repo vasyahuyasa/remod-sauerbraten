@@ -257,3 +257,7 @@ Call when player write with mute flag
 @event onghosttrigger
 @arg1 cn
 When player edit in ghost mode
+
+@event onreceivemap
+@arg1 cn
+When map uploaded to server by client

@@ -2589,6 +2589,10 @@ namespace server
     {
         if(!m_edit || len > 4*1024*1024) return;
         clientinfo *ci = getinfo(sender);
+
+        // remod
+        if(m_edit && ci->state.ext.ghost) return;
+
         if(ci->state.state==CS_SPECTATOR && !ci->privilege && !ci->local) return;
         if(mapdata) DELETEP(mapdata);
         if(!len) return;
@@ -2596,6 +2600,9 @@ namespace server
         if(!mapdata) { sendf(sender, 1, "ris", N_SERVMSG, "failed to open temporary file for map"); return; }
         mapdata->write(data, len);
         sendservmsgf("[%s sent a map to server, \"/getmap\" to receive it]", colorname(ci));
+
+        // remod
+        remod::onevent(ONRECEIVEMAP, "i", sender);
     }
 
     void sendclipboard(clientinfo *ci)
