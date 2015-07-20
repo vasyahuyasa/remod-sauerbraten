@@ -1333,7 +1333,7 @@ COMMAND(spectator, "ii");
  * @group server
  * @arg1 map name
  */
-ICOMMAND(map, "s", (char *name), sendf(-1, 1, "risii", N_MAPCHANGE, name, gamemode, 1); server::changemap(name, gamemode));
+ICOMMAND(map, "s", (char *name), server::changemap(name, gamemode));
 
 /**
  * Change map and mode
@@ -1341,7 +1341,7 @@ ICOMMAND(map, "s", (char *name), sendf(-1, 1, "risii", N_MAPCHANGE, name, gamemo
  * @arg1 map name
  * @arg2 mode number (see: getmode and $MODENAMES)
  */
-ICOMMAND(mapmode, "si", (char *name, int *mode), sendf(-1, 1, "risii", N_MAPCHANGE, name, *mode, 1); server::changemap(name, *mode));
+ICOMMAND(mapmode, "si", (char *name, int *mode), server::changemap(name, *mode));
 
 /**
  * Force player to hate himself and to want to die
