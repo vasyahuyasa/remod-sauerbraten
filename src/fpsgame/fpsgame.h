@@ -112,6 +112,9 @@ namespace server
         int lasttimeplayed, timeplayed;
         float effectiveness;
 
+        // remod
+        remod::extstate ext;
+
         gamestate() : state(CS_DEAD), editstate(CS_DEAD), lifesequence(0) {}
 
         bool isalive(int gamemillis)
@@ -136,6 +139,9 @@ namespace server
             frags = flags = deaths = teamkills = shotdamage = damage = tokens = 0;
 
             lastdeath = 0;
+
+            //remod
+            ext.reset();
 
             respawn();
         }
@@ -166,6 +172,9 @@ namespace server
         int timeplayed;
         float effectiveness;
 
+        // remod
+        remod::extstate ext;
+
         void save(gamestate &gs)
         {
             maxhealth = gs.maxhealth;
@@ -177,6 +186,9 @@ namespace server
             damage = gs.damage;
             timeplayed = gs.timeplayed;
             effectiveness = gs.effectiveness;
+
+            // remod
+            ext = gs.ext;
         }
 
         void restore(gamestate &gs)
@@ -191,6 +203,9 @@ namespace server
             gs.damage = damage;
             gs.timeplayed = timeplayed;
             gs.effectiveness = effectiveness;
+
+            // remod
+            gs.ext = ext;
         }
     };
 
@@ -223,6 +238,10 @@ namespace server
         void *authchallenge;
         int authkickvictim;
         char *authkickreason;
+
+        // remod
+        //hashtable<const char *, char *> vars;
+        remod::extinfo ext;
 
         clientinfo() : getdemo(NULL), getmap(NULL), clipboard(NULL), authchallenge(NULL), authkickreason(NULL) { reset(); }
         ~clientinfo() { events.deletecontents(); cleanclipboard(); cleanauth(); }
@@ -259,15 +278,15 @@ namespace server
         void setexceeded()
         {
             if(state.state==CS_ALIVE && !exceeded && !checkpushed(gamemillis, calcpushrange())) exceeded = gamemillis;
-            scheduleexceeded(); 
+            scheduleexceeded();
         }
-            
+
         void setpushed()
         {
             pushed = max(pushed, gamemillis);
             if(exceeded && checkpushed(exceeded, calcpushrange())) exceeded = 0;
         }
-        
+
         bool checkexceeded()
         {
             return state.state==CS_ALIVE && exceeded && gamemillis > exceeded + calcpushrange();
@@ -350,10 +369,19 @@ namespace server
     {
         int time, expire;
         uint ip;
+
+        //remod
+        string name;    // victim name
+        string actor;   // baning player's name (empty if by server)
+        uint actorip;  // baning player's ip (0.0.0.0 if by server)
     };
 
     namespace aiman
     {
+        //remod
+        extern bool addai(int skill, int limit);
+        extern bool deleteai();
+
         extern void removeai(clientinfo *ci);
         extern void clearai();
         extern void checkai();
@@ -371,6 +399,9 @@ namespace server
     #define MM_PRIVSERV (MM_MODE | MM_AUTOAPPROVE)
     #define MM_PUBSERV ((1<<MM_OPEN) | (1<<MM_VETO))
     #define MM_COOPSERV (MM_AUTOAPPROVE | MM_PUBSERV | (1<<MM_LOCKED))
+
+    //Remod
+    #define MM_CLANSERV ((1<<MM_OPEN) | (1<<MM_VETO) | (1<<MM_LOCKED))
 
     struct demofile
     {
@@ -435,7 +466,7 @@ namespace server
     extern servmode *smode;
 
     // remod
-    void kickclients(uint ip, clientinfo *actor = NULL);
+    void kickclients(uint ip, clientinfo *actor = NULL, int priv = PRIV_NONE);
     clientinfo *getinfo(int n);
     const char *privname(int type);
     bool hasmap(clientinfo *ci);
@@ -450,8 +481,8 @@ namespace server
     void sendservmsg(const char *s);
     void srvmsgf(int cn, const char *s, ...);
     int numclients(int exclude , bool nospec, bool noai, bool priv);
-    const char *colorname(clientinfo *ci, char *name = NULL);
+    const char *colorname(clientinfo *ci, const char *name = NULL);
     void addgban(const char *name);
     void cleargbans();
-
+}
 #endif

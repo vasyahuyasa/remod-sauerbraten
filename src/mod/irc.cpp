@@ -32,9 +32,9 @@ void console(int type, const char *s, ...)
 {
     defvformatstring(sf, s, s);
     string osf, psf, fmt;
-    formatstring(fmt)(consoletimefmt);
+    formatstring(fmt, consoletimefmt);
     filtertext(osf, sf);
-    formatstring(psf)("%s %s", gettime(fmt), osf);
+    formatstring(psf, "%s %s", gettime(fmt), osf);
     printf("%s\n", osf);
     //fflush(stdout);
 }
@@ -60,22 +60,22 @@ void ircprintf(ircnet *n, int relay, const char *target, const char *msg, ...)
         if(c)
         {
             // remod
-            formatstring(s)("\fs\fa[%s:%s]\fS", n->name, c->name);
+            formatstring(s, "\fs\fa[%s:%s]\fS", n->name, c->name);
 
             /*
-            formatstring(s)("\fs\fa[%s:%s]\fS", n->name, c->name);
+            formatstring(s, "\fs\fa[%s:%s]\fS", n->name, c->name);
             if(n->type == IRCT_RELAY && c->relay >= relay)
                 server::srvmsgf(relay > 1 ? -2 : -3, "\fs\fa[%s]\fS %s", c->friendly, str);
             */
         }
         else
         {
-            formatstring(s)("\fs\fa[%s:%s]\fS", n->name, target);
+            formatstring(s, "\fs\fa[%s:%s]\fS", n->name, target);
         }
     }
     else
     {
-        formatstring(s)("\fs\fa[%s]\fS", n->name);
+        formatstring(s, "\fs\fa[%s]\fS", n->name);
     }
     console(0, "%s %s", s, str); // console is not used to relay
 }
@@ -154,7 +154,7 @@ void ircsend(ircnet *n, const char *msg, ...)
     concatstring(str, "\n");
     ENetBuffer buf;
     uchar ubuf[512];
-    int len = strlen(str), carry = 0;
+    size_t len = strlen(str), carry = 0;
     while(carry < len)
     {
         int numu = encodeutf8(ubuf, sizeof(ubuf)-1, &((uchar *)str)[carry], len - carry, &carry);
@@ -267,7 +267,7 @@ int ircrecv(ircnet *n)
             case '\v': case '\f': n->input[n->inputlen+i] = ' '; break;
         }
         n->inputlen += len;
-        int carry = 0, decoded = decodeutf8(&n->input[n->inputcarry], n->inputlen - n->inputcarry, &n->input[n->inputcarry], n->inputlen - n->inputcarry, &carry);
+        size_t carry = 0, decoded = decodeutf8(&n->input[n->inputcarry], n->inputlen - n->inputcarry, &n->input[n->inputcarry], n->inputlen - n->inputcarry, &carry);
         if(carry > decoded)
         {
             memmove(&n->input[n->inputcarry + decoded], &n->input[n->inputcarry + carry], n->inputlen - (n->inputcarry + carry));

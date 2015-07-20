@@ -208,7 +208,7 @@ namespace db
 		loopi(sqlite3_data_count(stmt))
 		{
 			if(buf.length()) buf.add(' ');
-			defformatstring(colname)("%s", sqlite3_column_name(stmt, i));
+			defformatstring(colname, "%s", sqlite3_column_name(stmt, i));
 			buf.put(colname, strlen(colname));
 		}
 		buf.add('\0');
@@ -235,7 +235,7 @@ namespace db
 		loopi(fieldcount)
 		{
 			if(buf.length()) buf.add(' ');
-			defformatstring(field)("%s", sqlite3_column_text(stmt, i));
+			defformatstring(field, "%s", sqlite3_column_text(stmt, i));
 			const char *stripped_field = stripslashes(&field[0]);
 			const char *escaped_field = escapestring(stripped_field);
 			DELETEA(stripped_field);

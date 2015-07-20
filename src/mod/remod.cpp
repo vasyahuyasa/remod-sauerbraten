@@ -424,7 +424,7 @@ void writebans()
                 tmsk <<= 1;
                 cidrmsk++;
             }
-            formatstring(maskedip)("%i.%i.%i.%i/%i", ip.b[0], ip.b[1], ip.b[2], ip.b[3], cidrmsk);
+            formatstring(maskedip, "%i.%i.%i.%i/%i", ip.b[0], ip.b[1], ip.b[2], ip.b[3], cidrmsk);
 
             f->printf("permban %s \"%s\"\n", maskedip, b.reason);
         }
@@ -442,7 +442,7 @@ void writebans()
                 tmsk <<= 1;
                 cidrmsk++;
             }
-            formatstring(maskedip)("%i.%i.%i.%i/%i", b->ipoctet[0], b->ipoctet[1], b->ipoctet[2], b->ipoctet[3], cidrmsk);
+            formatstring(maskedip, "%i.%i.%i.%i/%i", b->ipoctet[0], b->ipoctet[1], b->ipoctet[2], b->ipoctet[3], cidrmsk);
             f->printf("permban %s \"%s\"\n", maskedip, b->reason);
         }
 
@@ -467,8 +467,8 @@ bool loadents(const char *fname, vector<entity> &ents, uint *crc)
     string mapname, ogzname, entsname;
     copystring(mapname, fname, 100);
     cutogz(mapname);
-    formatstring(ogzname)("%s/%s.ogz", remod::mapdir, mapname);
-    formatstring(entsname)("%s/%s.ents", remod::mapdir, mapname);
+    formatstring(ogzname, "%s/%s.ogz", remod::mapdir, mapname);
+    formatstring(entsname, "%s/%s.ents", remod::mapdir, mapname);
     path(ogzname);
     path(entsname);
 
@@ -534,7 +534,7 @@ bool loadents(const char *fname, vector<entity> &ents, uint *crc)
 bool writeents(const char *mapname, vector<entity> &ents, uint mapcrc)
 {
     string file;
-    formatstring(file)("mapinfo/%s.ents", mapname);
+    formatstring(file, "mapinfo/%s.ents", mapname);
 
     stream *mapi = opengzfile(path(file), "w+b");
 
@@ -581,7 +581,7 @@ void setmaster(clientinfo *ci, int priv)
     if(ci->privilege != PRIV_NONE)
     {
         name = privname(ci->privilege);
-        formatstring(msg)("%s relinquished %s", colorname(ci), name);
+        formatstring(msg, "%s relinquished %s", colorname(ci), name);
         sendservmsg(msg);
         remod::onevent(ONSETMASTER, "iisss", ci->clientnum, 0, "", "", "");
     }
@@ -617,7 +617,7 @@ void setmaster(clientinfo *ci, int priv)
     if(ci->privilege != PRIV_NONE)
     {
         name = privname(ci->privilege);
-        formatstring(msg)("%s claimed %s", colorname(ci), name);
+        formatstring(msg, "%s claimed %s", colorname(ci), name);
         sendservmsg(msg);
         remod::onevent(ONSETMASTER, "iisss", ci->clientnum, ci->privilege, "", "", "");
     }

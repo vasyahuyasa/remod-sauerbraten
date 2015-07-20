@@ -56,7 +56,7 @@ bool rconserver_udp::addpeer(struct sockaddr_in addr)
             rconpeers[i].addr = addr;
             rconpeers[i].logined = true;
             ipstr = inet_ntoa(addr.sin_addr);
-            formatstring(msg)("Rcon: new peer [%s:%i]", ipstr, ntohs(addr.sin_port));
+            formatstring(msg, "Rcon: new peer [%s:%i]", ipstr, ntohs(addr.sin_port));
             conoutf(msg);
             return true;
         }
@@ -101,7 +101,7 @@ void rconserver_udp::logout(struct sockaddr_in addr)
             int addrlen = sizeof(addr);
             sendto(sock, msg, len, 0, (struct sockaddr *)&rconpeers[i].addr, addrlen);
             rconpeers[i].logined = false;
-            defformatstring(quit_msg)("Rcon: quit [%s:%i]", inet_ntoa(addr.sin_addr), ntohs(addr.sin_port));
+            defformatstring(quit_msg, "Rcon: quit [%s:%i]", inet_ntoa(addr.sin_addr), ntohs(addr.sin_port));
             conoutf(quit_msg);
             return;
         }

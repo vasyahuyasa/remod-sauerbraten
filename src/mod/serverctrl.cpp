@@ -101,7 +101,7 @@ void getflags(int *pcn)
 void version()
 {
     string txt;
-    formatstring(txt)("Remod %s %s (build %s %s) %s/%s", REMOD_CODENAME, REMOD_VERSION, __DATE__, __TIME__, REMOD_SYSTEM, REMOD_ARCH);
+    formatstring(txt, "Remod %s %s (build %s %s) %s/%s", REMOD_CODENAME, REMOD_VERSION, __DATE__, __TIME__, REMOD_SYSTEM, REMOD_ARCH);
     result(txt);
 }
 
@@ -509,7 +509,7 @@ void loadmap(const char *name)
         int slen = strlen(buf);
         if(buf[slen] != '/' && buf[slen] != '\\' && slen+1 < (int)sizeof(buf)) { buf[slen] = '/'; buf[slen+1] = '\0'; }
     }
-    formatstring(fname)("%s%s.ogz", buf, name);
+    formatstring(fname, "%s%s.ogz", buf, name);
 
     if(server::mapdata) DELETEP(server::mapdata);
     server::mapdata = openfile(fname, "rb");
@@ -518,11 +518,11 @@ void loadmap(const char *name)
     string msg;
     if(!server::mapdata)
     {
-        formatstring(msg)("[failed to open %s, map do not exist on the server]", name);
+        formatstring(msg, "[failed to open %s, map do not exist on the server]", name);
     }
     else
     {
-        formatstring(msg)("[map %s was uploaded to server, \"/getmap\" to receive it]", name);
+        formatstring(msg, "[map %s was uploaded to server, \"/getmap\" to receive it]", name);
     }
     sendservmsg(msg);
 }
@@ -540,7 +540,7 @@ void savemap(const char *name)
         int slen = strlen(buf);
         if(buf[slen] != '/' && buf[slen] != '\\' && slen+1 < (int)sizeof(buf)) { buf[slen] = '/'; buf[slen+1] = '\0'; }
     }
-    formatstring(fname)("%s%s.ogz", buf, name);
+    formatstring(fname, "%s%s.ogz", buf, name);
 
     // status message
     string msg;
@@ -550,7 +550,7 @@ void savemap(const char *name)
         data = openfile(fname, "wb");
         if(!data)
         {
-            formatstring(msg)("[failed to open %s for writing]", fname);
+            formatstring(msg, "[failed to open %s for writing]", fname);
         }
         else
         {
@@ -566,12 +566,12 @@ void savemap(const char *name)
             // close file
             data->close();
             DELETEP(data);
-            formatstring(msg)("[map %s was saved]", name);
+            formatstring(msg, "[map %s was saved]", name);
         }
     }
     else
     {
-        formatstring(msg)("[no map to save]");
+        formatstring(msg, "[no map to save]");
     }
     sendservmsg(msg);
 }
@@ -584,7 +584,7 @@ void listclients()
     int numclients = 0;
     loopv(clients) if(clients[i])
     {
-        formatstring(cn)("%d", clients[i]->clientnum);
+        formatstring(cn, "%d", clients[i]->clientnum);
         if(numclients++) buf.add(' ');
         buf.put(cn, strlen(cn));
     }
@@ -810,7 +810,7 @@ void getextensions()
     int numext = 0;
     for(int i = 0; i<extensions->length(); i++) if(extensions->getbuf()[i]) // :`( - ugly
     {
-        formatstring(ext)("%s", extensions->getbuf()[i]);
+        formatstring(ext, "%s", extensions->getbuf()[i]);
         if(numext++) buf.add(' ');
         buf.put(ext, strlen(ext));
     }
@@ -1028,7 +1028,7 @@ void getpos(int *cn)
 {
     clientinfo *ci = (clientinfo *)getinfo(*cn);
     if(!ci || ci->state.state == CS_SPECTATOR) return;
-    defformatstring(pos)("%s %s %s", floatstr(ci->state.o.x), floatstr(ci->state.o.y), floatstr(ci->state.o.z + 14.0f)); // 14.0f camera height
+    defformatstring(pos, "%s %s %s", floatstr(ci->state.o.x), floatstr(ci->state.o.y), floatstr(ci->state.o.z + 14.0f)); // 14.0f camera height
     result(pos);
 }
 

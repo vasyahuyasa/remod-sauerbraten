@@ -334,3 +334,33 @@ inline void ident::getval(tagval &v) const
 #define ICOMMANDSNAME _icmds_
 #define ICOMMANDS(name, nargs, proto, b) ICOMMANDNS(name, ICOMMANDSNAME, nargs, proto, b)
  
+ // remod
+static inline void cleancode(ident &id)
+{
+    if(id.code)
+    {
+        id.code[0] -= 0x100;
+        if(int(id.code[0]) < 0x100) delete[] id.code;
+        id.code = NULL;
+    }
+}
+
+static inline void pusharg(ident &id, const tagval &v, identstack &stack)
+{
+    stack.val = id.val;
+    stack.valtype = id.valtype;
+    stack.next = id.stack;
+    id.stack = &stack;
+    id.setval(v);
+    cleancode(id);
+}
+
+static inline void poparg(ident &id)
+{
+    if(!id.stack) return;
+    identstack *stack = id.stack;
+    if(id.valtype == VAL_STR) delete[] id.val.s;
+    id.setval(*stack);
+    cleancode(id);
+    id.stack = stack->next;
+}
