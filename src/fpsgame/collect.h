@@ -518,7 +518,7 @@ struct collectclientmode : clientmode
             tokenpos.z -= theight.z/2 + sinf(lastmillis/100.0f)/20;
             float alpha = player1->state == CS_ALIVE && player1->tokens <= 0 && lastmillis < b.laststeal + STEALTOKENTIME ? 0.5f : 1.0f; 
             rendermodel(&b.light, b.team==team ? "skull/blue" : "skull/red", ANIM_MAPMODEL|ANIM_LOOP, tokenpos, lastmillis/10.0f, 0, MDL_SHADOW | MDL_CULL_VFC | MDL_CULL_OCCLUDED, NULL, NULL, 0, 0, alpha);
-            formatstring(b.info)("%d", totalscore(b.team));
+            formatstring(b.info, "%d", totalscore(b.team));
             vec above(b.tokenpos);
             above.z += TOKENHEIGHT;
             if(b.info[0]) particle_text(above, b.info, PART_TEXT, 1, b.team==team ? 0x6496FF : 0xFF4B19, 2.0f);
@@ -584,8 +584,7 @@ struct collectclientmode : clientmode
         {
             dropent()
             {
-                type = ENT_CAMERA;
-                collidetype = COLLIDE_AABB;
+                type = ENT_BOUNCE;
             }
         } d;
         d.o = o;
@@ -695,7 +694,7 @@ struct collectclientmode : clientmode
             if(!n)
             {
                 b.laststeal = lastmillis;
-                conoutf(CON_GAMEINFO, "%s stole a skull from \fs%s team\fr", teamcolorname(d), enemyteam==collectteambase(player1->team) ? "\f1your" : "\f3the enemy");
+                conoutf(CON_GAMEINFO, "%s stole a skull from %s", teamcolorname(d), teamcolor("your team", collectbaseteam(enemyteam), "the enemy team"));
                 playsound(S_FLAGDROP, &b.tokenpos);
             }
             if(t) particle_flare(b.tokenpos, vec(t->o.x, t->o.y, t->o.z + 0.5f*(TOKENHEIGHT + 1)), 500, PART_LIGHTNING, team==collectteambase(player1->team) ? 0x2222FF : 0xFF2222, 1.0f);
@@ -720,10 +719,10 @@ struct collectclientmode : clientmode
         d->flags = flags;
         setscore(team, score);
         
-        conoutf(CON_GAMEINFO, "%s collected %d %s for \fs%s team\fr", teamcolorname(d), deposited, deposited==1 ? "skull" : "skulls", team==collectteambase(player1->team) ? "\f1your" : "\f3the enemy");
+        conoutf(CON_GAMEINFO, "%s collected %d %s for %s", teamcolorname(d), deposited, deposited==1 ? "skull" : "skulls", teamcolor("your team", collectbaseteam(team), "the enemy team"));
         playsound(team==collectteambase(player1->team) ? S_FLAGSCORE : S_FLAGFAIL);
 
-        if(score >= SCORELIMIT) conoutf(CON_GAMEINFO, "\fs%s team\fr collected %d skulls", team==collectteambase(player1->team) ? "\f1your" : "\f3the enemy", score);
+        if(score >= SCORELIMIT) conoutf(CON_GAMEINFO, "%s collected %d skulls", teamcolor("your team", collectbaseteam(team), "the enemy team"), score);
     }
 
     void checkitems(fpsent *d)

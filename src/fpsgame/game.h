@@ -61,8 +61,8 @@ enum
 struct fpsentity : extentity
 {
     int triggerstate, lasttrigger;
-
-    fpsentity() : triggerstate(TRIGGER_RESET), lasttrigger(0) {}
+    
+    fpsentity() : triggerstate(TRIGGER_RESET), lasttrigger(0) {} 
 };
 
 enum { GUN_FIST = 0, GUN_SG, GUN_CG, GUN_RL, GUN_RIFLE, GUN_GL, GUN_PISTOL, GUN_FIREBALL, GUN_ICEBALL, GUN_SLIMEBALL, GUN_BITE, GUN_BARREL, NUMGUNS };
@@ -207,7 +207,7 @@ enum
     S_CHAINSAW_IDLE,
 
     S_HIT,
-
+    
     S_FLAGFAIL
 };
 
@@ -495,7 +495,7 @@ struct fpsstate
         }
         else if(m_sp)
         {
-            if(m_dmsp)
+            if(m_dmsp) 
             {
                 armourtype = A_BLUE;
                 armour = 25;
@@ -743,6 +743,7 @@ namespace game
     extern void sendmapinfo();
     extern void stopdemo();
     extern void changemap(const char *name, int mode);
+    extern void forceintermission();
     extern void c2sinfo(bool force = false);
     extern void sendposition(fpsent *d, bool reliable = false);
 
@@ -842,3 +843,4 @@ namespace server
 }
 
 #endif
+

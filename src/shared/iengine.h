@@ -2,6 +2,7 @@
 
 extern int curtime;                     // current frame time
 extern int lastmillis;                  // last time
+extern int elapsedtime;                 // elapsed frame time
 extern int totalmillis;                 // total elapsed time
 extern uint totalsecs;
 extern int gamespeed, paused;
@@ -73,9 +74,9 @@ struct selinfo
         extern int worldsize;
         if(grid <= 0 || grid >= worldsize) return false;
         if(o.x >= worldsize || o.y >= worldsize || o.z >= worldsize) return false;
-        if(o.x < 0) { s.x -= (grid - 1 - o.x)/grid; o.x = 0; }
-        if(o.y < 0) { s.y -= (grid - 1 - o.y)/grid; o.y = 0; }
-        if(o.z < 0) { s.z -= (grid - 1 - o.z)/grid; o.z = 0; }
+        if(o.x < 0) { s.x -= (grid - 1 - o.x)/grid; o.x = 0; } 
+        if(o.y < 0) { s.y -= (grid - 1 - o.y)/grid; o.y = 0; } 
+        if(o.z < 0) { s.z -= (grid - 1 - o.z)/grid; o.z = 0; } 
         s.x = clamp(s.x, 0, (worldsize - o.x)/grid);
         s.y = clamp(s.y, 0, (worldsize - o.y)/grid);
         s.z = clamp(s.z, 0, (worldsize - o.z)/grid);
@@ -154,6 +155,13 @@ extern void printfvar(ident *id, float f);
 extern void printsvar(ident *id, const char *s);
 extern int clampvar(ident *id, int i, int minval, int maxval);
 extern float clampfvar(ident *id, float f, float minval, float maxval);
+extern void loopiter(ident *id, identstack &stack, const tagval &v);
+extern void loopend(ident *id, identstack &stack);
+
+#define loopstart(id, stack) if((id)->type != ID_ALIAS) return; identstack stack;
+static inline void loopiter(ident *id, identstack &stack, int i) { tagval v; v.setint(i); loopiter(id, stack, v); }
+static inline void loopiter(ident *id, identstack &stack, float f) { tagval v; v.setfloat(f); loopiter(id, stack, v); }
+static inline void loopiter(ident *id, identstack &stack, const char *s) { tagval v; v.setstr(newstring(s)); loopiter(id, stack, v); }
 
 // console
 
@@ -223,7 +231,7 @@ extern void pushfont();
 extern bool popfont();
 extern void gettextres(int &w, int &h);
 extern void draw_text(const char *str, int left, int top, int r = 255, int g = 255, int b = 255, int a = 255, int cursor = -1, int maxwidth = -1);
-extern void draw_textf(const char *fstr, int left, int top, ...);
+extern void draw_textf(const char *fstr, int left, int top, ...) PRINTFARGS(1, 4);
 extern float text_widthf(const char *str);
 extern void text_boundsf(const char *str, float &width, float &height, int maxwidth = -1);
 extern int text_visible(const char *str, float hitx, float hity, int maxwidth);
@@ -329,6 +337,10 @@ extern void clearmapcrc();
 extern bool loadents(const char *fname, vector<entity> &ents, uint *crc = NULL);
 
 // physics
+extern vec collidewall;
+extern bool collideinside;
+extern physent *collideplayer;
+
 extern void moveplayer(physent *pl, int moveres, bool local);
 extern bool moveplayer(physent *pl, int moveres, bool local, int curtime);
 extern bool collide(physent *d, const vec &dir = vec(0, 0, 0), float cutoff = 0.0f, bool playercol = true);
@@ -463,19 +475,19 @@ struct g3d_gui
     virtual void end() = 0;
 
     virtual int text(const char *text, int color, const char *icon = NULL) = 0;
-    int textf(const char *fmt, int color, const char *icon = NULL, ...)
+    int textf(const char *fmt, int color, const char *icon = NULL, ...) PRINTFARGS(2, 5)
     {
         defvformatstring(str, icon, fmt);
         return text(str, color, icon);
     }
     virtual int button(const char *text, int color, const char *icon = NULL) = 0;
-    int buttonf(const char *fmt, int color, const char *icon = NULL, ...)
+    int buttonf(const char *fmt, int color, const char *icon = NULL, ...) PRINTFARGS(2, 5)
     {
         defvformatstring(str, icon, fmt);
         return button(str, color, icon);
     }
     virtual int title(const char *text, int color, const char *icon = NULL) = 0;
-    int titlef(const char *fmt, int color, const char *icon = NULL, ...)
+    int titlef(const char *fmt, int color, const char *icon = NULL, ...) PRINTFARGS(2, 5)
     {
         defvformatstring(str, icon, fmt);
         return title(str, color, icon);
@@ -485,7 +497,7 @@ struct g3d_gui
     virtual void pushlist() {}
     virtual void poplist() {}
 
-    virtual void allowautotab(bool on) = 0;
+    virtual bool allowautotab(bool on) = 0;
     virtual bool shouldtab() { return false; }
 	virtual void tab(const char *name = NULL, int color = 0) = 0;
     virtual int image(Texture *t, float scale, bool overlaid = false) = 0;
@@ -498,10 +510,11 @@ struct g3d_gui
 	virtual void strut(float size) = 0;
     virtual void space(float size) = 0;
     virtual void spring(int weight = 1) = 0;
+    virtual void column(int col) = 0;
     virtual char *keyfield(const char *name, int color, int length, int height = 0, const char *initval = NULL, int initmode = EDITORFOCUSED) = 0;
     virtual char *field(const char *name, int color, int length, int height = 0, const char *initval = NULL, int initmode = EDITORFOCUSED) = 0;
     virtual void textbox(const char *text, int width, int height, int color = 0xFFFFFF) = 0;
-    virtual void mergehits(bool on) = 0;
+    virtual bool mergehits(bool on) = 0;
 };
 
 struct g3d_callback

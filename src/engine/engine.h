@@ -6,108 +6,12 @@
 
 #ifndef STANDALONE
 
+#include "glexts.h"
 #include "octa.h"
 #include "lightmap.h"
 #include "bih.h"
 #include "texture.h"
 #include "model.h"
-
-// GL_ARB_multitexture
-extern PFNGLACTIVETEXTUREARBPROC       glActiveTexture_;
-extern PFNGLCLIENTACTIVETEXTUREARBPROC glClientActiveTexture_;
-extern PFNGLMULTITEXCOORD2FARBPROC     glMultiTexCoord2f_;
-extern PFNGLMULTITEXCOORD3FARBPROC     glMultiTexCoord3f_;
-extern PFNGLMULTITEXCOORD4FARBPROC     glMultiTexCoord4f_;
-
-// GL_ARB_vertex_buffer_object
-extern PFNGLGENBUFFERSARBPROC       glGenBuffers_;
-extern PFNGLBINDBUFFERARBPROC       glBindBuffer_;
-extern PFNGLMAPBUFFERARBPROC        glMapBuffer_;
-extern PFNGLUNMAPBUFFERARBPROC      glUnmapBuffer_;
-extern PFNGLBUFFERDATAARBPROC       glBufferData_;
-extern PFNGLBUFFERSUBDATAARBPROC    glBufferSubData_;
-extern PFNGLDELETEBUFFERSARBPROC    glDeleteBuffers_;
-extern PFNGLGETBUFFERSUBDATAARBPROC glGetBufferSubData_;
-
-// GL_ARB_occlusion_query
-extern PFNGLGENQUERIESARBPROC        glGenQueries_;
-extern PFNGLDELETEQUERIESARBPROC     glDeleteQueries_;
-extern PFNGLBEGINQUERYARBPROC        glBeginQuery_;
-extern PFNGLENDQUERYARBPROC          glEndQuery_;
-extern PFNGLGETQUERYIVARBPROC        glGetQueryiv_;
-extern PFNGLGETQUERYOBJECTIVARBPROC  glGetQueryObjectiv_;
-extern PFNGLGETQUERYOBJECTUIVARBPROC glGetQueryObjectuiv_;
-
-// GL_EXT_framebuffer_object
-extern PFNGLBINDRENDERBUFFEREXTPROC        glBindRenderbuffer_;
-extern PFNGLDELETERENDERBUFFERSEXTPROC     glDeleteRenderbuffers_;
-extern PFNGLGENFRAMEBUFFERSEXTPROC         glGenRenderbuffers_;
-extern PFNGLRENDERBUFFERSTORAGEEXTPROC     glRenderbufferStorage_;
-extern PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC  glCheckFramebufferStatus_;
-extern PFNGLBINDFRAMEBUFFEREXTPROC         glBindFramebuffer_;
-extern PFNGLDELETEFRAMEBUFFERSEXTPROC      glDeleteFramebuffers_;
-extern PFNGLGENFRAMEBUFFERSEXTPROC         glGenFramebuffers_;
-extern PFNGLFRAMEBUFFERTEXTURE2DEXTPROC    glFramebufferTexture2D_;
-extern PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC glFramebufferRenderbuffer_;
-extern PFNGLGENERATEMIPMAPEXTPROC          glGenerateMipmap_;
-
-// GL_EXT_framebuffer_blit
-#ifndef GL_EXT_framebuffer_blit
-#define GL_READ_FRAMEBUFFER_EXT           0x8CA8
-#define GL_DRAW_FRAMEBUFFER_EXT           0x8CA9
-#define GL_DRAW_FRAMEBUFFER_BINDING_EXT   0x8CA6
-#define GL_READ_FRAMEBUFFER_BINDING_EXT   0x8CAA
-typedef void (APIENTRYP PFNGLBLITFRAMEBUFFEREXTPROC) (GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter);
-#endif
-extern PFNGLBLITFRAMEBUFFEREXTPROC         glBlitFramebuffer_;
-
-// GL_EXT_draw_range_elements
-extern PFNGLDRAWRANGEELEMENTSEXTPROC glDrawRangeElements_;
-
-// GL_EXT_blend_minmax
-extern PFNGLBLENDEQUATIONEXTPROC glBlendEquation_;
-
-// GL_EXT_blend_color
-extern PFNGLBLENDCOLOREXTPROC glBlendColor_;
-
-// GL_EXT_multi_draw_arrays
-extern PFNGLMULTIDRAWARRAYSEXTPROC   glMultiDrawArrays_;
-extern PFNGLMULTIDRAWELEMENTSEXTPROC glMultiDrawElements_;
-
-// GL_EXT_packed_depth_stencil
-#ifndef GL_DEPTH_STENCIL_EXT
-#define GL_DEPTH_STENCIL_EXT 0x84F9
-#endif
-#ifndef GL_DEPTH24_STENCIL8_EXT
-#define GL_DEPTH24_STENCIL8_EXT 0x88F0
-#endif
-
-// GL_ARB_texture_compression
-extern PFNGLCOMPRESSEDTEXIMAGE3DARBPROC    glCompressedTexImage3D_;
-extern PFNGLCOMPRESSEDTEXIMAGE2DARBPROC    glCompressedTexImage2D_;
-extern PFNGLCOMPRESSEDTEXIMAGE1DARBPROC    glCompressedTexImage1D_;
-extern PFNGLCOMPRESSEDTEXSUBIMAGE3DARBPROC glCompressedTexSubImage3D_;
-extern PFNGLCOMPRESSEDTEXSUBIMAGE2DARBPROC glCompressedTexSubImage2D_;
-extern PFNGLCOMPRESSEDTEXSUBIMAGE1DARBPROC glCompressedTexSubImage1D_;
-extern PFNGLGETCOMPRESSEDTEXIMAGEARBPROC   glGetCompressedTexImage_;
-
-// GL_EXT_fog_coord
-extern PFNGLFOGCOORDPOINTEREXTPROC glFogCoordPointer_;
-
-// GL_ARB_map_buffer_range
-#ifndef GL_ARB_map_buffer_range
-#define GL_MAP_READ_BIT                   0x0001
-#define GL_MAP_WRITE_BIT                  0x0002
-#define GL_MAP_INVALIDATE_RANGE_BIT       0x0004
-#define GL_MAP_INVALIDATE_BUFFER_BIT      0x0008
-#define GL_MAP_FLUSH_EXPLICIT_BIT         0x0010
-#define GL_MAP_UNSYNCHRONIZED_BIT         0x0020
-typedef GLvoid* (APIENTRYP PFNGLMAPBUFFERRANGEPROC) (GLenum target, GLintptr offset, GLsizeiptr length, GLbitfield access);
-typedef void (APIENTRYP PFNGLFLUSHMAPPEDBUFFERRANGEPROC) (GLenum target, GLintptr offset, GLsizeiptr length);
-#endif
-extern PFNGLMAPBUFFERRANGEPROC         glMapBufferRange_;
-extern PFNGLFLUSHMAPPEDBUFFERRANGEPROC glFlushMappedBufferRange_;
-
 #include "varray.h"
 
 extern dynent *player;
@@ -216,14 +120,14 @@ static inline bool pvsoccluded(const ivec &bborigin, int size)
 }
 
 // rendergl
-extern bool hasVBO, hasDRE, hasOQ, hasTR, hasFBO, hasDS, hasTF, hasBE, hasBC, hasCM, hasNP2, hasTC, hasS3TC, hasFXT1, hasTE, hasMT, hasD3, hasAF, hasVP2, hasVP3, hasPP, hasMDA, hasTE3, hasTE4, hasVP, hasFP, hasGLSL, hasGM, hasNVFB, hasSGIDT, hasSGISH, hasDT, hasSH, hasNVPCF, hasRN, hasPBO, hasFBB, hasUBO, hasBUE, hasMBR, hasFC, hasTEX;
+extern bool hasTR, hasFBO, hasDS, hasTF, hasTRG, hasS3TC, hasFXT1, hasAF, hasNVFB, hasFBB, hasUBO, hasMBR;
 extern int hasstencil;
 extern int glversion, glslversion;
 
 extern float curfov, fovy, aspect, forceaspect;
 extern bool envmapping, minimapping, renderedgame, modelpreviewing;
-extern const glmatrixf viewmatrix;
-extern glmatrixf mvmatrix, projmatrix, mvpmatrix, invmvmatrix, invmvpmatrix, fogmatrix, invfogmatrix, envmatrix;
+extern const matrix4 viewmatrix;
+extern matrix4 mvmatrix, projmatrix, mvpmatrix, invmvmatrix, invmvpmatrix, fogmatrix, invfogmatrix, envmatrix;
 extern bvec fogcolor;
 
 extern void gl_checkextensions();
@@ -333,7 +237,7 @@ extern void allchanged(bool load = false);
 extern void clearvas(cube *c);
 extern vtxarray *newva(int x, int y, int z, int size);
 extern void destroyva(vtxarray *va, bool reparent = true);
-extern bool readva(vtxarray *va, ushort *&edata, uchar *&vdata);
+extern bool readva(vtxarray *va, ushort *&edata, vertex *&vdata);
 extern void updatevabb(vtxarray *va, bool force = false);
 extern void updatevabbs(bool force = false);
 
@@ -359,13 +263,10 @@ extern void resetqueries();
 extern int getnumqueries();
 extern void drawbb(const ivec &bo, const ivec &br, const vec &camera = camera1->o);
 
-#define startquery(query) { glBeginQuery_(GL_SAMPLES_PASSED_ARB, ((occludequery *)(query))->id); }
-#define endquery(query) \
-    { \
-        glEndQuery_(GL_SAMPLES_PASSED_ARB); \
-        extern int ati_oq_bug; \
-        if(ati_oq_bug) glFlush(); \
-    }
+extern int oqfrags;
+
+#define startquery(query) do { glBeginQuery_(GL_SAMPLES_PASSED, ((occludequery *)(query))->id); } while(0)
+#define endquery(query) do { glEndQuery_(GL_SAMPLES_PASSED); } while(0)
 
 // dynlight
 
@@ -478,7 +379,7 @@ extern int renderconsole(int w, int h, int abovehud);
 extern void conoutf(const char *s, ...) PRINTFARGS(1, 2);
 extern void conoutf(int type, const char *s, ...) PRINTFARGS(2, 3);
 extern void resetcomplete();
-extern void complete(char *s, const char *cmdprefix);
+extern void complete(char *s, int maxlen, const char *cmdprefix);
 const char *getkeyname(int code);
 extern const char *addreleaseaction(char *s);
 extern void writebinds(stream *f);
@@ -510,7 +411,7 @@ extern void renderbackground(const char *caption = NULL, Texture *mapshot = NULL
 extern void renderprogress(float bar, const char *text, GLuint tex = 0, bool background = false);
 
 extern void getfps(int &fps, int &bestdiff, int &worstdiff);
-extern void swapbuffers();
+extern void swapbuffers(bool overlay = true);
 extern int getclockmillis();
 
 // menu
@@ -572,7 +473,7 @@ extern void clearparticleemitters();
 extern void seedparticles();
 extern void updateparticles();
 extern void renderparticles(bool mainpass = false);
-extern bool printparticles(extentity &e, char *buf);
+extern bool printparticles(extentity &e, char *buf, int len);
 
 // decal
 extern void initdecals();
@@ -651,7 +552,7 @@ extern uchar shouldsaveblendmap();
 namespace recorder
 {
     extern void stop();
-    extern void capture();
+    extern void capture(bool overlay = true);
     extern void cleanup();
 }
 

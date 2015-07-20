@@ -65,7 +65,7 @@ namespace aiman
 
     static inline bool validaiclient(clientinfo *ci)
     {
-        return ci->clientnum >= 0 && ci->state.aitype == AI_NONE && (ci->state.state!=CS_SPECTATOR || ci->local || ci->privilege);
+        return ci->clientnum >= 0 && ci->state.aitype == AI_NONE && (ci->state.state!=CS_SPECTATOR || ci->local || (ci->privilege && !ci->warned));
     }
 
 	clientinfo *findaiclient(clientinfo *exclude = NULL)
@@ -82,8 +82,8 @@ namespace aiman
 
 	bool addai(int skill, int limit)
 	{
-	    // remod
-	   remod::onevent(ONADDBOT, "i", skill);
+		// remod
+		remod::onevent(ONADDBOT, "i", skill);
 
 		int numai = 0, cn = -1, maxai = limit >= 0 ? min(limit, MAXBOTS) : MAXBOTS;
 		loopv(bots)
@@ -131,8 +131,9 @@ namespace aiman
 
 	void deleteai(clientinfo *ci)
 	{
-	    // remod
-	    remod::onevent(ONDELBOT, "");
+
+        // remod
+        remod::onevent(ONDELBOT, "");
 
         int cn = ci->clientnum - MAXCLIENTS;
         if(!bots.inrange(cn)) return;
@@ -252,7 +253,7 @@ namespace aiman
 
         botlimit = clamp(limit, 0, MAXBOTS);
         dorefresh = true;
-        defformatstring(msg)("bot limit is now %d", botlimit);
+        defformatstring(msg, "bot limit is now %d", botlimit);
         sendservmsg(msg);
     }
 
@@ -261,7 +262,7 @@ namespace aiman
         if(ci && !ci->local && !ci->privilege) return;
         botbalance = balance ? 1 : 0;
         dorefresh = true;
-        defformatstring(msg)("bot team balancing is now %s", botbalance ? "enabled" : "disabled");
+        defformatstring(msg, "bot team balancing is now %s", botbalance ? "enabled" : "disabled");
         sendservmsg(msg);
     }
 

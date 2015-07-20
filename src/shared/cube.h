@@ -44,22 +44,12 @@
 
 #ifndef STANDALONE
 #include <SDL.h>
-#include <SDL_image.h>
 #include <SDL_opengl.h>
 #endif
 
 #include <enet/enet.h>
 
 #include <zlib.h>
-
-#ifdef __sun__
-#undef sun
-#undef MAXNAMELEN
-#ifdef queue
-  #undef queue
-#endif
-#define queue __squeue
-#endif
 
 #include "tools.h"
 #include "geom.h"
