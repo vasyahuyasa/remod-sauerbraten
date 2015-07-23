@@ -1872,4 +1872,9 @@ ICOMMAND(isghost, "i", (int *cn), {
             clientinfo *ci = getinfo(*cn);
             intret(ci ? (ci->state.ext.ghost ? 1 : 0) : 0);
          });
+/**
+ * Force start intermission
+ * @group server
+ */
+ICOMMAND(forceintermission, "", (), server::startintermission());
 }

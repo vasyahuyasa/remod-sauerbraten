@@ -132,6 +132,7 @@
 		<Unit filename="mod/irc.h" />
 		<Unit filename="mod/jsonbanlist.cpp" />
 		<Unit filename="mod/jsonbanlist.h" />
+		<Unit filename="mod/mysql.cpp" />
 		<Unit filename="mod/mysql/extlib/regex/cclass.h" />
 		<Unit filename="mod/mysql/extlib/regex/cname.h" />
 		<Unit filename="mod/mysql/extlib/regex/debug.h" />
