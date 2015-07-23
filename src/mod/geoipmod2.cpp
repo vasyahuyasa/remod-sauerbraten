@@ -24,16 +24,28 @@ namespace geoip
     void loadgeoip(const char *path, bool isgeocity)
     {
         GeoIP *gi;
+        string dbtype;
+        memset(dbtype, 0,sizeof(dbtype));
+
         const char *fname = findfile(path, "r"); // full path
         gi = GeoIP_open(fname, GEOIP_STANDARD | GEOIP_MEMORY_CACHE);
+        if(isgeocity)
+            strcpy(dbtype, "geocity");
+        else
+            strcpy(dbtype, "geoip");
+
         if(gi)
         {
-            (isgeocity ? geocity : geoip) = gi;
-            conoutf(CON_ERROR, "Geoip: %s loaded (db: \"%s\")", geocity ? "geocity" : "geoip", fname);
+            if(isgeocity)
+                geocity = gi;
+            else
+                geoip = gi;
+
+            conoutf(CON_ERROR, "Geoip: %s loaded (db: \"%s\")", dbtype, fname);
         }
         else
         {
-            conoutf(CON_ERROR, "Geoip: can not load %s (db: \"%s\")", geocity ? "geocity" : "geoip", fname);
+            conoutf(CON_ERROR, "Geoip: can not load %s (db: \"%s\")", dbtype, fname);
         }
     }
 
