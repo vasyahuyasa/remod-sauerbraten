@@ -89,11 +89,13 @@ void fatal(const char *fmt, ...)
 
 void conoutfv(int type, const char *fmt, va_list args)
 {
-    logoutfv(fmt, args);
+    //remod
+    //logoutfv(fmt, args);
 
     // remod
     static char buf[LOGSTRLEN];
     vformatstring(buf, fmt, args, sizeof(buf));
+    logoutf("%s", buf);
     filtertext(buf, buf);
     remod::rcon::sendmsg(buf);
 }
