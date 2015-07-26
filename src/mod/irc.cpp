@@ -1,43 +1,20 @@
+//remod
 #ifdef IRC
-
-#ifdef __FreeBSD__
-#include <sys/types.h>
-#include <sys/socket.h>
-#endif
-
+//#include "engine.h"
 #include "irc.h"
 #include "remod.h"
+#include "version.inc"
 
 // remod
 EXTENSION(IRC);
 VAR(verbose, 0, 0, 6);
 SVAR(consoletimefmt, "%c");
 SVAR(irccommandchar, "");
+VAR(ircpingdelay, 0, 60, 600); // delay in seconds between network ping
 time_t clocktime = 0;
 
-// remod
-VAR(ircpingdelay, 0, 60, 600); // delay in seconds between network ping
-
-char *gettime(char *format)
-{
-    struct tm *t;
-    static string buf;
-
-    t = localtime (&clocktime);
-    strftime (buf, sizeof (buf) - 1, format, t);
-    return buf;
-}
-
-void console(int type, const char *s, ...)
-{
-    defvformatstring(sf, s, s);
-    string osf, psf, fmt;
-    formatstring(fmt, consoletimefmt);
-    filtertext(osf, sf);
-    formatstring(psf, "%s %s", gettime(fmt), osf);
-    printf("%s\n", osf);
-    //fflush(stdout);
-}
+VAR(0, ircfilter, 0, 2, 2);
+VAR(0, ircverbose, 0, 0, 2);
 
 vector<ircnet *> ircnets;
 
@@ -52,18 +29,21 @@ ircnet *ircfind(const char *name)
 
 void ircprintf(ircnet *n, int relay, const char *target, const char *msg, ...)
 {
-    defvformatstring(str, msg, msg);
-    string s;
+    defvformatbigstring(str, msg, msg);
+    string s = "";
     if(target && *target && strcasecmp(target, n->nick))
     {
         ircchan *c = ircfindchan(n, target);
         if(c)
         {
-            // remod
             formatstring(s, "\fs\fa[%s:%s]\fS", n->name, c->name);
 
+            // remod
             /*
-            formatstring(s, "\fs\fa[%s:%s]\fS", n->name, c->name);
+            #ifndef STANDALONE
+            c->buffer.addline(str, MAXIRCLINES);
+            c->updated |= IRCUP_MSG;
+            #endif
             if(n->type == IRCT_RELAY && c->relay >= relay)
                 server::srvmsgf(relay > 1 ? -2 : -3, "\fs\fa[%s]\fS %s", c->friendly, str);
             */
@@ -71,19 +51,28 @@ void ircprintf(ircnet *n, int relay, const char *target, const char *msg, ...)
         else
         {
             formatstring(s, "\fs\fa[%s:%s]\fS", n->name, target);
+            #ifndef STANDALONE
+            n->buffer.addline(str, MAXIRCLINES);
+            n->updated |= IRCUP_MSG;
+            #endif
         }
     }
     else
     {
         formatstring(s, "\fs\fa[%s]\fS", n->name);
+        #ifndef STANDALONE
+        n->buffer.addline(newstring(str), MAXIRCLINES);
+        n->updated |= IRCUP_MSG;
+        #endif
     }
-    console(0, "%s %s", s, str); // console is not used to relay
+    if(ircverbose) console(0, "%s %s", s, str); // console is not used to relay
 }
 
 void ircestablish(ircnet *n)
 {
     if(!n) return;
-    n->lastattempt = clocktime;
+    n->lastattempt = n->lastactivity = clocktime;
+    n->lastping = 0;
     if(n->address.host == ENET_HOST_ANY)
     {
         // remod
@@ -92,7 +81,7 @@ void ircestablish(ircnet *n)
 
         if(!resolverwait(n->serv, &n->address))
         {
-            // remod
+            //remod
             //ircprintf(n, 4, NULL, "unable to resolve %s:[%d]...", n->serv, n->port);
             conoutf("Irc: unable to resolve %s:[%d]...", n->serv, n->port);
 
@@ -106,7 +95,7 @@ void ircestablish(ircnet *n)
     n->sock = enet_socket_create(ENET_SOCKET_TYPE_STREAM);
     if(n->sock != ENET_SOCKET_NULL && *n->ip && enet_socket_bind(n->sock, &address) < 0)
     {
-        // remod
+        //remod
         //ircprintf(n, 4, NULL, "failed to bind connection socket: %s", n->ip);
         conoutf("Irc: failed to bind connection socket: %s", n->ip);
 
@@ -121,9 +110,10 @@ void ircestablish(ircnet *n)
     if(setsockopt(n->sock, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, sizeof(timeout)) < 0) conoutf("Irc: setsockopt SO_RCVTIMEO failed");
     if(setsockopt(n->sock, SOL_SOCKET, SO_SNDTIMEO, (char *)&timeout, sizeof(timeout)) < 0) conoutf("Irc: setsockopt SO_SNDTIMEO failed");
 
-    if(n->sock == ENET_SOCKET_NULL || connectwithtimeout(n->sock, n->serv, n->address) < 0)
+    if(n->sock != ENET_SOCKET_NULL) enet_socket_set_option(n->sock, ENET_SOCKOPT_NONBLOCK, 1);
+    if(n->sock == ENET_SOCKET_NULL || enet_socket_connect(n->sock, &n->address) < 0)
     {
-        // remod
+        //remod
         //ircprintf(n, 4, NULL, n->sock == ENET_SOCKET_NULL ? "could not open socket to %s:[%d]" : "could not connect to %s:[%d]", n->serv, n->port);
         conoutf(n->sock == ENET_SOCKET_NULL ? "Irc: could not open socket to %s:[%d]" : "could not connect to %s:[%d]", n->serv, n->port);
 
@@ -135,9 +125,9 @@ void ircestablish(ircnet *n)
         n->state = IRC_DISC;
         return;
     }
-    n->state = IRC_ATTEMPT;
+    n->state = IRC_WAIT;
 
-    // remod
+    //remod
     //ircprintf(n, 4, NULL, "connecting to %s:[%d]...", n->serv, n->port);
     conoutf("Irc: connecting to %s:[%d]...", n->serv, n->port);
 }
@@ -146,10 +136,11 @@ void ircsend(ircnet *n, const char *msg, ...)
 {
     if(!n) return;
     defvformatstring(str, msg, msg);
-    if(n->sock == ENET_SOCKET_NULL) return;
+    if(n->sock == ENET_SOCKET_NULL || !*msg) return; // don't spew \n
 
     // remod
-    if(verbose >= 2) conoutf(0, "Irc: [%s] >>> %s", n->name, str);
+    //if(ircverbose >= 2) console(0, "[%s] >>> %s", n->name, str);
+    if(ircverbose >= 2) conoutf(0, "Irc: [%s] >>> %s", n->name, str);
 
     concatstring(str, "\n");
     ENetBuffer buf;
@@ -157,12 +148,13 @@ void ircsend(ircnet *n, const char *msg, ...)
     size_t len = strlen(str), carry = 0;
     while(carry < len)
     {
-        int numu = encodeutf8(ubuf, sizeof(ubuf)-1, &((uchar *)str)[carry], len - carry, &carry);
+        size_t numu = encodeutf8(ubuf, sizeof(ubuf)-1, &((uchar *)str)[carry], len - carry, &carry);
         if(carry >= len) ubuf[numu++] = '\n';
         loopi(numu) switch(ubuf[i])
         {
             case '\v': ubuf[i] = '\x01'; break;
-            case '\f': ubuf[i] = '\x03'; break;
+            case '\f': ubuf[i] = '\x03'; break; // color code
+            case '\r': ubuf[i] = '\x0F'; break; // end color formatting
         }
         buf.data = ubuf;
         buf.dataLength = numu;
@@ -170,9 +162,7 @@ void ircsend(ircnet *n, const char *msg, ...)
     }
 }
 
-VAR(ircfilter, 0, 1, 2);
-
-void converttext(char *dst, const char *src)
+void cube2irc(char *dst, const char *src)
 {
     int colorpos = 0; char colorstack[10];
     memset(colorstack, 'u', sizeof(colorstack)); //indicate user color
@@ -186,9 +176,9 @@ void converttext(char *dst, const char *src)
                 c = *++src;
                 if(c) ++src;
             }
-            else if(c == '[' || c == '(')
+            else if(c == '[' || c == '(' || c == '{')
             {
-                const char *end = strchr(src, c == '[' ? ']' : ')');
+                const char *end = strchr(src, c == '[' ? ']' : (c == '(' ? ')' : '}'));
                 src += end ? end-src : strlen(src);
             }
             else if(c == 's') { if(colorpos < (int)sizeof(colorstack)-1) colorpos++; continue; }
@@ -196,20 +186,78 @@ void converttext(char *dst, const char *src)
             int oldcolor = colorstack[colorpos]; colorstack[colorpos] = c;
             switch(c)
             {
-                case 'g': case '0': case 'G': *dst++ = '\f'; *dst++ = '0'; *dst++ = '3'; break; // green
-                case 'b': case '1': case 'B': *dst++ = '\f'; *dst++ = '1'; *dst++ = '2'; break; // blue
-                case 'y': case '2': case 'Y': *dst++ = '\f'; *dst++ = '0'; *dst++ = '3'; break; // yellow
-                case 'r': case '3': case 'R': *dst++ = '\f'; *dst++ = '0'; *dst++ = '4'; break; // red
-                case 'a': case '4': *dst++ = '\f'; *dst++ = '1'; *dst++ = '4'; break; // grey
-                case 'm': case '5': case 'M': *dst++ = '\f'; *dst++ = '1'; *dst++ = '3'; break; // magenta
-                case 'o': case '6': case 'O': *dst++ = '\f'; *dst++ = '0'; *dst++ = '7'; break; // orange
-                case 'c': case '9': case 'C': *dst++ = '\f'; *dst++ = '1'; *dst++ = '0'; break; // cyan
-                case 'v': *dst++ = '\f'; *dst++ = '0'; *dst++ = '6'; break; // violet
-                case 'p': *dst++ = '\f'; *dst++ = '0'; *dst++ = '6'; break; // purple
+                case 'B': *dst++ = '\f'; *dst++ = '0'; *dst++ = '2'; break; // dark blue
+                case 'G': *dst++ = '\f'; *dst++ = '0'; *dst++ = '3'; break; // dark green
+                case 'r': case '3': *dst++ = '\f'; *dst++ = '0'; *dst++ = '4'; break; // red
                 case 'n': *dst++ = '\f'; *dst++ = '0'; *dst++ = '5'; break; // brown
-                case 'd': case 'A': *dst++ = '\f'; *dst++ = '0'; *dst++ = '1'; break; // dark grey
-                case 'u': case 'w': case '7': case 'k': case '8': *dst++ = '\f'; *dst++ = '0'; *dst++ = '0'; break;
+                case 'p': case 'v': *dst++ = '\f'; *dst++ = '0'; *dst++ = '6'; break; // purple
+                case 'o': case '6': case 'O': *dst++ = '\f'; *dst++ = '0'; *dst++ = '7'; break; // orange
+                case 'y': case '2': case 'Y': *dst++ = '\f'; *dst++ = '0'; *dst++ = '8'; break; // yellow
+                case 'g': case '0': *dst++ = '\f'; *dst++ = '0'; *dst++ = '9'; break; // green
+                case 'C': *dst++ = '\f'; *dst++ = '1'; *dst++ = '0'; break; // dark cyan
+                case 'c': case '9': *dst++ = '\f'; *dst++ = '1'; *dst++ = '1'; break; // cyan
+                case 'b': case '1': *dst++ = '\f'; *dst++ = '1'; *dst++ = '2'; break; // blue
+                case 'm': case '5': case 'M': *dst++ = '\f'; *dst++ = '1'; *dst++ = '3'; break; // magenta
+                case 'k': case '8': case 'd': case 'A': *dst++ = '\f'; *dst++ = '1'; *dst++ = '4'; break; // dark grey
+                case 'a': case '4': *dst++ = '\f'; *dst++ = '1'; *dst++ = '5'; break; // grey
+                case 'u': case 'w': case '7': *dst++ = '\r'; break; // no color
                 default: colorstack[colorpos] = oldcolor; break;
+            }
+            continue;
+        }
+        if(iscubeprint(c) || iscubespace(c)) *dst++ = c;
+    }
+    *dst = '\0';
+}
+
+void irc2cube(char *dst, const char *src)
+{
+    for(int c = *src; c; c = *++src)
+    {
+        if(c == '\f')
+        {
+            c = *++src;
+            switch(c)
+            {
+                case '0':
+                    c = *++src;
+                    switch(c)
+                    {
+                        case '0': *dst++ = '\f'; *dst++ = 'w'; break; // white
+                        case '1': *dst++ = '\f'; *dst++ = 'A'; break; // dark grey (black too hard to see)
+                        case '2': *dst++ = '\f'; *dst++ = 'B'; break; // dark blue
+                        case '3': *dst++ = '\f'; *dst++ = 'G'; break; // dark green
+                        case '4': *dst++ = '\f'; *dst++ = 'r'; break; // red
+                        case '5': *dst++ = '\f'; *dst++ = 'n'; break; // brown
+                        case '6': *dst++ = '\f'; *dst++ = 'p'; break; // purple
+                        case '7': *dst++ = '\f'; *dst++ = 'o'; break; // orange
+                        case '8': *dst++ = '\f'; *dst++ = 'y'; break; // yellow
+                        case '9': *dst++ = '\f'; *dst++ = 'g'; break; // green
+                        default: *dst++ = '\f'; *dst++ = 'w'; c = *--src; break;
+                    }
+                    break;
+                case '1':
+                    c = *++src;
+                    switch(c)
+                    {
+                        case '0': *dst++ = '\f'; *dst++ = 'C'; break; // dark cyan
+                        case '1': *dst++ = '\f'; *dst++ = 'c'; break; // cyan
+                        case '2': *dst++ = '\f'; *dst++ = 'b'; break; // blue
+                        case '3': *dst++ = '\f'; *dst++ = 'm'; break; // magenta
+                        case '4': *dst++ = '\f'; *dst++ = 'A'; break; // dark grey
+                        case '5': *dst++ = '\f'; *dst++ = 'a'; break; // grey
+                        default: *dst++ = '\f'; *dst++ = 'A'; c = *--src; break;
+                    }
+                    break;
+                case '2': *dst++ = '\f'; *dst++ = 'B'; break; // dark blue
+                case '3': *dst++ = '\f'; *dst++ = 'G'; break; // dark green
+                case '4': *dst++ = '\f'; *dst++ = 'r'; break; // red
+                case '5': *dst++ = '\f'; *dst++ = 'n'; break; // brown
+                case '6': *dst++ = '\f'; *dst++ = 'p'; break; // purple
+                case '7': *dst++ = '\f'; *dst++ = 'o'; break; // orange
+                case '8': *dst++ = '\f'; *dst++ = 'y'; break; // yellow
+                case '9': *dst++ = '\f'; *dst++ = 'g'; break; // green
+                default: *dst++ = '\f'; *dst++ = 'w'; c = *--src; break;
             }
             continue;
         }
@@ -221,18 +269,18 @@ void converttext(char *dst, const char *src)
 void ircoutf(int relay, const char *msg, ...)
 {
     defvformatstring(src, msg, msg);
-    mkstring(str);
+    string str = "";
     switch(ircfilter)
     {
-        case 2: filtertext(str, src); break;
-        case 1: converttext(str, src); break;
+        case 2: filterstring(str, src); break;
+        case 1: cube2irc(str, src); break;
         case 0: default: copystring(str, src); break;
     }
     loopv(ircnets) if(ircnets[i]->sock != ENET_SOCKET_NULL && ircnets[i]->type == IRCT_RELAY && ircnets[i]->state == IRC_ONLINE)
     {
         ircnet *n = ircnets[i];
 #if 0 // workaround for freenode's crappy dropping all but the first target of multi-target messages even though they don't state MAXTARGETS=1 in 005 string..
-        mkstring(s);
+        string s = "";
         loopvj(n->channels) if(n->channels[j].state == IRCC_JOINED && n->channels[j].relay >= relay)
         {
             ircchan *c = &n->channels[j];
@@ -252,14 +300,14 @@ int ircrecv(ircnet *n)
     if(!n) return -1;
     if(n->sock == ENET_SOCKET_NULL) return -2;
     int total = 0;
-    enet_uint32 events = ENET_SOCKET_WAIT_RECEIVE;
-    while(enet_socket_wait(n->sock, &events, 0) >= 0 && events)
+    for(;;)
     {
         ENetBuffer buf;
         buf.data = n->input + n->inputlen;
         buf.dataLength = sizeof(n->input) - n->inputlen;
         int len = enet_socket_receive(n->sock, NULL, &buf, 1);
-        if(len <= 0) return -3;
+        if(!len) break;
+        if(len < 0) return -3;
         loopi(len) switch(n->input[n->inputlen+i])
         {
             case '\x01': n->input[n->inputlen+i] = '\v'; break;
@@ -285,16 +333,12 @@ void ircnewnet(int type, const char *name, const char *serv, int port, const cha
     ircnet *m = ircfind(name);
     if(m)
     {
-        if(m->state != IRC_DISC) conoutf("ircnet %s already exists", m->name);
-        else ircestablish(m);
+        conoutf("ircnet %s already exists", m->name);
         return;
     }
     ircnet &n = *ircnets.add(new ircnet);
     n.type = type;
-    n.state = IRC_NEW;
-    n.sock = ENET_SOCKET_NULL;
     n.port = port;
-    n.lastattempt = 0;
     copystring(n.name, name);
     copystring(n.serv, serv);
     copystring(n.nick, nick);
@@ -303,71 +347,61 @@ void ircnewnet(int type, const char *name, const char *serv, int port, const cha
     n.address.host = ENET_HOST_ANY;
     n.address.port = n.port;
     n.input[0] = n.authname[0] = n.authpass[0] = 0;
-
-    // remod
+#ifndef STANDALONE
+    n.lastseen = totalmillis;
+#endif
+    //remod
     //ircprintf(&n, 4, NULL, "added %s %s (%s:%d) [%s]", type == IRCT_RELAY ? "relay" : "client", name, serv, port, nick);
-    conoutf("Irc: added irc %s %s (%s:%d) [%s]", type == IRCT_RELAY ? "relay" : "client", name, serv, port, nick);
+    conoutf("Irc: added %s %s (%s:%d) [%s]", type == IRCT_RELAY ? "relay" : "client", name, serv, port, nick);
 }
 
-ICOMMAND(ircaddclient, "ssisss", (const char *n, const char *s, int *p, const char *c, const char *h, const char *z), {
+ICOMMAND(0, ircaddclient, "ssisss", (const char *n, const char *s, int *p, const char *c, const char *h, const char *z), {
     ircnewnet(IRCT_CLIENT, n, s, *p, c, h, z);
 });
-
-/**
- * Connect to IRC server
- * @group irc
- * @arg1 name of network
- * @arg2 server
- * @arg3 port
- * @arg4 bot nick
- * @arg5 server ip
- * @arg6 server password
- * @example ircaddrelay gamesurge GameConnect.NL.EU.GameSurge.net 6667 rb10 // connect to gamesurge network
- */
-ICOMMAND(ircaddrelay, "ssisss", (const char *n, const char *s, int *p, const char *c, const char *h, const char *z), {
+ICOMMAND(0, ircaddrelay, "ssisss", (const char *n, const char *s, int *p, const char *c, const char *h, const char *z), {
     ircnewnet(IRCT_RELAY, n, s, *p, c, h, z);
 });
-ICOMMAND(ircserv, "ss", (const char *name, const char *s), {
+ICOMMAND(0, ircserv, "ss", (const char *name, const char *s), {
     ircnet *n = ircfind(name);
     if(!n) { conoutf("no such ircnet: %s", name); return; }
     if(!s || !*s) { ircprintf(n, 4, NULL, "current server is: %s", n->serv); return; }
     copystring(n->serv, s);
 });
-ICOMMAND(ircport, "ss", (const char *name, const char *s), {
+ICOMMAND(0, ircport, "ss", (const char *name, const char *s), {
     ircnet *n = ircfind(name);
     if(!n) { conoutf("no such ircnet: %s", name); return; }
     if(!s || !*s || !parseint(s)) { ircprintf(n, 4, NULL, "current port is: %d", n->port); return; }
     n->port = parseint(s);
 });
-ICOMMAND(ircnick, "ss", (const char *name, const char *s), {
+ICOMMAND(0, ircnick, "ss", (const char *name, const char *s), {
     ircnet *n = ircfind(name);
     if(!n) { conoutf("no such ircnet: %s", name); return; }
     if(!s || !*s) { ircprintf(n, 4, NULL, "current nickname is: %s", n->nick); return; }
     copystring(n->nick, s);
 });
-ICOMMAND(ircbind, "ss", (const char *name, const char *s), {
+ICOMMAND(0, ircbind, "ss", (const char *name, const char *s), {
     ircnet *n = ircfind(name);
     if(!n) { conoutf("no such ircnet: %s", name); return; }
     if(!s || !*s) { ircprintf(n, 4, NULL, "currently bound to: %s", n->ip); return; }
     copystring(n->ip, s);
 });
-ICOMMAND(ircpass, "ss", (const char *name, const char *s), {
+ICOMMAND(0, ircpass, "ss", (const char *name, const char *s), {
     ircnet *n = ircfind(name);
     if(!n) { conoutf("no such ircnet: %s", name); return; }
     if(!s || !*s) { ircprintf(n, 4, NULL, "current password is: %s", n->passkey && *n->passkey ? "<set>" : "<not set>"); return; }
     copystring(n->passkey, s);
 });
-ICOMMAND(ircauth, "sss", (const char *name, const char *s, const char *t), {
+ICOMMAND(0, ircauth, "sss", (const char *name, const char *s, const char *t), {
     ircnet *n = ircfind(name);
     if(!n) { conoutf("no such ircnet: %s", name); return; }
-    if(!s || !*s || !t || !*t) { ircprintf(n, 4, NULL, "current authority is: %s (%s)", n->authname, n->authpass && *n->authpass ? "<set>" : "<not set>"); return; }
+    if(!s || !*s || !t || !*t) { ircprintf(n, 4, NULL, "current auth details are: %s (%s)", n->authname, n->authpass && *n->authpass ? "<set>" : "<not set>"); return; }
     copystring(n->authname, s);
     copystring(n->authpass, t);
 });
-ICOMMAND(ircconnect, "s", (const char *name), {
+ICOMMAND(0, ircconnect, "s", (const char *name), {
     ircnet *n = ircfind(name);
     if(!n) { conoutf("no such ircnet: %s", name); return; }
-    if(n->state != IRC_DISC) { ircprintf(n, 4, NULL, "network already already active"); return; }
+    if(n->state > IRC_DISC) { ircprintf(n, 4, NULL, "network already already active"); return; }
     ircestablish(n);
 });
 
@@ -386,9 +420,9 @@ bool ircjoin(ircnet *n, ircchan *c)
     if(!n || !c) return false;
     if(n->state != IRC_ONLINE)
     {
-        // remod
+        //remod
         //ircprintf(n, 4, NULL, "cannot join %s until connection is online", c->name);
-        conoutf("Irc: cannot join %s until connection is online", n->name);
+        conoutf("Irc: cannot join ircnet %s until connection is online", n->name);
 
         return false;
     }
@@ -406,9 +440,10 @@ bool ircenterchan(ircnet *n, const char *name)
     ircchan *c = ircfindchan(n, name);
     if(!c)
     {
-        // remod
+        //remod
         //ircprintf(n, 4, NULL, "no channel called %s available", name);
         conoutf("Irc: ircnet %s has no channel called %s ready", n->name, name);
+
         return false;
     }
     return ircjoin(n, c);
@@ -426,10 +461,9 @@ bool ircnewchan(int type, const char *name, const char *channel, const char *fri
     ircchan *c = ircfindchan(n, channel);
     if(c)
     {
-        // remod
+        //remod
         //ircprintf(n, 4, NULL, "channel %s already exists", c->name);
         conoutf("Irc: %s channel %s already exists", n->name, c->name);
-
         return false;
     }
     ircchan &d = n->channels.add();
@@ -442,13 +476,13 @@ bool ircnewchan(int type, const char *name, const char *channel, const char *fri
     copystring(d.passkey, passkey);
     if(n->state == IRC_ONLINE) ircjoin(n, &d);
 
-    // remod
+    //remod
     //ircprintf(n, 4, NULL, "added channel: %s", d.name);
     conoutf("Irc: %s added channel %s", n->name, d.name);
 
     return true;
 }
-
+//remod
 /**
  * Join channel on specified network
  * @group irc
@@ -459,13 +493,13 @@ bool ircnewchan(int type, const char *name, const char *channel, const char *fri
  * @arg5 relay (useless Red eclipse legacy, should be 0)
  * @example ircaddchan gamesurge #my-servers 0 "hpass" // join password protected channel
  */
-ICOMMAND(ircaddchan, "ssssi", (const char *n, const char *c, const char *f, const char *z, int *r), {
+ICOMMAND(0, ircaddchan, "ssssi", (const char *n, const char *c, const char *f, const char *z, int *r), {
     ircnewchan(IRCCT_AUTO, n, c, f, z, *r);
 });
-ICOMMAND(ircjoinchan, "ssssi", (const char *n, const char *c, const char *f, const char *z, int *r), {
+ICOMMAND(0, ircjoinchan, "ssssi", (const char *n, const char *c, const char *f, const char *z, int *r), {
     ircnewchan(IRCCT_NONE, n, c, f, z, *r);
 });
-ICOMMAND(ircpasschan, "sss", (const char *name, const char *chan, const char *s), {
+ICOMMAND(0, ircpasschan, "sss", (const char *name, const char *chan, const char *s), {
     ircnet *n = ircfind(name);
     if(!n) { conoutf("no such ircnet: %s", name); return; }
     ircchan *c = ircfindchan(n, chan);
@@ -473,7 +507,7 @@ ICOMMAND(ircpasschan, "sss", (const char *name, const char *chan, const char *s)
     if(!s || !*s) { ircprintf(n, 4, NULL, "channel %s current password is: %s", c->name, c->passkey && *c->passkey ? "<set>" : "<not set>"); return; }
     copystring(c->passkey, s);
 });
-ICOMMAND(ircrelaychan, "sss", (const char *name, const char *chan, const char *s), {
+ICOMMAND(0, ircrelaychan, "sss", (const char *name, const char *chan, const char *s), {
     ircnet *n = ircfind(name);
     if(!n) { conoutf("no such ircnet: %s", name); return; }
     ircchan *c = ircfindchan(n, chan);
@@ -481,7 +515,7 @@ ICOMMAND(ircrelaychan, "sss", (const char *name, const char *chan, const char *s
     if(!s || !*s) { ircprintf(n, 4, NULL, "channel %s current relay level is: %d", c->name, c->relay); return; }
     c->relay = parseint(s);
 });
-ICOMMAND(ircfriendlychan, "sss", (const char *name, const char *chan, const char *s), {
+ICOMMAND(0, ircfriendlychan, "sss", (const char *name, const char *chan, const char *s), {
     ircnet *n = ircfind(name);
     if(!n) { conoutf("no such ircnet: %s", name); return; }
     ircchan *c = ircfindchan(n, chan);
@@ -515,14 +549,20 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
                     {
                         if(!strcasecmp(q, "ACTION"))
                         {
-                            //ircprintf(n, 1, g ? w[g+1] : NULL, "\fv* %s %s", user[0], r);
+                            //remod
+                            //string str = "";
+                            //irc2cube(str, r);
+                            //ircprintf(n, 1, g ? w[g+1] : NULL, "\fv* %s %s", user[0], str);
                         }
                         else
                         {
                             ircprintf(n, 4, g ? w[g+1] : NULL, "\fr%s requests: %s %s", user[0], q, r);
 
                             if(!strcasecmp(q, "VERSION"))
-                                ircsend(n, "NOTICE %s :\vVERSION %s v%s-%s %d bit (%s), %s\v", user[0], RE_NAME, RE_VER_STR, RE_PLATFORM, RE_ARCH, RE_RELEASE, RE_URL);
+                                //remod
+                                //ircsend(n, "NOTICE %s :\vVERSION %s v%s-%s%d (%s)%s%s\v", user[0], VERSION_NAME, VERSION_STRING, versionplatname, versionarch, VERSION_RELEASE, *VERSION_URL ? ", " : "", VERSION_URL);
+                                ircsend(n, "NOTICE %s :\vVERSION %s Remod \"%s\" %s (build %s %s) %s/%s %s\v", user[0], REMOD_CODENAME, REMOD_VERSION, __DATE__, __TIME__, REMOD_SYSTEM, REMOD_ARCH, REMOD_URL);
+
                             else if(!strcasecmp(q, "PING")) // eh, echo back
                                 ircsend(n, "NOTICE %s :\vPING %s\v", user[0], r);
                         }
@@ -536,40 +576,35 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
                 // remod
                 const char *ftext; // command buffer
 
-                const char *p = w[g+2];
-                if (n->type == IRCT_RELAY && g &&
-                		((strcasecmp(w[g+1], n->nick) &&
-								!strncasecmp(w[g+2], n->nick, strlen(n->nick)) &&
-								strchr(":;, .\t", w[g+2][strlen(n->nick)]) &&
-								(p += strlen(n->nick))) ||
-                		(irccommandchar &&
-                				strlen(irccommandchar) &&
-                				!strncasecmp(w[g+2], irccommandchar, strlen(irccommandchar)) &&
-                				(p += strlen(irccommandchar)) )))
+                string str = "";
+
+                //remod
+                //if(n->type == IRCT_RELAY && g && strcasecmp(w[g+1], n->nick) && !strncasecmp(w[g+2], n->nick, strlen(n->nick)))
+                if(n->type == IRCT_RELAY && g && ((strcasecmp(w[g+1], n->nick) && !strncasecmp(w[g+2], n->nick, strlen(n->nick))
+                                                   || (irccommandchar && strlen(irccommandchar) && !strncasecmp(w[g+2], irccommandchar, strlen(irccommandchar)) && (p += strlen(irccommandchar))) )))
                 {
+                    const char *p = &w[g+2][strlen(n->nick)];
                     while(p && (*p == ':' || *p == ';' || *p == ',' || *p == '.' || *p == ' ' || *p == '\t')) p++;
 
-                    // remod
                     if(p && *p)
                     {
+                        //remod
                         // hightlighted message to bot
                         // user[0]='degrave'
                         // user[1]='~ezhi'
                         // user[2]='degry.lamer.gamesurge'
                         // p='qqq'
-                        ircprintf(n, 0, w[g+1], "\fa<\fw%s\fa>\fw %s", user[0], p);
+                        irc2cube(str, p);
+                        ircprintf(n, 0, w[g+1], "\fa<\fw%s\fa>\fw %s", user[0], str);
 
+                        //remod
                         //irc_oncommand "sender" "p a r a m s"
-                        ftext = newstring(p);
-                        //server::filtercstext(ftext);
-                        remod::onevent(IRC_ONCOMMAND, "ss", user[0], ftext);
-                        DELETEA(ftext);
+                        remod::onevent(IRC_ONCOMMAND, "ss", user[0], str);
                     }
                 }
                 else
                 {
                     // remod
-                    //ircprintf(n, 1, g ? w[g+1] : NULL, "\fa<\fw%s\fa>\fw %s", user[0], w[g+2]);
                     // normal and private message
                     // in private w[2]==n->nick
                     // user[0]='degrave'
@@ -580,10 +615,11 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
                     // w[2]='#rb-servers'
                     // w[3]='a'
 
-                    //server::filtercstext(ftext);
-                    ftext = newstring(w[g+2]);
-                    remod::onevent(strcasecmp(w[g+1], n->nick) ? IRC_ONMSG : IRC_ONPRIVMSG, "ss", user[0], ftext);
-                    DELETEA(ftext);
+                    irc2cube(str, w[g+2]);
+
+                    //remod
+                    //ircprintf(n, 1, g ? w[g+1] : NULL, "\fa<\fw%s\fa>\fw %s", user[0], str);
+                    remod::onevent(strcasecmp(w[g+1], n->nick) ? IRC_ONMSG : IRC_ONPRIVMSG, "ss", user[0], str);
                 }
             }
             else ircprintf(n, 2, g ? w[g+1] : NULL, "\fo-%s- %s", user[0], w[g+2]);
@@ -591,7 +627,7 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
     }
     else if(!strcasecmp(w[g], "NICK"))
     {
-	// remod
+        // remod
         loopv(n->channels)
             if(n->channels[i].rename(user[0], w[g+1])) break;
 
@@ -610,9 +646,12 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
             {
                 c->state = IRCC_JOINED;
                 c->lastjoin = c->lastsync = clocktime;
+                #ifndef STANDALONE
+                c->updated |= IRCUP_NEW;
+                #endif
             }
 
-            // remod
+            //remod
             //ircprintf(n, 3, w[g+1], "\fg%s (%s@%s) has joined", user[0], user[1], user[2]);
             if(strcmp(n->nick, user[0]) != 0)
                 c->adduser(user[0], NONE);
@@ -630,14 +669,14 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
                 c->lastsync = 0;
             }
 
-            // remod
+            //remod
             //ircprintf(n, 3, w[g+1], "\fo%s (%s@%s) has left", user[0], user[1], user[2]);
             c->deluser(user[0]);
         }
     }
     else if(!strcasecmp(w[g], "QUIT"))
     {
-        // remod
+        //remod
         //if(numargs > g+1) ircprintf(n, 3, NULL, "\fr%s (%s@%s) has quit: %s", user[0], user[1], user[2], w[g+1]);
         //else ircprintf(n, 3, NULL, "\fr%s (%s@%s) has quit", user[0], user[1], user[2]);
         loopv(n->channels)
@@ -654,8 +693,7 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
                 c->lastjoin = clocktime;
                 c->lastsync = 0;
             }
-
-            // remod
+            //remod
             //ircprintf(n, 3, w[g+1], "\fr%s (%s@%s) has kicked %s from %s", user[0], user[1], user[2], w[g+2], w[g+1]);
             c->deluser(user[0]);
         }
@@ -664,7 +702,7 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
     {
         if(numargs > g+2)
         {
-            mkstring(modestr);
+            string modestr = "";
             loopi(numargs-g-2)
             {
                 if(i) concatstring(modestr, " ");
@@ -700,6 +738,7 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
     {
         if(numargs > g+1)
         {
+            //remod
             //ircprintf(n, 4, NULL, "%s PING %s", user[0], w[g+1]);
             ircsend(n, "PONG %s", w[g+1]);
         }
@@ -709,6 +748,12 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
             ircsend(n, "PONG %d", clocktime);
         }
     }
+    else if(!strcasecmp(w[g], "ERROR"))
+    {
+        if(numargs > g+1) ircprintf(n, 4, NULL, "%s ERROR %s", user[0], w[g+1]);
+        else ircprintf(n, 4, NULL, "%s ERROR", user[0]);
+        n->state = IRC_QUIT;
+    }
     // remod
     else if(!strcasecmp(w[g], "PONG"))
     {
@@ -717,7 +762,7 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
     else
     {
         int numeric = *w[g] && *w[g] >= '0' && *w[g] <= '9' ? atoi(w[g]) : 0, off = 0;
-        mkstring(s);
+        string s = "";
         #define irctarget(a) (!strcasecmp(n->nick, a) || *a == '#' || ircfindchan(n, a))
         char *targ = numargs > g+1 && irctarget(w[g+1]) ? w[g+1] : NULL;
         if(numeric)
@@ -750,16 +795,15 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
                 }
                 break;
             }
-
             // remod
             case 353:
             {
                 // char *s - list of nicks
                 char *nick;
                 char *pnick;
-                mkstring(s2);
+                string s2 = "";
                 strcpy(s2, s); // dublicate users line
-                usermode state=NONE;
+                usermode state = NONE;
 
                 ircchan *c = ircfindchan(n, w[g+3]);
                 c->resetusers();
@@ -769,9 +813,9 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
                 {
                     switch(nick[0])
                     {
-			case '~':
+                        case '~':
                         case '*': state = OWNER; break;
-			case '&':
+                        case '&':
                         case '!': state = ADMIN; break;
                         case '@': state = OP; break;
                         case '%': state = HALFOP; break;
@@ -781,12 +825,12 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
 
                     if(state != NONE)
                     {
-                        int len = strlen(nick);
+                        size_t len = strlen(nick);
                         strncpy(nick, &nick[1], len-1);
                         nick[len-1] = '\0';
                     }
 
-                    pnick=newstring(nick);
+                    pnick = newstring(nick);
                     c->adduser(pnick, state);
 
                     nick = strtok(NULL, " ");
@@ -889,7 +933,7 @@ void ircparse(ircnet *n)
             loopi(3) DELETEA(user[i]);
         }
     cleanup:
-        loopi(MAXWORDS) DELETEA(w[i]);
+        loopi(numargs) DELETEA(w[i]);
     }
     int parsed = start - (char *)n->input;
     if(parsed > 0)
@@ -903,12 +947,14 @@ void ircparse(ircnet *n)
 void ircdiscon(ircnet *n, const char *msg = NULL)
 {
     if(!n) return;
-    if(msg) ircprintf(n, 4, NULL, "disconnected from %s (%s:[%d]): %s", n->name, n->serv, n->port, msg);
+    if(n->state == IRC_WAIT) ircprintf(n, 4, NULL, "could not connect to %s:[%d]", n->serv, n->port);
+    else if(msg) ircprintf(n, 4, NULL, "disconnected from %s (%s:[%d]): %s", n->name, n->serv, n->port, msg);
     else ircprintf(n, 4, NULL, "disconnected from %s (%s:[%d])", n->name, n->serv, n->port);
     enet_socket_destroy(n->sock);
     n->state = IRC_DISC;
     n->sock = ENET_SOCKET_NULL;
     n->lastattempt = clocktime;
+    n->lastactivity = n->lastping = 0;
 }
 
 void irccleanup()
@@ -916,15 +962,101 @@ void irccleanup()
     loopv(ircnets) if(ircnets[i]->sock != ENET_SOCKET_NULL)
     {
         ircnet *n = ircnets[i];
-        ircsend(n, "QUIT :%s, %s", RE_NAME, RE_URL);
+        ircsend(n, "QUIT :%s%s%s", VERSION_NAME, *VERSION_URL ? ", " : "", VERSION_URL);
         ircdiscon(n, "shutdown");
     }
 }
 
+bool ircaddsockets(ENetSocket &maxsock, ENetSocketSet &readset, ENetSocketSet &writeset)
+{
+    int numsocks = 0;
+    loopv(ircnets)
+    {
+        ircnet *n = ircnets[i];
+        if(n->sock != ENET_SOCKET_NULL && n->state > IRC_DISC) switch(n->state)
+        {
+            case IRC_WAIT:
+                ENET_SOCKETSET_ADD(writeset, n->sock);
+                // fall-through
+            case IRC_ONLINE: case IRC_CONN: case IRC_QUIT:
+                maxsock = maxsock == ENET_SOCKET_NULL ? n->sock : max(maxsock, n->sock);
+                ENET_SOCKETSET_ADD(readset, n->sock);
+                numsocks++;
+                break;
+        }
+    }
+    return numsocks > 0;
+}
+
+void ircchecksockets(ENetSocketSet &readset, ENetSocketSet &writeset)
+{
+    loopv(ircnets)
+    {
+        ircnet *n = ircnets[i];
+        if(n->sock != ENET_SOCKET_NULL && n->state > IRC_DISC) switch(n->state)
+        {
+            case IRC_WAIT:
+                if(ENET_SOCKETSET_CHECK(readset, n->sock) || ENET_SOCKETSET_CHECK(writeset, n->sock))
+                {
+                    int error = 0;
+                    if(enet_socket_get_option(n->sock, ENET_SOCKOPT_ERROR, &error) < 0 || error) ircdiscon(n);
+                    else n->state = IRC_ATTEMPT;
+                }
+                break;
+            case IRC_ONLINE: case IRC_CONN: case IRC_QUIT:
+                if(ENET_SOCKETSET_CHECK(readset, n->sock)) switch(ircrecv(n))
+                {
+                    case -3: ircdiscon(n, "read error"); break;
+                    case -2: ircdiscon(n, "connection reset"); break;
+                    case -1: ircdiscon(n, "invalid connection"); break;
+                    case 0: break;
+                    default:
+                    {
+                        ircparse(n);
+                        n->lastactivity = clocktime;
+                        n->lastping = 0;
+                        break;
+                    }
+                }
+                break;
+         }
+    }
+}
+
+VAR(0, ircautoaway, 0, 15, VAR_MAX); // time in seconds after closing the gui the user is marked as away
 void ircslice()
 {
-    clocktime = time(NULL);
-
+    #ifndef STANDALONE
+    loopvrev(ircnets)
+    {
+        ircnet *n = ircnets[i];
+        if((n->sock == ENET_SOCKET_NULL || n->state <= IRC_DISC) && n->updated&IRCUP_LEAVE)
+        {
+            delete n;
+            ircnets.remove(i);
+            continue;
+        }
+        loopvjrev(n->channels)
+        {
+            ircchan &c = n->channels[j];
+            if(c.state != IRCC_JOINED && c.state != IRCC_JOINING && (c.type != IRCCT_AUTO || c.updated&IRCUP_LEAVE))
+                n->channels.remove(j);
+        }
+        if(n->type != IRCT_RELAY && n->state == IRC_ONLINE)
+        {
+            if(n->away && n->lastseen > n->away)
+            {
+                ircsend(n, "AWAY");
+                n->away = 0;
+            }
+            else if(!n->away && totalmillis-n->lastseen >= ircautoaway*1000)
+            {
+                ircsend(n, "AWAY :Auto-away after %d second%s", ircautoaway, ircautoaway != 1 ? "s" : "");
+                n->away = totalmillis;
+            }
+        }
+    }
+    #endif
     loopv(ircnets)
     {
         ircnet *n = ircnets[i];
@@ -932,11 +1064,16 @@ void ircslice()
         {
             switch(n->state)
             {
+                case IRC_WAIT:
+                {
+                    if(!n->lastattempt || clocktime-n->lastattempt >= 60) ircdiscon(n);
+                    break;
+                }
                 case IRC_ATTEMPT:
                 {
                     if(*n->passkey) ircsend(n, "PASS %s", n->passkey);
                     ircsend(n, "NICK %s", n->nick);
-                    ircsend(n, "USER %s +iw %s :%s v%s-%s %d bit (%s)", RE_UNAME, RE_UNAME, RE_NAME, RE_VER_STR, RE_PLATFORM, RE_ARCH, RE_RELEASE);
+                    ircsend(n, "USER %s +iw %s :%s v%s-%s%d (%s)", VERSION_UNAME, VERSION_UNAME, VERSION_NAME, VERSION_STRING, versionplatname, versionarch, VERSION_RELEASE);
                     n->state = IRC_CONN;
                     loopvj(n->channels)
                     {
@@ -959,22 +1096,26 @@ void ircslice()
                 }
                 case IRC_CONN:
                 {
-                    if(n->state == IRC_CONN && clocktime-n->lastattempt >= 60) ircdiscon(n, "connection attempt timed out");
-                    else switch(ircrecv(n))
+                    if(n->state == IRC_CONN && (!n->lastattempt || clocktime-n->lastattempt >= 60))
+                        ircdiscon(n, "connection attempt timed out");
+                    if(!n->lastactivity)
                     {
-                        case -3: ircdiscon(n, "read error"); break;
-                        case -2: ircdiscon(n, "connection reset"); break;
-                        case -1: ircdiscon(n, "invalid connection"); break;
-                        case 0: break;
-                        default: ircparse(n); break;
+                        n->lastactivity = clocktime;
+                        n->lastping = 0;
+                    }
+                    else if(clocktime-n->lastactivity >= 120)
+                    {
+                        if(!n->lastping)
+                        {
+                            ircsend(n, "PING %d", clocktime);
+                            n->lastping = clocktime;
+                        }
+                        else if(clocktime-n->lastping >= 120) ircdiscon(n, "connection timed out");
                     }
                     break;
                 }
-                default:
-                {
-                    ircdiscon(n, "encountered unknown connection state");
-                    break;
-                }
+                case IRC_QUIT: ircdiscon(n, "closing link"); break;
+                default: ircdiscon(n, "encountered unknown connection state"); break;
             }
         }
         else if(!n->lastattempt || clocktime-n->lastattempt >= 60) ircestablish(n);
@@ -1126,4 +1267,5 @@ COMMAND(ircaction, "s");
  */
 COMMAND(ircauthcmd, "ss");
 
-#endif
+ICOMMAND(0, ircconns, "", (void), { int num = 0; loopv(ircnets) if(ircnets[i]->state >= IRC_ATTEMPT) num++; intret(num); });
+#endif // IRC

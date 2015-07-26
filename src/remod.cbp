@@ -15,10 +15,6 @@
 					<Add option="-fomit-frame-pointer" />
 					<Add option="-O2" />
 					<Add option="-Wall" />
-					<Add option="-DSTANDALONE" />
-					<Add option="-DIRC" />
-					<Add option="-DGEOIP" />
-					<Add option="-DSQLITE3" />
 					<Add option="-DNO_OLDNAMES" />
 					<Add option="-DDBUG_OFF" />
 					<Add option="-DHAVE_ULONG" />
@@ -54,12 +50,8 @@
 				<Compiler>
 					<Add option="-fomit-frame-pointer" />
 					<Add option="-Wall" />
-					<Add option="-DSTANDALONE" />
-					<Add option="-DIRC" />
-					<Add option="-DGEOIP" />
 					<Add option="-DGEOIPDATADIR" />
 					<Add option="-DHAS_SOCKLEN_T" />
-					<Add option="-DSQLITE3" />
 					<Add directory="enet/include" />
 					<Add directory="shared" />
 					<Add directory="include" />
@@ -79,6 +71,10 @@
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
+			<Add option="-DSTANDALONE" />
+			<Add option="-DIRC" />
+			<Add option="-DGEOIP" />
+			<Add option="-DSQLITE3" />
 		</Compiler>
 		<Unit filename="engine/command.cpp" />
 		<Unit filename="engine/engine.h" />
@@ -130,6 +126,7 @@
 		<Unit filename="mod/geoipmod2.h" />
 		<Unit filename="mod/irc.cpp" />
 		<Unit filename="mod/irc.h" />
+		<Unit filename="mod/irc_remod.h" />
 		<Unit filename="mod/jsonbanlist.cpp" />
 		<Unit filename="mod/jsonbanlist.h" />
 		<Unit filename="mod/mysql.cpp" />
