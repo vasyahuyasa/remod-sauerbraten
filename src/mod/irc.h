@@ -1,5 +1,28 @@
+#ifndef __IRC_H__
+#define __IRC_H__
+
+#include "game.h"
+
 enum { IRCC_NONE = 0, IRCC_JOINING, IRCC_JOINED, IRCC_KICKED, IRCC_BANNED };
 enum { IRCCT_NONE = 0, IRCCT_AUTO };
+
+//remod
+enum usermode
+{
+    OP      = 1 << 1,
+    HALFOP  = 1 << 2,
+    VOICE   = 1 << 3,
+    ADMIN   = 1 << 4,
+    OWNER   = 1 << 5,
+    NONE    = 1 << 6,
+    ERR     = 0
+};
+
+struct user
+{
+    string nick;
+    usermode state;
+};
 
 struct ircchan
 {
@@ -27,9 +50,60 @@ struct ircchan
         buffer.reset();
 #endif
     }
+
+    // remod
+    void adduser(char *nick, usermode state)
+    {
+        if(!nick) return;
+        user &u = users.add();
+        strcpy(u.nick, nick);
+        u.state=state;
+    }
+
+    void deluser(char *nick)
+    {
+        if(!nick) return;
+        loopv(users)
+            if(strcmp(users[i].nick, nick)==0)
+            {
+                users.remove(i);
+                return;
+            }
+    }
+
+    void setusermode(char *nick, usermode state)
+    {
+        if(!nick) return;
+        loopv(users)
+            if(strcmp(users[i].nick, nick)==0) users[i].state = state;
+    }
+
+    void resetusers()
+    {
+        //loopv(users) delete(&users[i]); // posible crash
+        users.shrink(0);
+    }
+
+    bool rename(char *nick, char *newnick)
+    {
+        if(!nick || !newnick) return false;
+        loopv(users)
+            if(strcmp(users[i].nick, nick)==0)
+            {
+                strncpy(users[i].nick, newnick, 100);
+                users[i].nick[100] = '\0';
+                return true;
+            }
+
+        return false;
+    }
 };
 enum { IRCT_NONE = 0, IRCT_CLIENT, IRCT_RELAY, IRCT_MAX };
 enum { IRC_NEW = 0, IRC_DISC, IRC_WAIT, IRC_ATTEMPT, IRC_CONN, IRC_ONLINE, IRC_QUIT, IRC_MAX };
+
+//remod
+static string ircstates[IRC_MAX] = { "IRC_NEW", "IRC_DISC", "IRC_WAIT", "IRC_ATTEMPT", "IRC_CONN", "IRC_ONLINE", "IRC_QUIT"};
+
 struct ircnet
 {
     int type, state, port, lastattempt, lastactivity, lastping, inputcarry, inputlen;
@@ -40,7 +114,7 @@ struct ircnet
     uchar input[4096];
 
     // remod
-    time_t lastping, lastpong;
+    time_t lastpong;
     char *authcmd;
 
 #ifndef STANDALONE
@@ -98,3 +172,10 @@ extern void irccleanup();
 extern bool ircaddsockets(ENetSocket &maxsock, ENetSocketSet &readset, ENetSocketSet &writeset);
 extern void ircchecksockets(ENetSocketSet &readset, ENetSocketSet &writeset);
 extern void ircslice();
+
+//remod
+extern usermode irc_user_state(char *nick);
+extern bool resolverwait(const char *name, ENetAddress *address);
+void ping();
+void irc_checkserversockets();
+#endif // __IRC_H__

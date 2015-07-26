@@ -838,4 +838,44 @@ void ghost(int cn, bool v)
     onevent(ONGHOST, "ii", cn, v ? 1 : 0);
 }
 
+// Red Eclipse (c)
+bool filterstring(char *dst, const char *src, bool newline, bool colour, bool whitespace, bool wsstrip, size_t len)
+{
+    bool filtered = false;
+    size_t n = 0;
+    for(int c = uchar(*src); c && n <= len; c = uchar(*++src))
+    {
+        if(newline && (c=='\n' || c=='\r')) c = ' ';
+        if(c=='\f')
+        {
+            if(!colour) dst[n++] = c;
+            else
+            {
+                filtered = true;
+                c = *++src;
+                if(!c) break;
+                else if(c=='z')
+                {
+                    c = *++src;
+                    if(c) c = *++src;
+                    if(!c) break;
+                }
+                else if(c == '[' || c == '(' || c == '{')
+                {
+                    const char *end = strchr(src, c == '[' ? ']' : (c == '(' ? ')' : '}'));
+                    src += end ? end-src : strlen(src);
+                }
+
+            }
+            continue;
+        }
+        if(iscubeprint(c) || (iscubespace(c) && whitespace && (!wsstrip || n)))
+            dst[n++] = c;
+        else filtered = true;
+    }
+    if(whitespace && wsstrip && n) while(iscubespace(dst[n-1])) dst[--n] = 0;
+    dst[n <= len ? n : len] = 0;
+    return filtered;
+}
+
 }

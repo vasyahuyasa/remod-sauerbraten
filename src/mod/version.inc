@@ -33,3 +33,11 @@
 #else
     #define REMOD_ARCH "x??"
 #endif
+
+#ifndef REMOD_URL
+#define REMOD_URL "https://github.com/vasyahuyasa/remod-sauerbraten"
+#endif
+
+#ifndef MOD_NAME
+#define MOD_NAME "Remod"
+#endif

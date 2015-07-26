@@ -4,6 +4,7 @@
 #include "engine.h"
 #include "rconmod.h"
 #include "remod.h"
+#include "commandev.h"
 
 #ifdef IRC
 #include "irc.h"
@@ -1051,6 +1052,7 @@ void rundedicatedserver()
 		//remod
 		remod::rcon::update();
         	#ifdef IRC
+        	irc_checkserversockets();
         	ircslice();
         	#endif
         	remod::checkresume();
@@ -1063,6 +1065,7 @@ void rundedicatedserver()
         serverslice(true, 5);
         remod::rcon::update();
         #ifdef IRC
+        irc_checkserversockets();
         ircslice();
         #endif
         remod::checkresume();

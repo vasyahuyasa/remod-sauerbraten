@@ -5,7 +5,6 @@
 #include "varbox.h"
 
 
-
 // worlio.cpp
 extern void cutogz(char *s);
 
@@ -90,5 +89,8 @@ namespace remod
     void sendmapto(int cn);
     bool iseditcommand(int type);
     void ghost(int cn, bool v);
+    bool filterstring(char *dst, const char *src, bool newline, bool colour, bool whitespace, bool wsstrip, size_t len);
+    template<size_t N> static inline bool filterstring(char (&dst)[N], const char *src, bool newline = true, bool colour = true, bool whitespace = true, bool wsstrip = false) { return filterstring(dst, src, newline, colour, whitespace, wsstrip, N-1); }
+
 }
 #endif
