@@ -878,4 +878,44 @@ bool filterstring(char *dst, const char *src, bool newline, bool colour, bool wh
     return filtered;
 }
 
+// to keep irc colors work
+size_t old_encodeutf8(uchar *dstbuf, size_t dstlen, const uchar *srcbuf, size_t srclen, size_t *carry)
+{
+    uchar *dst = dstbuf, *dstend = &dstbuf[dstlen];
+    const uchar *src = srcbuf, *srcend = &srcbuf[srclen];
+    if(src < srcend && dst < dstend) do
+    {
+        int uni = cube2uni(*src);
+        if(uni <= 0x7F)
+        {
+            if(dst >= dstend) goto done;
+            const uchar *end = min(srcend, &src[dstend-dst]);
+            do
+            {
+                *dst++ = uni;
+                if(++src >= end) goto done;
+                uni = cube2uni(*src);
+            }
+            while(uni <= 0x7F);
+        }
+        if(uni <= 0x7FF) { if(dst + 2 > dstend) goto done; *dst++ = 0xC0 | (uni>>6); goto uni2; }
+        else if(uni <= 0xFFFF) { if(dst + 3 > dstend) goto done; *dst++ = 0xE0 | (uni>>12); goto uni3; }
+        else if(uni <= 0x1FFFFF) { if(dst + 4 > dstend) goto done; *dst++ = 0xF0 | (uni>>18); goto uni4; }
+        else if(uni <= 0x3FFFFFF) { if(dst + 5 > dstend) goto done; *dst++ = 0xF8 | (uni>>24); goto uni5; }
+        else if(uni <= 0x7FFFFFFF) { if(dst + 6 > dstend) goto done; *dst++ = 0xFC | (uni>>30); goto uni6; }
+        else goto uni1;
+    uni6: *dst++ = 0x80 | ((uni>>24)&0x3F);
+    uni5: *dst++ = 0x80 | ((uni>>18)&0x3F);
+    uni4: *dst++ = 0x80 | ((uni>>12)&0x3F);
+    uni3: *dst++ = 0x80 | ((uni>>6)&0x3F);
+    uni2: *dst++ = 0x80 | (uni&0x3F);
+    uni1:;
+    }
+    while(++src < srcend);
+
+done:
+    if(carry) *carry += src - srcbuf;
+    return dst - dstbuf;
+}
+
 }

@@ -10,7 +10,7 @@
 EXTENSION(IRC);
 SVAR(consoletimefmt, "%c");
 SVAR(irccommandchar, "");
-VAR(ircpingdelay, 0, 60, 600); // delay in seconds between network ping
+VAR(ircpingdelay, 0, 60, 120); // delay in seconds between network ping
 VAR(ircfilter, 0, 2, 2);
 VARN(verbose, ircverbose, 0, 0, 2);
 time_t clocktime = 0;
@@ -24,6 +24,20 @@ typedef char bigstring[BIGSTRLEN];
 //remod
 //VAR(0, ircfilter, 0, 2, 2);
 //VAR(0, ircverbose, 0, 0, 2);
+
+
+//remod
+void hexprint(char *str)
+{
+    printf("%s = ", str);
+    char *c = str;
+    while(*c)
+    {
+        printf("%#x ", *c);
+        c++;
+    }
+    printf("\n");
+}
 
 //remod
 char *gettime(char *format)
@@ -133,14 +147,6 @@ void ircestablish(ircnet *n)
         address.host = ENET_HOST_ANY;
     }
 
-    // Remod hack, sometimes irc bot block client connections
-    // set socket timeout to 5 seconds
-    struct timeval timeout;
-    timeout.tv_sec = 5;
-    timeout.tv_usec = 0;
-    if(setsockopt(n->sock, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, sizeof(timeout)) < 0) conoutf("Irc: setsockopt SO_RCVTIMEO failed");
-    if(setsockopt(n->sock, SOL_SOCKET, SO_SNDTIMEO, (char *)&timeout, sizeof(timeout)) < 0) conoutf("Irc: setsockopt SO_SNDTIMEO failed");
-
     if(n->sock != ENET_SOCKET_NULL) enet_socket_set_option(n->sock, ENET_SOCKOPT_NONBLOCK, 1);
     if(n->sock == ENET_SOCKET_NULL || enet_socket_connect(n->sock, &n->address) < 0)
     {
@@ -177,9 +183,10 @@ void ircsend(ircnet *n, const char *msg, ...)
     ENetBuffer buf;
     uchar ubuf[512];
     size_t len = strlen(str), carry = 0;
+
     while(carry < len)
     {
-        size_t numu = encodeutf8(ubuf, sizeof(ubuf)-1, &((uchar *)str)[carry], len - carry, &carry);
+        size_t numu = remod::old_encodeutf8(ubuf, sizeof(ubuf)-1, &((uchar *)str)[carry], len - carry, &carry);
         if(carry >= len) ubuf[numu++] = '\n';
         loopi(numu) switch(ubuf[i])
         {
@@ -308,6 +315,7 @@ void ircoutf(int relay, const char *msg, ...)
         case 1: cube2irc(str, src); break;
         case 0: default: copystring(str, src); break;
     }
+
     loopv(ircnets) if(ircnets[i]->sock != ENET_SOCKET_NULL && ircnets[i]->type == IRCT_RELAY && ircnets[i]->state == IRC_ONLINE)
     {
         ircnet *n = ircnets[i];
@@ -645,6 +653,8 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
                     // w[2]='#rb-servers'
                     // w[3]='a'
 
+                    printf("%s: ", user[0]);
+                    hexprint(w[g+2]);
                     irc2cube(str, w[g+2]);
 
                     //remod
@@ -994,7 +1004,7 @@ void irccleanup()
         ircnet *n = ircnets[i];
 
         //remod
-        ircsend(n, "QUIT :Remod %s%s", REMOD_VERSION, REMOD_URL);
+        ircsend(n, "QUIT :Remod %s", REMOD_URL);
 
         ircdiscon(n, "shutdown");
     }
@@ -1065,7 +1075,6 @@ void irc_checkserversockets()
     ENetSocket maxsock = ENET_SOCKET_NULL;
     ircaddsockets(maxsock, readset, writeset);
     if(maxsock == ENET_SOCKET_NULL || enet_socketset_select(maxsock, &readset, &writeset, 0) <= 0) return;
-    conoutf("checksokkets");
     ircchecksockets(readset, writeset);
 }
 
@@ -1129,7 +1138,7 @@ void ircslice()
                     ircsend(n, "NICK %s", n->nick);
 
                     //remod
-                    ircsend(n, "USER %s +iw %s :%s v%s-%s%d (%s)", MOD_NAME, MOD_NAME, REMOD_CODENAME, REMOD_VERSION, REMOD_SYSTEM, REMOD_ARCH, REMOD_CODENAME);
+                    ircsend(n, "USER %s +iw %s :%s %s %s/%s", MOD_NAME, MOD_NAME, MOD_NAME, REMOD_CODENAME, REMOD_SYSTEM, REMOD_ARCH);
 
                     n->state = IRC_CONN;
                     loopvj(n->channels)
@@ -1207,7 +1216,8 @@ usermode irc_user_state(char *nick)
 
 void ircisop(char *name)
 {
-    intret((irc_user_state(name) == OP) || (irc_user_state(name) == OWNER) || (irc_user_state(name) == ADMIN) || (irc_user_state(name) == HALFOP));
+    usermode mode = irc_user_state(name);
+    intret((mode == OP) || (mode == OWNER) || (mode == ADMIN) || (mode == HALFOP));
 }
 
 void ircisvoice(char *name)
@@ -1217,11 +1227,14 @@ void ircisvoice(char *name)
 
 void ircsayto(char *to, char *msg)
 {
+    //remod
+    string str;
+    cube2irc(str, msg);
 
     loopv(ircnets)
     {
         ircnet *in = ircnets[i];
-        ircsend(in, "PRIVMSG %s :%s", to, msg);
+        ircsend(in, "PRIVMSG %s :%s", to, str);
     }
 }
 
@@ -1240,21 +1253,20 @@ void ircaction(char *msg)
 
 void ping()
 {
-    // don't ping
     if(ircpingdelay == 0) return;
 
     loopv(ircnets)
     {
-        ircnet *in = ircnets[i];
-        if(in->state == IRC_ONLINE && (clocktime - in->lastping) > ircpingdelay)
+        ircnet *n = ircnets[i];
+        if(n->state == IRC_ONLINE && (clocktime - n->lastactivity) >= ircpingdelay)
         {
-            ircsend(in, "PING %u", clocktime);
-            in->lastping = clocktime;
+            ircsend(n, "PING %u", clocktime);
+            n->lastactivity = clocktime;
         }
     }
 }
 
-void ircauthcmd(char *name, char *cmd)
+void ircauthcmd(char *name, const char *cmd)
 {
     ircnet *n = ircfind(name);
     if(!n) { conoutf("no such ircnet: %s", name); return; }
@@ -1268,7 +1280,7 @@ void irc_dumpnicks()
     loopv(ircnets)
         loopvj(ircnets[i]->channels)
             loopvk(ircnets[i]->channels[j].users)
-                printf("ircnets[%i]->channels[%i].users[%i]=%s stat=%d\n", i, j, k, ircnets[i]->channels[j].users[k].nick, ircnets[i]->channels[j].users[k].state);
+                conoutf("ircnets[%i]->channels[%i].users[%i]=%s stat=%d\n", i, j, k, ircnets[i]->channels[j].users[k].nick, ircnets[i]->channels[j].users[k].state);
 }
 COMMAND(irc_dumpnicks, "");
 #endif
