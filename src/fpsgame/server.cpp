@@ -2212,9 +2212,19 @@ namespace server
 
         //while(bannedips.length() && bannedips[0].expire-totalmillis <= 0) bannedips.remove(0);
         //remod
-        loopv(bannedips)
+        // check only 1 ban inside main loop
+        static int bancounter = 0;
+        int banlen = bannedips.length();
+        if(banlen && bancounter < banlen)
         {
-            if(bannedips[i].expire - totalmillis <= 0) bannedips.remove(i);
+            if(bannedips[bancounter].expire - totalmillis <= 0)
+                bannedips.remove(bancounter);
+            else
+                bancounter++;
+        }
+        else
+        {
+            bancounter = 0;
         }
 
         loopv(connects) if(totalmillis-connects[i]->connectmillis>15000) disconnect_client(connects[i]->clientnum, DISC_TIMEOUT);
