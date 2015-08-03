@@ -25,20 +25,6 @@ typedef char bigstring[BIGSTRLEN];
 //VAR(0, ircfilter, 0, 2, 2);
 //VAR(0, ircverbose, 0, 0, 2);
 
-
-//remod
-void hexprint(char *str)
-{
-    printf("%s = ", str);
-    char *c = str;
-    while(*c)
-    {
-        printf("%#x ", *c);
-        c++;
-    }
-    printf("\n");
-}
-
 //remod
 char *gettime(char *format)
 {
@@ -654,7 +640,6 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
                     // w[3]='a'
 
                     printf("%s: ", user[0]);
-                    hexprint(w[g+2]);
                     irc2cube(str, w[g+2]);
 
                     //remod
