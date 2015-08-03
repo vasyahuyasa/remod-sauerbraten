@@ -641,8 +641,6 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
 
                     irc2cube(str, w[g+2]);
 
-                    conoutf("str: %s\nuser[0]: %s", str, user[0]);
-
                     //remod
                     //ircprintf(n, 1, g ? w[g+1] : NULL, "\fa<\fw%s\fa>\fw %s", user[0], str);
                     remod::onevent(strcasecmp(w[g+1], n->nick) ? IRC_ONMSG : IRC_ONPRIVMSG, "ss", user[0], str);
