@@ -253,11 +253,14 @@ namespace remod
 
 void extstate::reset()
 {
+    // don't reset vars on map change
+    /*
     muted = false;
     ghost = false;
 
     lastmutetrigger= 0;
     lastghosttrigger = 0;
+    */
 
     loopi(NUMGUNS)
     {

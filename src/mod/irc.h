@@ -101,9 +101,6 @@ struct ircchan
 enum { IRCT_NONE = 0, IRCT_CLIENT, IRCT_RELAY, IRCT_MAX };
 enum { IRC_NEW = 0, IRC_DISC, IRC_WAIT, IRC_ATTEMPT, IRC_CONN, IRC_ONLINE, IRC_QUIT, IRC_MAX };
 
-//remod
-static string ircstates[IRC_MAX] = { "IRC_NEW", "IRC_DISC", "IRC_WAIT", "IRC_ATTEMPT", "IRC_CONN", "IRC_ONLINE", "IRC_QUIT"};
-
 struct ircnet
 {
     int type, state, port, lastattempt, lastactivity, lastping, inputcarry, inputlen;

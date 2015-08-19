@@ -56,6 +56,7 @@ namespace remod
         } guninfo[NUMGUNS];
 
         void reset();
+        extstate() : muted(false), ghost(false), lastmutetrigger(0), lastghosttrigger(0) {}
     };
 
     struct extinfo

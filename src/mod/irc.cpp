@@ -293,7 +293,8 @@ void irc2cube(char *dst, const char *src)
 void ircoutf(int relay, const char *msg, ...)
 {
     defvformatstring(src, msg, msg);
-    string str = "";
+    //remod
+    bigstring str = "";
     switch(ircfilter)
     {
         //remod
@@ -1212,7 +1213,7 @@ void ircisvoice(char *name)
 void ircsayto(char *to, char *msg)
 {
     //remod
-    string str;
+    bigstring str;
     cube2irc(str, msg);
 
     loopv(ircnets)
