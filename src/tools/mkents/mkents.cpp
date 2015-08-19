@@ -43,7 +43,7 @@ bool loadents(const char *fname, vector<entity> &ents, uint *crc)
     string pakname, mapname, mcfgname, ogzname;
     copystring(mapname, fname, 100);
     cutogz(mapname);
-    formatstring(ogzname)("%s.ogz", mapname);
+    formatstring(ogzname, "%s.ogz", mapname);
     path(ogzname);
     stream *f = opengzfile(ogzname, "rb");
     if(!f) return false;
@@ -158,7 +158,7 @@ bool loadents(const char *fname, vector<entity> &ents, uint *crc)
 bool writeents(const char *mapname, vector<entity> &ents, uint mapcrc)
 {
     string file;
-    formatstring(file)("%s", mapname);
+    formatstring(file, "%s", mapname);
 
     stream *mapi = opengzfile(path(file), "w+b");
 
@@ -199,8 +199,8 @@ bool mkents(char *fname)
     copystring(name, fname, 100);
     cutogz(name);
 
-    formatstring(ogzname)("%s.ogz", name);
-    formatstring(entsname)("%s.ents", name);
+    formatstring(ogzname, "%s.ogz", name);
+    formatstring(entsname, "%s.ents", name);
 
     //printf("processing %s... ", name);
 
