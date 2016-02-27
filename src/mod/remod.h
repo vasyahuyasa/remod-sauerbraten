@@ -37,9 +37,20 @@ namespace server
 
 namespace remod
 {
+
     // mutemode
     enum  { MUTEMODE_NONE = 0, MUTEMODE_SPECS, MUTEMODE_PLAYERS, MUTEMODE_MASTERS, NUMMUTEMODE };
     typedef server::clientinfo clientinfo;
+
+    // flood control
+    enum { FLOOD_OTHER = 0, FLOOD_TEXT, FLOOD_SWITCHNAME, FLOOD_SWITCHMODEL, FLOOD_SWITCHTEAM, FLOOD_EDITVAR, NUMFLOOD };
+    struct floodstate
+    {
+        int lastevent; // time of last flood event
+        size_t strikes; // number of flood limit hits
+        int lastwarning; // when last cubescript event was triggereg
+        int floodlimit; // when event ignore will excedd
+    };
 
     struct extstate
     {
@@ -54,6 +65,8 @@ namespace remod
             int shotdamage;
             int damage;
         } guninfo[NUMGUNS];
+
+        floodstate flood[NUMFLOOD];
 
         void reset();
         extstate() : muted(false), ghost(false), lastmutetrigger(0), lastghosttrigger(0) {}
@@ -93,6 +106,6 @@ namespace remod
     bool filterstring(char *dst, const char *src, bool newline, bool colour, bool whitespace, bool wsstrip, size_t len);
     template<size_t N> static inline bool filterstring(char (&dst)[N], const char *src, bool newline = true, bool colour = true, bool whitespace = true, bool wsstrip = false) { return filterstring(dst, src, newline, colour, whitespace, wsstrip, N-1); }
     size_t old_encodeutf8(uchar *dstbuf, size_t dstlen, const uchar *srcbuf, size_t srclen, size_t *carry);
-
+    bool checkflood(clientinfo *ci, int type);
 }
 #endif

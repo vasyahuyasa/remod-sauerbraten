@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <title>Remod user guide</title>
-	
+
 <style type="text/css">
 
 ul.numlist {
@@ -43,7 +43,7 @@ thead tr {
 tr.group {
 	background: #AAAAAA;
 	font-weight: bold;
-	
+
 }
 
 td {
@@ -95,7 +95,7 @@ div.clear {
 	<h1>User guide</h1>
 	Generated: ${str(date.year)}-${str(date.month)}-${str(date.day)}
 	<hr>
-	
+
 	<!-- menu -->
 	<ul class="numlist">
 		<li>
@@ -130,31 +130,34 @@ div.clear {
 	<div>
 		<a name="overview"></a>
 		<h2>Overview</h2>
-		some words why remod is cool
+		<p>Remod is lightweight crossplatform sauerbraten server mod. The goal of project is create lightweight crossplatform (FreeBSD, Linux, Windows and others) mod for replacement of official sauerbraten server.</p>
+
+
 	</div>
-	
-	
+
+
 	<div>
 		<a name="installation"></a>
 		<h2>Installation</h2>
+		<p>The installation notes can be found in the project <a href="https://github.com/vasyahuyasa/remod-sauerbraten/wiki">wiki</a>.</p>
 	</div>
-	
+
 	<div>
 		<a name="configuration"></a>
 		<h2>Configuration</h2>
-		
+
 		Remod command line options
 		<ul class="dotlist">
 			<li><a name="-q" id="-q" class="cmdline_opt">-q</a> Sets your home directory.
 				If set, the engine will look for files in your home directory as well as the normal installation directory.
-				However, all files will be written to your home directory, instead of the normal installation directory.</li>			
-			
+				However, all files will be written to your home directory, instead of the normal installation directory.</li>
+
 			<li><a name="-k" id="-k" class="cmdline_opt">-f</a> Adds the mod directory to the list of directories the engine will search in for files.
-				Directories will be searched in the order listed on the command-line, and if not found, the engine looks in the installation directory.</li>			
-			
+				Directories will be searched in the order listed on the command-line, and if not found, the engine looks in the installation directory.</li>
+
 			<li><a name="-u" id="-u" class="cmdline_opt">-f</a> Sets the server upstream bandwidth to N bytes per second.
-				Only set this parameter if you know what you are doing, specifying a wrong value is worse than not specifying it at all.</li>			
-			
+				Only set this parameter if you know what you are doing, specifying a wrong value is worse than not specifying it at all.</li>
+
 			<li><a name="-n" id="-n" class="cmdline_opt">-n</a> Same as serverdesc.</li>
 
 			<li><a name="-c" id="-c" class="cmdline_opt">-c</a> Same as maxclients.</li>
@@ -162,35 +165,35 @@ div.clear {
 			<li><a name="-i" id="-i" class="cmdline_opt">-i</a> Same as serverport.</li>
 
 			<li><a name="-j" id="-j" class="cmdline_opt">-j</a> Same as serverip.</li>
-			
+
 			<li><a name="-m" id="-m" class="cmdline_opt">-m</a> Sets the
 				master server to use for server (registering). (ex.: -msauerbraten.org).</li>
 
 			<li><a name="-p" id="-p" class="cmdline_opt">-p</a> Same as adminpass.</li>
-				
+
 			<li><a name="-y" id="-y" class="cmdline_opt">-y</a> Same as serverpass.</li>
-			
+
 			<li><a name="-o" id="-o" class="cmdline_opt">-o</a> Same as publicserver.</li>
-				
+
 			<li><a name="-f" id="-f" class="cmdline_opt">-f</a> Execute
 				config file instead of server-init.cfg (ex. -fserver2.cfg)</li>
 
 			<li><a name="-g" id="-g" class="cmdline_opt">-g</a> File for
 				write logs instead of STDOUT (ex. -gserver.log)</li>
-				
+
 			<li><a name="-d" id="-d" class="cmdline_opt">-d</a> Run server
 				in daemon mode (don't work on windows)</li>
-			
+
 			<li><a name="-p" id="-p" class="cmdline_opt">-p</a> Write
 				pid to file (ex. -p/var/run/remod.pid, don't work on windows)</li>
 		</ul>
 	</div>
-	
+
 	<div>
 		<a name="cs"></a>
 		<h2>Remod cubescript specifications</h2>
 	</div>
-	
+
 	<div>
 		<a name="cs-info"></a>
 		<h3>General cubescript info</h3>
@@ -198,19 +201,19 @@ div.clear {
 			<li>Cubescript manual by Hirato: <a href="https://github.com/Hirato/lamiae/wiki/CubeScript">https://github.com/Hirato/lamiae/wiki/CubeScript</a></li>
 		</ul>
 	</div>
-	
-	
+
+
 	<div>
 		<a name="cs-functions"></a>
 		<h3>Cubescript functions</h3>
-		
+
 		Legend:
 		<ul>
     		<li>cn - client number</li>
     		<li>1|0 - boolean parameter same as n but only can be 0 or 1</li>
     		<li>str - string parameter</li>
 		</ul>
-		
+
 		<table>
 			<thead>
 				<tr>
@@ -231,7 +234,7 @@ div.clear {
 						Group: ${group.getName()}
 					</td>
 				</tr>
-				
+
 				<py:loop val="${group.getFunctionsList()}" var="func">
 				<tr class="${evenOdd('even', 'odd')}">
 					<td class="name">
@@ -252,7 +255,7 @@ div.clear {
 					<td>${func.getSourceFile()}</td>
 				</tr>
 				</py:loop>
-				
+
 				<tr>
 					<td colspan="6">&nbsp;</td>
 				</tr>
@@ -265,12 +268,12 @@ div.clear {
 	<div>
 		<a name="cs-events"></a>
 		<h3>Remod events</h3>
-		
+
 		Legend:
 		<ul>
     		<li>greedy - if event handler returns FALSE, further event processing will be disabled</li>
 		</ul>
-		
+
 		<table>
 			<thead>
 				<tr>
@@ -290,9 +293,9 @@ div.clear {
 						Group: ${group.getName()}
 					</td>
 				</tr>
-				
+
 				<py:loop val="${group.getEventsList()}" var="evt">
-				
+
 				<tr class="${evenOdd('even', 'odd')}">
 					<td class="name">
 						<a name="cs-evt-${evt.getName()}"></a>
@@ -311,7 +314,7 @@ div.clear {
 					<td>${evt.getSourceFile()}</td>
 				</tr>
 				</py:loop>
-				
+
 				<tr>
 					<td colspan="5">&nbsp;</td>
 				</tr>
@@ -325,8 +328,8 @@ div.clear {
 	<div>
 		<a name="cs-variables"></a>
 		<h3>Server variables</h3>
-		
-		
+
+
 		<table>
 			<thead>
 				<tr>
@@ -349,9 +352,9 @@ div.clear {
 						Group: ${group.getName()}
 					</td>
 				</tr>
-				
+
 				<py:loop val="${group.getVariablesList()}" var="v">
-				
+
 				<tr class="${evenOdd('even', 'odd')}">
 					<td class="name">
 						<a name="cs-var-${v.getName()}"></a>
@@ -362,12 +365,12 @@ div.clear {
 					<td>${v.getCurValue()}</td>
 					<td>${v.getMaxValue()}</td>
 					<td>${v.getAccess()}</td>
-				
+
 					<td>${nl2br(v.getDescription())}</td>
 					<td>${v.getSourceFile()}</td>
 				</tr>
 				</py:loop>
-				
+
 				<tr>
 					<td colspan="8">&nbsp;</td>
 				</tr>
@@ -377,6 +380,6 @@ div.clear {
 		</table>
 	</div>
 
-	
+
 </body>
 </html>

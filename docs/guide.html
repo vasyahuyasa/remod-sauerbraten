@@ -1,10 +1,10 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
 
-<html xmlns:py="http://code.google.com/p/remod-sauerbraten/">
+<html xmlns:py="https://github.com/vasyahuyasa/remod-sauerbraten">
 <head>
 <meta charset="utf-8">
 <title>Remod user guide</title>
-	
+
 <style type="text/css">
 
 ul.numlist {
@@ -43,7 +43,7 @@ thead tr {
 tr.group {
 	background: #AAAAAA;
 	font-weight: bold;
-	
+
 }
 
 td {
@@ -93,9 +93,9 @@ div.clear {
 
 <body>
 	<h1>User guide</h1>
-	Generated: 2015-8-1
+	Generated: 2016-2-28
 	<hr>
-	
+
 	<!-- menu -->
 	<ul class="numlist">
 		<li>
@@ -130,31 +130,34 @@ div.clear {
 	<div>
 		<a name="overview"></a>
 		<h2>Overview</h2>
-		some words why remod is cool
+		<p>Remod is lightweight crossplatform sauerbraten server mod. The goal of project is create lightweight crossplatform (FreeBSD, Linux, Windows and others) mod for replacement of official sauerbraten server.</p>
+
+
 	</div>
-	
-	
+
+
 	<div>
 		<a name="installation"></a>
 		<h2>Installation</h2>
+		<p>The installation notes can be found in the project <a href="https://github.com/vasyahuyasa/remod-sauerbraten/wiki">wiki</a>.</p>
 	</div>
-	
+
 	<div>
 		<a name="configuration"></a>
 		<h2>Configuration</h2>
-		
+
 		Remod command line options
 		<ul class="dotlist">
 			<li><a name="-q" id="-q" class="cmdline_opt">-q</a> Sets your home directory.
 				If set, the engine will look for files in your home directory as well as the normal installation directory.
-				However, all files will be written to your home directory, instead of the normal installation directory.</li>			
-			
+				However, all files will be written to your home directory, instead of the normal installation directory.</li>
+
 			<li><a name="-k" id="-k" class="cmdline_opt">-f</a> Adds the mod directory to the list of directories the engine will search in for files.
-				Directories will be searched in the order listed on the command-line, and if not found, the engine looks in the installation directory.</li>			
-			
+				Directories will be searched in the order listed on the command-line, and if not found, the engine looks in the installation directory.</li>
+
 			<li><a name="-u" id="-u" class="cmdline_opt">-f</a> Sets the server upstream bandwidth to N bytes per second.
-				Only set this parameter if you know what you are doing, specifying a wrong value is worse than not specifying it at all.</li>			
-			
+				Only set this parameter if you know what you are doing, specifying a wrong value is worse than not specifying it at all.</li>
+
 			<li><a name="-n" id="-n" class="cmdline_opt">-n</a> Same as serverdesc.</li>
 
 			<li><a name="-c" id="-c" class="cmdline_opt">-c</a> Same as maxclients.</li>
@@ -162,56 +165,55 @@ div.clear {
 			<li><a name="-i" id="-i" class="cmdline_opt">-i</a> Same as serverport.</li>
 
 			<li><a name="-j" id="-j" class="cmdline_opt">-j</a> Same as serverip.</li>
-			
+
 			<li><a name="-m" id="-m" class="cmdline_opt">-m</a> Sets the
 				master server to use for server (registering). (ex.: -msauerbraten.org).</li>
 
 			<li><a name="-p" id="-p" class="cmdline_opt">-p</a> Same as adminpass.</li>
-				
+
 			<li><a name="-y" id="-y" class="cmdline_opt">-y</a> Same as serverpass.</li>
-			
+
 			<li><a name="-o" id="-o" class="cmdline_opt">-o</a> Same as publicserver.</li>
-				
+
 			<li><a name="-f" id="-f" class="cmdline_opt">-f</a> Execute
 				config file instead of server-init.cfg (ex. -fserver2.cfg)</li>
 
 			<li><a name="-g" id="-g" class="cmdline_opt">-g</a> File for
 				write logs instead of STDOUT (ex. -gserver.log)</li>
-				
+
 			<li><a name="-d" id="-d" class="cmdline_opt">-d</a> Run server
 				in daemon mode (don't work on windows)</li>
-			
+
 			<li><a name="-p" id="-p" class="cmdline_opt">-p</a> Write
 				pid to file (ex. -p/var/run/remod.pid, don't work on windows)</li>
 		</ul>
 	</div>
-	
+
 	<div>
 		<a name="cs"></a>
 		<h2>Remod cubescript specifications</h2>
 	</div>
-	
+
 	<div>
 		<a name="cs-info"></a>
 		<h3>General cubescript info</h3>
 		<ul>
 			<li>Cubescript manual by Hirato: <a href="https://github.com/Hirato/lamiae/wiki/CubeScript">https://github.com/Hirato/lamiae/wiki/CubeScript</a></li>
-			<li>Cubescript guide: <a href="http://cube.wikispaces.com/Scripting+Guide">http://cube.wikispaces.com/Scripting+Guide</a></li>
 		</ul>
 	</div>
-	
-	
+
+
 	<div>
 		<a name="cs-functions"></a>
 		<h3>Cubescript functions</h3>
-		
+
 		Legend:
 		<ul>
     		<li>cn - client number</li>
     		<li>1|0 - boolean parameter same as n but only can be 0 or 1</li>
     		<li>str - string parameter</li>
 		</ul>
-		
+
 		<table>
 			<thead>
 				<tr>
@@ -232,7 +234,7 @@ div.clear {
 						Group: crypto
 					</td>
 				</tr>
-				
+
 				
 				<tr class="even">
 					<td class="name">
@@ -348,7 +350,7 @@ div.clear {
 					<td>mod/cryptomod.cpp</td>
 				</tr>
 				
-				
+
 				<tr>
 					<td colspan="6">&nbsp;</td>
 				</tr>
@@ -361,7 +363,7 @@ div.clear {
 						Group: db
 					</td>
 				</tr>
-				
+
 				
 				<tr class="even">
 					<td class="name">
@@ -766,7 +768,7 @@ div.clear {
 					<td>mod/db.cpp</td>
 				</tr>
 				
-				
+
 				<tr>
 					<td colspan="6">&nbsp;</td>
 				</tr>
@@ -779,7 +781,7 @@ div.clear {
 						Group: event
 					</td>
 				</tr>
-				
+
 				
 				<tr class="odd">
 					<td class="name">
@@ -1177,7 +1179,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 					<td>mod/commandhandler.cpp</td>
 				</tr>
 				
-				
+
 				<tr>
 					<td colspan="6">&nbsp;</td>
 				</tr>
@@ -1190,7 +1192,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 						Group: irc
 					</td>
 				</tr>
-				
+
 				
 				<tr class="even">
 					<td class="name">
@@ -1367,7 +1369,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 					<td>mod/irc.cpp</td>
 				</tr>
 				
-				
+
 				<tr>
 					<td colspan="6">&nbsp;</td>
 				</tr>
@@ -1380,7 +1382,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 						Group: player
 					</td>
 				</tr>
-				
+
 				
 				<tr class="odd">
 					<td class="name">
@@ -2259,7 +2261,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				
+
 				<tr>
 					<td colspan="6">&nbsp;</td>
 				</tr>
@@ -2272,7 +2274,7 @@ If permission check fails, oncommandpermerror event is triggered</td>
 						Group: server
 					</td>
 				</tr>
-				
+
 				
 				<tr class="even">
 					<td class="name">
@@ -3564,7 +3566,7 @@ id.stack = stack->next;<br/>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				
+
 				<tr>
 					<td colspan="6">&nbsp;</td>
 				</tr>
@@ -3577,7 +3579,7 @@ id.stack = stack->next;<br/>
 						Group: system
 					</td>
 				</tr>
-				
+
 				
 				<tr class="even">
 					<td class="name">
@@ -7772,7 +7774,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				
+
 				<tr>
 					<td colspan="6">&nbsp;</td>
 				</tr>
@@ -7785,12 +7787,12 @@ id.stack = stack->next;<br/>
 	<div>
 		<a name="cs-events"></a>
 		<h3>Remod events</h3>
-		
+
 		Legend:
 		<ul>
     		<li>greedy - if event handler returns FALSE, further event processing will be disabled</li>
 		</ul>
-		
+
 		<table>
 			<thead>
 				<tr>
@@ -7814,9 +7816,9 @@ id.stack = stack->next;<br/>
 						Group: event
 					</td>
 				</tr>
+
 				
-				
-				
+
 				<tr class="odd">
 					<td class="name">
 						<a name="cs-evt-irc_onmsg"></a>
@@ -7842,7 +7844,7 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
+
 				<tr class="even">
 					<td class="name">
 						<a name="cs-evt-irc_onprivmsg"></a>
@@ -7868,7 +7870,7 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
+
 				<tr class="odd">
 					<td class="name">
 						<a name="cs-evt-onaddbot"></a>
@@ -7887,7 +7889,7 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
+
 				<tr class="even">
 					<td class="name">
 						<a name="cs-evt-onbotlimit"></a>
@@ -7913,7 +7915,7 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
+
 				<tr class="odd">
 					<td class="name">
 						<a name="cs-evt-onclearbans"></a>
@@ -7932,7 +7934,7 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
+
 				<tr class="even">
 					<td class="name">
 						<a name="cs-evt-oncleardemos"></a>
@@ -7951,7 +7953,7 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
+
 				<tr class="odd">
 					<td class="name">
 						<a name="cs-evt-oncommandpermerror"></a>
@@ -7977,7 +7979,7 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
+
 				<tr class="even">
 					<td class="name">
 						<a name="cs-evt-oncommandunknown"></a>
@@ -8003,7 +8005,7 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
+
 				<tr class="odd">
 					<td class="name">
 						<a name="cs-evt-oncommandusageerror"></a>
@@ -8029,7 +8031,7 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
+
 				<tr class="even">
 					<td class="name">
 						<a name="cs-evt-onconnect"></a>
@@ -8048,7 +8050,7 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
+
 				<tr class="odd">
 					<td class="name">
 						<a name="cs-evt-ondeath"></a>
@@ -8067,7 +8069,7 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
+
 				<tr class="even">
 					<td class="name">
 						<a name="cs-evt-ondelbot"></a>
@@ -8079,7 +8081,7 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
+
 				<tr class="odd">
 					<td class="name">
 						<a name="cs-evt-ondisconnect"></a>
@@ -8098,7 +8100,7 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
+
 				<tr class="even">
 					<td class="name">
 						<a name="cs-evt-ondropflag"></a>
@@ -8124,7 +8126,7 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
+
 				<tr class="odd">
 					<td class="name">
 						<a name="cs-evt-oneditmode"></a>
@@ -8150,7 +8152,7 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
+
 				<tr class="even">
 					<td class="name">
 						<a name="cs-evt-oneditmute"></a>
@@ -8176,8 +8178,34 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
+
 				<tr class="odd">
+					<td class="name">
+						<a name="cs-evt-onflood"></a>
+						onflood
+					</td>
+					<td>
+						<div class="arg">
+							<div class="argname">$arg1</div>
+							<div class="argtype">string</div>
+							<div class="argdescr">cn</div>
+							<div class="clear"></div>
+						</div>
+					
+						<div class="arg">
+							<div class="argname">$arg2</div>
+							<div class="argtype">string</div>
+							<div class="argdescr">flood type</div>
+							<div class="clear"></div>
+						</div>
+					</td>
+					<td></td>
+					<td>When client reach flood limit ignore that type events for some time (flood type: 0 - unknown, 1 - chat, 2 - rename, 3 - switchmodel, 4 - team, 5 - editvar)</td>
+					<td></td>
+				</tr>
+				
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-evt-onfrag"></a>
 						onfrag
@@ -8195,8 +8223,8 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-evt-ongetdemo"></a>
 						ongetdemo
@@ -8221,8 +8249,8 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-evt-ongetmap"></a>
 						ongetmap
@@ -8240,8 +8268,8 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-evt-onghost"></a>
 						onghost
@@ -8266,8 +8294,8 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-evt-onghosttrigger"></a>
 						onghosttrigger
@@ -8285,8 +8313,8 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-evt-onimission"></a>
 						onimission
@@ -8297,8 +8325,8 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-evt-oninvisflag"></a>
 						oninvisflag
@@ -8316,8 +8344,8 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-evt-onkick"></a>
 						onkick
@@ -8342,8 +8370,8 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-evt-onlistdemos"></a>
 						onlistdemos
@@ -8361,8 +8389,8 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-evt-onmapstart"></a>
 						onmapstart
@@ -8373,8 +8401,8 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-evt-onmapvote"></a>
 						onmapvote
@@ -8406,8 +8434,8 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-evt-onmastermode"></a>
 						onmastermode
@@ -8432,8 +8460,8 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-evt-onmodmap"></a>
 						onmodmap
@@ -8451,8 +8479,8 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-evt-onmute (1|0)"></a>
 						onmute (1|0)
@@ -8470,8 +8498,8 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-evt-onmutemodetrigger"></a>
 						onmutemodetrigger
@@ -8489,8 +8517,8 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-evt-onmutetrigger"></a>
 						onmutetrigger
@@ -8508,8 +8536,8 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-evt-onnewmap"></a>
 						onnewmap
@@ -8527,8 +8555,8 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-evt-onovertime"></a>
 						onovertime
@@ -8539,8 +8567,8 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-evt-onpausegame"></a>
 						onpausegame
@@ -8558,8 +8586,8 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-evt-onreceivemap"></a>
 						onreceivemap
@@ -8577,8 +8605,8 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-evt-onrecorddemo"></a>
 						onrecorddemo
@@ -8589,8 +8617,8 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-evt-onresetflag"></a>
 						onresetflag
@@ -8608,8 +8636,8 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-evt-onresumegame"></a>
 						onresumegame
@@ -8627,8 +8655,8 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-evt-onreturnflag"></a>
 						onreturnflag
@@ -8653,8 +8681,8 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-evt-onsavedemo"></a>
 						onsavedemo
@@ -8679,8 +8707,8 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-evt-onsayteam"></a>
 						onsayteam
@@ -8705,8 +8733,8 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-evt-onscoreflag"></a>
 						onscoreflag
@@ -8731,8 +8759,8 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-evt-onsetmaster"></a>
 						onsetmaster
@@ -8771,8 +8799,8 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-evt-onsetteam"></a>
 						onsetteam
@@ -8797,8 +8825,8 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-evt-onspawn"></a>
 						onspawn
@@ -8816,8 +8844,8 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-evt-onspectator"></a>
 						onspectator
@@ -8842,8 +8870,8 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-evt-onstopdemo"></a>
 						onstopdemo
@@ -8854,8 +8882,8 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-evt-onsuicide"></a>
 						onsuicide
@@ -8873,8 +8901,8 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-evt-onswitchmodel"></a>
 						onswitchmodel
@@ -8899,8 +8927,8 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-evt-onswitchname"></a>
 						onswitchname
@@ -8932,8 +8960,8 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-evt-onswitchteam"></a>
 						onswitchteam
@@ -8958,8 +8986,8 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-evt-ontakeflag"></a>
 						ontakeflag
@@ -8991,8 +9019,8 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-evt-onteamkill"></a>
 						onteamkill
@@ -9010,8 +9038,8 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-evt-ontext"></a>
 						ontext
@@ -9036,7 +9064,7 @@ id.stack = stack->next;<br/>
 					<td></td>
 				</tr>
 				
-				
+
 				<tr>
 					<td colspan="5">&nbsp;</td>
 				</tr>
@@ -9058,8 +9086,8 @@ id.stack = stack->next;<br/>
 	<div>
 		<a name="cs-variables"></a>
 		<h3>Server variables</h3>
-		
-		
+
+
 		<table>
 			<thead>
 				<tr>
@@ -9094,10 +9122,10 @@ id.stack = stack->next;<br/>
 						Group: system
 					</td>
 				</tr>
+
 				
-				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-0"></a>
 						0
@@ -9107,13 +9135,13 @@ id.stack = stack->next;<br/>
 					<td>0</td>
 					<td>2</td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>mod/irc.cpp</td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-adminpass"></a>
 						adminpass
@@ -9123,13 +9151,13 @@ id.stack = stack->next;<br/>
 					<td>""</td>
 					<td></td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>fpsgame/server.cpp</td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-attachradius"></a>
 						attachradius
@@ -9139,13 +9167,13 @@ id.stack = stack->next;<br/>
 					<td>100</td>
 					<td>1000</td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>engine/world.cpp</td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-authfile"></a>
 						authfile
@@ -9155,13 +9183,13 @@ id.stack = stack->next;<br/>
 					<td>"auth.cfg"</td>
 					<td></td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>mod/remod.cpp</td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-autodemo"></a>
 						autodemo
@@ -9171,13 +9199,13 @@ id.stack = stack->next;<br/>
 					<td>0</td>
 					<td>1 </td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>fpsgame/server.cpp</td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-autorepammo"></a>
 						autorepammo
@@ -9187,13 +9215,13 @@ id.stack = stack->next;<br/>
 					<td>1</td>
 					<td>1</td>
 					<td>persist</td>
-				
+
 					<td></td>
 					<td>fpsgame/capture.h</td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-banfile"></a>
 						banfile
@@ -9203,13 +9231,13 @@ id.stack = stack->next;<br/>
 					<td>"permbans.cfg"</td>
 					<td></td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>mod/remod.cpp</td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-basenumbers"></a>
 						basenumbers
@@ -9219,13 +9247,13 @@ id.stack = stack->next;<br/>
 					<td>0</td>
 					<td>1</td>
 					<td>persist</td>
-				
+
 					<td></td>
 					<td>fpsgame/capture.h</td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-capturetether"></a>
 						capturetether
@@ -9235,13 +9263,13 @@ id.stack = stack->next;<br/>
 					<td>1</td>
 					<td>1</td>
 					<td>persist</td>
-				
+
 					<td></td>
 					<td>fpsgame/capture.h</td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-commandchar"></a>
 						commandchar
@@ -9251,13 +9279,13 @@ id.stack = stack->next;<br/>
 					<td>"#"</td>
 					<td></td>
 					<td>read/write</td>
-				
+
 					<td>Defines the character for command starts with (#command)</td>
 					<td>fpsgame/server.cpp</td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-consoletimefmt"></a>
 						consoletimefmt
@@ -9267,13 +9295,13 @@ id.stack = stack->next;<br/>
 					<td>"%c"</td>
 					<td></td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>mod/irc.cpp</td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-ctftkpenalty"></a>
 						ctftkpenalty
@@ -9283,13 +9311,13 @@ id.stack = stack->next;<br/>
 					<td>1</td>
 					<td>1</td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>fpsgame/ctf.h</td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-dbgalias"></a>
 						dbgalias
@@ -9299,13 +9327,13 @@ id.stack = stack->next;<br/>
 					<td>4</td>
 					<td>1000</td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-dbggz"></a>
 						dbggz
@@ -9315,13 +9343,13 @@ id.stack = stack->next;<br/>
 					<td>0</td>
 					<td>1</td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>shared/stream.cpp</td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-dbgvars"></a>
 						dbgvars
@@ -9331,13 +9359,13 @@ id.stack = stack->next;<br/>
 					<td>0</td>
 					<td>1</td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>engine/worldio.cpp</td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-demodir"></a>
 						demodir
@@ -9347,13 +9375,13 @@ id.stack = stack->next;<br/>
 					<td>""</td>
 					<td></td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>fpsgame/server.cpp</td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-demoname"></a>
 						demoname
@@ -9363,13 +9391,13 @@ id.stack = stack->next;<br/>
 					<td></td>
 					<td></td>
 					<td></td>
-				
+
 					<td>Defines the custom demo name, should be defined like demoname = [ result (format "demo %1" (getmillis)) ]</td>
 					<td></td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-entautoviewdist"></a>
 						entautoviewdist
@@ -9379,13 +9407,13 @@ id.stack = stack->next;<br/>
 					<td>25</td>
 					<td>100</td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>engine/world.cpp</td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-entdrop"></a>
 						entdrop
@@ -9395,13 +9423,13 @@ id.stack = stack->next;<br/>
 					<td>2</td>
 					<td>3</td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>engine/world.cpp</td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-entediting"></a>
 						entediting
@@ -9411,13 +9439,13 @@ id.stack = stack->next;<br/>
 					<td>0</td>
 					<td>1</td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>engine/world.cpp</td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-entitysurf"></a>
 						entitysurf
@@ -9427,13 +9455,13 @@ id.stack = stack->next;<br/>
 					<td>0</td>
 					<td>1</td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>engine/world.cpp</td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-entmovingshadow"></a>
 						entmovingshadow
@@ -9443,13 +9471,13 @@ id.stack = stack->next;<br/>
 					<td>1</td>
 					<td>1</td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>engine/world.cpp</td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-entselradius"></a>
 						entselradius
@@ -9459,13 +9487,13 @@ id.stack = stack->next;<br/>
 					<td>2</td>
 					<td>10</td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>engine/world.cpp</td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-entselsnap"></a>
 						entselsnap
@@ -9475,13 +9503,13 @@ id.stack = stack->next;<br/>
 					<td>0</td>
 					<td>1</td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>engine/world.cpp</td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-gamelimit"></a>
 						gamelimit
@@ -9491,13 +9519,13 @@ id.stack = stack->next;<br/>
 					<td>0</td>
 					<td>INT_MAX</td>
 					<td>readonly</td>
-				
+
 					<td></td>
 					<td>fpsgame/server.cpp</td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-gamemillis"></a>
 						gamemillis
@@ -9507,13 +9535,13 @@ id.stack = stack->next;<br/>
 					<td>0</td>
 					<td>INT_MAX</td>
 					<td>readonly</td>
-				
+
 					<td></td>
 					<td>fpsgame/server.cpp</td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-imissiontime"></a>
 						imissiontime
@@ -9523,13 +9551,13 @@ id.stack = stack->next;<br/>
 					<td>10000</td>
 					<td>INT_MAX</td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>fpsgame/server.cpp</td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-initcfg"></a>
 						initcfg
@@ -9539,13 +9567,13 @@ id.stack = stack->next;<br/>
 					<td>""</td>
 					<td></td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>engine/server.cpp</td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-ipbanmsg"></a>
 						ipbanmsg
@@ -9555,13 +9583,13 @@ id.stack = stack->next;<br/>
 					<td>1</td>
 					<td>1</td>
 					<td>read/write</td>
-				
+
 					<td>Show ban messages on server</td>
 					<td>engine/server.cpp</td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-irccommandchar"></a>
 						irccommandchar
@@ -9571,13 +9599,13 @@ id.stack = stack->next;<br/>
 					<td>""</td>
 					<td></td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>mod/irc.cpp</td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-ircfilter"></a>
 						ircfilter
@@ -9587,13 +9615,13 @@ id.stack = stack->next;<br/>
 					<td>2</td>
 					<td>2</td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>mod/irc.cpp</td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-ircpingdelay"></a>
 						ircpingdelay
@@ -9603,13 +9631,13 @@ id.stack = stack->next;<br/>
 					<td>60</td>
 					<td>120</td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>mod/irc.cpp</td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-lockmaprotation"></a>
 						lockmaprotation
@@ -9619,13 +9647,13 @@ id.stack = stack->next;<br/>
 					<td>0</td>
 					<td>2</td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>fpsgame/server.cpp</td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-mapdir"></a>
 						mapdir
@@ -9635,13 +9663,13 @@ id.stack = stack->next;<br/>
 					<td>""</td>
 					<td></td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-mapscale"></a>
 						mapscale
@@ -9651,13 +9679,13 @@ id.stack = stack->next;<br/>
 					<td>0</td>
 					<td>0</td>
 					<td>override</td>
-				
+
 					<td></td>
 					<td>engine/world.cpp</td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-mapsize"></a>
 						mapsize
@@ -9667,13 +9695,13 @@ id.stack = stack->next;<br/>
 					<td>0</td>
 					<td>0</td>
 					<td>override</td>
-				
+
 					<td></td>
 					<td>engine/world.cpp</td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-maptitle"></a>
 						maptitle
@@ -9683,13 +9711,13 @@ id.stack = stack->next;<br/>
 					<td>"Untitled Map by Unknown"</td>
 					<td></td>
 					<td>override</td>
-				
+
 					<td></td>
 					<td>engine/world.cpp</td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-mapversion"></a>
 						mapversion
@@ -9699,13 +9727,13 @@ id.stack = stack->next;<br/>
 					<td>MAPVERSION</td>
 					<td>0</td>
 					<td>override</td>
-				
+
 					<td></td>
 					<td>engine/world.cpp</td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-mastername"></a>
 						mastername
@@ -9715,13 +9743,13 @@ id.stack = stack->next;<br/>
 					<td>server::defaultmaster(</td>
 					<td></td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>engine/server.cpp</td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-masterpass"></a>
 						masterpass
@@ -9731,13 +9759,13 @@ id.stack = stack->next;<br/>
 					<td>""</td>
 					<td></td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>fpsgame/server.cpp</td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-masterport"></a>
 						masterport
@@ -9747,13 +9775,13 @@ id.stack = stack->next;<br/>
 					<td>server::masterport()</td>
 					<td>0xFFFF</td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>engine/server.cpp</td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-maxclients"></a>
 						maxclients
@@ -9763,13 +9791,13 @@ id.stack = stack->next;<br/>
 					<td>DEFAULTCLIENTS</td>
 					<td>MAXCLIENTS</td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>engine/server.cpp</td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-maxdemos"></a>
 						maxdemos
@@ -9779,13 +9807,13 @@ id.stack = stack->next;<br/>
 					<td>5</td>
 					<td>25</td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>fpsgame/server.cpp</td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-maxdemosize"></a>
 						maxdemosize
@@ -9795,13 +9823,13 @@ id.stack = stack->next;<br/>
 					<td>16</td>
 					<td>31</td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>fpsgame/server.cpp</td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-maxdupclients"></a>
 						maxdupclients
@@ -9811,13 +9839,13 @@ id.stack = stack->next;<br/>
 					<td>0</td>
 					<td>MAXCLIENTS</td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>engine/server.cpp</td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-modifiedmapspectator"></a>
 						modifiedmapspectator
@@ -9827,13 +9855,13 @@ id.stack = stack->next;<br/>
 					<td>1</td>
 					<td>2</td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>fpsgame/server.cpp</td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-mutemode"></a>
 						mutemode
@@ -9843,13 +9871,13 @@ id.stack = stack->next;<br/>
 					<td>0</td>
 					<td>NUMMUTEMODE-1</td>
 					<td>read/write</td>
-				
+
 					<td>0 - everyone can talk, 1 - everyone except scpectators can talk, 2 - only players with priveleges can talk, 3 - only admins can talk</td>
 					<td>mod/remod.cpp</td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-name"></a>
 						name
@@ -9880,13 +9908,13 @@ extern void renderwater();
 extern void renderlava(const materialsurface &m</td>
 					<td>Texture *tex</td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>engine/engine.h</td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-nodamage"></a>
 						nodamage
@@ -9896,13 +9924,13 @@ extern void renderlava(const materialsurface &m</td>
 					<td>0</td>
 					<td>1</td>
 					<td>read/write</td>
-				
+
 					<td>Don't deal any damage in coopedit mode</td>
 					<td>fpsgame/server.cpp</td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-numargs"></a>
 						numargs
@@ -9912,13 +9940,13 @@ extern void renderlava(const materialsurface &m</td>
 					<td>0</td>
 					<td>0</td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-octaentsize"></a>
 						octaentsize
@@ -9928,13 +9956,13 @@ extern void renderlava(const materialsurface &m</td>
 					<td>64</td>
 					<td>1024</td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>engine/world.cpp</td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-overtime"></a>
 						overtime
@@ -9944,13 +9972,13 @@ extern void renderlava(const materialsurface &m</td>
 					<td>0</td>
 					<td>600</td>
 					<td>read/write</td>
-				
+
 					<td>Overtime when teams are tied, 0 - disable overtime</td>
 					<td>fpsgame/server.cpp</td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-packetdelay"></a>
 						packetdelay
@@ -9960,13 +9988,13 @@ extern void renderlava(const materialsurface &m</td>
 					<td>33</td>
 					<td>33</td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>fpsgame/server.cpp</td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-pause"></a>
 						pause
@@ -9976,13 +10004,13 @@ extern void renderlava(const materialsurface &m</td>
 					<td>0</td>
 					<td>1</td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-persist"></a>
 						persist
@@ -9992,13 +10020,13 @@ extern void renderlava(const materialsurface &m</td>
 					<td>0</td>
 					<td>1</td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>fpsgame/server.cpp</td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-publicserver"></a>
 						publicserver
@@ -10008,13 +10036,13 @@ extern void renderlava(const materialsurface &m</td>
 					<td>0</td>
 					<td>3</td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>fpsgame/server.cpp</td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-rconenable"></a>
 						rconenable
@@ -10024,13 +10052,13 @@ extern void renderlava(const materialsurface &m</td>
 					<td>0</td>
 					<td>1</td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>mod/rconmod.cpp</td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-rconip"></a>
 						rconip
@@ -10040,13 +10068,13 @@ extern void renderlava(const materialsurface &m</td>
 					<td>""</td>
 					<td></td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>mod/rconmod.cpp</td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-rconpass"></a>
 						rconpass
@@ -10056,13 +10084,13 @@ extern void renderlava(const materialsurface &m</td>
 					<td>""</td>
 					<td></td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>mod/rconmod.cpp</td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-rconport"></a>
 						rconport
@@ -10072,13 +10100,13 @@ extern void renderlava(const materialsurface &m</td>
 					<td>27070</td>
 					<td>65535</td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>engine/server.cpp</td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-rconproto"></a>
 						rconproto
@@ -10088,13 +10116,13 @@ extern void renderlava(const materialsurface &m</td>
 					<td>0</td>
 					<td>NUMPROTOS-1</td>
 					<td>read/write</td>
-				
+
 					<td>Rcon protocol 0 - udp, 1 - tcp</td>
 					<td>mod/rconmod.cpp</td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-restrictdemos"></a>
 						restrictdemos
@@ -10104,13 +10132,13 @@ extern void renderlava(const materialsurface &m</td>
 					<td>1</td>
 					<td>1</td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>fpsgame/server.cpp</td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-restrictgamespeed"></a>
 						restrictgamespeed
@@ -10120,13 +10148,13 @@ extern void renderlava(const materialsurface &m</td>
 					<td>1</td>
 					<td>1</td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>fpsgame/server.cpp</td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-restrictpausegame"></a>
 						restrictpausegame
@@ -10136,13 +10164,13 @@ extern void renderlava(const materialsurface &m</td>
 					<td>1</td>
 					<td>1</td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>fpsgame/server.cpp</td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-resumedelay"></a>
 						resumedelay
@@ -10152,13 +10180,13 @@ extern void renderlava(const materialsurface &m</td>
 					<td>0</td>
 					<td>100</td>
 					<td>read/write</td>
-				
+
 					<td>Delay in seconds before unpause game on request</td>
 					<td>mod/remod.cpp</td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-resumetimer"></a>
 						resumetimer
@@ -10168,13 +10196,13 @@ extern void renderlava(const materialsurface &m</td>
 					<td>0</td>
 					<td>1</td>
 					<td>readonly</td>
-				
+
 					<td>0 - no unpause was requested, 1 - resume timer is started</td>
 					<td>mod/remod.cpp</td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-roundtime"></a>
 						roundtime
@@ -10184,13 +10212,13 @@ extern void renderlava(const materialsurface &m</td>
 					<td>0</td>
 					<td>INT_MAX</td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>fpsgame/server.cpp</td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-savebak"></a>
 						savebak
@@ -10200,13 +10228,13 @@ extern void renderlava(const materialsurface &m</td>
 					<td>2</td>
 					<td>2</td>
 					<td>persist</td>
-				
+
 					<td></td>
 					<td>engine/worldio.cpp</td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-savedemo"></a>
 						savedemo
@@ -10216,13 +10244,13 @@ extern void renderlava(const materialsurface &m</td>
 					<td>0</td>
 					<td>1</td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>fpsgame/server.cpp</td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-serverauth"></a>
 						serverauth
@@ -10232,13 +10260,13 @@ extern void renderlava(const materialsurface &m</td>
 					<td>""</td>
 					<td></td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>fpsgame/server.cpp</td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-serverbotbalance"></a>
 						serverbotbalance
@@ -10248,13 +10276,13 @@ extern void renderlava(const materialsurface &m</td>
 					<td>1</td>
 					<td>1</td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>fpsgame/aiman.h</td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-serverbotlimit"></a>
 						serverbotlimit
@@ -10264,13 +10292,13 @@ extern void renderlava(const materialsurface &m</td>
 					<td>8</td>
 					<td>MAXBOTS</td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>fpsgame/aiman.h</td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-serverdesc"></a>
 						serverdesc
@@ -10280,13 +10308,13 @@ extern void renderlava(const materialsurface &m</td>
 					<td>""</td>
 					<td></td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>fpsgame/server.cpp</td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-serverip"></a>
 						serverip
@@ -10296,13 +10324,13 @@ extern void renderlava(const materialsurface &m</td>
 					<td>""</td>
 					<td></td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>engine/server.cpp</td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-servermotd"></a>
 						servermotd
@@ -10312,13 +10340,13 @@ extern void renderlava(const materialsurface &m</td>
 					<td>""</td>
 					<td></td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>fpsgame/server.cpp</td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-serverpass"></a>
 						serverpass
@@ -10328,13 +10356,13 @@ extern void renderlava(const materialsurface &m</td>
 					<td>""</td>
 					<td></td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>fpsgame/server.cpp</td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-serverport"></a>
 						serverport
@@ -10344,13 +10372,13 @@ extern void renderlava(const materialsurface &m</td>
 					<td>server::serverport()</td>
 					<td>0xFFFF-1</td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>engine/server.cpp</td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-serveruprate"></a>
 						serveruprate
@@ -10360,13 +10388,13 @@ extern void renderlava(const materialsurface &m</td>
 					<td>0</td>
 					<td>INT_MAX</td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>engine/server.cpp</td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-setroundtime"></a>
 						setroundtime
@@ -10376,13 +10404,13 @@ extern void renderlava(const materialsurface &m</td>
 					<td>0</td>
 					<td>INT_MAX</td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>fpsgame/server.cpp</td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-showentradius"></a>
 						showentradius
@@ -10392,13 +10420,13 @@ extern void renderlava(const materialsurface &m</td>
 					<td>1</td>
 					<td>1</td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>engine/world.cpp</td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-totalmillis"></a>
 						totalmillis
@@ -10408,13 +10436,13 @@ extern void renderlava(const materialsurface &m</td>
 					<td>0</td>
 					<td>INT_MAX</td>
 					<td>readonly</td>
-				
+
 					<td></td>
 					<td>engine/server.cpp</td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-triggerstate"></a>
 						triggerstate
@@ -10424,13 +10452,13 @@ extern void renderlava(const materialsurface &m</td>
 					<td>0</td>
 					<td>1</td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>fpsgame/entities.cpp</td>
 				</tr>
 				
-				
-				<tr class="even">
+
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-updatemaster"></a>
 						updatemaster
@@ -10440,13 +10468,13 @@ extern void renderlava(const materialsurface &m</td>
 					<td>1</td>
 					<td>1</td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>engine/server.cpp</td>
 				</tr>
 				
-				
-				<tr class="odd">
+
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-verbose"></a>
 						verbose
@@ -10456,12 +10484,12 @@ extern void renderlava(const materialsurface &m</td>
 					<td>0</td>
 					<td>2</td>
 					<td>read/write</td>
-				
+
 					<td></td>
 					<td>mod/irc.cpp</td>
 				</tr>
 				
-				
+
 				<tr>
 					<td colspan="8">&nbsp;</td>
 				</tr>
@@ -10471,6 +10499,6 @@ extern void renderlava(const materialsurface &m</td>
 		</table>
 	</div>
 
-	
+
 </body>
 </html>

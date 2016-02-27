@@ -267,6 +267,14 @@ void extstate::reset()
         guninfo[i].damage = 0;
         guninfo[i].shotdamage = 0;
     }
+
+    loopi(NUMFLOOD)
+    {
+        flood[i].floodlimit = 0;
+        flood[i].lastevent = 0;
+        flood[i].lastwarning = 0;
+        flood[i].strikes = 0;
+    }
 }
 
 // Find best frager
@@ -920,5 +928,67 @@ done:
     if(carry) *carry += src - srcbuf;
     return dst - dstbuf;
 }
+    // networkmessage to flood message type
+    inline size_t floodtype(int type)
+    {
+        size_t flood = FLOOD_OTHER;
+        switch(type)
+        {
+        case N_SAYTEAM:
+        case N_TEXT:
+            flood = FLOOD_TEXT;
+            break;
 
+        case N_SWITCHNAME:
+            flood = FLOOD_SWITCHNAME;
+            break;
+
+        case N_SWITCHTEAM:
+            flood = FLOOD_SWITCHTEAM;
+            break;
+
+        case N_EDITVAR:
+            flood = FLOOD_EDITVAR;
+            break;
+
+        default:
+            break;
+        }
+        return flood;
+    }
+
+    #define FLOODDELAY 500
+    #define STRIKELIMIT 5
+    #define FLOODMUTE 10000
+    #define FLOODTRIGGERTIME 10000
+    bool checkflood(clientinfo *ci, int type)
+    {
+        bool isflood = false;
+        size_t floodmsg = floodtype(type);
+        floodstate &fs = ci->state.ext.flood[floodmsg];
+
+        // if faster than limit
+        if((totalmillis - fs.lastevent) < FLOODDELAY) {
+            fs.strikes++;
+        }
+
+        // strike limit is reached, ignore next events
+        if(fs.strikes >= STRIKELIMIT)
+        {
+            fs.floodlimit = totalmillis + FLOODMUTE;
+            fs.strikes = 0;
+        }
+
+        // if client is flooder
+        if((totalmillis - fs.floodlimit) < 0)
+        {
+            isflood = true;
+            if((totalmillis - fs.lastwarning) > FLOODTRIGGERTIME) {
+                fs.lastwarning = totalmillis;
+                remod::onevent(ONFLOOD, "ii", ci->clientnum, floodmsg);
+            }
+        }
+        fs.lastevent = totalmillis;
+        return isflood;
+    }
 }

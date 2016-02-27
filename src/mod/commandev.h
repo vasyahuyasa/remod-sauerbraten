@@ -13,7 +13,7 @@ enum eventType { ONADDBOT = 0, ONBOTLIMIT, ONCLEARBANS, ONCLEARDEMOS, ONCOMMAND,
                  ONSPAWN, ONSPECTATOR, ONSTOPDEMO, ONSUICIDE, ONSWITCHMODEL, ONSWITCHNAME,
                  ONSWITCHTEAM, ONTAKEFLAG, ONTEAMKILL, ONTEXT, ONMUTETRIGGER, ONMUTEMODETRIGGER,
                  IRC_ONCOMMAND, IRC_ONCOMMANDPERMERROR, IRC_ONCOMMANDUNKNOWN,
-                 IRC_ONCOMMANDUSAGEERROR, IRC_ONMSG, IRC_ONPRIVMSG,
+                 IRC_ONCOMMANDUSAGEERROR, IRC_ONMSG, IRC_ONPRIVMSG, ONFLOOD,
                  CUSTOMEVENT, NUMEVENTS };
 
 static const char * const eventNames[] = {
@@ -27,7 +27,7 @@ static const char * const eventNames[] = {
                  "onspawn", "onspectator", "onstopdemo", "onsuicide", "onswitchmodel", "onswitchname",
                  "onswitchteam", "ontakeflag", "onteamkill", "ontext", "onmutetrigger", "onmutemodetrigger",
                  "irc_oncommand", "irc_oncommandpermerror", "irc_oncommandunknown",
-                 "irc_oncommandusageerror", "irc_onmsg", "irc_onprivmsg",
+                 "irc_oncommandusageerror", "irc_onmsg", "irc_onprivmsg", "onflood",
                  "custom event", "number of events" };
 
 namespace remod

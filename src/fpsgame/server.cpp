@@ -3024,6 +3024,7 @@ namespace server
                 filtertext(text, text, true, true);
 
                 // remod
+                if(remod::checkflood(ci, type)) break;
                 char* ftext = newstring(text);
 
                 //Check for commandchar
@@ -3070,6 +3071,7 @@ namespace server
                 filtertext(text, text, true, true);
 
                 // remod
+                if(remod::checkflood(ci, type)) break;
                 if(remod::checkmutemode(ci))
                 {
                     remod::onevent(ONMUTEMODETRIGGER, "i", sender);
@@ -3101,15 +3103,18 @@ namespace server
 
             case N_SWITCHNAME:
             {
-                QUEUE_MSG;
+                //QUEUE_MSG;
                 getstring(text, p);
 
                 //remod
+                if(remod::checkflood(ci, N_SWITCHNAME)) break;
+
                 string oldname;
                 copystring(oldname, ci->name);
 
                 filtertext(ci->name, text, false, false, MAXNAMELEN);
                 if(!ci->name[0]) copystring(ci->name, "unnamed");
+                QUEUE_INT(N_SWITCHNAME);
                 QUEUE_STR(ci->name);
 
                 // remod
@@ -3121,17 +3126,25 @@ namespace server
             case N_SWITCHMODEL:
             {
                 ci->playermodel = getint(p);
-                QUEUE_MSG;
+                //QUEUE_MSG;
+
+                //remod
+                if(remod::checkflood(ci, N_SWITCHMODEL)) break;
 
                 // remod
                 remod::onevent(ONSWITCHMODEL, "ii", sender, ci->playermodel);
-
+                QUEUE_INT(N_SWITCHMODEL);
+                QUEUE_INT(ci->playermodel);
                 break;
             }
 
             case N_SWITCHTEAM:
             {
                 getstring(text, p);
+
+                //remod
+                if(remod::checkflood(ci, N_SWITCHTEAM)) break;
+
                 filtertext(text, text, false, false, MAXTEAMLEN);
                 if(m_teammode && text[0] && strcmp(ci->team, text) && (!smode || smode->canchangeteam(ci, ci->team, text)) && addteaminfo(text))
                 {
@@ -3213,6 +3226,7 @@ namespace server
                 }
 
                 // remod
+                if(remod::checkflood(ci, N_EDITVAR)) break;
                 if(ci->state.ext.ghost) break;
 
                 if(ci && ci->state.state!=CS_SPECTATOR) QUEUE_MSG;

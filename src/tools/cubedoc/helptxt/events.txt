@@ -261,3 +261,8 @@ When player edit in ghost mode
 @event onreceivemap
 @arg1 cn
 When map uploaded to server by client
+
+@event onflood
+@arg1 cn
+@arg2 flood type
+When client reach flood limit ignore that type events for some time (flood type: 0 - unknown, 1 - chat, 2 - rename, 3 - switchmodel, 4 - team, 5 - editvar)
