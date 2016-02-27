@@ -1,6 +1,6 @@
 // version, change on release
 #ifndef REMOD_VERSION
-#define REMOD_VERSION "SVN build $Rev$"
+#define REMOD_VERSION "v1.0.2"
 #endif
 
 // codename
