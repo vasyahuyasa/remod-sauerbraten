@@ -1150,6 +1150,22 @@ void loopteams(ident *id, uint *body)
     }
 }
 
+void reqauth(int *cn, char *desc)
+{
+    clientinfo *ci = (clientinfo *)getinfo(*cn);
+    if(ci) {
+        const char *domain = desc;
+
+        // ugly code to acess authserv var
+        if(!desc || !desc[0])
+        {
+            ident *id = getident("serverauth");
+            domain = *id->storage.s;
+        }
+        sendf(*cn, 1, "ris", N_REQAUTH, domain);
+    }
+}
+
 /**
  * Set client personal variable for session (limit of variables is 128)
  * @group player
@@ -1877,4 +1893,13 @@ ICOMMAND(isghost, "i", (int *cn), {
  * @group server
  */
 ICOMMAND(forceintermission, "", (), server::startintermission());
+
+/**
+ * Request claim auth from client
+ * @group server
+ * @arg1 cn
+ * @arg2 domain (default serverauth)
+ */
+COMMAND(reqauth, "is");
+
 }
