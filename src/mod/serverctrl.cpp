@@ -1902,4 +1902,6 @@ ICOMMAND(forceintermission, "", (), server::startintermission());
  */
 COMMAND(reqauth, "is");
 
+// debug flood bug
+COMMANDN(debugflood, debugFlood, "");
 }

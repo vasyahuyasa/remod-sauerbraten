@@ -107,5 +107,6 @@ namespace remod
     template<size_t N> static inline bool filterstring(char (&dst)[N], const char *src, bool newline = true, bool colour = true, bool whitespace = true, bool wsstrip = false) { return filterstring(dst, src, newline, colour, whitespace, wsstrip, N-1); }
     size_t old_encodeutf8(uchar *dstbuf, size_t dstlen, const uchar *srcbuf, size_t srclen, size_t *carry);
     bool checkflood(clientinfo *ci, int type);
+    void debugFlood();
 }
 #endif

@@ -991,4 +991,24 @@ done:
         fs.lastevent = totalmillis;
         return isflood;
     }
+
+    void debugFlood()
+    {
+        loopvrev(clients)
+        {
+            clientinfo *ci = clients[i];
+            conoutf("Name: %s", ci->name);
+            conoutf("totalmillis: %d", totalmillis);
+            conoutf("STRIKELIMIT: %d", STRIKELIMIT);
+            loopi(NUMFLOOD)
+            {
+                floodstate &fs = ci->state.ext.flood[i];
+                conoutf("floodstate %d:", i);
+                conoutf("    int lastevent %d:", fs.lastevent);
+                conoutf("    size_t strikes %d:", fs.strikes);
+                conoutf("    int lastwarning %d:", fs.lastwarning);
+                conoutf("    int floodlimit %d:", fs.floodlimit);
+            }
+        }
+    }
 }
