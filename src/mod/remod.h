@@ -54,6 +54,7 @@ namespace remod
 
     struct extstate
     {
+        int suicides;
         bool muted;
         bool ghost;
 
@@ -69,7 +70,7 @@ namespace remod
         floodstate flood[NUMFLOOD];
 
         void reset();
-        extstate() : muted(false), ghost(false), lastmutetrigger(0), lastghosttrigger(0) {}
+        extstate() : suicides(0), muted(false), ghost(false), lastmutetrigger(0), lastghosttrigger(0) {}
     };
 
     struct extinfo
@@ -108,5 +109,6 @@ namespace remod
     size_t old_encodeutf8(uchar *dstbuf, size_t dstlen, const uchar *srcbuf, size_t srclen, size_t *carry);
     bool checkflood(clientinfo *ci, int type);
     void debugFlood();
+    void addSuicide(clientinfo *ci); // count suicides
 }
 #endif

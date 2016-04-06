@@ -1966,6 +1966,7 @@ namespace server
                 actor->state.effectiveness += fragvalue*friends/float(max(enemies, 1));
             }
             teaminfo *t = m_teammode ? teaminfos.access(actor->team) : NULL;
+
             if(t) t->frags += fragvalue;
             sendf(-1, 1, "ri5", N_DIED, target->clientnum, actor->clientnum, actor->state.frags, t ? t->frags : 0);
             target->position.setsize(0);
@@ -1985,7 +1986,11 @@ namespace server
             if(onfrag)      remod::onevent(ONFRAG,     "i", actor->clientnum);
             if(onteamkill)  remod::onevent(ONTEAMKILL, "i", actor->clientnum);
             if(ondeath)     remod::onevent(ONDEATH,    "i", target->clientnum);
-            if(onsuicide)   remod::onevent(ONSUICIDE,  "i", target->clientnum);
+            if(onsuicide)
+            {
+                remod::addSuicide(target);
+                remod::onevent(ONSUICIDE,  "i", target->clientnum);
+            }
         }
     }
 
@@ -2006,6 +2011,7 @@ namespace server
         gs.respawn();
 
         // remod
+        remod::addSuicide(ci);
         remod::onevent(ONSUICIDE,  "i", ci->clientnum);
     }
 

@@ -1904,4 +1904,15 @@ COMMAND(reqauth, "is");
 
 // debug flood bug
 COMMANDN(debugflood, debugFlood, "");
+
+/**
+ * Get number of suicides
+ * @group player
+ * @arg1 client number
+ * @return number of suicides
+ */
+ICOMMAND(getsuicides, "i", (int *cn), {
+            clientinfo *ci = getinfo(*cn);
+            intret(ci ? ci->state.ext.suicides : 0);
+         });
 }

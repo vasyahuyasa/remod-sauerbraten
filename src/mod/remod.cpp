@@ -262,6 +262,8 @@ void extstate::reset()
     lastghosttrigger = 0;
     */
 
+    suicides = 0;
+
     loopi(NUMGUNS)
     {
         guninfo[i].damage = 0;
@@ -1010,5 +1012,11 @@ done:
                 conoutf("    int floodlimit %d:", fs.floodlimit);
             }
         }
+    }
+
+    void addSuicide(clientinfo *ci)
+    {
+        if(ci)
+            ci->state.ext.suicides++;
     }
 }
