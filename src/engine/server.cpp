@@ -344,12 +344,13 @@ void disconnect_client(int n, int reason)
     if(!clients.inrange(n) || clients[n]->type!=ST_TCPIP) return;
     enet_peer_disconnect(clients[n]->peer, reason);
     server::clientdisconnect(n);
-    delclient(clients[n]);
     const char *msg = disconnectreason(reason);
     string s;
-    if(msg) formatstring(s, "client (%s) disconnected because: %s", clients[n]->hostname, msg);
-    else formatstring(s, "client (%s) disconnected", clients[n]->hostname);
+    if(msg) formatstring(s, "client (%s) disconnected because: %s", ((server::clientinfo *)(clients[n]->info))->name, msg);
+    else formatstring(s, "client (%s) disconnected", ((server::clientinfo *)(clients[n]->info))->name);
     logoutf("%s", s);
+
+    delclient(clients[n]);
 
     // remod
     if(!(!ipbanmsg && reason == DISC_IPBAN)) server::sendservmsg(s);
