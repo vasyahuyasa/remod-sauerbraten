@@ -5,6 +5,3 @@ remod64
 # Ignore anything compiled
 *.o
 *.a
-*.dll
-
-
