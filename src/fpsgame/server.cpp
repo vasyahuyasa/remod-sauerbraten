@@ -1170,6 +1170,8 @@ namespace server
         putint(p, -1);
         sendpacket(-1, 1, p.finalize());
 
+        // remod
+        remod::onevent(ONSETMASTER, "iisss", ci->clientnum, ci->privilege, pass, authname ? authname:"", authdesc ? authdesc:"");
 
         checkpausegame();
         return true;
