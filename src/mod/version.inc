@@ -1,6 +1,6 @@
 // version, change on release
 #ifndef REMOD_VERSION
-#define REMOD_VERSION "v1.0.15"
+#define REMOD_VERSION "v1.1.1"
 #endif
 
 // codename
