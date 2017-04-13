@@ -588,7 +588,7 @@ void ircprocess(ircnet *n, char *user[3], int g, int numargs, char *w[])
                             if(!strcasecmp(q, "VERSION"))
                                 //remod
                                 //ircsend(n, "NOTICE %s :\vVERSION %s v%s-%s%d (%s)%s%s\v", user[0], VERSION_NAME, VERSION_STRING, versionplatname, versionarch, VERSION_RELEASE, *VERSION_URL ? ", " : "", VERSION_URL);
-                                ircsend(n, "NOTICE %s :\vVERSION %s Remod \"%s\" %s (build %s %s) %s/%s %s\v", user[0], REMOD_CODENAME, REMOD_VERSION, __DATE__, __TIME__, REMOD_SYSTEM, REMOD_ARCH, REMOD_URL);
+                                ircsend(n, "NOTICE %s :\vVERSION Remod \"%s\" %s (build %s %s) %s/%s %s\v", user[0], REMOD_CODENAME, REMOD_VERSION, __DATE__, __TIME__, REMOD_SYSTEM, REMOD_ARCH, REMOD_URL);
 
                             else if(!strcasecmp(q, "PING")) // eh, echo back
                                 ircsend(n, "NOTICE %s :\vPING %s\v", user[0], r);
