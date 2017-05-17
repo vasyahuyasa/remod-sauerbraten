@@ -6,11 +6,11 @@ The goal of project is create lightweight crossplatform (FreeBSD, Linux, Windows
 
 Nightly builds (Linux and win32 packages) available here: http://remod.butchers.su/.
 
-##Download
+## Download
   * Latest development version: https://github.com/vasyahuyasa/remod-sauerbraten/releases
   * GIT repository: https://github.com/vasyahuyasa/remod-sauerbraten
 
-##Installation notes and some guides
+## Installation notes and some guides
 ```
 git clone https://github.com/vasyahuyasa/remod-sauerbraten.git
 cd remod-sauerbraten
@@ -19,9 +19,9 @@ git submodule update
 cd src
 make
 ```
-  * Check our https://github.com/vasyahuyasa/remod-sauerbraten/wiki/Installation wiki page
+  * Check our [wiki page](https://github.com/vasyahuyasa/remod-sauerbraten/wiki/Installation)
 
-##Implemented features
+## Implemented features
   * server side cubescript
   * remote control, access to serverside cubescript (via tcp, udp and netcat)
   * new cubescript functions
@@ -33,17 +33,17 @@ make
   * save and load maps to local file system in coopedit mode
   * database (sqlite3, mysql)
 
-##Work in progress
+## Work in progress
   * users system
   * scoreboard
   * anticheat
 
-##Supported platforms
+## Supported platforms
   * Mac (cmake, Xcode)
   * FreeBSD 
   * Linux
   * Windows
 
-##Contacts
+## Contacts
   * [degrave](https://github.com/vasyahuyasa), [^o_o^](https://github.com/rmhmlhr)
   * IRC: irc://irc.gamesurge.net/rb
