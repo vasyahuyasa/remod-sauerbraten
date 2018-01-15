@@ -16,6 +16,11 @@ void validmapname(char *dst, const char *src, const char *prefix = NULL, const c
     else if(dst != alt) copystring(dst, alt, maxlen);
 }
 
+void fixmapname(char *name)
+{
+    validmapname(name, name, NULL, "");
+}
+
 void getmapfilenames(const char *fname, const char *cname, char *pakname, char *mapname, char *cfgname)
 {
     if(!cname) cname = fname;
