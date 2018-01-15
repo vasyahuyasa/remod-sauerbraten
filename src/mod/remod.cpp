@@ -964,7 +964,11 @@ done:
     #define FLOODMUTE 10000
     #define FLOODTRIGGERTIME 10000
     bool checkflood(clientinfo *ci, int type)
-    {       
+    {
+        // remod TODO: fix this function
+        // server muted after 21 day of uptime
+        return false;
+
         bool isflood = false;
         size_t floodmsg = floodtype(type);
         floodstate &fs = ci->state.ext.flood[floodmsg];
