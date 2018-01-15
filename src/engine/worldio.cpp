@@ -8,6 +8,11 @@ void cutogz(char *s)
     if(ogzp) *ogzp = '\0';
 }
 
+void fixmapname(char *name)
+{
+    validmapname(name, name, NULL, "");
+}
+
 void getmapfilenames(const char *fname, const char *cname, char *pakname, char *mapname, char *cfgname)
 {
     if(!cname) cname = fname;
