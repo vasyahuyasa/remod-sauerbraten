@@ -270,6 +270,11 @@ auth_db = "default"
 exec "scripts/modules/syncauth.cfg"
 
 
+//******** Authcontrol module ********
+// Extended commands to allow control of authkeys stored in MySQL/SQLite databases in-game.
+
+exec "scripts/modules/authcontrol.cfg"
+
 
 //******** Spy module ********
 // Collects IP addresses of players and allow you to see players with fake names
