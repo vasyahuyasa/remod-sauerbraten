@@ -1900,7 +1900,7 @@ namespace server
         if(gamemillis >= gamelimit && !interm)
         {
             //remod
-            if(overtime && m_teammode && remod::isteamsequalscore())
+            if(overtime && (m_teammode ? remod::isteamsequalscore() : remod::isplayerssequalscore()))
             {
                 if(m_timed && smapname[0])
                 {

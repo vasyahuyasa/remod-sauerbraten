@@ -758,6 +758,29 @@ bool isteamsequalscore()
     return (goodscore == evilscore);
 }
 
+// Check if two top player have equal score
+bool isplayerssequalscore()
+{
+    int maxfrags = INT_MIN;
+    bool equalfrags = false;
+    
+    loopv(clients)
+    if(clients[i]->state.state != CS_SPECTATOR)
+    {
+        clientinfo *ci = clients[i];
+        if (ci->state.frags > maxfrags)
+        {
+            maxfrags = ci->state.frags;
+            equalfrags = false;
+        }
+        else if (ci->state.frags == maxfrags)
+            equalfrags = true;
+    }
+    
+    return equalfrags;
+}
+
+
 void rename(int cn, const char* name)
 {
     // don't rename bots
