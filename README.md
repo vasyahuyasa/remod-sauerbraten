@@ -14,8 +14,7 @@ Nightly builds (Linux and win32 packages) available here: http://remod.butchers.
 ```
 git clone https://github.com/vasyahuyasa/remod-sauerbraten.git
 cd remod-sauerbraten
-git submodule init
-git submodule update
+git submodule update --init --recursive
 cd src
 make
 ```
