@@ -32,4 +32,4 @@ RUN apk --no-cache add \
     mariadb-connector-c \
     libgcc
     
-ENTRYPOINT ["/bin/sh"]
+ENTRYPOINT ["/remod64"]
