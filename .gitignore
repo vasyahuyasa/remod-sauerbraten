@@ -5,3 +5,6 @@ remod64
 # Ignore anything compiled
 *.o
 *.a
+
+# config
+server-init.cfg
