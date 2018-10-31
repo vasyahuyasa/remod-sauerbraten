@@ -52,21 +52,26 @@ namespace remod
             banlists.add(bl);
         }
 
+        // Try to find banlist by name. If banlist absent create new one if name is null
+        // or empty string return local banlist
         banlist* banmanager::getbanlist(char *name)
         {
-            banlist *bl = NULL;
+            banlist *bl = NULL;            
             if(name && name[0])
             {
+                // banlists[0]->name is always is null need to check it
                 loopv(banlists)
-                    if(strcmp(banlists[i]->name, name))
+                    if(banlists[i]->name && strcmp(banlists[i]->name, name))
                     {
                         bl = banlists[i];
                         break;
                     }
             }
-            else bl = banlists[0]; // local banlist without name
-            if(bl == NULL) bl = new banlist(name); // create new banlist
-            return bl;
+            else
+            {
+                bl = banlists[0]; // local banlist without name
+            }
+            return bl != NULL ? bl : new banlist(name);
         }
 
         banlist* banmanager::localbanlist()
