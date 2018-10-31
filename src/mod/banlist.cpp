@@ -116,7 +116,7 @@ namespace remod
             if(admin)
                 strcpy(b->admin, admin);
             if(reason)
-                strcpy(b->reason, reason);            
+                strcpy(b->reason, reason);
 
             banlist *bl = getbanlist(listname);
             bl->add(b);
