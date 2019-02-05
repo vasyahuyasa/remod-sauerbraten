@@ -47,6 +47,32 @@ void getip(int *pcn) {
 }
 
 
+void getplayermodel(int *cn)
+{
+    clientinfo *ci = (clientinfo *)getinfo((int)*cn);
+    if(ci)
+    {
+        intret(ci->playermodel);
+    }
+}
+
+void gethealth(int *cn)
+{
+    clientinfo *ci = (clientinfo *)getinfo((int)*cn);
+    if(ci)
+    {
+        intret(ci->state.health);
+    }
+}
+
+void writetofile(char* filename, char* content)
+{
+    stream *f = openutf8file(filename, "w");
+    if(!f) return;
+    f->printf("//%s \n", filename);
+    f->printf("%s", content);
+    delete f;
+}
 
 void getfrags(int *pcn)
 {
@@ -1222,6 +1248,29 @@ ICOMMAND(getmode, "", (), intret(gamemode));
  * @example ip2int (getip $cn)
  */
 COMMAND(getip, "i");
+
+/**
+ * Get player's model as integer
+ * @group server
+ * @arg1 client number
+ * @return integer playermodel's num
+ */
+COMMAND(getplayermodel, "i");
+
+/**
+ * Get current player's health
+ * @group player
+ * @arg1 client number
+ */
+COMMAND(gethealth, "i");
+
+/**
+ * Write text to an external file
+ * @group server
+ * @arg1 file name
+ * @arg2 file content
+ */
+COMMAND(writetofile, "ss");
 
 /**
  * Get frags count of player
