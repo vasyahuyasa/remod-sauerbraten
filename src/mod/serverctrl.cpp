@@ -1251,16 +1251,17 @@ COMMAND(getip, "i");
 
 /**
  * Get player's model as integer
- * @group server
+ * @group player
  * @arg1 client number
  * @return integer playermodel's num
  */
 COMMAND(getplayermodel, "i");
 
 /**
- * Get current player's health
+ * Get player's current health
  * @group player
  * @arg1 client number
+ * @return player's health num
  */
 COMMAND(gethealth, "i");
 
