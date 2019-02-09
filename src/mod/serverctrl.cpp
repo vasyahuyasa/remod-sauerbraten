@@ -47,6 +47,23 @@ void getip(int *pcn) {
 }
 
 
+void getplayermodel(int *cn)
+{
+    clientinfo *ci = (clientinfo *)getinfo((int)*cn);
+    if(ci)
+    {
+        intret(ci->playermodel);
+    }
+}
+
+void gethealth(int *cn)
+{
+    clientinfo *ci = (clientinfo *)getinfo((int)*cn);
+    if(ci)
+    {
+        intret(ci->state.health);
+    }
+}
 
 void getfrags(int *pcn)
 {
@@ -1222,6 +1239,22 @@ ICOMMAND(getmode, "", (), intret(gamemode));
  * @example ip2int (getip $cn)
  */
 COMMAND(getip, "i");
+
+/**
+ * Get player's model as integer
+ * @group player
+ * @arg1 client number
+ * @return integer playermodel's num
+ */
+COMMAND(getplayermodel, "i");
+
+/**
+ * Get player's current health
+ * @group player
+ * @arg1 client number
+ * @return player's health num
+ */
+COMMAND(gethealth, "i");
 
 /**
  * Get frags count of player
