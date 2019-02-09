@@ -65,15 +65,6 @@ void gethealth(int *cn)
     }
 }
 
-void writetofile(char* filename, char* content)
-{
-    stream *f = openutf8file(filename, "w");
-    if(!f) return;
-    f->printf("//%s \n", filename);
-    f->printf("%s", content);
-    delete f;
-}
-
 void getfrags(int *pcn)
 {
     int cn=(int)*pcn;
@@ -1264,14 +1255,6 @@ COMMAND(getplayermodel, "i");
  * @return player's health num
  */
 COMMAND(gethealth, "i");
-
-/**
- * Write text to an external file
- * @group server
- * @arg1 file name
- * @arg2 file content
- */
-COMMAND(writetofile, "ss");
 
 /**
  * Get frags count of player
