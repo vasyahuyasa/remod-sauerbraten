@@ -1494,9 +1494,6 @@ namespace server
             gs.armour, gs.armourtype,
             gs.gunselect, GUN_PISTOL-GUN_SG+1, &gs.ammo[GUN_SG]);
         gs.lastspawn = gamemillis;
-
-        //remod
-        remod::onevent(ONSPAWN, "i", ci->clientnum);
     }
 
     void sendwelcome(clientinfo *ci)
@@ -1622,6 +1619,9 @@ namespace server
                 putint(p, N_FORCEDEATH);
                 putint(p, ci->clientnum);
                 sendf(-1, 1, "ri2x", N_FORCEDEATH, ci->clientnum, ci->clientnum);
+
+                // remod
+                ci->state.ext.spawned = false;
             }
             else
             {
@@ -2273,6 +2273,9 @@ namespace server
         ci->state.timeplayed += lastmillis - ci->state.lasttimeplayed;
         if(!ci->local && (!ci->privilege || ci->warned)) aiman::removeai(ci);
         sendf(-1, 1, "ri3", N_SPECTATOR, ci->clientnum, 1);
+
+        // remod
+        ci->state.ext.spawned = false;
     }
 
     struct crcinfo
@@ -2360,6 +2363,9 @@ namespace server
         sendf(-1, 1, "ri3", N_SPECTATOR, ci->clientnum, 0);
         if(ci->clientmap[0] || ci->mapcrc) checkmaps();
         if(!hasmap(ci)) rotatemap(true);
+
+        // remod
+        ci->state.ext.spawned = false;
     }
 
     void sendservinfo(clientinfo *ci)
@@ -2815,7 +2821,13 @@ namespace server
                     }
                     if(smode && cp->state.state==CS_ALIVE) smode->moved(cp, cp->state.o, cp->gameclip, pos, (flags&0x80)!=0);
                     cp->state.o = pos;
-                    cp->gameclip = (flags&0x80)!=0;
+                    cp->gameclip = (flags&0x80)!=0;                    
+                }
+
+                // remod
+                if (!cp->state.ext.spawned) {
+                    remod::onevent(ONSPAWN, "i", cp->clientnum);
+                    cp->state.ext.spawned = true;
                 }
                 break;
             }
@@ -2954,6 +2966,9 @@ namespace server
                     putint(cm->messages, N_SPAWN);
                     sendstate(cq->state, cm->messages);
                 });
+
+                // remod
+                cq->state.ext.spawned = false;
                 break;
             }
 
