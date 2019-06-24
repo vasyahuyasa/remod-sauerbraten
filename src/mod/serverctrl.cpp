@@ -1047,7 +1047,7 @@ void getpos(int *cn)
 {
     clientinfo *ci = (clientinfo *)getinfo(*cn);
     if(!ci || ci->state.state == CS_SPECTATOR) return;
-    defformatstring(pos, "%s %s %s", floatstr(ci->state.o.x), floatstr(ci->state.o.y), floatstr(ci->state.o.z + 14.0f)); // 14.0f camera height
+    defformatstring(pos, "%f %f %f", ci->state.o.x, ci->state.o.y, ci->state.o.z + 14.0f); // 14.0f camera height
     result(pos);
 }
 
@@ -1111,7 +1111,7 @@ void loopteams(ident *id, uint *body)
     if(m_ctf || m_collect)
     {
         teams.add("good");
-        teams.add("evil");
+        teams.add("evilteam");
     }
     else
     {

@@ -2825,9 +2825,9 @@ namespace server
                 }
 
                 // remod
-                if (!cp->state.ext.spawned) {
-                    remod::onevent(ONSPAWN, "i", cp->clientnum);
-                    cp->state.ext.spawned = true;
+                if (ci->state.state==CS_ALIVE && !ci->state.ext.spawned) {
+                    remod::onevent(ONSPAWN, "i", ci->clientnum);
+                    ci->state.ext.spawned = true;
                 }
                 break;
             }
