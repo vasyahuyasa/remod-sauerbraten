@@ -126,6 +126,9 @@ namespace aiman
 		ci->aireinit = 2;
 		ci->connected = true;
         dorefresh = true;
+
+        // remod
+        ci->state.ext.spawned = false;
 		return true;
 	}
 

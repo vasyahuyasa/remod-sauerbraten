@@ -160,6 +160,7 @@ void spectator(int *st, int *pcn)
         spinfo->state.state = CS_SPECTATOR;
         spinfo->state.timeplayed += lastmillis - spinfo->state.lasttimeplayed;
         if(!spinfo->local && !spinfo->privilege) aiman::removeai(spinfo);
+        spinfo->state.ext.spawned = false;
     }
     else if(spinfo->state.state==CS_SPECTATOR && !val)
     {
@@ -168,6 +169,7 @@ void spectator(int *st, int *pcn)
         spinfo->state.lasttimeplayed = lastmillis;
         aiman::addclient(spinfo);
         if(spinfo->clientmap[0] || spinfo->mapcrc) checkmaps();
+        spinfo->state.ext.spawned = false;
     }
     sendf(-1, 1, "ri3", N_SPECTATOR, spectator, val);
     if(!val && !hasmap(spinfo)) rotatemap(true);
@@ -1045,7 +1047,7 @@ void getpos(int *cn)
 {
     clientinfo *ci = (clientinfo *)getinfo(*cn);
     if(!ci || ci->state.state == CS_SPECTATOR) return;
-    defformatstring(pos, "%s %s %s", floatstr(ci->state.o.x), floatstr(ci->state.o.y), floatstr(ci->state.o.z + 14.0f)); // 14.0f camera height
+    defformatstring(pos, "%f %f %f", ci->state.o.x, ci->state.o.y, ci->state.o.z + 14.0f); // 14.0f camera height
     result(pos);
 }
 
@@ -1109,7 +1111,7 @@ void loopteams(ident *id, uint *body)
     if(m_ctf || m_collect)
     {
         teams.add("good");
-        teams.add("evil");
+        teams.add("evilteam");
     }
     else
     {
