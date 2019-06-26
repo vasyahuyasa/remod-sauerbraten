@@ -15,7 +15,7 @@ USE_MYSQL=true
 MYSQL_USE_SYSTEM_LIBS=true
 
 #Use ssytem enet libraryie
-ENET_USE_SYSTEM_LIBS=true
+ENET_USE_SYSTEM_LIBS=false
 ######################################
 
 ### Tools
