@@ -1,4 +1,6 @@
 language: c
+git:
+  submodules: true
 sudo: required
 services: docker
 env:
@@ -17,8 +19,8 @@ script:
 
 before_deploy:
   - docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD
-  - docker pull "${IMAGE_NAME}" || true
-  - cd .. && docker build --pull --cache-from "$IMAGE_NAME" --tag "$IMAGE_NAME" .
+  - cd ..
+  - docker build --pull --cache-from "$IMAGE_NAME" --tag "$IMAGE_NAME" .
   - docker tag "${IMAGE_NAME}" "${IMAGE_NAME}:latest"
   - docker tag "${IMAGE_NAME}" "${IMAGE_NAME}:${TRAVIS_TAG}"
 

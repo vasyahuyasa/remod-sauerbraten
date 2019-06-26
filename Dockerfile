@@ -6,8 +6,9 @@ RUN apk --no-cache add \
     binutils \
     sqlite-dev \
     mariadb-connector-c \
-    mariadb-connector-c-dev
-COPY src/ /src/
+    mariadb-connector-c-dev \
+    autoconf
+COPY src src/
 RUN cd src; make -f Makefile.alpine
 
 FROM alpine:3.10.0
