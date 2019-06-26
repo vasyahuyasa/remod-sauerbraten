@@ -57,6 +57,7 @@ namespace remod
         int suicides;
         bool muted;
         bool ghost;
+        bool spawned; // if false, N_POS packed trigger onspawn event
 
         int lastmutetrigger;
         int lastghosttrigger;
@@ -70,7 +71,7 @@ namespace remod
         floodstate flood[NUMFLOOD];
 
         void reset();
-        extstate() : suicides(0), muted(false), ghost(false), lastmutetrigger(0), lastghosttrigger(0) {}
+        extstate() : suicides(0), muted(false), ghost(false), spawned(false), lastmutetrigger(0), lastghosttrigger(0) {}
     };
 
     struct extinfo
