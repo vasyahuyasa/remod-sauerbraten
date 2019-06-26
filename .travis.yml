@@ -20,8 +20,10 @@ before_deploy:
   - docker pull "${IMAGE_NAME}" || true
 
 deploy:
-  - cd .. && docker build --pull --cache-from "$IMAGE_NAME" --tag "$IMAGE_NAME" .
-  - docker tag "${IMAGE_NAME}" "${IMAGE_NAME}:latest"
-  - docker tag "${IMAGE_NAME}" "${IMAGE_NAME}:${TRAVIS_TAG}"
-  - docker push "${IMAGE_NAME}:latest"
-  - docker push "${IMAGE_NAME}:${TRAVIS_TAG}"
+  provider: script
+  script:
+    - cd .. && docker build --pull --cache-from "$IMAGE_NAME" --tag "$IMAGE_NAME" .
+    - docker tag "${IMAGE_NAME}" "${IMAGE_NAME}:latest"
+    - docker tag "${IMAGE_NAME}" "${IMAGE_NAME}:${TRAVIS_TAG}"
+    - docker push "${IMAGE_NAME}:latest"
+    - docker push "${IMAGE_NAME}:${TRAVIS_TAG}"
