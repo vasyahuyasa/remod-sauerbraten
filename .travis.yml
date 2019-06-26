@@ -24,8 +24,6 @@ before_deploy:
 
 deploy:
   provider: script
-  script:
-    - docker push "${IMAGE_NAME}:latest"
-    - docker push "${IMAGE_NAME}:${TRAVIS_TAG}"
+  script: docker push "${IMAGE_NAME}:latest" && docker push "${IMAGE_NAME}:${TRAVIS_TAG}"
   on:
     branch: docker
