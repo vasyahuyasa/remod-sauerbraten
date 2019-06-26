@@ -18,13 +18,13 @@ script:
 before_deploy:
   - docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD
   - docker pull "${IMAGE_NAME}" || true
+  - docker build --pull --cache-from "$IMAGE_NAME" --tag "$IMAGE_NAME" .
+  - docker tag "${IMAGE_NAME}" "${IMAGE_NAME}:latest"
+  - docker tag "${IMAGE_NAME}" "${IMAGE_NAME}:${TRAVIS_TAG}"
 
 deploy:
   provider: script
   script:
-    - docker build --pull --cache-from "$IMAGE_NAME" --tag "$IMAGE_NAME" .
-    - docker tag "${IMAGE_NAME}" "${IMAGE_NAME}:latest"
-    - docker tag "${IMAGE_NAME}" "${IMAGE_NAME}:${TRAVIS_TAG}"
     - docker push "${IMAGE_NAME}:latest"
     - docker push "${IMAGE_NAME}:${TRAVIS_TAG}"
   on:
