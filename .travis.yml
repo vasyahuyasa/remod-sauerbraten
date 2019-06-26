@@ -15,7 +15,7 @@ compiler:
   - gcc
 
 script:
-  - cd src && make
+  - cd src && make && make clean
 
 before_deploy:
   - docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD
