@@ -1,7 +1,11 @@
 language: c
+sudo: required
+services: docker
+env:
+  global:
+    - IMAGE_NAME=vasyahuyasa/remod
 
 before_install:
-  # Install dependencies
   - sudo apt-get update
   - sudo apt-get install -y automake build-essential zlib1g-dev
  
@@ -11,3 +15,13 @@ compiler:
 script:
   - cd src && make
 
+before_deploy:
+  - docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD
+  - docker pull "${IMAGE_NAME}" || true
+
+deploy:
+  - cd .. && docker build --pull --cache-from "$IMAGE_NAME" --tag "$IMAGE_NAME" .
+  - docker tag "${IMAGE_NAME}" "${IMAGE_NAME}:latest"
+  - docker tag "${IMAGE_NAME}" "${IMAGE_NAME}:${TRAVIS_TAG}"
+  - docker push "${IMAGE_NAME}:latest"
+  - docker push "${IMAGE_NAME}:${TRAVIS_TAG}"
