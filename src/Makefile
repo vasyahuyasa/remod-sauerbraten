@@ -107,17 +107,14 @@ SERVER_OBJS= \
 
 
 
-#geoip
+# geoip maxminddb
 ifeq ($(USE_GEOIP),true)
-override CXXFLAGS+= -DGEOIP -DGEOIPDATADIR -DPACKAGE_VERSION=\"1.6.9\"
-override INCLUDES+= -Imod/libGeoIP/
-override SERVER_OBJS+= \
-        mod/geoipmod2-standalone.o \
-	mod/libGeoIP/GeoIP-standalone.o \
-	mod/libGeoIP/GeoIPCity-standalone.o \
-        mod/libGeoIP/GeoIP_deprecated-standalone.o
+override CXXFLAGS+= -DGEOIP
+override INCLUDES+= -Imod/libmaxminddb/include
+override SERVER_LIBS+= -Lmod/libmaxminddb/src/.libs -lmaxminddb
+override SERVER_OBJS+= mod/geoipmod2-standalone.o
 endif
-#end of geoip
+# end maxminddb
 
 #irc
 ifeq ($(USE_IRCBOT),true)
@@ -149,6 +146,7 @@ override SERVER_LIBS+= -lsqlite3
 else
 override CXXFLAGS+= -DSQLITE_THREADSAFE=1
 override INCLUDES+= -Imod/sqlite3
+
 #linux-only libs
 ifeq ($(PLATFORM),Linux)
 override SERVER_LIBS+= -ldl -lpthread
@@ -238,7 +236,7 @@ debug: debug-flags
 debug-flags: override CXXFLAGS+=-O0 -g -DDEBUG -DDEBUG_SQL
 debug-flags: build
 
-build: revision server
+build: revision libmaxminddb server
 
 revision:
 SVNVERSION= $(shell svnversion -cn . 2>/dev/null | sed -e "s/.*://" -e "s/\([0-9]*\).*/\1/" | grep "[0-9]") 
@@ -255,14 +253,17 @@ libenet: enet/Makefile
 clean-enet: enet/Makefile
 	$(MAKE) -C enet/ maintainer-clean
 
-geoip/Makefile:
-	cd mod/GeoIP; chmod +x configure; ./configure --enable-shared=no --enable-static=yes
-
-libgeoip: geoip/Makefile
-	$(MAKE)	-C mod/GeoIP/libGeoIP/ all
-
 clean-geoip: geoip/Makefile
 	$(MAKE) -C mod/GeoIP/libGeoIP/ maintainer-clean
+
+maxminddb/Makefile:
+	cd mod/libmaxminddb; ./configure --enable-shared=no --enable-static=yes
+
+libmaxminddb: maxminddb/Makefile
+	$(MAKE)	-C mod/libmaxminddb/ all
+
+clean-maxminddb: maxminddb/Makefile
+	$(MAKE) -C mod/libmaxminddb/ maintainer-clean
 
 clean: clean-enet
 	-$(RM) $(SERVER_OBJS) 

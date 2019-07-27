@@ -8,3 +8,6 @@ remod64
 
 # config
 server-init.cfg
+
+# vscode
+.vscode

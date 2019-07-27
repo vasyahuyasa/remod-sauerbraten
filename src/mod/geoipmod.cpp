@@ -8,7 +8,7 @@
 
 
 
-#ifdef GEOIP
+#ifdef GEOIP_LEGACY
 
 #include "geoipmod.h"
 #include "remod.h"

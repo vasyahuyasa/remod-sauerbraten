@@ -1,13 +1,15 @@
 /*
 * remod:    geoipmod2.cpp
-* date:     2014
+* date:     2014, 2019
 * author:   degrave
 *
-* GEOIP new staff
+* GeoIP mod. Using maxminddb for translate IP to country name
 */
 
-#include "GeoIP.h"
-#include "GeoIPCity.h"
+#ifdef GEOIP
+
+#include <errno.h>
+#include "maxminddb.h"
 #include "geoipmod2.h"
 #include "remod.h"
 
@@ -15,127 +17,104 @@ EXTENSION(GEOIP);
 
 namespace remod
 {
-namespace geoip
+
+static MMDB_s mmdb;
+static bool geoipAvailable = false;
+
+void loadgeoip(const char *filename)
 {
+    const char *fname = findfile(filename, "r");
 
-    static GeoIP *geoip = NULL;
-    static GeoIP *geocity = NULL;
-
-    void loadgeoip(const char *path, bool isgeocity)
+    if (!fname)
     {
-        GeoIP *gi;
-        string dbtype;
-        memset(dbtype, 0,sizeof(dbtype));
-
-        const char *fname = findfile(path, "r"); // full path
-        gi = GeoIP_open(fname, GEOIP_STANDARD | GEOIP_MEMORY_CACHE);
-        if(isgeocity)
-            strcpy(dbtype, "geocity");
-        else
-            strcpy(dbtype, "geoip");
-
-        if(gi)
-        {
-            if(isgeocity)
-                geocity = gi;
-            else
-                geoip = gi;
-
-            conoutf(CON_ERROR, "Geoip: %s loaded (db: \"%s\")", dbtype, fname);
-        }
-        else
-        {
-            conoutf(CON_ERROR, "Geoip: can not load %s (db: \"%s\")", dbtype, fname);
-        }
+        conoutf(CON_ERROR, "Geoip: can not load %s", filename);
+        return;
     }
 
-    const char *getcountry(const char *addr)
+    int status = MMDB_open(fname, MMDB_MODE_MMAP, &mmdb);
+    if (status != MMDB_SUCCESS)
     {
-        const char *country_name = NULL;
-        if(geoip)
+        conoutf(CON_ERROR, "Geoip: can not load %s: %s", filename, MMDB_strerror(status));
+        if (status == MMDB_IO_ERROR)
         {
-            GeoIPLookup gl;
-            country_name = GeoIP_country_name_by_addr_gl(geoip, addr, &gl);
+            conoutf(CON_ERROR, "Geoip: IO error: %s", strerror(errno));
         }
-
-        return country_name;
+        return;
     }
 
-    const char *getcity(const char *addr)
-    {
-        char *city = NULL;
-        if(geocity)
-        {
-            //GeoIPRecord *gir = GeoIP_record_by_ipnum(geocity, ipnum);
-            GeoIPRecord *gir = GeoIP_record_by_addr(geocity, addr);
-            if(gir != NULL)
-            {
-                char *city = gir->city != NULL ? newstring(gir->city) : NULL;
-                GeoIPRecord_delete(gir);
-            }
-        }
+    geoipAvailable = true;
 
-        return city;
-    }
-
-    /**
-    * Load geoip database from specified path
-    * @group server
-    * @arg1 /path/to/geoip.db
-    */
-    ICOMMAND(geodb, "s", (const char *path),
-             {
-                 loadgeoip(path, false);
-             });
-
-    /**
-    * Load geoip city database from specified path
-    * @group server
-    * @arg1 /path/to/geoipcity.db
-    */
-    ICOMMAND(geocitydb, "s", (const char *path),
-             {
-                 loadgeoip(path, true);
-             });
-
-    /**
-    * Return country for specified ip
-    * @group server
-    * @arg1 ip
-    * @return country
-    */
-    ICOMMAND(getcountry, "s", (const char *addr),
-             {
-
-                 const char *country = getcountry(addr);
-                 result(country != NULL ? country : addr);
-             });
-
-    /**
-    * Return city for specified ip
-    * @group server
-    * @arg1 ip
-    * @return city
-    */
-    ICOMMAND(getcity, "s", (const char *addr),
-            {
-                const char *city = getcity(addr);
-                result(city != NULL ? city : addr);
-            });
-
-    /**
-    * Check if geoip is ready to use
-    * @group server
-    * @return 1 if is ready, otherwise 0
-    */
-    ICOMMAND(isgeoip, "", (), intret(geoip != NULL));
-
-    /**
-    * Check if geoip city is ready to use
-    * @group server
-    * @return 1 if is ready, otherwise 0
-    */
-    ICOMMAND(isgeocity, "", (), intret(geocity != NULL));
-}
+    conoutf(CON_INFO, "Geoip: \"%s\" loaded", fname);
 }
 
+/**
+ * Find country name by IP, if country can not be found NULL will be retunred
+ */
+const char *getcountry(const char *addr)
+{
+    if (!geoipAvailable)
+    {
+        return NULL;
+    }
+
+    int gai_error, mmdb_error;
+    MMDB_lookup_result_s result = MMDB_lookup_string(&mmdb, addr, &gai_error, &mmdb_error);
+
+    if (gai_error != 0)
+    {
+        conoutf(CON_ERROR, "Geoip: error from getaddrinfo for %s - %s", addr, gai_strerror(gai_error));
+        return NULL;
+    }
+
+    if (mmdb_error != MMDB_SUCCESS)
+    {
+        conoutf(CON_ERROR, "Geoip: error from libmaxminddb: %s", MMDB_strerror(mmdb_error));
+        return NULL;
+    }
+
+    if (!result.found_entry)
+    {
+        return NULL;
+    }
+
+    MMDB_entry_data_s entry_data;
+    int status = MMDB_get_value(&result.entry, &entry_data, "country", "names", "en", NULL);
+    if (status != MMDB_SUCCESS)
+    {
+        conoutf(CON_ERROR, "Geoip: can not get entry value: %s", MMDB_strerror(status));
+        return NULL;
+    }
+
+    if (!entry_data.has_data)
+    {
+        return NULL;
+    }
+
+    return newstring(entry_data.utf8_string, entry_data.data_size);
+}
+
+/**
+ * Load geoip database from specified path
+ * @group server
+ * @arg1 /path/to/geoip.db
+ */
+COMMANDN(geodb, loadgeoip, "s");
+
+/**
+ * Return country for specified ip, if country can not be determinated return ip
+ * @group server
+ * @arg1 ip
+ * @return country
+ */
+ICOMMAND(getcountry, "s", (const char *addr), { const char *country = getcountry(addr); result(country ? country : addr); });
+
+/**
+ * Check if geoip is ready to use
+ * @group server
+ * @return 1 if is ready, otherwise 0
+ */
+ICOMMAND(isgeoip, "", (), intret(geoipAvailable));
+
+} // namespace remod
+
+#endif
