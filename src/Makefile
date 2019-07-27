@@ -253,14 +253,11 @@ libenet: enet/Makefile
 clean-enet: enet/Makefile
 	$(MAKE) -C enet/ maintainer-clean
 
-clean-geoip: geoip/Makefile
-	$(MAKE) -C mod/GeoIP/libGeoIP/ maintainer-clean
-
 maxminddb/Makefile:
 	cd mod/libmaxminddb; ./configure --enable-shared=no --enable-static=yes
 
 libmaxminddb: maxminddb/Makefile
-	$(MAKE)	-C mod/libmaxminddb/ all
+	$(MAKE)	-C mod/libmaxminddb/src all
 
 clean-maxminddb: maxminddb/Makefile
 	$(MAKE) -C mod/libmaxminddb/ maintainer-clean
