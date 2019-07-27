@@ -94,7 +94,7 @@ const char *getcountry(const char *addr)
 }
 
 /**
- * Load geoip database from specified path
+ * Load geoip database from specified path. You alawys can find fresh database at url https://dev.maxmind.com/geoip/geoip2/geolite2/
  * @group server
  * @arg1 /path/to/geoip.db
  */
