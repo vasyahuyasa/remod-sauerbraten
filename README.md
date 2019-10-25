@@ -7,8 +7,13 @@ The goal of project is create lightweight crossplatform (FreeBSD, Linux, Windows
 Nightly builds (Linux and win32 packages) available here: http://remod.butchers.su/.
 
 ## Download
+
   * Latest development version: https://github.com/vasyahuyasa/remod-sauerbraten/releases
   * GIT repository: https://github.com/vasyahuyasa/remod-sauerbraten
+ 
+## Docker
+
+https://hub.docker.com/r/vasyahuyasa/remod
 
 ## Installation notes and some guides
 ```
