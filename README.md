@@ -21,21 +21,23 @@ make
   * Check our [wiki page](https://github.com/vasyahuyasa/remod-sauerbraten/wiki/Installation)
 
 ## Implemented features
-  * server side cubescript
-  * remote control, access to serverside cubescript (via tcp, udp and netcat)
-  * new cubescript functions
-  * GeoIP support
-  * IRC bot
-  * cubescript events
-  * user #commands
-  * irc bot user commands
-  * save and load maps to local file system in coopedit mode
-  * database (sqlite3, mysql)
+  * [x] server side cubescript
+  * [x] remote control, access to serverside cubescript (via tcp, udp and netcat)
+  * [x] new cubescript functions
+  * [x] GeoIP support
+  * [x] IRC bot
+  * [x] cubescript events
+  * [x] user #commands
+  * [x] irc bot user commands
+  * [x] save and load maps to local file system in coopedit mode
+  * [x] database (sqlite3, mysql)
+  * [x] docker
 
 ## Work in progress
-  * users system
-  * scoreboard
-  * anticheat
+  * [ ] users system
+  * [ ] scoreboard
+  * [ ] anticheat
+  * [ ] docker comose / documentation
 
 ## Supported platforms
   * Mac (cmake, Xcode)
