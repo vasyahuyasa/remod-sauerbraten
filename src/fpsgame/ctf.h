@@ -425,7 +425,7 @@ struct ctfclientmode : clientmode
 
                     // remod
                     remod::onevent(ONRESETFLAG, "s", ctfflagteam(f.team));
-
+                    
                 }
             }
         }
@@ -530,10 +530,11 @@ struct ctfclientmode : clientmode
                 drawicon(m_hold ? HICON_NEUTRAL_FLAG : (flags[i].team==ctfteamflag(player1->team) ? HICON_BLUE_FLAG : HICON_RED_FLAG), x, HICON_Y);
                 if(m_hold)
                 {
-                    glPushMatrix();
-                    glScalef(2, 2, 1);
+                    pushhudmatrix();
+                    hudmatrix.scale(2, 2, 1);
+                    flushhudmatrix();
                     draw_textf("%d", (x + HICON_SIZE + HICON_SPACE)/2, HICON_TEXTY/2, max(HOLDSECS - (lastmillis - flags[i].owntime)/1000, 0));
-                    glPopMatrix();
+                    pophudmatrix();
                 }
                 break;
             }
@@ -541,22 +542,23 @@ struct ctfclientmode : clientmode
 
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         int s = 1800/4, x = 1800*w/h - s - s/10, y = s/10;
-        glColor4f(1, 1, 1, minimapalpha);
+        gle::colorf(1, 1, 1, minimapalpha);
         if(minimapalpha >= 1) glDisable(GL_BLEND);
         bindminimap();
         drawminimap(d, x, y, s);
         if(minimapalpha >= 1) glEnable(GL_BLEND);
-        glColor3f(1, 1, 1);
+        gle::colorf(1, 1, 1);
         float margin = 0.04f, roffset = s*margin, rsize = s + 2*roffset;
         settexture("packages/hud/radar.png", 3);
         drawradar(x - roffset, y - roffset, rsize);
         #if 0
         settexture("packages/hud/compass.png", 3);
-        glPushMatrix();
-        glTranslatef(x - roffset + 0.5f*rsize, y - roffset + 0.5f*rsize, 0);
-        glRotatef(camera1->yaw + 180, 0, 0, -1);
+        pushhudmatrix();
+        hudmatrix.translate(x - roffset + 0.5f*rsize, y - roffset + 0.5f*rsize, 0);
+        hudmatrix.rotate_around_z((camera1->yaw + 180)*-RAD);
+        flushhudmatrix();
         drawradar(-0.5f*rsize, -0.5f*rsize, rsize);
-        glPopMatrix();
+        pophudmatrix();
         #endif
         if(m_hold)
         {
@@ -581,11 +583,12 @@ struct ctfclientmode : clientmode
             int wait = respawnwait(d);
             if(wait>=0)
             {
-                glPushMatrix();
-                glScalef(2, 2, 1);
+                pushhudmatrix();
+                hudmatrix.scale(2, 2, 1);
+                flushhudmatrix();
                 bool flash = wait>0 && d==player1 && lastspawnattempt>=d->lastpain && lastmillis < lastspawnattempt+100;
                 draw_textf("%s%d", (x+s/2)/2-(wait>=10 ? 28 : 16), (y+s/2)/2-32, flash ? "\f3" : "", wait);
-                glPopMatrix();
+                pophudmatrix();
             }
         }
     }
@@ -793,7 +796,7 @@ struct ctfclientmode : clientmode
             f.interptime = 0;
         }
         conoutf(CON_GAMEINFO, "%s dropped %s", teamcolorname(d), teamcolorflag(f));
-        playsound(S_FLAGDROP);
+        teamsound(d, S_FLAGDROP);
     }
 
     void flagexplosion(int i, int team, const vec &loc)
@@ -836,7 +839,7 @@ struct ctfclientmode : clientmode
         returnflag(i);
         if(m_protect && d->feetpos().dist(f.spawnloc) < FLAGRADIUS) d->flagpickup |= 1<<f.id;
         conoutf(CON_GAMEINFO, "%s returned %s", teamcolorname(d), teamcolorflag(f));
-        playsound(S_FLAGRETURN);
+        teamsound(d, S_FLAGRETURN);
     }
 
     void spawnflag(flag &f)
@@ -862,7 +865,7 @@ struct ctfclientmode : clientmode
         if(shouldeffect)
         {
             conoutf(CON_GAMEINFO, "%s reset", teamcolorflag(f));
-            playsound(S_FLAGRESET);
+            teamsound(team == ctfteamflag(player1->team), S_FLAGRESET);
         }
     }
 
@@ -909,7 +912,7 @@ struct ctfclientmode : clientmode
         else if(m_protect || f.droptime) conoutf(CON_GAMEINFO, "%s picked up %s", teamcolorname(d), teamcolorflag(f));
         else conoutf(CON_GAMEINFO, "%s stole %s", teamcolorname(d), teamcolorflag(f));
         ownflag(i, d, lastmillis);
-        playsound(S_FLAGPICKUP);
+        teamsound(d, S_FLAGPICKUP);
     }
 
     void invisflag(int i, int invis)
@@ -924,15 +927,34 @@ struct ctfclientmode : clientmode
     {
         if(d->state!=CS_ALIVE) return;
         vec o = d->feetpos();
+        bool tookflag = false;
         loopv(flags)
         {
             flag &f = flags[i];
-            if((m_hold ? f.spawnindex < 0 : !ctfflagteam(f.team)) || f.owner || (f.droptime && f.droploc.x<0)) continue;
+            if((m_hold ? f.spawnindex < 0 : !ctfflagteam(f.team) || f.team == ctfteamflag(d->team)) || f.owner || (f.droptime && f.droploc.x<0)) continue;
             const vec &loc = f.droptime ? f.droploc : f.spawnloc;
             if(o.dist(loc) < FLAGRADIUS)
             {
                 if(d->flagpickup&(1<<f.id)) continue;
                 if(m_hold || ((lookupmaterial(o)&MATF_CLIP) != MAT_GAMECLIP && (lookupmaterial(loc)&MATF_CLIP) != MAT_GAMECLIP))
+                {
+                    tookflag = true;
+                    addmsg(N_TAKEFLAG, "rcii", d, i, f.version);
+                }
+                d->flagpickup |= 1<<f.id;
+            }
+            else d->flagpickup &= ~(1<<f.id);
+        }
+        if(m_hold) return;
+        loopv(flags)
+        {
+            flag &f = flags[i];
+            if(!ctfflagteam(f.team) || f.team != ctfteamflag(d->team) || f.owner || (f.droptime && f.droploc.x<0)) continue;
+            const vec &loc = f.droptime ? f.droploc : f.spawnloc;
+            if(o.dist(loc) < FLAGRADIUS)
+            {
+                if(!tookflag && d->flagpickup&(1<<f.id)) continue;
+                if((lookupmaterial(o)&MATF_CLIP) != MAT_GAMECLIP && (lookupmaterial(loc)&MATF_CLIP) != MAT_GAMECLIP)
                     addmsg(N_TAKEFLAG, "rcii", d, i, f.version);
                 d->flagpickup |= 1<<f.id;
             }

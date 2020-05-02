@@ -226,7 +226,7 @@ enum
     N_PING, N_PONG, N_CLIENTPING,
     N_TIMEUP, N_FORCEINTERMISSION,
     N_SERVMSG, N_ITEMLIST, N_RESUME,
-    N_EDITMODE, N_EDITENT, N_EDITF, N_EDITT, N_EDITM, N_FLIP, N_COPY, N_PASTE, N_ROTATE, N_REPLACE, N_DELCUBE, N_REMIP, N_NEWMAP, N_GETMAP, N_SENDMAP, N_CLIPBOARD, N_EDITVAR,
+    N_EDITMODE, N_EDITENT, N_EDITF, N_EDITT, N_EDITM, N_FLIP, N_COPY, N_PASTE, N_ROTATE, N_REPLACE, N_DELCUBE, N_REMIP, N_EDITVSLOT, N_UNDO, N_REDO, N_NEWMAP, N_GETMAP, N_SENDMAP, N_CLIPBOARD, N_EDITVAR,
     N_MASTERMODE, N_KICK, N_CLEARBANS, N_CURRENTMASTER, N_SPECTATOR, N_SETMASTER, N_SETTEAM,
     N_BASES, N_BASEINFO, N_BASESCORE, N_REPAMMO, N_BASEREGEN, N_ANNOUNCE,
     N_LISTDEMOS, N_SENDDEMOLIST, N_GETDEMO, N_SENDDEMO,
@@ -256,7 +256,7 @@ static const int msgsizes[] =               // size inclusive message token, 0 f
     N_PING, 2, N_PONG, 2, N_CLIENTPING, 2,
     N_TIMEUP, 2, N_FORCEINTERMISSION, 1,
     N_SERVMSG, 0, N_ITEMLIST, 0, N_RESUME, 0,
-    N_EDITMODE, 2, N_EDITENT, 11, N_EDITF, 16, N_EDITT, 16, N_EDITM, 16, N_FLIP, 14, N_COPY, 14, N_PASTE, 14, N_ROTATE, 15, N_REPLACE, 17, N_DELCUBE, 14, N_REMIP, 1, N_NEWMAP, 2, N_GETMAP, 1, N_SENDMAP, 0, N_EDITVAR, 0,
+    N_EDITMODE, 2, N_EDITENT, 11, N_EDITF, 16, N_EDITT, 16, N_EDITM, 16, N_FLIP, 14, N_COPY, 14, N_PASTE, 14, N_ROTATE, 15, N_REPLACE, 17, N_DELCUBE, 14, N_REMIP, 1, N_EDITVSLOT, 16, N_UNDO, 0, N_REDO, 0, N_NEWMAP, 2, N_GETMAP, 1, N_SENDMAP, 0, N_EDITVAR, 0,
     N_MASTERMODE, 2, N_KICK, 0, N_CLEARBANS, 1, N_CURRENTMASTER, 0, N_SPECTATOR, 3, N_SETMASTER, 0, N_SETTEAM, 0,
     N_BASES, 0, N_BASEINFO, 0, N_BASESCORE, 0, N_REPAMMO, 1, N_BASEREGEN, 6, N_ANNOUNCE, 2,
     N_LISTDEMOS, 1, N_SENDDEMOLIST, 0, N_GETDEMO, 2, N_SENDDEMO, 0,
@@ -279,7 +279,7 @@ static const int msgsizes[] =               // size inclusive message token, 0 f
 #define SAUERBRATEN_SERVER_PORT 28785
 #define SAUERBRATEN_SERVINFO_PORT 28786
 #define SAUERBRATEN_MASTER_PORT 28787
-#define PROTOCOL_VERSION 259            // bump when protocol changes
+#define PROTOCOL_VERSION 260            // bump when protocol changes
 #define DEMO_VERSION 1                  // bump when demo format changes
 #define DEMO_MAGIC "SAUERBRATEN_DEMO"
 
@@ -332,11 +332,11 @@ static struct itemstat { int add, max, sound; const char *name; int icon, info; 
     {5,     15,    S_ITEMAMMO,   "RI", HICON_RIFLE, GUN_RIFLE},
     {10,    30,    S_ITEMAMMO,   "GL", HICON_GL, GUN_GL},
     {30,    120,   S_ITEMAMMO,   "PI", HICON_PISTOL, GUN_PISTOL},
-    {25,    100,   S_ITEMHEALTH, "H", HICON_HEALTH, -1},
-    {10,    1000,  S_ITEMHEALTH, "MH", HICON_HEALTH, -1},
+    {25,    100,   S_ITEMHEALTH, "H",  HICON_HEALTH, -1},
+    {100,   200,   S_ITEMHEALTH, "MH", HICON_HEALTH, 50},
     {100,   100,   S_ITEMARMOUR, "GA", HICON_GREEN_ARMOUR, A_GREEN},
     {200,   200,   S_ITEMARMOUR, "YA", HICON_YELLOW_ARMOUR, A_YELLOW},
-    {20000, 30000, S_ITEMPUP,    "Q", HICON_QUAD, -1},
+    {20000, 30000, S_ITEMPUP,    "Q",  HICON_QUAD, -1},
 };
 
 #define MAXRAYS 20
@@ -397,7 +397,7 @@ struct fpsstate
         itemstat &is = itemstats[type-I_SHELLS];
         switch(type)
         {
-            case I_BOOST: return maxhealth<is.max;
+            case I_BOOST: return maxhealth<is.max || health<maxhealth;
             case I_HEALTH: return health<maxhealth;
             case I_GREENARMOUR:
                 // (100h/100g only absorbs 200 damage)
@@ -415,7 +415,7 @@ struct fpsstate
         switch(type)
         {
             case I_BOOST:
-                maxhealth = min(maxhealth+is.add, is.max);
+                maxhealth = min(maxhealth+is.info, is.max);
             case I_HEALTH: // boost also adds to health
                 health = min(health+is.add, maxhealth);
                 break;
@@ -435,6 +435,7 @@ struct fpsstate
 
     void respawn()
     {
+        maxhealth = 100;
         health = maxhealth;
         armour = 0;
         armourtype = A_BLUE;
@@ -711,6 +712,8 @@ namespace game
     extern const char *teamcolorname(fpsent *d, const char *alt = "you");
     extern const char *teamcolor(const char *name, bool sameteam, const char *alt = NULL);
     extern const char *teamcolor(const char *name, const char *team, const char *alt = NULL);
+    extern void teamsound(bool sameteam, int n, const vec *loc = NULL);
+    extern void teamsound(fpsent *d, int n, const vec *loc = NULL);
     extern fpsent *pointatplayer();
     extern fpsent *hudplayer();
     extern fpsent *followingplayer();
@@ -731,12 +734,13 @@ namespace game
     // client
     extern bool connected, remote, demoplayback;
     extern string servinfo;
+    extern vector<uchar> messages;
 
     extern int parseplayer(const char *arg);
     extern void ignore(int cn);
     extern void unignore(int cn);
     extern bool isignored(int cn);
-    extern void addmsg(int type, const char *fmt = NULL, ...);
+    extern bool addmsg(int type, const char *fmt = NULL, ...);
     extern void switchname(const char *name);
     extern void switchteam(const char *name);
     extern void switchplayermodel(int playermodel);
@@ -805,6 +809,7 @@ namespace game
     extern void getbestteams(vector<const char *> &best);
     extern void clearteaminfo();
     extern void setteaminfo(const char *team, int frags);
+    extern int statuscolor(fpsent *d, int color);
 
     // render
     struct playermodelinfo

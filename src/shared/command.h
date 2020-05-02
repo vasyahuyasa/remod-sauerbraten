@@ -189,8 +189,6 @@ struct ident
     void getval(tagval &v) const;
 };
 
-static inline bool htcmp(const char *key, const ident &id) { return !strcmp(key, id.name); }
-
 extern void addident(ident *id);
 
 extern tagval *commandret;
@@ -285,6 +283,7 @@ inline void ident::getval(tagval &v) const
 #define VARF(name, min, cur, max, body) _VARF(name, name, min, cur, max, body, 0)
 #define VARFP(name, min, cur, max, body) _VARF(name, name, min, cur, max, body, IDF_PERSIST)
 #define VARFR(name, min, cur, max, body) _VARF(name, name, min, cur, max, body, IDF_OVERRIDE)
+#define VARFNP(name, global, min, cur, max, body) _VARF(name, global, min, cur, max, body, IDF_PERSIST)
 
 #define _HVAR(name, global, min, cur, max, persist)  int global = variable(#name, min, cur, max, &global, NULL, persist | IDF_HEX)
 #define HVARN(name, global, min, cur, max) _HVAR(name, global, min, cur, max, 0)
@@ -334,7 +333,7 @@ inline void ident::getval(tagval &v) const
 #define ICOMMANDSNAME _icmds_
 #define ICOMMANDS(name, nargs, proto, b) ICOMMANDNS(name, ICOMMANDSNAME, nargs, proto, b)
  
- // remod
+// remod
 static inline void cleancode(ident &id)
 {
     if(id.code)

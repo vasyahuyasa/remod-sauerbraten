@@ -240,7 +240,6 @@ namespace server
         char *authkickreason;
 
         // remod
-        //hashtable<const char *, char *> vars;
         remod::extinfo ext;
 
         clientinfo() : getdemo(NULL), getmap(NULL), clipboard(NULL), authchallenge(NULL), authkickreason(NULL) { reset(); }
@@ -278,15 +277,15 @@ namespace server
         void setexceeded()
         {
             if(state.state==CS_ALIVE && !exceeded && !checkpushed(gamemillis, calcpushrange())) exceeded = gamemillis;
-            scheduleexceeded();
+            scheduleexceeded(); 
         }
-
+            
         void setpushed()
         {
             pushed = max(pushed, gamemillis);
             if(exceeded && checkpushed(exceeded, calcpushrange())) exceeded = 0;
         }
-
+        
         bool checkexceeded()
         {
             return state.state==CS_ALIVE && exceeded && gamemillis > exceeded + calcpushrange();
@@ -482,7 +481,6 @@ namespace server
     void srvmsgf(int cn, const char *s, ...);
     int numclients(int exclude , bool nospec, bool noai, bool priv);
     const char *colorname(clientinfo *ci, const char *name = NULL);
-    void addgban(const char *name);
     void cleargbans();
 }
 #endif

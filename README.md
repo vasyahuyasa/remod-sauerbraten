@@ -25,6 +25,10 @@ make
 ```
   * Check our [wiki page](https://github.com/vasyahuyasa/remod-sauerbraten/wiki/Installation)
 
+## Update GeoIP database
+
+Remod uses GeoLite2 Country database. Because of new policy of Maxmind 
+
 ## Implemented features
   * [x] server side cubescript
   * [x] remote control, access to serverside cubescript (via tcp, udp and netcat)
