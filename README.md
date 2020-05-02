@@ -42,11 +42,15 @@ Remod uses GeoLite2 Country database. Because of new policy of Maxmind
   * [x] database (sqlite3, mysql)
   * [x] docker
 
-## Work in progress
+## Work in progress   
+  * [ ] docker-compose / documentation
+
+## backlog
+  * [ ] discord bot
+  * [ ] some kind of rpc
+  * [ ] anticheat
   * [ ] users system
   * [ ] scoreboard
-  * [ ] anticheat
-  * [ ] docker comose / documentation
 
 ## Supported platforms
   * Mac (cmake, Xcode)
@@ -57,3 +61,4 @@ Remod uses GeoLite2 Country database. Because of new policy of Maxmind
 ## Contacts
   * [degrave](https://github.com/vasyahuyasa), [^o_o^](https://github.com/rmhmlhr)
   * IRC: irc://irc.gamesurge.net/rb
+  * Discord [degrave@sauerworld](https://discord.gg/rfptFpx)
