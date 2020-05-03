@@ -182,33 +182,39 @@ ircfilter 1 //0: copy string
 
 // Maps for ffa and other not team modes
 ffamaps = [
-complex douze ot academy metl2 metl3 justice turbine hashi mbt2 fanatic_quake dock renegade curvy_castle nmp8 tartech aard3c
-skrdm1 bvdm_01 outpost park tumwalk industry injustice mbt10 curvedm kalking1 hog2 kffa fragplaza collusion duel8 alithia island
-frozen memento neondevastation alloy ruine DM_BS1 shinmei1 osiris sdm1 powerplant oasis metl4 ruby shindou dune gubo teahupoo
-rm5 depot masdm orbe torment legazzo fury mbt9 refuge shadowed dirtndust force killfactory moonlite castle_trap orion ogrosupply
-nucleus elegy shiva arbana simplicity pitch_black duel7 suburb roughinery stemple tejen pgdm deathtek hades corruption paradigm lostinspace
-sauerstruck phosgene neonpanic akaritori konkuri-to katrez_d oddworld guacamole wake5 frostbyte thor aqueducts ksauer1 kmap5 thetowers darkdeath wdcd
+aard3c abyss academy access albatross akaritori akimiski alithia alloy antel anubis aod aqueducts arbana asenatra asthma averas
+bvdm_01 carbide cartel castle_trap clash collusion colony complex conflict corruption curvedm curvy_castle darkdeath deathtek depot dirtndust DM_BS1
+dock douze duel5 duel7 duel8 dune elegy exist exo fallen fanatic_quake fdm6 ferguson force frag-lab fragplaza frostbyte
+frozen fury ghetto gorge gothic-df guacamole gubo hades hashi hator haze hdm3 headroom hektik hog2 industry injustice
+insipid island justice kalking1 katrez_d kffa killfactory kmap5 konkuri-to ksauer1 legacy legazzo lost_soul lostinspace masdm mbt10 mbt2
+mbt9 memento memoria metl2 metl3 metl4 moonlite neondevastation neonpanic nessus nmp8 nucleus oasis oddworld ogrosupply oldschool orbe
+orion osiris ot outpost paradigm pariah park pgdm phosgene phrantic pitch_black powerplant purgatory refuge renegade rm1 rm5
+roughinery ruby ruine sandstorm sauerowalk sauerstruck sdm1 shadowed shindou shinmei1 shiva simplicity skrdm1 souls spcr2 stahlbox stemple
+stronghold suburb tartech teahupoo tejen thetowers thor torment toxicity tumwalk turbine turmoil ventania waltz wake5 wdcd zavial zdm2 
 ]
 
 // Maps for capture modes
 capturemaps = [
-urban_c nevil_c fb_capture collusion c_valley lostinspace fc3 face-capture nmp4 nmp8 hallo tempest monastery alithia hades fc4 relic
-fc5 paradigm corruption asteroids ogrosupply reissen akroseum turbulence frostbyte c_egypt caribbean dust2 campo dirtndust damnation arabic spcr
-nucleus evilness subterra snapper_rocks kopenhagen asgard mbt12 cwcastle nitro suburb haste valhalla abbey venice mercury core_transfer hidden 
-forge eternal_valley tortuga core_refuge infamy capture_night river_c serenity xenon nmp9 ph-capture killcore3 twinforts duomo donya
+abbey access akimiski akroseum alithia anubis aod arabic asenatra asgard asteroids averas bklyn c_egypt c_valley campo capture_night
+caribbean collide collusion core_refuge core_transfer corruption croma cwcastle damnation dirtndust disruption donya duomo dust2 eris eternal_valley evilness
+face-capture fallen fb_capture fc3 fc4 fc5 forge fragnostic frostbyte fusion genesis ghetto gorge gothic-df hades hallo haste
+hidden infamy killcore3 kopenhagen laucin lostinspace luna mbt12 mc-lab mercury monastery nevil_c new_energy nitro nmp4 nmp9 nucleus
+ogrosupply ow pandora paradigm pariah ph-capture reissen relic river_c river_keep ruby ruebli serenity snapper_rocks spcr stadium stronghold
+subterra suburb tempest tortuga turbulence turmoil twinforts urban_c valhalla venice waltz xenon
 ]
 
 // Maps for ctf, protect and and collect modes
 ctfmaps = [
-hallo flagstone tempest siberia reissen tejen shipwreck authentic urban_c bt_falls valhalla garden mbt1 autumn akroseum face-capture dust2
-mach2 evilness turbulence l_ctf twinforts berlin_wall mbt12 europium abbey redemption damnation forge campo nitro infamy catch22 subterra
-forgotten nucleus bad_moon snapper_rocks haste spcr asgard mill capture_night arbana hidden eternal_valley mercury kopenhagen tortuga mbt4 core_refuge core_transfer 
-desecration recovery wdcd suburb xenon sacrifice
+abbey akimiski akroseum arbana asgard authentic autumn bad_moon berlin_wall bklyn breakout bt_falls campo capture_night catch22 collide core_refuge
+core_transfer croma damnation desecration disruption dust2 earthsea enigma eris eternal_valley europium evilness face-capture fire_keep flagstone forge forgotten
+fragnostic fusion garden hallo haste hidden infamy kopenhagen l_ctf laucin luna mach2 mbt1 mbt4 mbt12 mc-lab mercury
+mill new_energy nitro nucleus ow pandora ra recovery redemption regal reissen river_keep ruebli sacrifice shipwreck siberia snapper_rocks
+spcr stadium stronghold subterra suburb tatooine tectonic tejen tempest tortuga turbulence twinforts urban_c valhalla wdcd xenon
 ]
 
 // Single player maps
 spmaprot = [
-mpsp6a mpsp6b mpsp6c mpsp9a mpsp9b mpsp9c mpsp10 lost level9
+mpsp6a mpsp6b mpsp6c mpsp9a mpsp9b mpsp9c mpsp10 lost level9 skrsp1 crnsp1
 ]
 
 maprotationreset
