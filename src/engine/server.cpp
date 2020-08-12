@@ -103,21 +103,6 @@ void conoutfv(int type, const char *fmt, va_list args)
     remod::rcon::sendmsg(buf);
 }
 
-void conoutf(const char *fmt, ...)
-{
-    va_list args;
-    va_start(args, fmt);
-    conoutfv(CON_INFO, fmt, args);
-    va_end(args);
-}
-
-void conoutf(int type, const char *fmt, ...)
-{
-    va_list args;
-    va_start(args, fmt);
-    conoutfv(type, fmt, args);
-    va_end(args);
-}
 #endif
 
 #define DEFAULTCLIENTS 8
@@ -754,6 +739,7 @@ void localdisconnect(bool cleanup)
 
 void localconnect()
 {
+    if(initing) return;
     client &c = addclient(ST_LOCAL);
     copystring(c.hostname, "local");
     game::gameconnect(false);
@@ -1057,12 +1043,12 @@ void rundedicatedserver()
 
         //remod
 		remod::rcon::update();
-        	#ifdef IRC
-        	irc_checkserversockets();
-        	ircslice();
-        	#endif
-        	remod::checkresume();
-        	remod::eventsupdate();
+        #ifdef IRC
+        irc_checkserversockets();
+        ircslice();
+        #endif
+        remod::checkresume();
+        remod::eventsupdate();
 	}
 #else
     // remod

@@ -155,7 +155,7 @@ imissiontime 10000
 roundtime 0
 
 // not shuffle teams (in game #persist)
-persist 0 
+persistteams 0 
 
 // character before player command
 commandchar "#"

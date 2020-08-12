@@ -69,7 +69,7 @@ extern void cleanuptexture(Texture *t);
 extern uchar *loadalphamask(Texture *t);
 extern void loadlayermasks();
 extern Texture *cubemapload(const char *name, bool mipit = true, bool msg = true, bool transient = false);
-extern void drawcubemap(int size, const vec &o, float yaw, float pitch, const cubemapside &side);
+extern void drawcubemap(int size, const vec &o, float yaw, float pitch, const cubemapside &side, bool onlysky = false);
 extern void loadshaders();
 extern void setuptexparameters(int tnum, void *pixels, int clamp, int filter, GLenum format = GL_RGB, GLenum target = GL_TEXTURE_2D, bool swizzle = false);
 extern void createtexture(int tnum, int w, int h, void *pixels, int clamp, int filter, GLenum component = GL_RGB, GLenum target = GL_TEXTURE_2D, int pw = 0, int ph = 0, int pitch = 0, bool resize = true, GLenum format = GL_FALSE, bool swizzle = false);
@@ -353,7 +353,9 @@ extern void cleanreflections();
 extern void queryreflections();
 extern void drawreflections();
 extern void renderwater();
-extern void renderlava(const materialsurface &m, Texture *tex, float scale);
+extern void setuplava(Texture *tex, float scale);
+extern void renderlava(const materialsurface &m);
+extern void flushlava();
 extern void loadcaustics(bool force = false);
 extern void preloadwatershaders(bool force = false);
 
@@ -406,7 +408,7 @@ extern void clearsleep(bool clearoverrides = true);
 
 // console
 extern void processtextinput(const char *str, int len);
-extern void processkey(int code, bool isdown);
+extern void processkey(int code, bool isdown, int modstate = 0);
 extern int rendercommand(int x, int y, int w);
 extern int renderconsole(int w, int h, int abovehud);
 extern void conoutf(const char *s, ...) PRINTFARGS(1, 2);
@@ -539,12 +541,17 @@ extern void flushblobs();
 // rendersky
 extern int explicitsky;
 extern double skyarea;
+extern char *skybox;
 
-extern void drawskybox(int farplane, bool limited);
+extern void setupsky();
+extern void drawskybox(int farplane, bool limited, bool force = false);
 extern bool limitsky();
+extern bool shouldrenderskyenvmap();
+extern bool shouldclearskyboxglare();
 
 // 3dgui
 extern void g3d_render();
+extern void g3d_render2d();
 extern bool g3d_windowhit(bool on, bool act);
 extern bool g3d_key(int code, bool isdown);
 extern bool g3d_input(const char *str, int len);
