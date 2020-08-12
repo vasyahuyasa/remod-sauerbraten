@@ -20,7 +20,7 @@ Delay in seconds before unpause game on request
 0 - no unpause was requested, 1 - resume timer is started
 
 @variable overtime
-Overtime when teams are tied, 0 - disable overtime
+Overtime with 2 minutes when teams are tied, 0 - disable overtime
 
 @variable nodamage
 Don't deal any damage in coopedit mode

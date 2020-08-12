@@ -453,10 +453,10 @@ struct captureclientmode : clientmode
         if(blips && !basenumbers) gle::end();
     }
 
-    int respawnwait(fpsent *d)
+    int respawnwait(fpsent *d, int delay = 0)
     {
         if(m_regencapture) return -1;
-        return max(0, RESPAWNSECS-(lastmillis-d->lastpain)/1000);
+        return d->respawnwait(RESPAWNSECS, delay);
     }
 
     int clipconsole(int w, int h)
@@ -611,65 +611,17 @@ struct captureclientmode : clientmode
         }
     }
 
-    int closesttoenemy(const char *team, bool noattacked = false, bool farthest = false)
+    // prefer spawning near friendly base
+    float ratespawn(fpsent *d, const extentity &e)
     {
-        float bestdist = farthest ? -1e10f : 1e10f;
-        int best = -1;
-        int attackers = INT_MAX, attacked = -1;
+        float minbasedist = 1e16f;
         loopv(bases)
         {
             baseinfo &b = bases[i];
-            if(!b.owner[0] || strcmp(b.owner, team)) continue;
-            if(noattacked && b.enemy[0]) continue;
-            float dist = disttoenemy(b);
-            if(farthest ? dist > bestdist : dist < bestdist)
-            {
-                best = i;
-                bestdist = dist;
-            }
-            else if(b.enemy[0] && b.enemies < attackers)
-            {
-                attacked = i;
-                attackers = b.enemies;
-            }
+            if(!b.owner[0] || strcmp(b.owner, d->team)) continue;
+            minbasedist = min(minbasedist, e.o.dist(b.o));
         }
-        if(best < 0) return attacked;
-        return best;
-    }
-
-    int pickteamspawn(const char *team)
-    {
-        int closest = closesttoenemy(team, true, m_regencapture);
-        if(!m_regencapture && closest < 0) closest = closesttoenemy(team, false);
-        if(closest < 0) return -1;
-        baseinfo &b = bases[closest];
-
-        float bestdist = 1e10f, altdist = 1e10f;
-        int best = -1, alt = -1;
-        loopv(entities::ents)
-        {
-            extentity *e = entities::ents[i];
-            if(e->type!=PLAYERSTART || e->attr2) continue;
-            float dist = e->o.dist(b.o);
-            if(dist < bestdist)
-            {
-                alt = best;
-                altdist = bestdist;
-                best = i;
-                bestdist = dist;
-            }
-            else if(dist < altdist)
-            {
-                alt = i;
-                altdist = dist;
-            }
-        }
-        return rnd(2) ? best : alt;
-    }
-
-    void pickspawn(fpsent *d)
-    {
-        findplayerspawn(d, pickteamspawn(d->team));
+        return minbasedist < 1e16f ? proximityscore(minbasedist, 128.0f, 512.0f) : 1.0f;
     }
 
 	bool aicheck(fpsent *d, ai::aistate &b)

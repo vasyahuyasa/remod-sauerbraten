@@ -58,8 +58,10 @@ namespace game
     extern void dynentcollide(physent *d, physent *o, const vec &dir);
     extern const char *getclientmap();
     extern const char *getmapinfo();
+    extern const char *getscreenshotinfo();
     extern void resetgamestate();
     extern void suicide(physent *d);
+    extern float ratespawn(dynent *d, const extentity &e);
     extern void newmap(int size);
     extern void loadingmap(const char *name);
     extern void startmap(const char *name);
@@ -88,6 +90,7 @@ namespace game
     extern void adddynlights();
     extern void particletrack(physent *owner, vec &o, vec &d);
     extern void dynlighttrack(physent *owner, vec &o, vec &hud);
+    extern int maxsoundradius(int n);
     extern bool serverinfostartcolumn(g3d_gui *g, int i);
     extern void serverinfoendcolumn(g3d_gui *g, int i);
     extern bool serverinfoentry(g3d_gui *g, int i, const char *name, int port, const char *desc, const char *map, int ping, const vector<int> &attr, int np);

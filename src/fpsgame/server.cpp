@@ -20,6 +20,8 @@ namespace game
     const char *gameident() { return "fps"; }
 }
 
+VAR(regenbluearmour, 0, 1, 1);
+
 extern ENetAddress masteraddress;
 
 // remod
@@ -32,8 +34,7 @@ namespace server
     int gamemode = 0;
 
     // remod
-    //int gamemillis = 0, gamelimit = 0,
-
+    //int gamemillis = 0, gamelimit = 0, nextexceeded = 0, gamespeed = 100;
     int nextexceeded = 0, gamespeed = 100;
     bool gamepaused = false, shouldstep = true;
 
@@ -61,7 +62,6 @@ namespace server
     VAR(autodemo, 0, 0, 1 );
     SVAR(demodir, "");
     VAR(packetdelay, 10, 33, 33);
-    VAR(overtime, 0, 0, 600);
     VAR(nodamage, 0, 0, 1);
 
     vector<uint> allowedips;
@@ -329,7 +329,7 @@ namespace server
 
     COMMAND(teamkillkickreset, "");
     COMMANDN(teamkillkick, addteamkillkick, "sii");
-    
+
     vector<teamkillinfo> teamkills;
     bool shouldcheckteamkills = false;
 
@@ -531,7 +531,12 @@ namespace server
     {
         if((m_timed && gamemillis>=gamelimit) || !sents.inrange(i) || !sents[i].spawned) return false;
         clientinfo *ci = getinfo(sender);
-        if(!ci || (!ci->local && !ci->state.canpickup(sents[i].type))) return false;
+        if(!ci) return false;
+        if(!ci->local && !ci->state.canpickup(sents[i].type))
+        {
+            sendf(sender, 1, "ri3", N_ITEMACC, i, -1);
+            return false;
+        }
         sents[i].spawned = false;
         sents[i].spawntime = spawntime(sents[i].type);
         sendf(-1, 1, "ri3", N_ITEMACC, i, sender);
@@ -584,6 +589,8 @@ namespace server
         return best;
     }
 
+    VAR(persistteams, 0, 0, 1);
+
     void autoteam()
     {
         static const char * const teamnames[2] = {"good", "evil"};
@@ -617,44 +624,6 @@ namespace server
                 if(!strcmp(ci->team, teamnames[i])) continue;
                 copystring(ci->team, teamnames[i], MAXTEAMLEN+1);
                 sendf(-1, 1, "riisi", N_SETTEAM, ci->clientnum, teamnames[i], -1);
-            }
-        }
-    }
-
-    //remod
-    void persistautoteam()
-    {
-        //if(!m_check(gamemode, M_CTF|M_PROTECT|M_HOLD)) return; // check for flag modes
-
-        string goodteam;
-        goodteam[0] = '\0';
-        loopv(clients)
-        {
-            clientinfo *ci = clients[i];
-            if(ci)
-            {
-                if((strcmp(ci->team, "good") != 0) && (strcmp(ci->team, "evil") != 0)) // not standart player team
-                {
-                    if(goodteam[0]) // if defined not standart "good" team
-                    {
-                        if(strcmp(ci->team, goodteam) == 0)
-                        {
-                            copystring(ci->team, "good", MAXTEAMLEN+1);
-                            sendf(-1, 1, "riisi", N_SETTEAM, ci->clientnum, "good", -1);
-                        }
-                        else
-                        {
-                            copystring(ci->team, "evil", MAXTEAMLEN+1);
-                            sendf(-1, 1, "riisi", N_SETTEAM, ci->clientnum, "evil", -1);
-                        }
-                    }
-                    else
-                    {
-                        copystring(goodteam, ci->team); // define "good" team
-                        copystring(ci->team, "good", MAXTEAMLEN+1);
-                        sendf(-1, 1, "riisi", N_SETTEAM, ci->clientnum, "good", -1);
-                    }
-                }
             }
         }
     }
@@ -880,13 +849,13 @@ namespace server
         }
     }
 
-    void senddemo(clientinfo *ci, int num)
+    void senddemo(clientinfo *ci, int num, int tag)
     {
         if(ci->getdemo) return;
         if(!num) num = demos.length();
         if(!demos.inrange(num-1)) return;
         demofile &d = demos[num-1];
-        if((ci->getdemo = sendf(ci->clientnum, 2, "rim", N_SENDDEMO, d.len, d.data)))
+        if((ci->getdemo = sendf(ci->clientnum, 2, "riim", N_SENDDEMO, tag, d.len, d.data)))
             ci->getdemo->freeCallback = freegetdemo;
 
         // remod
@@ -905,14 +874,37 @@ namespace server
         loopv(clients) sendwelcome(clients[i]);
     }
 
+    // remod
+    //SVARP(demodir, "demo");
+
+    const char *getdemofile(const char *file, bool init)
+    {
+        if(!demodir[0]) return NULL;
+        static string buf;
+        copystring(buf, demodir);
+        int dirlen = strlen(buf);
+        if(buf[dirlen] != '/' && buf[dirlen] != '\\' && dirlen+1 < (int)sizeof(buf)) { buf[dirlen++] = '/'; buf[dirlen] = '\0'; }
+        if(init)
+        {
+            const char *dir = findfile(buf, "w");
+            if(!fileexists(dir, "w")) createdir(dir);
+        }
+        concatstring(buf, file);
+        return buf;
+    }
+
     void setupdemoplayback()
     {
         if(demoplayback) return;
         demoheader hdr;
         string msg;
         msg[0] = '\0';
-        defformatstring(file, "%s.dmo", smapname);
-        demoplayback = opengzfile(file, "rb");
+        string file;
+        copystring(file, smapname);
+        int len = strlen(file);
+        if(len < 4 || strcasecmp(&file[len-4], ".dmo")) concatstring(file, ".dmo");
+        if(const char *buf = getdemofile(file, false)) demoplayback = opengzfile(buf, "rb");
+        if(!demoplayback) demoplayback = opengzfile(file, "rb");
         if(!demoplayback) formatstring(msg, "could not read demo \"%s\"", file);
         else if(demoplayback->read(&hdr, sizeof(demoheader))!=sizeof(demoheader) || memcmp(hdr.magic, DEMO_MAGIC, sizeof(hdr.magic)))
             formatstring(msg, "\"%s\" is not a demo file", file);
@@ -1707,10 +1699,7 @@ namespace server
         }
         notgotitems = false;
     }
-    
-    // remod
-    VAR(persist, 0, 0, 1);
-
+        
     void changemap(const char *s, int mode)
     {
         stopdemo();
@@ -1723,7 +1712,7 @@ namespace server
         gamemillis = 0;
         
         // remod
-        gamelimit = roundtime ? roundtime : (m_overtime ? 15 : 10)*60000;
+        gamelimit = roundtime ? roundtime : 10*60000;
 
         interm = 0;
         nextexceeded = 0;
@@ -1743,10 +1732,7 @@ namespace server
         sendf(-1, 1, "risii", N_MAPCHANGE, smapname, gamemode, 1);
 
         clearteaminfo();
-
-        //remod
-        if(m_teammode) { if(!persist) { autoteam(); } else { if(m_ctf) persistautoteam(); } }
-
+        if(m_teammode && !persistteams) autoteam();
 
         if(m_capture) smode = &capturemode;
         else if(m_ctf) smode = &ctfmode;
@@ -1830,6 +1816,7 @@ namespace server
         loopv(votes) if(!best || votes[i].count > best->count || (votes[i].count == best->count && rnd(2))) best = &votes[i];
         if(force || (best && best->count > maxvotes/2))
         {
+            sendpackets(true);
             if(demorecord) enddemorecord();
             if(best && (best->count > (force ? 1 : maxvotes/2)))
             {
@@ -1875,6 +1862,7 @@ namespace server
         ci->modevote = reqmode;
         if(ci->local || (ci->privilege && mastermode>=MM_VETO))
         {
+            sendpackets(true);
             if(demorecord) enddemorecord();
             if(!ci->local || hasnonlocalclients())
                 sendservmsgf("%s forced %s on map %s", colorname(ci), modename(ci->modevote), ci->mapvote[0] ? ci->mapvote : "[new map]");
@@ -1890,36 +1878,78 @@ namespace server
         }
     }
 
+    VAR(overtime, 0, 0, 1);
+
     //remod
     VAR(imissiontime, 0, 10000, INT_MAX);
 
-    void checkintermission()
-    {        
-        if(gamemillis >= gamelimit && !interm)
+    bool checkovertime()
+    {
+        if(!m_timed || !overtime) return false;
+        const char* topteam = NULL;
+        int topscore = INT_MIN;
+        bool tied = false;
+        if(m_teammode)
         {
-            //remod
-            if(overtime && (m_teammode ? remod::isteamsequalscore() : remod::isplayerssequalscore()))
+            vector<teamscore> scores;
+            if(smode && smode->hidefrags()) smode->getteamscores(scores);
+            loopv(clients)
             {
-                if(m_timed && smapname[0])
+                clientinfo *ci = clients[i];
+                if(ci->state.state==CS_SPECTATOR || !ci->team[0]) continue;
+                int score = 0;
+                if(smode && smode->hidefrags())
                 {
-                    gamelimit += overtime * 1000;
-                    sendf(-1, 1, "ri2", N_TIMEUP, overtime);
-                    remod::onevent(ONOVERTIME, "");
+                    int idx = scores.htfind(ci->team);
+                    if(idx >= 0) score = scores[idx].score;
                 }
-                return;
+                else if(teaminfo *ti = teaminfos.access(ci->team)) score = ti->frags;
+                if(!topteam || score > topscore) { topteam = ci->team; topscore = score; tied = false; }
+                else if(score == topscore && strcmp(ci->team, topteam)) tied = true;
             }
+        }
+        else
+        {
+            loopv(clients)
+            {
+                clientinfo *ci = clients[i];
+                if(ci->state.state==CS_SPECTATOR) continue;
+                int score = ci->state.frags;
+                if(score > topscore) { topscore = score; tied = false; }
+                else if(score == topscore) tied = true;
+            }
+        }
+        if(!tied) return false;
 
+        // remod
+        // sendservmsg("the game is tied with overtime");
+
+        gamelimit = max(gamemillis, gamelimit) + 2*60000;
+        sendf(-1, 1, "ri2", N_TIMEUP, max((gamelimit - gamemillis)/1000, 1));
+
+        // remod
+        remod::onevent(ONOVERTIME, "");
+
+        return true;
+    }
+
+    void checkintermission(bool force = false)
+    {
+        if(gamemillis >= gamelimit && !interm && (force || !checkovertime()))
+        {
             sendf(-1, 1, "ri2", N_TIMEUP, 0);
             if(smode) smode->intermission();
             changegamespeed(100);
-            interm = gamemillis + imissiontime; // remod
+
+            // remod
+            interm = gamemillis + imissiontime;
 
             // remod
             remod::onevent(ONIMISSION, "");
         }
     }
 
-    void startintermission() { gamelimit = min(gamelimit, gamemillis); checkintermission(); }
+    void startintermission() { gamelimit = min(gamelimit, gamemillis); checkintermission(true); }
 
     void dodamage(clientinfo *target, clientinfo *actor, int damage, int gun, const vec &hitpush = vec(0, 0, 0))
     {
@@ -3425,9 +3455,9 @@ namespace server
 
             case N_GETDEMO:
             {
-                int n = getint(p);
+                int n = getint(p), tag = getint(p);
                 if(!ci->privilege && !ci->local && ci->state.state==CS_SPECTATOR) break;
-                senddemo(ci, n);
+                senddemo(ci, n, tag);
                 break;
             }
 
