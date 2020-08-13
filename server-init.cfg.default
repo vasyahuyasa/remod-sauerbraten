@@ -169,6 +169,9 @@ resumedelay 3
 // overtime in seconds when teams are tied (0 - disable overtime)
 overtime 0
 
+// Enable/Disable blue armour in regen capture (1 - enabled, default)
+regenbluearmour 1
+
 // IRC bot configuration
 verbose 1 //if verbose >= 2, relay game messages to irc
 ircfilter 1 //0: copy string
@@ -183,33 +186,36 @@ ircfilter 1 //0: copy string
 // Maps for ffa and other not team modes
 ffamaps = [
 aard3c abyss academy access albatross akaritori akimiski alithia alloy antel anubis aod aqueducts arbana asenatra asthma averas
-bvdm_01 carbide cartel castle_trap clash collusion colony complex conflict corruption curvedm curvy_castle darkdeath deathtek depot dirtndust DM_BS1
-dock douze duel5 duel7 duel8 dune elegy exist exo fallen fanatic_quake fdm6 ferguson force frag-lab fragplaza frostbyte
-frozen fury ghetto gorge gothic-df guacamole gubo hades hashi hator haze hdm3 headroom hektik hog2 industry injustice
-insipid island justice kalking1 katrez_d kffa killfactory kmap5 konkuri-to ksauer1 legacy legazzo lost_soul lostinspace masdm mbt10 mbt2
-mbt9 memento memoria metl2 metl3 metl4 moonlite neondevastation neonpanic nessus nmp8 nucleus oasis oddworld ogrosupply oldschool orbe
-orion osiris ot outpost paradigm pariah park pgdm phosgene phrantic pitch_black powerplant purgatory refuge renegade rm1 rm5
-roughinery ruby ruine sandstorm sauerowalk sauerstruck sdm1 shadowed shindou shinmei1 shiva simplicity skrdm1 souls spcr2 stahlbox stemple
-stronghold suburb tartech teahupoo tejen thetowers thor torment toxicity tumwalk turbine turmoil ventania waltz wake5 wdcd zavial zdm2 
+bvdm_01 carbide cartel castle_trap clash collusion colony complex conflict corruption crypta curvedm curvy_castle darkdeath deathtek depot dirtndust
+dispute DM_BS1 dock douze duel5 duel7 duel8 dune elegy exist exo fallen fanatic_quake fdm6 ferguson force frag-lab
+frag2 fragplaza frostbyte frozen fury ghetto gorge gothic-df guacamole gubo hades hashi hator haze hdm3 headroom helligsted
+hektik hillfort hog2 horus idyll3 industry infernal injustice insipid island janela justice kalking1 kastro katrez_d kffa killfactory
+kmap5 konkuri-to ksauer1 legacy legazzo lost_soul lostinspace masdm mbt10 mbt2 mbt9 memento memoria metl2 metl3 metl4 moonlite
+neondevastation neonpanic nessus nmp8 nucleus oasis oddworld ognjen ogrosupply oldschool orbe orion osiris ot outpost paradigm pariah
+park pgdm phosgene phrantic pitch_black powerplant purgatory refuge renegade rm1 rm5 roughinery ruby ruine sandstorm sauerowalk sauerstruck
+sdm1 shadowed shindou shinmei1 shiva simplicity skrdm1 souls spcr2 stahlbox stemple stronghold suburb suisei tartech teahupoo tejen
+thetowers thor torment toxicity tumwalk turbine turmoil unworld unworld2 ventania waltz wake5 wdcd zavial zdm2 ztn
 ]
 
 // Maps for capture modes
 capturemaps = [
 abbey access akimiski akroseum alithia anubis aod arabic asenatra asgard asteroids averas bklyn c_egypt c_valley campo capture_night
-caribbean collide collusion core_refuge core_transfer corruption croma cwcastle damnation dirtndust disruption donya duomo dust2 eris eternal_valley evilness
-face-capture fallen fb_capture fc3 fc4 fc5 forge fragnostic frostbyte fusion genesis ghetto gorge gothic-df hades hallo haste
-hidden infamy killcore3 kopenhagen laucin lostinspace luna mbt12 mc-lab mercury monastery nevil_c new_energy nitro nmp4 nmp9 nucleus
-ogrosupply ow pandora paradigm pariah ph-capture reissen relic river_c river_keep ruby ruebli serenity snapper_rocks spcr stadium stronghold
-subterra suburb tempest tortuga turbulence turmoil twinforts urban_c valhalla venice waltz xenon
+caribbean casa collide collusion core_refuge core_transfer corruption croma cwcastle damnation destiny dirtndust disruption donya duomo dust2 earthstation
+eris eternal_valley evilness face-capture fallen fb_capture fc3 fc4 fc5 forge fragnostic frostbyte fusion genesis ghetto gorge gothic-df
+hades hallo haste hidden infamy infernal killcore3 kopenhagen laucin lostinspace luna mbt12 mc-lab meltdown2 mercury monastery nevil_c
+new_energy nitro nmp4 nmp9 nucleus ogrosupply overdrive ow pandora paradigm pariah ph-capture pul1ctf reissen relic risk river_c
+river_keep ruby ruebli serenity snapper_rocks spcr stadium stronghold subterra suburb surge tempest tortuga turbulence turmoil twinforts urban_c
+valhalla venice waltz xenon
 ]
 
 // Maps for ctf, protect and and collect modes
 ctfmaps = [
-abbey akimiski akroseum arbana asgard authentic autumn bad_moon berlin_wall bklyn breakout bt_falls campo capture_night catch22 collide core_refuge
-core_transfer croma damnation desecration disruption dust2 earthsea enigma eris eternal_valley europium evilness face-capture fire_keep flagstone forge forgotten
-fragnostic fusion garden hallo haste hidden infamy kopenhagen l_ctf laucin luna mach2 mbt1 mbt4 mbt12 mc-lab mercury
-mill new_energy nitro nucleus ow pandora ra recovery redemption regal reissen river_keep ruebli sacrifice shipwreck siberia snapper_rocks
-spcr stadium stronghold subterra suburb tatooine tectonic tejen tempest tortuga turbulence twinforts urban_c valhalla wdcd xenon
+abbey akimiski akroseum arbana asgard authentic autumn bad_moon berlin_wall bklyn breakout bt_falls campo capture_night casa catch22 collide
+core_refuge core_transfer croma daemex damnation desecration destiny disruption dust2 earthsea earthstation enigma eris eternal_valley europium evilness face-capture
+fire_keep flagstone forge forgotten fortress fragnostic fusion garden hallo haste hidden infamy kiryu kopenhagen l_ctf laucin luna
+mach2 mbt1 mbt4 mbt12 mc-lab meltdown2 mercury mill new_energy nitro nucleus overdrive ow pandora pul1ctf ra recovery
+redemption regal reissen risk river_keep ruebli sacrifice shellshock2 shipwreck siberia snapper_rocks spcr stadium stronghold subterra suburb surge
+tatooine tectonic tejen tempest tortuga tubes turbulence twinforts unworld3 urban_c valhalla warlock wdcd xenon
 ]
 
 // Single player maps
