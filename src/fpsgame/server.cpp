@@ -59,7 +59,6 @@ namespace server
     );
 
     VAR(savedemo, 0, 0, 1);
-    VAR(autodemo, 0, 0, 1 );
     SVAR(demodir, "");
     VAR(packetdelay, 10, 33, 33);
     VAR(nodamage, 0, 0, 1);
@@ -270,6 +269,7 @@ namespace server
     VAR(maxdemos, 0, 5, 25);
     VAR(maxdemosize, 0, 16, 31);
     VAR(restrictdemos, 0, 1, 1);
+    VAR(autorecorddemo, 0, 0, 1);
 
     VAR(restrictpausegame, 0, 1, 1);
     VAR(restrictgamespeed, 0, 1, 1);
@@ -1756,14 +1756,13 @@ namespace server
         }
         else if(demonextmatch)
         {
-            demonextmatch = false;
+            demonextmatch = autorecorddemo!=0;
             setupdemorecord();
         }
 
         if(smode) smode->setup();
 
         // remod
-        if(autodemo) demonextmatch = true;
         remod::onevent(ONMAPSTART, "");
     }
 
