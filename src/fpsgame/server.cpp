@@ -59,7 +59,6 @@ namespace server
     );
 
     VAR(savedemo, 0, 0, 1);
-    VAR(autodemo, 0, 0, 1 );
     SVAR(demodir, "");
     VAR(packetdelay, 10, 33, 33);
     VAR(nodamage, 0, 0, 1);
@@ -270,6 +269,7 @@ namespace server
     VAR(maxdemos, 0, 5, 25);
     VAR(maxdemosize, 0, 16, 31);
     VAR(restrictdemos, 0, 1, 1);
+    VAR(autorecorddemo, 0, 0, 1);
 
     VAR(restrictpausegame, 0, 1, 1);
     VAR(restrictgamespeed, 0, 1, 1);
@@ -618,7 +618,7 @@ namespace server
         loopi(sizeof(team)/sizeof(team[0]))
         {
             addteaminfo(teamnames[i]);
-            loopvj(team[i])
+            if(!persistteams) loopvj(team[i])
             {
                 clientinfo *ci = team[i][j];
                 if(!strcmp(ci->team, teamnames[i])) continue;
@@ -1732,7 +1732,7 @@ namespace server
         sendf(-1, 1, "risii", N_MAPCHANGE, smapname, gamemode, 1);
 
         clearteaminfo();
-        if(m_teammode && !persistteams) autoteam();
+        if(m_teammode) autoteam();
 
         if(m_capture) smode = &capturemode;
         else if(m_ctf) smode = &ctfmode;
@@ -1754,16 +1754,15 @@ namespace server
         {
             if(clients.length()) setupdemoplayback();
         }
-        else if(demonextmatch)
+        else
         {
-            demonextmatch = false;
-            setupdemorecord();
+            if(demonextmatch) setupdemorecord();
+            demonextmatch = autorecorddemo!=0;
         }
 
         if(smode) smode->setup();
 
         // remod
-        if(autodemo) demonextmatch = true;
         remod::onevent(ONMAPSTART, "");
     }
 

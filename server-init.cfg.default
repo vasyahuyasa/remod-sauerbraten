@@ -134,7 +134,7 @@ rconproto 0 // Rcon protocol 0 - udp, 1 - tcp
 geodb "GeoIP.dat"
 
 // record demos after every game
-autodemo 1
+autorecorddemo 1
 
 // save demos to disc
 savedemo 1
