@@ -19,11 +19,11 @@ https://hub.docker.com/r/vasyahuyasa/remod
 ```
 git clone https://github.com/vasyahuyasa/remod-sauerbraten.git
 cd remod-sauerbraten
-git submodule update --init --recursive
 cd src
 make
 ```
-  * Check our [wiki page](https://github.com/vasyahuyasa/remod-sauerbraten/wiki/Installation)
+
+ * Check our [wiki page](https://github.com/vasyahuyasa/remod-sauerbraten/wiki/Installation)
 
 ## Update GeoIP database
 
