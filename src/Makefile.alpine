@@ -74,7 +74,7 @@ INCLUDES= -Ishared -Iengine -Ifpsgame -Imod -Imod/hashlib2plus/src -Imod/cryptom
 ifeq ($(ENET_USE_SYSTEM_LIBS),true)
 else
 override INCLUDES += -Ienet/include
-override SERVER_LIBS += -Lenet/.libs
+override SERVER_LIBS += -Lenet
 endif
 
 SERVER_OBJS= \
