@@ -66,7 +66,7 @@ ifeq ($(PLATFORM),SunOS)
 SERVER_LIBS+= -lsocket -lnsl
 endif
 
-CXXFLAGS=-fomit-frame-pointer -Wall -fsigned-char -DSTANDALONE
+CXXFLAGS=-O3 -fomit-frame-pointer -ffast-math -Wall -fsigned-char -fno-exceptions -fno-rtti -DSTANDALONE
 
 INCLUDES= -Ishared -Iengine -Ifpsgame -Imod -Imod/hashlib2plus/src -Imod/cryptomod/polarssl/include
 
@@ -250,10 +250,10 @@ enet/Makefile:
 	cd enet; autoreconf -vfi; ./configure --enable-shared=no --enable-static=yes
 	
 libenet: enet/Makefile
-	$(MAKE)	-C enet/ all
+	$(MAKE)	-C enet
 
 clean-enet: enet/Makefile
-	$(MAKE) -C enet/ maintainer-clean
+	$(MAKE) -C enet clean
 
 geoip/Makefile:
 	cd mod/GeoIP; chmod +x configure; ./configure --enable-shared=no --enable-static=yes
