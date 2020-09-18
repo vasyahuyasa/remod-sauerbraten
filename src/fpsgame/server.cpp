@@ -1669,7 +1669,7 @@ namespace server
     {
         gamestate &gs = ci->state;
         sendf(-1, 1, "ri3i4i6vi", N_RESUME, ci->clientnum, gs.state,
-+           gs.frags, gs.flags, gs.deaths, gs.quadmillis,
+            gs.frags, gs.flags, gs.deaths, gs.quadmillis,
             gs.lifesequence,
             gs.health, gs.maxhealth,
             gs.armour, gs.armourtype,
