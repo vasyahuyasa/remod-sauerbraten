@@ -66,7 +66,7 @@ ifeq ($(PLATFORM),SunOS)
 SERVER_LIBS+= -lsocket -lnsl
 endif
 
-CXXFLAGS=-O3 -fomit-frame-pointer -ffast-math -Wall -fsigned-char -fno-exceptions -fno-rtti -DSTANDALONE
+CXXFLAGS=-O3 -fomit-frame-pointer -Wall -fsigned-char -fno-exceptions -fno-rtti -DSTANDALONE
 
 INCLUDES= -Ishared -Iengine -Ifpsgame -Imod -Imod/hashlib2plus/src -Imod/cryptomod/polarssl/include
 

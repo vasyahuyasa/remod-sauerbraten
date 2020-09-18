@@ -32,7 +32,7 @@ AR=i686-w64-mingw32-ar
 
 SERVER_NAME=remod.exe
 
-CXXFLAGS= -O3 -fpermissive -fomit-frame-pointer -ffast-math -Wall -fsigned-char -fno-exceptions -fno-rtti -fstack-protector -DSTANDALONE -static -Wl,-subsystem,windows
+CXXFLAGS= -O3 -fpermissive -fomit-frame-pointer -Wall -fsigned-char -fno-exceptions -fno-rtti -fstack-protector -DSTANDALONE -static -Wl,-subsystem,windows
 
 SERVER_INCLUDES= -I/usr/i686-w64-mingw32/include/ $(INCLUDES) 
 SERVER_LIBS= -lz.dll -lgcc -lstdc++
