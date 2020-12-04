@@ -111,6 +111,11 @@ masterpass yx
 // when 0 only requires master
 // restrictpausegame 1
 
+// controls whether admin privs are necessary to change gamespeed
+// when 1 requires admin (default)
+// when 0 only requires master
+// restrictgamespeed 1
+
 // whether or not to allow players to vote on maps not in the rotation
 // when 1 requires master
 // when 2 requires admin
@@ -133,7 +138,9 @@ rconproto 0 // Rcon protocol 0 - udp, 1 - tcp
 // GeoIp database
 geodb "GeoIP.dat"
 
-// record demos after every game
+// whether or not to enable server-side demo recording automatically for every match
+// when 1 will always record a server-side demo for every match
+// when 0 will only record a demo for a match when requested
 autorecorddemo 1
 
 // save demos to disc
@@ -154,8 +161,10 @@ imissiontime 10000
 // time limit for every round (0 - don't change, in game #gtime)
 roundtime 0
 
-// not shuffle teams (in game #persist)
-persistteams 0 
+// whether or not teams should persist across matches and avoid autobalancing
+// when 1 teams persist across matches and don't autobalance
+// when 0 teams automatically balance at the beginning of a match (default)
+persistteams 0
 
 // character before player command
 commandchar "#"
@@ -166,10 +175,14 @@ ipbanmsg 1
 // delay in seconds before unpausing
 resumedelay 3
 
-// overtime in seconds when teams are tied (0 - disable overtime)
+// whether or not overtime is enabled for matches
+// when 1 enables overtime such that the match will keep going so long as scores are tied
+// when 0 the match will always end after a fixed time whether or not anyone wins (default)
 overtime 0
 
-// Enable/Disable blue armour in regen capture (1 - enabled, default)
+// whether or not blue armour is enabled in regen capture
+// when 1 players spawn with blue armour in regen capture as in other modes (default)
+// when 0 players spawn without any armour in regen capture
 regenbluearmour 1
 
 // IRC bot configuration
