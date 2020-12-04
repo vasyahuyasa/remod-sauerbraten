@@ -618,18 +618,18 @@ namespace server
         loopi(sizeof(team)/sizeof(team[0]))
         {
             addteaminfo(teamnames[i]);
-            if(!persistteams) loopvj(team[i])
+            loopvj(team[i])
             {
                 clientinfo *ci = team[i][j];
                 if(!strcmp(ci->team, teamnames[i])) continue;
+                if(persistteams && ci->team[0] && (!smode || smode->canchangeteam(ci, teamnames[i], ci->team)))
+                {
+                    addteaminfo(ci->team);
+                    continue;
+                }
                 copystring(ci->team, teamnames[i], MAXTEAMLEN+1);
                 sendf(-1, 1, "riisi", N_SETTEAM, ci->clientnum, teamnames[i], -1);
             }
-        }
-        if(persistteams) loopv(clients)
-        {
-            clientinfo *ci = clients[i];
-            if(ci->team[0]) addteaminfo(ci->team);
         }
     }
 
