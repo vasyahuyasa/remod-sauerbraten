@@ -2715,6 +2715,21 @@ void looplist(ident *id, const char *list, const uint *body)
 }
 COMMAND(looplist, "rse");
 
+void loopsublist(ident *id, const char *list, int *skip, int *count, const uint *body)
+{
+    if(id->type!=ID_ALIAS) return;
+    identstack stack;
+    int n = 0, offset = max(*skip, 0), len = *count < 0 ? INT_MAX : offset + *count;
+    for(const char *s = list, *start, *end; parselist(s, start, end) && n < len; n++) if(n >= offset)
+    {
+        char *val = newstring(start, end-start);
+        setiter(*id, val, stack);
+        execute(body);
+    }
+    if(n) poparg(*id);
+}
+COMMAND(loopsublist, "rsiie");
+
 void looplistconc(ident *id, const char *list, const uint *body, bool space)
 {
     if(id->type!=ID_ALIAS) return;
