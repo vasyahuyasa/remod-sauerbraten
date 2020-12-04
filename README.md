@@ -19,11 +19,15 @@ https://hub.docker.com/r/vasyahuyasa/remod
 ```
 git clone https://github.com/vasyahuyasa/remod-sauerbraten.git
 cd remod-sauerbraten
-git submodule update --init --recursive
 cd src
 make
 ```
-  * Check our [wiki page](https://github.com/vasyahuyasa/remod-sauerbraten/wiki/Installation)
+
+ * Check our [wiki page](https://github.com/vasyahuyasa/remod-sauerbraten/wiki/Installation)
+
+## Update GeoIP database
+
+Remod uses GeoLite2 Country database. Because of new policy of Maxmind 
 
 ## Implemented features
   * [x] server side cubescript
@@ -38,11 +42,15 @@ make
   * [x] database (sqlite3, mysql)
   * [x] docker
 
-## Work in progress
+## Work in progress   
+  * [ ] docker-compose / documentation
+
+## backlog
+  * [ ] discord bot
+  * [ ] some kind of rpc
+  * [ ] anticheat
   * [ ] users system
   * [ ] scoreboard
-  * [ ] anticheat
-  * [ ] docker comose / documentation
 
 ## Supported platforms
   * Mac (cmake, Xcode)
@@ -53,3 +61,4 @@ make
 ## Contacts
   * [degrave](https://github.com/vasyahuyasa), [^o_o^](https://github.com/rmhmlhr)
   * IRC: irc://irc.gamesurge.net/rb
+  * Discord [degrave@sauerworld](https://discord.gg/rfptFpx)

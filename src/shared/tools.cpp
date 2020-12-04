@@ -20,23 +20,20 @@ void operator delete(void *p) { if(p) free(p); }
 
 void operator delete[](void *p) { if(p) free(p); }
 
-#ifndef WIN32
-#include <unistd.h>
-#endif
-
-int guessnumcpus()
+void *operator new(size_t size, bool err)
 {
-    int numcpus = 1;
-#ifdef WIN32
-    SYSTEM_INFO info;
-    GetSystemInfo(&info);
-    numcpus = (int)info.dwNumberOfProcessors;
-#elif defined(_SC_NPROCESSORS_ONLN)
-    numcpus = (int)sysconf(_SC_NPROCESSORS_ONLN);
-#endif
-    return max(numcpus, 1);
+    void *p = malloc(size);
+    if(!p && err) abort();
+    return p;
 }
-    
+
+void *operator new[](size_t size, bool err)
+{
+    void *p = malloc(size);
+    if(!p && err) abort();
+    return p;
+}
+
 ////////////////////////// rnd numbers ////////////////////////////////////////
 
 #define N (624)             
@@ -88,8 +85,8 @@ void putint(vector<uchar> &p, int n) { putint_(p, n); }
 
 int getint(ucharbuf &p)
 {
-    int c = (char)p.get();
-    if(c==-128) { int n = p.get(); n |= char(p.get())<<8; return n; }
+    int c = (schar)p.get();
+    if(c==-128) { int n = p.get(); n |= ((schar)p.get())<<8; return n; }
     else if(c==-127) { int n = p.get(); n |= p.get()<<8; n |= p.get()<<16; return n|(p.get()<<24); }
     else return c;
 }
@@ -130,7 +127,7 @@ int getuint(ucharbuf &p)
         n += (p.get() << 7) - 0x80;
         if(n & (1<<14)) n += (p.get() << 14) - (1<<14);
         if(n & (1<<21)) n += (p.get() << 21) - (1<<21);
-        if(n & (1<<28)) n |= -1<<28;
+        if(n & (1<<28)) n |= ~0U<<28;
     }
     return n;
 }

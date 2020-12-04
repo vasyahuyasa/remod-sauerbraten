@@ -447,31 +447,33 @@ struct collectclientmode : clientmode
         if(d->state == CS_ALIVE && d->tokens > 0)
         {
             int x = HICON_X + 3*HICON_STEP + (d->quadmillis ? HICON_SIZE + HICON_SPACE : 0);
-            glPushMatrix();
-            glScalef(2, 2, 1);
+            pushhudmatrix();
+            hudmatrix.scale(2, 2, 1);
+            flushhudmatrix();
             draw_textf("%d", (x + HICON_SIZE + HICON_SPACE)/2, HICON_TEXTY/2, d->tokens);
-            glPopMatrix();
+            pophudmatrix();
             drawicon(HICON_TOKEN, x, HICON_Y);
         }
 
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         int s = 1800/4, x = 1800*w/h - s - s/10, y = s/10;
-        glColor4f(1, 1, 1, minimapalpha);
+        gle::colorf(1, 1, 1, minimapalpha);
         if(minimapalpha >= 1) glDisable(GL_BLEND);
         bindminimap();
         drawminimap(d, x, y, s);
         if(minimapalpha >= 1) glEnable(GL_BLEND);
-        glColor3f(1, 1, 1);
+        gle::colorf(1, 1, 1);
         float margin = 0.04f, roffset = s*margin, rsize = s + 2*roffset;
         settexture("packages/hud/radar.png", 3);
         drawradar(x - roffset, y - roffset, rsize);
         #if 0
         settexture("packages/hud/compass.png", 3);
-        glPushMatrix();
-        glTranslatef(x - roffset + 0.5f*rsize, y - roffset + 0.5f*rsize, 0);
-        glRotatef(camera1->yaw + 180, 0, 0, -1);
+        pushhudmatrix();
+        hudmatrix.translate(x - roffset + 0.5f*rsize, y - roffset + 0.5f*rsize, 0);
+        hudmatrix.rotate_around_z((camera1->yaw + 180)*-RAD);
+        flushhudmatrix();
         drawradar(-0.5f*rsize, -0.5f*rsize, rsize);
-        glPopMatrix();
+        pophudmatrix();
         #endif
         loopv(bases)
         {
@@ -493,11 +495,12 @@ struct collectclientmode : clientmode
             int wait = respawnwait(d);
             if(wait>=0)
             {
-                glPushMatrix();
-                glScalef(2, 2, 1);
+                pushhudmatrix();
+                hudmatrix.scale(2, 2, 1);
+                flushhudmatrix();
                 bool flash = wait>0 && d==player1 && lastspawnattempt>=d->lastpain && lastmillis < lastspawnattempt+100;
                 draw_textf("%s%d", (x+s/2)/2-(wait>=10 ? 28 : 16), (y+s/2)/2-32, flash ? "\f3" : "", wait);
-                glPopMatrix();
+                pophudmatrix();
             }
         }
     }
@@ -695,7 +698,7 @@ struct collectclientmode : clientmode
             {
                 b.laststeal = lastmillis;
                 conoutf(CON_GAMEINFO, "%s stole a skull from %s", teamcolorname(d), teamcolor("your team", collectbaseteam(enemyteam), "the enemy team"));
-                playsound(S_FLAGDROP, &b.tokenpos);
+                teamsound(d, S_FLAGDROP, &b.tokenpos);
             }
             if(t) particle_flare(b.tokenpos, vec(t->o.x, t->o.y, t->o.z + 0.5f*(TOKENHEIGHT + 1)), 500, PART_LIGHTNING, team==collectteambase(player1->team) ? 0x2222FF : 0xFF2222, 1.0f);
         }
@@ -707,7 +710,7 @@ struct collectclientmode : clientmode
         {
             base &b = bases[basenum];
             b.laststeal = lastmillis;
-            //playsound(S_FLAGSCORE, d != player1 ? &b.tokenpos : NULL);
+            //teamsound(d, S_FLAGSCORE, d != player1 ? &b.tokenpos : NULL);
             int n = 0;
             loopv(bases)
             {
@@ -752,14 +755,14 @@ struct collectclientmode : clientmode
         d->lastcollect = o;
     }
 
-    int respawnwait(fpsent *d)
+    int respawnwait(fpsent *d, int delay = 0)
     {
-        return max(0, RESPAWNSECS-(lastmillis-d->lastpain)/1000);
+        return d->respawnwait(RESPAWNSECS, delay);
     }
 
-    void pickspawn(fpsent *d)
+    int getspawngroup(fpsent *d)
     {
-        findplayerspawn(d, -1, collectteambase(d->team));
+        return collectteambase(d->team);
     }
 
     bool aicheck(fpsent *d, ai::aistate &b)

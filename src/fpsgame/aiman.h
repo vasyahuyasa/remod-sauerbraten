@@ -1,9 +1,9 @@
 // server-side ai manager
 namespace aiman
 {
-    bool dorefresh = false;
+    bool dorefresh = false, botbalance = true;
     VARN(serverbotlimit, botlimit, 0, 8, MAXBOTS);
-    VARN(serverbotbalance, botbalance, 0, 1, 1);
+    VAR(serverbotbalance, 0, 1, 1);
 
     void calcteams(vector<teamscore> &teams)
     {
@@ -82,7 +82,7 @@ namespace aiman
 
 	bool addai(int skill, int limit)
 	{
-		// remod
+        // remod
 		remod::onevent(ONADDBOT, "i", skill);
 
 		int numai = 0, cn = -1, maxai = limit >= 0 ? min(limit, MAXBOTS) : MAXBOTS;
@@ -140,7 +140,7 @@ namespace aiman
 
         int cn = ci->clientnum - MAXCLIENTS;
         if(!bots.inrange(cn)) return;
-        if(smode) smode->leavegame(ci, true);
+        if(ci->ownernum >= 0 && !ci->aireinit && smode) smode->leavegame(ci, true);
         sendf(-1, 1, "ri2", N_CDIS, ci->clientnum);
         clientinfo *owner = (clientinfo *)getclientinfo(ci->ownernum);
         if(owner) owner->bots.removeobj(ci);
@@ -177,10 +177,11 @@ namespace aiman
 
 	void shiftai(clientinfo *ci, clientinfo *owner = NULL)
 	{
+        if(ci->ownernum >= 0 && !ci->aireinit && smode) smode->leavegame(ci, true);
         clientinfo *prevowner = (clientinfo *)getclientinfo(ci->ownernum);
         if(prevowner) prevowner->bots.removeobj(ci);
 		if(!owner) { ci->aireinit = 0; ci->ownernum = -1; }
-		else if(ci->clientnum != owner->clientnum) { ci->aireinit = 2; ci->ownernum = owner->clientnum; owner->bots.add(ci); }
+		else if(ci->ownernum != owner->clientnum) { ci->aireinit = 2; ci->ownernum = owner->clientnum; owner->bots.add(ci); }
         dorefresh = true;
 	}
 
@@ -253,7 +254,7 @@ namespace aiman
 
         // remod
         remod::onevent(ONBOTLIMIT, "ii", ci->clientnum, clamp(limit, 0, MAXBOTS));
-
+        
         botlimit = clamp(limit, 0, MAXBOTS);
         dorefresh = true;
         defformatstring(msg, "bot limit is now %d", botlimit);
@@ -274,7 +275,7 @@ namespace aiman
     {
         dorefresh = true;
         loopv(clients) if(clients[i]->local || clients[i]->privilege) return;
-        if(!botbalance) setbotbalance(NULL, true);
+        if(botbalance != (serverbotbalance != 0)) setbotbalance(NULL, serverbotbalance != 0);
     }
 
     void addclient(clientinfo *ci)

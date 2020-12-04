@@ -1,6 +1,6 @@
 /*
 * remod:    geoipmod2.cpp
-* date:     2014
+* date:     2014, 2019
 * author:   degrave
 *
 * GEOIP new staff

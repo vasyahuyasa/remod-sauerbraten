@@ -168,7 +168,7 @@ namespace server
     {
         uint ip;
         string name;
-        int maxhealth, frags, flags, deaths, teamkills, shotdamage, damage;
+        int frags, flags, deaths, teamkills, shotdamage, damage;
         int timeplayed;
         float effectiveness;
 
@@ -177,7 +177,6 @@ namespace server
 
         void save(gamestate &gs)
         {
-            maxhealth = gs.maxhealth;
             frags = gs.frags;
             flags = gs.flags;
             deaths = gs.deaths;
@@ -193,8 +192,6 @@ namespace server
 
         void restore(gamestate &gs)
         {
-            if(gs.health==gs.maxhealth) gs.health = maxhealth;
-            gs.maxhealth = maxhealth;
             gs.frags = frags;
             gs.flags = flags;
             gs.deaths = deaths;
@@ -240,7 +237,6 @@ namespace server
         char *authkickreason;
 
         // remod
-        //hashtable<const char *, char *> vars;
         remod::extinfo ext;
 
         clientinfo() : getdemo(NULL), getmap(NULL), clipboard(NULL), authchallenge(NULL), authkickreason(NULL) { reset(); }
@@ -278,15 +274,15 @@ namespace server
         void setexceeded()
         {
             if(state.state==CS_ALIVE && !exceeded && !checkpushed(gamemillis, calcpushrange())) exceeded = gamemillis;
-            scheduleexceeded();
+            scheduleexceeded(); 
         }
-
+            
         void setpushed()
         {
             pushed = max(pushed, gamemillis);
             if(exceeded && checkpushed(exceeded, calcpushrange())) exceeded = 0;
         }
-
+        
         bool checkexceeded()
         {
             return state.state==CS_ALIVE && exceeded && gamemillis > exceeded + calcpushrange();
@@ -482,7 +478,6 @@ namespace server
     void srvmsgf(int cn, const char *s, ...);
     int numclients(int exclude , bool nospec, bool noai, bool priv);
     const char *colorname(clientinfo *ci, const char *name = NULL);
-    void addgban(const char *name);
     void cleargbans();
 }
 #endif

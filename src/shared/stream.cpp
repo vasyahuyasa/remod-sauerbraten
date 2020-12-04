@@ -1,5 +1,30 @@
 #include "cube.h"
 
+///////////////////////////// console ////////////////////////
+void conoutf(const char *fmt, ...)
+{
+    va_list args;
+    va_start(args, fmt);
+    conoutfv(CON_INFO, fmt, args);
+    va_end(args);
+}
+
+void conoutf(int type, const char *fmt, ...)
+{
+    va_list args;
+    va_start(args, fmt);
+    conoutfv(type, fmt, args);
+    va_end(args);
+}
+
+void conoutf(int type, int tag, const char *fmt, ...)
+{
+    va_list args;
+    va_start(args, fmt);
+    conoutfv(type | ((tag << CON_TAG_SHIFT) & CON_TAG_MASK), fmt, args);
+    va_end(args);
+}
+
 ///////////////////////// character conversion ///////////////
 
 #define CUBECTYPE(s, p, d, a, A, u, U) \
@@ -536,20 +561,20 @@ int listfiles(const char *dir, const char *ext, vector<char *> &files)
 }
 
 #ifndef STANDALONE
-static int rwopsseek(SDL_RWops *rw, int pos, int whence)
+static Sint64 rwopsseek(SDL_RWops *rw, Sint64 pos, int whence)
 {
     stream *f = (stream *)rw->hidden.unknown.data1;
     if((!pos && whence==SEEK_CUR) || f->seek(pos, whence)) return (int)f->tell();
     return -1;
 }
 
-static int rwopsread(SDL_RWops *rw, void *buf, int size, int nmemb)
+static size_t rwopsread(SDL_RWops *rw, void *buf, size_t size, size_t nmemb)
 {
     stream *f = (stream *)rw->hidden.unknown.data1;
     return f->read(buf, size*nmemb)/size;
 }
 
-static int rwopswrite(SDL_RWops *rw, const void *buf, int size, int nmemb)
+static size_t rwopswrite(SDL_RWops *rw, const void *buf, size_t size, size_t nmemb)
 {
     stream *f = (stream *)rw->hidden.unknown.data1;
     return f->write(buf, size*nmemb)/size;
@@ -656,19 +681,21 @@ struct filestream : stream
     offset tell() 
     { 
 #ifdef WIN32
-#ifdef __GNUC__
-        return ftello64(file);
+#if defined(__GNUC__) && !defined(__MINGW32__)
+        offset off = ftello64(file);
 #else
-        return _ftelli64(file);       
+        offset off = _ftelli64(file);
 #endif
 #else
-        return ftello(file); 
+        offset off = ftello(file);
 #endif
+        // ftello returns LONG_MAX for directories on some platforms
+        return off + 1 >= 0 ? off : -1;
     }
     bool seek(offset pos, int whence) 
     { 
 #ifdef WIN32
-#ifdef __GNUC__
+#if defined(__GNUC__) && !defined(__MINGW32__)
         return fseeko64(file, pos, whence) >= 0;
 #else
         return _fseeki64(file, pos, whence) >= 0;
@@ -1213,9 +1240,10 @@ char *loadfile(const char *fn, size_t *size, bool utf8)
 {
     stream *f = openfile(fn, "rb");
     if(!f) return NULL;
-    size_t len = f->size();
-    if(len <= 0) { delete f; return NULL; }
-    char *buf = new char[len+1];
+    stream::offset fsize = f->size();
+    if(fsize <= 0) { delete f; return NULL; }
+    size_t len = fsize;
+    char *buf = new (false) char[len+1];
     if(!buf) { delete f; return NULL; }
     size_t offset = 0;
     if(utf8 && len >= 3)
