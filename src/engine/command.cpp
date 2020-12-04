@@ -1586,7 +1586,7 @@ void printvar(ident *id)
             break;
     }
 }
-ICOMMAND(print, "r", (ident *id), printvar(id));
+ICOMMAND(printvar, "r", (ident *id), printvar(id));
 
 typedef void (__cdecl *comfun)();
 typedef void (__cdecl *comfun1)(void *);
