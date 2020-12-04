@@ -3144,7 +3144,7 @@ ICOMMAND(unistr, "i", (int *i), { char *s = newstring(1); s[0] = uni2cube(*i); s
 
 int naturalsort(const char *a, const char *b)
 {
-    for(;; ++a, ++b)
+    for(;;)
     {
         int ac = *a, bc = *b;
         if(!ac) return bc ? -1 : 0;
@@ -3163,6 +3163,7 @@ int naturalsort(const char *a, const char *b)
             else if(n > 0) return 1;
         }
         else if(ac != bc) return ac - bc;
+        else { ++a; ++b; }
     }
 }
 ICOMMAND(naturalsort, "ss", (char *a, char *b), intret(naturalsort(a,b)<=0));
