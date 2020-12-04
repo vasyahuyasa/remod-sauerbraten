@@ -682,6 +682,29 @@ void setsvarchecked(ident *id, const char *val)
     }
 }
 
+ICOMMAND(set, "rt", (ident *id, tagval *v),
+{
+    switch(id->type)
+    {
+        case ID_ALIAS:
+            if(id->index < MAXARGS) setarg(*id, *v); else setalias(*id, *v);
+            v->type = VAL_NULL;
+            break;
+        case ID_VAR:
+            setvarchecked(id, forceint(*v));
+            break;
+        case ID_FVAR:
+            setfvarchecked(id, forcefloat(*v));
+            break;
+        case ID_SVAR:
+            setsvarchecked(id, forcestr(*v));
+            break;
+        default:
+            debugcode("cannot redefine builtin %s with an alias", id->name);
+            break;
+    }
+});
+
 bool addcommand(const char *name, identfun fun, const char *args)
 {
     uint argmask = 0;
