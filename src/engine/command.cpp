@@ -1354,11 +1354,30 @@ static void compilestatements(vector<uint> &code, const char *&p, int rettype, i
                 if(idname) 
                 {
                     id = newident(idname, IDF_UNKNOWN);
-                    if(!id || id->type != ID_ALIAS) { compilestr(code, idname, idlen, true); id = NULL; }
+                    if(id) switch(id->type)
+                    {
+                        case ID_ALIAS:
+                            if(!(more = compilearg(code, p, VAL_ANY))) compilestr(code);
+                            code.add((id->index < MAXARGS ? CODE_ALIASARG : CODE_ALIAS)|(id->index<<8));
+                            goto endcommand;
+                        case ID_VAR:
+                            if(!(more = compilearg(code, p, VAL_INT))) compileint(code);
+                            code.add(CODE_IVAR1|(id->index<<8));
+                            goto endcommand;
+                        case ID_FVAR:
+                            if(!(more = compilearg(code, p, VAL_FLOAT))) compilefloat(code);
+                            code.add(CODE_FVAR1|(id->index<<8));
+                            goto endcommand;
+                        case ID_SVAR:
+                            if(!(more = compilearg(code, p, VAL_STR))) compilestr(code);
+                            code.add(CODE_SVAR1|(id->index<<8));
+                            goto endcommand;
+                    }
+                    compilestr(code, idname, idlen, true);
                     delete[] idname;
                 }
                 if(!(more = compilearg(code, p, VAL_ANY))) compilestr(code);
-                code.add(id && idname ? (id->index < MAXARGS ? CODE_ALIASARG : CODE_ALIAS)|(id->index<<8) : CODE_ALIASU);
+                code.add(CODE_ALIASU);
                 goto endstatement;
         }
         numargs = 0;
@@ -1460,7 +1479,8 @@ static void compilestatements(vector<uint> &code, const char *&p, int rettype, i
                         code.add(CODE_SVAR1|(id->index<<8));
                     }
                     break;
-            }        
+            }
+        endcommand:
             delete[] idname;
         }
     endstatement:
