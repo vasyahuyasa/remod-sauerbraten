@@ -37,7 +37,7 @@ struct captureclientmode : clientmode
         string name, info;
         entitylight light;
 #endif
-        int ammogroup, ammotype, ammo, owners, enemies, converted, capturetime;
+        int ammogroup, ammotype, tag, ammo, owners, enemies, converted, capturetime;
 
         baseinfo() { reset(); }
 
@@ -57,6 +57,7 @@ struct captureclientmode : clientmode
             capturetime = -1;
             ammogroup = 0;
             ammotype = 0;
+            tag = -1;
             ammo = 0;
             owners = 0;
         }
@@ -230,18 +231,6 @@ struct captureclientmode : clientmode
         return false;
     }
 
-    float disttoenemy(baseinfo &b)
-    {
-        float dist = 1e10f;
-        loopv(bases)
-        {
-            baseinfo &e = bases[i];
-            if(e.owner[0] && strcmp(b.owner, e.owner))
-                dist = min(dist, b.o.dist(e.o));
-        }
-        return dist;
-    }
-
     bool insidebase(const baseinfo &b, const vec &o)
     {
         float dx = (b.o.x-o.x), dy = (b.o.y-o.y), dz = (b.o.z-o.z);
@@ -382,21 +371,21 @@ struct captureclientmode : clientmode
             {
                 bool isowner = !strcmp(b.owner, player1->team);
                 if(b.enemy[0]) { mtype = PART_METER_VS; mcolor = 0xFF1932; mcolor2 = 0x3219FF; if(!isowner) swap(mcolor, mcolor2); }
-                if(!b.name[0]) formatstring(b.info, "base %d: %s", i+1, b.owner);
-                else if(basenumbers) formatstring(b.info, "%s (%d): %s", b.name, i+1, b.owner);
+                if(!b.name[0]) formatstring(b.info, "base %d: %s", b.tag, b.owner);
+                else if(basenumbers) formatstring(b.info, "%s (%d): %s", b.name, b.tag, b.owner);
                 else formatstring(b.info, "%s: %s", b.name, b.owner);
                 tcolor = isowner ? 0x6496FF : 0xFF4B19;
             }
             else if(b.enemy[0])
             {
-                if(!b.name[0]) formatstring(b.info, "base %d: %s", i+1, b.enemy);
-                else if(basenumbers) formatstring(b.info, "%s (%d): %s", b.name, i+1, b.enemy);
+                if(!b.name[0]) formatstring(b.info, "base %d: %s", b.tag, b.enemy);
+                else if(basenumbers) formatstring(b.info, "%s (%d): %s", b.name, b.tag, b.enemy);
                 else formatstring(b.info, "%s: %s", b.name, b.enemy);
                 if(strcmp(b.enemy, player1->team)) { tcolor = 0xFF4B19; mtype = PART_METER; mcolor = 0xFF1932; }
                 else { tcolor = 0x6496FF; mtype = PART_METER; mcolor = 0x3219FF; }
             }
-            else if(!b.name[0]) formatstring(b.info, "base %d", i+1);
-            else if(basenumbers) formatstring(b.info, "%s (%d)", b.name, i+1);
+            else if(!b.name[0]) formatstring(b.info, "base %d", b.tag);
+            else if(basenumbers) formatstring(b.info, "%s (%d)", b.name, b.tag);
             else copystring(b.info, b.name);
 
             vec above(b.ammopos);
@@ -434,7 +423,7 @@ struct captureclientmode : clientmode
             if(basenumbers)
             {
                 static string blip;
-                formatstring(blip, "%d", i+1);
+                formatstring(blip, "%d", b.tag);
                 int tw, th;
                 text_bounds(blip, tw, th);
                 draw_text(blip, int(0.5f*(dir.x*fw/blipsize - tw)), int(0.5f*(dir.y*fh/blipsize - th)));
@@ -542,6 +531,7 @@ struct captureclientmode : clientmode
             defformatstring(alias, "base_%d", e->attr2);
             const char *name = getalias(alias);
             copystring(b.name, name);
+            b.tag = e->attr2>0 ? e->attr2 : bases.length();
             b.light = e->light;
         }
     }
@@ -568,16 +558,16 @@ struct captureclientmode : clientmode
         {
             if(strcmp(b.owner, owner))
             {
-                if(!b.name[0]) conoutf(CON_GAMEINFO, "%s captured base %d", teamcolor(owner, owner), i+1);
-                else if(basenumbers) conoutf(CON_GAMEINFO, "%s captured %s (%d)", teamcolor(owner, owner), b.name, i+1);
+                if(!b.name[0]) conoutf(CON_GAMEINFO, "%s captured base %d", teamcolor(owner, owner), b.tag);
+                else if(basenumbers) conoutf(CON_GAMEINFO, "%s captured %s (%d)", teamcolor(owner, owner), b.name, b.tag);
                 else conoutf(CON_GAMEINFO, "%s captured %s", teamcolor(owner, owner), b.name);
                 if(!strcmp(owner, player1->team)) playsound(S_V_BASECAP);
             }
         }
         else if(b.owner[0])
         {
-            if(!b.name[0]) conoutf(CON_GAMEINFO, "%s lost base %d", teamcolor(b.owner, b.owner), i+1);
-            else if(basenumbers) conoutf(CON_GAMEINFO, "%s lost %s (%d)", teamcolor(b.owner, b.owner), b.name, i+1);
+            if(!b.name[0]) conoutf(CON_GAMEINFO, "%s lost base %d", teamcolor(b.owner, b.owner), b.tag);
+            else if(basenumbers) conoutf(CON_GAMEINFO, "%s lost %s (%d)", teamcolor(b.owner, b.owner), b.name, b.tag);
             else conoutf(CON_GAMEINFO, "%s lost %s", teamcolor(b.owner, b.owner), b.name);
             if(!strcmp(b.owner, player1->team)) playsound(S_V_BASELOST);
         }
@@ -723,7 +713,7 @@ ICOMMAND(insidebases, "", (),
         if(b.valid() && capturemode.insidebase(b, player1->feetpos()))
         {
             if(buf.length()) buf.add(' ');
-            defformatstring(basenum, "%d", i+1);
+            defformatstring(basenum, "%d", b.tag);
             buf.put(basenum, strlen(basenum));
         }
     }
