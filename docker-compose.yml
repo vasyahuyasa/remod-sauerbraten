@@ -1,0 +1,13 @@
+version: "3"
+services:
+  sauerbraten:
+    container_name: remod_sauerbraten
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    image: remod_sauerbraten
+    restart: always
+    network_mode: "host"
+    ports:
+      - "28785:28785"
+      - "28786:28786"
