@@ -1,4 +1,5 @@
-FROM alpine:3.10.0 as dev
+FROM alpine:3.12.1 as builder
+
 RUN apk --no-cache add \
     gcc \
     g++ \
@@ -11,19 +12,26 @@ RUN apk --no-cache add \
     automake \
     libtool
 COPY src src/
+
 RUN cd src; make -f Makefile.alpine
 
-FROM alpine:3.10.0
-EXPOSE  28785 28786 28784 27070
+FROM alpine:3.12.1
+
 WORKDIR /remod
-COPY --from=dev remod64 remod64
+
+# Expose laninfo, server, serverinfo, rcon
+EXPOSE 28784 28785 28786 27070
+
+COPY --from=builder remod64 remod64
 COPY scripts scripts/
 COPY maps maps/
 COPY auth.cfg GeoIP.dat permbans.cfg ./
 COPY server-init.cfg.default server-init.cfg
+
 RUN apk --no-cache add \
     libstdc++ \
     sqlite-libs \
     mariadb-connector-c \
     libgcc
-CMD ["./remod64"]
+
+ENTRYPOINT ["/remod/remod64"]
