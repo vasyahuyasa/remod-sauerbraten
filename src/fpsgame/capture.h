@@ -37,7 +37,7 @@ struct captureclientmode : clientmode
         string name, info;
         entitylight light;
 #endif
-        int ammogroup, ammotype, ammo, owners, enemies, converted, capturetime;
+        int ammogroup, ammotype, tag, ammo, owners, enemies, converted, capturetime;
 
         baseinfo() { reset(); }
 
@@ -57,6 +57,7 @@ struct captureclientmode : clientmode
             capturetime = -1;
             ammogroup = 0;
             ammotype = 0;
+            tag = -1;
             ammo = 0;
             owners = 0;
         }
@@ -230,18 +231,6 @@ struct captureclientmode : clientmode
         return false;
     }
 
-    float disttoenemy(baseinfo &b)
-    {
-        float dist = 1e10f;
-        loopv(bases)
-        {
-            baseinfo &e = bases[i];
-            if(e.owner[0] && strcmp(b.owner, e.owner))
-                dist = min(dist, b.o.dist(e.o));
-        }
-        return dist;
-    }
-
     bool insidebase(const baseinfo &b, const vec &o)
     {
         float dx = (b.o.x-o.x), dy = (b.o.y-o.y), dz = (b.o.z-o.z);
@@ -382,21 +371,21 @@ struct captureclientmode : clientmode
             {
                 bool isowner = !strcmp(b.owner, player1->team);
                 if(b.enemy[0]) { mtype = PART_METER_VS; mcolor = 0xFF1932; mcolor2 = 0x3219FF; if(!isowner) swap(mcolor, mcolor2); }
-                if(!b.name[0]) formatstring(b.info, "base %d: %s", i+1, b.owner);
-                else if(basenumbers) formatstring(b.info, "%s (%d): %s", b.name, i+1, b.owner);
+                if(!b.name[0]) formatstring(b.info, "base %d: %s", b.tag, b.owner);
+                else if(basenumbers) formatstring(b.info, "%s (%d): %s", b.name, b.tag, b.owner);
                 else formatstring(b.info, "%s: %s", b.name, b.owner);
                 tcolor = isowner ? 0x6496FF : 0xFF4B19;
             }
             else if(b.enemy[0])
             {
-                if(!b.name[0]) formatstring(b.info, "base %d: %s", i+1, b.enemy);
-                else if(basenumbers) formatstring(b.info, "%s (%d): %s", b.name, i+1, b.enemy);
+                if(!b.name[0]) formatstring(b.info, "base %d: %s", b.tag, b.enemy);
+                else if(basenumbers) formatstring(b.info, "%s (%d): %s", b.name, b.tag, b.enemy);
                 else formatstring(b.info, "%s: %s", b.name, b.enemy);
                 if(strcmp(b.enemy, player1->team)) { tcolor = 0xFF4B19; mtype = PART_METER; mcolor = 0xFF1932; }
                 else { tcolor = 0x6496FF; mtype = PART_METER; mcolor = 0x3219FF; }
             }
-            else if(!b.name[0]) formatstring(b.info, "base %d", i+1);
-            else if(basenumbers) formatstring(b.info, "%s (%d)", b.name, i+1);
+            else if(!b.name[0]) formatstring(b.info, "base %d", b.tag);
+            else if(basenumbers) formatstring(b.info, "%s (%d)", b.name, b.tag);
             else copystring(b.info, b.name);
 
             vec above(b.ammopos);
@@ -434,29 +423,29 @@ struct captureclientmode : clientmode
             if(basenumbers)
             {
                 static string blip;
-                formatstring(blip, "%d", i+1);
+                formatstring(blip, "%d", b.tag);
                 int tw, th;
                 text_bounds(blip, tw, th);
                 draw_text(blip, int(0.5f*(dir.x*fw/blipsize - tw)), int(0.5f*(dir.y*fh/blipsize - th)));
             }
             else
             {
-                if(!blips) glBegin(GL_QUADS);
+                if(!blips) { gle::defvertex(2); gle::deftexcoord0(); gle::begin(GL_QUADS); }
                 float x = 0.5f*(dir.x*fw/blipsize - fw), y = 0.5f*(dir.y*fh/blipsize - fh);
-                glTexCoord2f(0.0f, 0.0f); glVertex2f(x,    y);
-                glTexCoord2f(1.0f, 0.0f); glVertex2f(x+fw, y);
-                glTexCoord2f(1.0f, 1.0f); glVertex2f(x+fw, y+fh);
-                glTexCoord2f(0.0f, 1.0f); glVertex2f(x,    y+fh);
+                gle::attribf(x,    y);    gle::attribf(0, 0);
+                gle::attribf(x+fw, y);    gle::attribf(1, 0);
+                gle::attribf(x+fw, y+fh); gle::attribf(1, 1);
+                gle::attribf(x,    y+fh); gle::attribf(0, 1);
             }
             blips++;
         }
-        if(blips && !basenumbers) glEnd();
+        if(blips && !basenumbers) gle::end();
     }
 
-    int respawnwait(fpsent *d)
+    int respawnwait(fpsent *d, int delay = 0)
     {
         if(m_regencapture) return -1;
-        return max(0, RESPAWNSECS-(lastmillis-d->lastpain)/1000);
+        return d->respawnwait(RESPAWNSECS, delay);
     }
 
     int clipconsole(int w, int h)
@@ -468,22 +457,23 @@ struct captureclientmode : clientmode
     {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         int s = 1800/4, x = 1800*w/h - s - s/10, y = s/10;
-        glColor4f(1, 1, 1, minimapalpha);
+        gle::colorf(1, 1, 1, minimapalpha);
         if(minimapalpha >= 1) glDisable(GL_BLEND);
         bindminimap();
         drawminimap(d, x, y, s);
         if(minimapalpha >= 1) glEnable(GL_BLEND);
-        glColor3f(1, 1, 1);
+        gle::colorf(1, 1, 1);
         float margin = 0.04f, roffset = s*margin, rsize = s + 2*roffset;
         settexture("packages/hud/radar.png", 3);
         drawradar(x - roffset, y - roffset, rsize);
         #if 0
         settexture("packages/hud/compass.png", 3);
-        glPushMatrix();
-        glTranslatef(x - roffset + 0.5f*rsize, y - roffset + 0.5f*rsize, 0);
-        glRotatef(camera1->yaw + 180, 0, 0, -1);
+        pushhudmatrix();
+        hudmatrix.translate(x - roffset + 0.5f*rsize, y - roffset + 0.5f*rsize, 0);
+        hudmatrix.rotate_around_z((camera1->yaw + 180)*-RAD);
+        flushhudmatrix();
         drawradar(-0.5f*rsize, -0.5f*rsize, rsize);
-        glPopMatrix();
+        pophudmatrix();
         #endif
         bool showenemies = lastmillis%1000 >= 500;
         int fw = 1, fh = 1;
@@ -494,10 +484,11 @@ struct captureclientmode : clientmode
             text_bounds(" ", fw, fh);
         }
         else settexture("packages/hud/blip_blue.png", 3);
-        glPushMatrix();
-        glTranslatef(x + 0.5f*s, y + 0.5f*s, 0);
         float blipsize = basenumbers ? 0.1f : 0.05f;
-        glScalef((s*blipsize)/fw, (s*blipsize)/fh, 1.0f);
+        pushhudmatrix();
+        hudmatrix.translate(x + 0.5f*s, y + 0.5f*s, 0);
+        hudmatrix.scale((s*blipsize)/fw, (s*blipsize)/fh, 1.0f);
+        flushhudmatrix();
         drawblips(d, blipsize, fw, fh, 1, showenemies);
         if(basenumbers) setfont("digit_grey");
         else settexture("packages/hud/blip_grey.png", 3);
@@ -506,7 +497,7 @@ struct captureclientmode : clientmode
         else settexture("packages/hud/blip_red.png", 3);
         drawblips(d, blipsize, fw, fh, -1, showenemies);
         if(showenemies) drawblips(d, blipsize, fw, fh, -2);
-        glPopMatrix();
+        pophudmatrix();
         if(basenumbers) popfont();
         drawteammates(d, x, y, s);
         if(d->state == CS_DEAD)
@@ -514,11 +505,12 @@ struct captureclientmode : clientmode
             int wait = respawnwait(d);
             if(wait>=0)
             {
-                glPushMatrix();
-                glScalef(2, 2, 1);
+                pushhudmatrix();
+                hudmatrix.scale(2, 2, 1);
+                flushhudmatrix();
                 bool flash = wait>0 && d==player1 && lastspawnattempt>=d->lastpain && lastmillis < lastspawnattempt+100;
                 draw_textf("%s%d", (x+s/2)/2-(wait>=10 ? 28 : 16), (y+s/2)/2-32, flash ? "\f3" : "", wait);
-                glPopMatrix();
+                pophudmatrix();
             }
         }
     }
@@ -539,6 +531,7 @@ struct captureclientmode : clientmode
             defformatstring(alias, "base_%d", e->attr2);
             const char *name = getalias(alias);
             copystring(b.name, name);
+            b.tag = e->attr2>0 ? e->attr2 : bases.length();
             b.light = e->light;
         }
     }
@@ -565,16 +558,16 @@ struct captureclientmode : clientmode
         {
             if(strcmp(b.owner, owner))
             {
-                if(!b.name[0]) conoutf(CON_GAMEINFO, "%s captured base %d", teamcolor(owner, owner), i+1);
-                else if(basenumbers) conoutf(CON_GAMEINFO, "%s captured %s (%d)", teamcolor(owner, owner), b.name, i+1);
+                if(!b.name[0]) conoutf(CON_GAMEINFO, "%s captured base %d", teamcolor(owner, owner), b.tag);
+                else if(basenumbers) conoutf(CON_GAMEINFO, "%s captured %s (%d)", teamcolor(owner, owner), b.name, b.tag);
                 else conoutf(CON_GAMEINFO, "%s captured %s", teamcolor(owner, owner), b.name);
                 if(!strcmp(owner, player1->team)) playsound(S_V_BASECAP);
             }
         }
         else if(b.owner[0])
         {
-            if(!b.name[0]) conoutf(CON_GAMEINFO, "%s lost base %d", teamcolor(b.owner, b.owner), i+1);
-            else if(basenumbers) conoutf(CON_GAMEINFO, "%s lost %s (%d)", teamcolor(b.owner, b.owner), b.name, i+1);
+            if(!b.name[0]) conoutf(CON_GAMEINFO, "%s lost base %d", teamcolor(b.owner, b.owner), b.tag);
+            else if(basenumbers) conoutf(CON_GAMEINFO, "%s lost %s (%d)", teamcolor(b.owner, b.owner), b.name, b.tag);
             else conoutf(CON_GAMEINFO, "%s lost %s", teamcolor(b.owner, b.owner), b.name);
             if(!strcmp(b.owner, player1->team)) playsound(S_V_BASELOST);
         }
@@ -608,65 +601,17 @@ struct captureclientmode : clientmode
         }
     }
 
-    int closesttoenemy(const char *team, bool noattacked = false, bool farthest = false)
+    // prefer spawning near friendly base
+    float ratespawn(fpsent *d, const extentity &e)
     {
-        float bestdist = farthest ? -1e10f : 1e10f;
-        int best = -1;
-        int attackers = INT_MAX, attacked = -1;
+        float minbasedist = 1e16f;
         loopv(bases)
         {
             baseinfo &b = bases[i];
-            if(!b.owner[0] || strcmp(b.owner, team)) continue;
-            if(noattacked && b.enemy[0]) continue;
-            float dist = disttoenemy(b);
-            if(farthest ? dist > bestdist : dist < bestdist)
-            {
-                best = i;
-                bestdist = dist;
-            }
-            else if(b.enemy[0] && b.enemies < attackers)
-            {
-                attacked = i;
-                attackers = b.enemies;
-            }
+            if(!b.owner[0] || strcmp(b.owner, d->team)) continue;
+            minbasedist = min(minbasedist, e.o.dist(b.o));
         }
-        if(best < 0) return attacked;
-        return best;
-    }
-
-    int pickteamspawn(const char *team)
-    {
-        int closest = closesttoenemy(team, true, m_regencapture);
-        if(!m_regencapture && closest < 0) closest = closesttoenemy(team, false);
-        if(closest < 0) return -1;
-        baseinfo &b = bases[closest];
-
-        float bestdist = 1e10f, altdist = 1e10f;
-        int best = -1, alt = -1;
-        loopv(entities::ents)
-        {
-            extentity *e = entities::ents[i];
-            if(e->type!=PLAYERSTART || e->attr2) continue;
-            float dist = e->o.dist(b.o);
-            if(dist < bestdist)
-            {
-                alt = best;
-                altdist = bestdist;
-                best = i;
-                bestdist = dist;
-            }
-            else if(dist < altdist)
-            {
-                alt = i;
-                altdist = dist;
-            }
-        }
-        return rnd(2) ? best : alt;
-    }
-
-    void pickspawn(fpsent *d)
-    {
-        findplayerspawn(d, pickteamspawn(d->team));
+        return minbasedist < 1e16f ? proximityscore(minbasedist, 128.0f, 512.0f) : 1.0f;
     }
 
 	bool aicheck(fpsent *d, ai::aistate &b)
@@ -768,7 +713,7 @@ ICOMMAND(insidebases, "", (),
         if(b.valid() && capturemode.insidebase(b, player1->feetpos()))
         {
             if(buf.length()) buf.add(' ');
-            defformatstring(basenum, "%d", i+1);
+            defformatstring(basenum, "%d", b.tag);
             buf.put(basenum, strlen(basenum));
         }
     }

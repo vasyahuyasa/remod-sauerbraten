@@ -1,0 +1,5 @@
+TODO:
+ - ban by ip already implemented in next release
+ - server.cpp:4071 TODO: port old remod code with ghosttrigger to next release
+ - ctf.h:942 probably missed ONTAKEFLAG event
+ - enable GeoIP2

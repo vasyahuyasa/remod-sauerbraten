@@ -8,9 +8,11 @@
 #endif
 #define NULL 0
 
+typedef signed char schar;
 typedef unsigned char uchar;
 typedef unsigned short ushort;
 typedef unsigned int uint;
+typedef unsigned long ulong;
 typedef signed long long int llong;
 typedef unsigned long long int ullong;
 
@@ -32,6 +34,8 @@ typedef unsigned long long int ullong;
 #define UNUSED
 #endif
 
+void *operator new(size_t, bool);
+void *operator new[](size_t, bool);
 inline void *operator new(size_t, void *p) { return p; }
 inline void *operator new[](size_t, void *p) { return p; }
 inline void operator delete(void *, void *) {}
@@ -68,6 +72,30 @@ static inline T clamp(T a, U b, U c)
 {
     return max(T(b), min(a, T(c)));
 }
+
+#ifdef __GNUC__
+#define bitscan(mask) (__builtin_ffs(mask)-1)
+#else
+#ifdef WIN32
+#pragma intrinsic(_BitScanForward)
+static inline int bitscan(uint mask)
+{
+    ulong i;
+    return _BitScanForward(&i, mask) ? i : -1;
+}
+#else
+static inline int bitscan(uint mask)
+{
+    if(!mask) return -1;
+    int i = 1;
+    if(!(mask&0xFFFF)) { i += 16; mask >>= 16; }
+    if(!(mask&0xFF)) { i += 8; mask >>= 8; }
+    if(!(mask&0xF)) { i += 4; mask >>= 4; }
+    if(!(mask&3)) { i += 2; mask >>= 2; }
+    return i - (mask&1);
+}
+#endif
+#endif
 
 #define rnd(x) ((int)(randomMT()&0x7FFFFFFF)%(x))
 #define rndscale(x) (float((randomMT()&0x7FFFFFFF)*double(x)/double(0x7FFFFFFF)))
@@ -200,6 +228,10 @@ inline char *newstring(const char *s)           { size_t l = strlen(s); char *d 
 #define loopvk(v)   for(int k = 0; k<(v).length(); k++)
 #define loopvrev(v) for(int i = (v).length()-1; i>=0; i--)
 
+template<class T> inline void memclear(T *p, size_t n) { memset((void *)p, 0, n * sizeof(T)); }
+template<class T> inline void memclear(T &p) { memset((void *)&p, 0, sizeof(T)); }
+template<class T, size_t N> inline void memclear(T (&p)[N]) { memset((void *)p, 0, N * sizeof(T)); }
+
 template <class T>
 struct databuf
 {
@@ -218,6 +250,19 @@ struct databuf
     template<class U>
     databuf(T *buf, U maxlen) : buf(buf), len(0), maxlen((int)maxlen), flags(0) {}
 
+    void reset()
+    {
+        len = 0;
+        flags = 0;
+    }
+
+    void reset(T *buf_, int maxlen_)
+    {
+        reset();
+        buf = buf_;
+        maxlen = maxlen_;
+    }
+
     const T &get()
     {
         static T overreadval = 0;
@@ -231,6 +276,13 @@ struct databuf
         sz = clamp(sz, 0, maxlen-len);
         len += sz;
         return databuf(&buf[len-sz], sz);
+    }
+
+    T *pad(int numvals)
+    {
+        T *vals = &buf[len];
+        len += min(numvals, maxlen-len);
+        return vals;
     }
 
     void put(const T &val)
@@ -263,11 +315,14 @@ struct databuf
         len = max(len-n, 0);
     }
 
+    T *getbuf() const { return buf; }
     bool empty() const { return len==0; }
     int length() const { return len; }
     int remaining() const { return maxlen-len; }
     bool overread() const { return (flags&OVERREAD)!=0; }
     bool overwrote() const { return (flags&OVERWROTE)!=0; }
+
+    bool check(int n) { return remaining() >= n; }
 
     void forceoverread()
     {
@@ -340,8 +395,19 @@ struct packetbuf : ucharbuf
 template<class T>
 static inline float heapscore(const T &n) { return n; }
 
-template<class T>
-static inline bool compareless(const T &x, const T &y) { return x < y; }
+struct sortless
+{
+    template<class T> bool operator()(const T &x, const T &y) const { return x < y; }
+    bool operator()(char *x, char *y) const { return strcmp(x, y) < 0; }
+    bool operator()(const char *x, const char *y) const { return strcmp(x, y) < 0; }
+};
+
+struct sortnameless
+{
+    template<class T> bool operator()(const T &x, const T &y) const { return sortless()(x.name, y.name); }
+    template<class T> bool operator()(T *x, T *y) const { return sortless()(x->name, y->name); }
+    template<class T> bool operator()(const T *x, const T *y) const { return sortless()(x->name, y->name); }
+};
 
 template<class T, class F>
 static inline void insertionsort(T *start, T *end, F fun)
@@ -370,7 +436,7 @@ static inline void insertionsort(T *buf, int n, F fun)
 template<class T>
 static inline void insertionsort(T *buf, int n)
 {
-    insertionsort(buf, buf+n, compareless<T>);
+    insertionsort(buf, buf+n, sortless());
 }
 
 template<class T, class F>
@@ -424,7 +490,7 @@ static inline void quicksort(T *buf, int n, F fun)
 template<class T>
 static inline void quicksort(T *buf, int n)
 {
-    quicksort(buf, buf+n, compareless<T>);
+    quicksort(buf, buf+n, sortless());
 }
 
 template<class T> struct isclass
@@ -604,12 +670,13 @@ template <class T> struct vector
         quicksort(&buf[i], n < 0 ? ulen-i : n, fun);
     }
 
-    void sort() { sort(compareless<T>); }
+    void sort() { sort(sortless()); }
+    void sortname() { sort(sortnameless()); }
 
     void growbuf(int sz)
     {
         int olen = alen;
-        if(!alen) alen = max(MINSIZE, sz);
+        if(alen <= 0) alen = max(MINSIZE, sz);
         else while(alen < sz) alen += alen/2;
         if(alen <= olen) return;
         uchar *newbuf = new uchar[alen*sizeof(T)];
@@ -623,7 +690,7 @@ template <class T> struct vector
 
     databuf<T> reserve(int sz)
     {
-        if(ulen+sz > alen) growbuf(ulen+sz);
+        if(alen-ulen < sz) growbuf(ulen+sz);
         return databuf<T>(&buf[ulen], sz);
     }
 
@@ -719,7 +786,7 @@ template <class T> struct vector
 
     T *insert(int i, const T *e, int n)
     {
-        if(ulen+n>alen) growbuf(ulen+n);
+        if(alen-ulen < n) growbuf(ulen+n);
         loopj(n) add(T());
         for(int p = ulen-1; p>=i+n; p--) buf[p] = buf[p-n];
         loopj(n) buf[i+j] = e[j];
@@ -875,13 +942,6 @@ template<class H, class E, class K, class T> struct hashbase
         HTFIND( , insert(h, key) = elem);
     }
 
-    template<class V>
-    T &add(const V &elem)
-    {
-        const K &key = H::getkey(elem);
-        HTFIND( , insert(h, key) = elem);
-    }
-
     template<class U>
     T &operator[](const U &key)
     {
@@ -899,7 +959,6 @@ template<class H, class E, class K, class T> struct hashbase
     {
         HTFIND( , notfound);
     }
-
 
     template<class U>
     bool remove(const U &key)
@@ -953,6 +1012,12 @@ template<class T> struct hashset : hashbase<hashset<T>, T, T, T>
     static inline const T &getkey(const T &elem) { return elem; }
     static inline T &getdata(T &elem) { return elem; }
     template<class K> static inline void setkey(T &elem, const K &key) {}
+
+    template<class V>
+    T &add(const V &elem)
+    {
+        return basetype::access(elem, elem);
+    }
 };
 
 template<class T> struct hashnameset : hashbase<hashnameset<T>, T, const char *, T>
@@ -965,6 +1030,12 @@ template<class T> struct hashnameset : hashbase<hashnameset<T>, T, const char *,
     template<class U> static inline const char *getkey(U *elem) { return elem->name; }
     static inline T &getdata(T &elem) { return elem; }
     template<class K> static inline void setkey(T &elem, const K &key) {}
+
+    template<class V>
+    T &add(const V &elem)
+    {
+        return basetype::access(getkey(elem), elem);
+    }
 };
 
 template<class K, class T> struct hashtableentry
@@ -1077,6 +1148,23 @@ template <class T, int SIZE> struct queue
         return t;
     }
 
+    T remove(int offset)
+    {
+        T val = removing(offset);
+        if(head+offset >= SIZE) for(int i = head+offset - SIZE + 1; i < tail; i++) data[i-1] = data[i];
+        else if(head < tail) for(int i = head+offset + 1; i < tail; i++) data[i-1] = data[i];
+        else
+        {
+            for(int i = head+offset + 1; i < SIZE; i++) data[i-1] = data[i];
+            data[SIZE-1] = data[0];
+            for(int i = 1; i < tail; i++) data[i-1] = data[i];
+        }
+        tail--;
+        if(tail < 0) tail += SIZE;
+        len--;
+        return val;
+    }
+
     T &operator[](int offset) { return removing(offset); }
     const T &operator[](int offset) const { return removing(offset); }
 };
@@ -1116,6 +1204,14 @@ template<class T> inline void endiansame(T *buf, size_t len) {}
 #define lilswap endianswap
 #define bigswap endiansame
 #endif
+#elif defined(__BYTE_ORDER__)
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+#define lilswap endiansame
+#define bigswap endianswap
+#else
+#define lilswap endianswap
+#define bigswap endiansame
+#endif
 #else
 template<class T> inline T lilswap(T n) { return *(const uchar *)&islittleendian ? n : endianswap(n); }
 template<class T> inline void lilswap(T *buf, size_t len) { if(!*(const uchar *)&islittleendian) endianswap(buf, len); }
@@ -1134,7 +1230,7 @@ template<class T> inline void bigswap(T *buf, size_t len) { if(*(const uchar *)&
 struct stream
 {
 #ifdef WIN32
-#ifdef __GNUC__
+#if defined(__GNUC__) && !defined(__MINGW32__)
     typedef off64_t offset;
 #else
     typedef __int64 offset;
@@ -1208,6 +1304,7 @@ static inline int iscubealpha(uchar c) { return cubectype[c]&CT_ALPHA; }
 static inline int iscubealnum(uchar c) { return cubectype[c]&(CT_ALPHA|CT_DIGIT); }
 static inline int iscubelower(uchar c) { return cubectype[c]&CT_LOWER; }
 static inline int iscubeupper(uchar c) { return cubectype[c]&CT_UPPER; }
+static inline int iscubepunct(uchar c) { return cubectype[c] == CT_PRINT; }
 static inline int cube2uni(uchar c)
 { 
     extern const int cube2unichars[256]; 
@@ -1232,6 +1329,8 @@ static inline uchar cubeupper(uchar c)
 extern size_t decodeutf8(uchar *dst, size_t dstlen, const uchar *src, size_t srclen, size_t *carry = NULL);
 extern size_t encodeutf8(uchar *dstbuf, size_t dstlen, const uchar *srcbuf, size_t srclen, size_t *carry = NULL);
 
+extern string homedir;
+
 extern char *makerelpath(const char *dir, const char *file, const char *prefix = NULL, const char *cmd = NULL);
 extern char *path(char *s);
 extern char *path(const char *s, bool copy);
@@ -1255,7 +1354,6 @@ extern int listfiles(const char *dir, const char *ext, vector<char *> &files);
 extern int listzipfiles(const char *dir, const char *ext, vector<char *> &files);
 extern void seedMT(uint seed);
 extern uint randomMT();
-extern int guessnumcpus();
 
 extern void putint(ucharbuf &p, int n);
 extern void putint(packetbuf &p, int n);
@@ -1285,6 +1383,5 @@ struct ipmask
     int print(char *buf) const;
     bool check(enet_uint32 host) const { return (host & mask) == ip; }
 };
-    
 #endif
 

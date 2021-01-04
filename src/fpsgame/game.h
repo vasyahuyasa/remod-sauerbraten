@@ -82,7 +82,6 @@ enum
     M_CTF        = 1<<8,
     M_PROTECT    = 1<<9,
     M_HOLD       = 1<<10,
-    M_OVERTIME   = 1<<11,
     M_EDIT       = 1<<12,
     M_DEMO       = 1<<13,
     M_LOCAL      = 1<<14,
@@ -135,6 +134,7 @@ static struct gamemodeinfo
 #define m_check(mode, flag)    (m_valid(mode) && gamemodes[(mode) - STARTGAMEMODE].flags&(flag))
 #define m_checknot(mode, flag) (m_valid(mode) && !(gamemodes[(mode) - STARTGAMEMODE].flags&(flag)))
 #define m_checkall(mode, flag) (m_valid(mode) && (gamemodes[(mode) - STARTGAMEMODE].flags&(flag)) == (flag))
+#define m_checkonly(mode, flag, exclude) (m_valid(mode) && (gamemodes[(mode) - STARTGAMEMODE].flags&((flag)|(exclude))) == (flag))
 
 #define m_noitems      (m_check(gamemode, M_NOITEMS))
 #define m_noammo       (m_check(gamemode, M_NOAMMO|M_NOITEMS))
@@ -142,13 +142,14 @@ static struct gamemodeinfo
 #define m_tactics      (m_check(gamemode, M_TACTICS))
 #define m_efficiency   (m_check(gamemode, M_EFFICIENCY))
 #define m_capture      (m_check(gamemode, M_CAPTURE))
+#define m_capture_only (m_checkonly(gamemode, M_CAPTURE, M_REGEN))
 #define m_regencapture (m_checkall(gamemode, M_CAPTURE | M_REGEN))
 #define m_ctf          (m_check(gamemode, M_CTF))
+#define m_ctf_only     (m_checkonly(gamemode, M_CTF, M_PROTECT | M_HOLD))
 #define m_protect      (m_checkall(gamemode, M_CTF | M_PROTECT))
 #define m_hold         (m_checkall(gamemode, M_CTF | M_HOLD))
 #define m_collect      (m_check(gamemode, M_COLLECT))
 #define m_teammode     (m_check(gamemode, M_TEAM))
-#define m_overtime     (m_check(gamemode, M_OVERTIME))
 #define isteam(a,b)    (m_teammode && strcmp(a, b)==0)
 
 #define m_demo         (m_check(gamemode, M_DEMO))
@@ -226,7 +227,7 @@ enum
     N_PING, N_PONG, N_CLIENTPING,
     N_TIMEUP, N_FORCEINTERMISSION,
     N_SERVMSG, N_ITEMLIST, N_RESUME,
-    N_EDITMODE, N_EDITENT, N_EDITF, N_EDITT, N_EDITM, N_FLIP, N_COPY, N_PASTE, N_ROTATE, N_REPLACE, N_DELCUBE, N_REMIP, N_NEWMAP, N_GETMAP, N_SENDMAP, N_CLIPBOARD, N_EDITVAR,
+    N_EDITMODE, N_EDITENT, N_EDITF, N_EDITT, N_EDITM, N_FLIP, N_COPY, N_PASTE, N_ROTATE, N_REPLACE, N_DELCUBE, N_REMIP, N_EDITVSLOT, N_UNDO, N_REDO, N_NEWMAP, N_GETMAP, N_SENDMAP, N_CLIPBOARD, N_EDITVAR,
     N_MASTERMODE, N_KICK, N_CLEARBANS, N_CURRENTMASTER, N_SPECTATOR, N_SETMASTER, N_SETTEAM,
     N_BASES, N_BASEINFO, N_BASESCORE, N_REPAMMO, N_BASEREGEN, N_ANNOUNCE,
     N_LISTDEMOS, N_SENDDEMOLIST, N_GETDEMO, N_SENDDEMO,
@@ -256,10 +257,10 @@ static const int msgsizes[] =               // size inclusive message token, 0 f
     N_PING, 2, N_PONG, 2, N_CLIENTPING, 2,
     N_TIMEUP, 2, N_FORCEINTERMISSION, 1,
     N_SERVMSG, 0, N_ITEMLIST, 0, N_RESUME, 0,
-    N_EDITMODE, 2, N_EDITENT, 11, N_EDITF, 16, N_EDITT, 16, N_EDITM, 16, N_FLIP, 14, N_COPY, 14, N_PASTE, 14, N_ROTATE, 15, N_REPLACE, 17, N_DELCUBE, 14, N_REMIP, 1, N_NEWMAP, 2, N_GETMAP, 1, N_SENDMAP, 0, N_EDITVAR, 0,
+    N_EDITMODE, 2, N_EDITENT, 11, N_EDITF, 16, N_EDITT, 16, N_EDITM, 16, N_FLIP, 14, N_COPY, 14, N_PASTE, 14, N_ROTATE, 15, N_REPLACE, 17, N_DELCUBE, 14, N_REMIP, 1, N_EDITVSLOT, 16, N_UNDO, 0, N_REDO, 0, N_NEWMAP, 2, N_GETMAP, 1, N_SENDMAP, 0, N_EDITVAR, 0,
     N_MASTERMODE, 2, N_KICK, 0, N_CLEARBANS, 1, N_CURRENTMASTER, 0, N_SPECTATOR, 3, N_SETMASTER, 0, N_SETTEAM, 0,
     N_BASES, 0, N_BASEINFO, 0, N_BASESCORE, 0, N_REPAMMO, 1, N_BASEREGEN, 6, N_ANNOUNCE, 2,
-    N_LISTDEMOS, 1, N_SENDDEMOLIST, 0, N_GETDEMO, 2, N_SENDDEMO, 0,
+    N_LISTDEMOS, 1, N_SENDDEMOLIST, 0, N_GETDEMO, 3, N_SENDDEMO, 0,
     N_DEMOPLAYBACK, 3, N_RECORDDEMO, 2, N_STOPDEMO, 1, N_CLEARDEMOS, 2,
     N_TAKEFLAG, 3, N_RETURNFLAG, 4, N_RESETFLAG, 6, N_INVISFLAG, 3, N_TRYDROPFLAG, 1, N_DROPFLAG, 7, N_SCOREFLAG, 10, N_INITFLAGS, 0,
     N_SAYTEAM, 0,
@@ -279,7 +280,7 @@ static const int msgsizes[] =               // size inclusive message token, 0 f
 #define SAUERBRATEN_SERVER_PORT 28785
 #define SAUERBRATEN_SERVINFO_PORT 28786
 #define SAUERBRATEN_MASTER_PORT 28787
-#define PROTOCOL_VERSION 259            // bump when protocol changes
+#define PROTOCOL_VERSION 260            // bump when protocol changes
 #define DEMO_VERSION 1                  // bump when demo format changes
 #define DEMO_MAGIC "SAUERBRATEN_DEMO"
 
@@ -332,11 +333,11 @@ static struct itemstat { int add, max, sound; const char *name; int icon, info; 
     {5,     15,    S_ITEMAMMO,   "RI", HICON_RIFLE, GUN_RIFLE},
     {10,    30,    S_ITEMAMMO,   "GL", HICON_GL, GUN_GL},
     {30,    120,   S_ITEMAMMO,   "PI", HICON_PISTOL, GUN_PISTOL},
-    {25,    100,   S_ITEMHEALTH, "H", HICON_HEALTH, -1},
-    {10,    1000,  S_ITEMHEALTH, "MH", HICON_HEALTH, -1},
+    {25,    100,   S_ITEMHEALTH, "H",  HICON_HEALTH, -1},
+    {100,   200,   S_ITEMHEALTH, "MH", HICON_HEALTH, 50},
     {100,   100,   S_ITEMARMOUR, "GA", HICON_GREEN_ARMOUR, A_GREEN},
     {200,   200,   S_ITEMARMOUR, "YA", HICON_YELLOW_ARMOUR, A_YELLOW},
-    {20000, 30000, S_ITEMPUP,    "Q", HICON_QUAD, -1},
+    {20000, 30000, S_ITEMPUP,    "Q",  HICON_QUAD, -1},
 };
 
 #define MAXRAYS 20
@@ -397,7 +398,7 @@ struct fpsstate
         itemstat &is = itemstats[type-I_SHELLS];
         switch(type)
         {
-            case I_BOOST: return maxhealth<is.max;
+            case I_BOOST: return maxhealth<is.max || health<maxhealth;
             case I_HEALTH: return health<maxhealth;
             case I_GREENARMOUR:
                 // (100h/100g only absorbs 200 damage)
@@ -415,7 +416,7 @@ struct fpsstate
         switch(type)
         {
             case I_BOOST:
-                maxhealth = min(maxhealth+is.add, is.max);
+                maxhealth = min(maxhealth+is.info, is.max);
             case I_HEALTH: // boost also adds to health
                 health = min(health+is.add, maxhealth);
                 break;
@@ -435,6 +436,7 @@ struct fpsstate
 
     void respawn()
     {
+        maxhealth = 100;
         health = maxhealth;
         armour = 0;
         armourtype = A_BLUE;
@@ -460,8 +462,12 @@ struct fpsstate
         }
         else if(m_regencapture)
         {
-            armourtype = A_BLUE;
-            armour = 25;
+            extern int regenbluearmour;
+            if(regenbluearmour)
+            {
+                armourtype = A_BLUE;
+                armour = 25;
+            }
             gunselect = GUN_PISTOL;
             ammo[GUN_PISTOL] = 40;
             ammo[GUN_GL] = 1;
@@ -515,7 +521,7 @@ struct fpsstate
     // just subtract damage here, can set death, etc. later in code calling this
     int dodamage(int damage)
     {
-        int ad = damage*(armourtype+1)*25/100; // let armour absorb when possible
+        int ad = (damage*(armourtype+1)*25)/100; // let armour absorb when possible
         if(ad>armour) ad = armour;
         armour -= ad;
         damage -= ad;
@@ -604,6 +610,11 @@ struct fpsent : dynent, fpsstate
         stopattacksound();
         lastnode = -1;
     }
+
+    int respawnwait(int secs, int delay = 0)
+    {
+        return max(0, secs - (::lastmillis - lastpain - delay)/1000);
+    }
 };
 
 struct teamscore
@@ -674,10 +685,12 @@ namespace game
         virtual void respawned(fpsent *d) {}
         virtual void setup() {}
         virtual void checkitems(fpsent *d) {}
-        virtual int respawnwait(fpsent *d) { return 0; }
-        virtual void pickspawn(fpsent *d) { findplayerspawn(d); }
+        virtual int respawnwait(fpsent *d, int delay = 0) { return 0; }
+        virtual int getspawngroup(fpsent *d) { return 0; }
+        virtual float ratespawn(fpsent *d, const extentity &e) { return 1.0f; }
         virtual void senditems(packetbuf &p) {}
         virtual void removeplayer(fpsent *d) {}
+        virtual void died(fpsent *victim, fpsent *actor) {}
         virtual void gameover() {}
         virtual bool hidefrags() { return false; }
         virtual int getteamscore(const char *team) { return 0; }
@@ -711,14 +724,18 @@ namespace game
     extern const char *teamcolorname(fpsent *d, const char *alt = "you");
     extern const char *teamcolor(const char *name, bool sameteam, const char *alt = NULL);
     extern const char *teamcolor(const char *name, const char *team, const char *alt = NULL);
+    extern void teamsound(bool sameteam, int n, const vec *loc = NULL);
+    extern void teamsound(fpsent *d, int n, const vec *loc = NULL);
     extern fpsent *pointatplayer();
     extern fpsent *hudplayer();
-    extern fpsent *followingplayer();
+    extern fpsent *followingplayer(fpsent *fallback = NULL);
     extern void stopfollowing();
     extern void clientdisconnected(int cn, bool notify = true);
     extern void clearclients(bool notify = true);
     extern void startgame();
-    extern void spawnplayer(fpsent *);
+    extern float proximityscore(float x, float lower, float upper);
+    extern void pickgamespawn(fpsent *d);
+    extern void spawnplayer(fpsent *d);
     extern void deathstate(fpsent *d, bool restore = false);
     extern void damaged(int damage, fpsent *d, fpsent *actor, bool local = true);
     extern void killed(fpsent *d, fpsent *actor);
@@ -731,12 +748,13 @@ namespace game
     // client
     extern bool connected, remote, demoplayback;
     extern string servinfo;
+    extern vector<uchar> messages;
 
     extern int parseplayer(const char *arg);
     extern void ignore(int cn);
     extern void unignore(int cn);
     extern bool isignored(int cn);
-    extern void addmsg(int type, const char *fmt = NULL, ...);
+    extern bool addmsg(int type, const char *fmt = NULL, ...);
     extern void switchname(const char *name);
     extern void switchteam(const char *name);
     extern void switchplayermodel(int playermodel);
@@ -805,6 +823,7 @@ namespace game
     extern void getbestteams(vector<const char *> &best);
     extern void clearteaminfo();
     extern void setteaminfo(const char *team, int frags);
+    extern int statuscolor(fpsent *d, int color);
 
     // render
     struct playermodelinfo
@@ -833,6 +852,8 @@ namespace server
     extern const char *mastermodename(int n, const char *unknown = "unknown");
     extern void startintermission();
     extern void stopdemo();
+    extern void timeupdate(int secs);
+    extern const char *getdemofile(const char *file, bool init);
     extern void forcemap(const char *map, int mode);
     extern void forcepaused(bool paused);
     extern void forcegamespeed(int speed);

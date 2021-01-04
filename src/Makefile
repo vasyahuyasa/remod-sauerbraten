@@ -66,7 +66,7 @@ ifeq ($(PLATFORM),SunOS)
 SERVER_LIBS+= -lsocket -lnsl
 endif
 
-CXXFLAGS=-fomit-frame-pointer -Wall -fsigned-char -DSTANDALONE
+CXXFLAGS=-O3 -fomit-frame-pointer -Wall -fsigned-char -fno-exceptions -fno-rtti -DSTANDALONE
 
 INCLUDES= -Ishared -Iengine -Ifpsgame -Imod -Imod/hashlib2plus/src -Imod/cryptomod/polarssl/include
 
@@ -74,7 +74,7 @@ INCLUDES= -Ishared -Iengine -Ifpsgame -Imod -Imod/hashlib2plus/src -Imod/cryptom
 ifeq ($(ENET_USE_SYSTEM_LIBS),true)
 else
 override INCLUDES += -Ienet/include
-override SERVER_LIBS += -Lenet/.libs
+override SERVER_LIBS += -Lenet
 endif
 
 SERVER_OBJS= \
@@ -248,10 +248,10 @@ enet/Makefile:
 	cd enet; autoreconf -vfi; ./configure --enable-shared=no --enable-static=yes
 	
 libenet: enet/Makefile
-	$(MAKE)	-C enet/ all
+	$(MAKE)	-C enet
 
 clean-enet: enet/Makefile
-	$(MAKE) -C enet/ maintainer-clean
+	$(MAKE) -C enet clean
 
 maxminddb/Makefile:
 	cd mod/libmaxminddb; ./configure --enable-shared=no --enable-static=yes

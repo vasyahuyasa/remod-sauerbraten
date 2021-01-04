@@ -168,22 +168,25 @@ namespace entities
     void pickupeffects(int n, fpsent *d)
     {
         if(!ents.inrange(n)) return;
-        int type = ents[n]->type;
+        extentity *e = ents[n];
+        int type = e->type;
         if(type<I_SHELLS || type>I_QUAD) return;
-        ents[n]->clearspawned();
+        e->clearspawned();
+        e->clearnopickup();
         if(!d) return;
         itemstat &is = itemstats[type-I_SHELLS];
-        if(d!=player1 || isthirdperson())
+        fpsent *h = followingplayer(player1);
+        if(d!=h || isthirdperson())
         {
             //particle_text(d->abovehead(), is.name, PART_TEXT, 2000, 0xFFC864, 4.0f, -8);
             particle_icon(d->abovehead(), is.icon%4, is.icon/4, PART_HUD_ICON_GREY, 2000, 0xFFFFFF, 2.0f, -8);
         }
-        playsound(itemstats[type-I_SHELLS].sound, d!=player1 ? &d->o : NULL, NULL, 0, 0, 0, -1, 0, 1500);
+        playsound(itemstats[type-I_SHELLS].sound, d!=h ? &d->o : NULL, NULL, 0, 0, 0, -1, 0, 1500);
         d->pickup(type);
-        if(d==player1) switch(type)
+        if(d==h) switch(type)
         {
             case I_BOOST:
-                conoutf(CON_GAMEINFO, "\f2you have a permanent +10 health bonus! (%d)", d->maxhealth);
+                conoutf(CON_GAMEINFO, "\f2you got the health boost!");
                 playsound(S_V_BOOST, NULL, NULL, 0, 0, 0, -1, 0, 3000);
                 break;
 
@@ -205,12 +208,9 @@ namespace entities
             {
                 int snd = S_TELEPORT, flags = 0;
                 if(e.attr4 > 0) { snd = e.attr4; flags = SND_MAP; }
-                if(d == player1) playsound(snd, NULL, NULL, flags);
-                else
-                {
-                    playsound(snd, &e.o, NULL, flags);
-                    if(ents.inrange(td) && ents[td]->type == TELEDEST) playsound(snd, &ents[td]->o, NULL, flags);
-                }
+                fpsent *h = followingplayer(player1);
+                playsound(snd, d==h ? NULL : &e.o, NULL, flags);
+                if(d!=h && ents.inrange(td) && ents[td]->type == TELEDEST) playsound(snd, &ents[td]->o, NULL, flags);
             }
         }
         if(local && d->clientnum >= 0)
@@ -235,8 +235,7 @@ namespace entities
             {
                 int snd = S_JUMPPAD, flags = 0;
                 if(e.attr4 > 0) { snd = e.attr4; flags = SND_MAP; }
-                if(d == player1) playsound(snd, NULL, NULL, flags);
-                else playsound(snd, &e.o, NULL, flags);
+                playsound(snd, d == followingplayer(player1) ? NULL : &e.o, NULL, flags);
             }
         }
         if(local && d->clientnum >= 0)
@@ -283,33 +282,33 @@ namespace entities
 
     void trypickup(int n, fpsent *d)
     {
-        switch(ents[n]->type)
+        extentity *e = ents[n];
+        switch(e->type)
         {
             default:
-                if(d->canpickup(ents[n]->type))
+                if(d->canpickup(e->type))
                 {
                     addmsg(N_ITEMPICKUP, "rci", d, n);
-                    ents[n]->clearspawned(); // even if someone else gets it first
+                    e->setnopickup(); // even if someone else gets it first
                 }
                 break;
 
             case TELEPORT:
             {
-                if(d->lastpickup==ents[n]->type && lastmillis-d->lastpickupmillis<500) break;
-                if(ents[n]->attr3 > 0)
+                if(d->lastpickup==e->type && lastmillis-d->lastpickupmillis<500) break;
+                if(e->attr3 > 0)
                 {
-                    defformatstring(hookname, "can_teleport_%d", ents[n]->attr3);
-                    if(identexists(hookname) && !execute(hookname)) break;
+                    defformatstring(hookname, "can_teleport_%d", e->attr3);
+                    if(!execidentbool(hookname, true)) break;
                 }
-                d->lastpickup = ents[n]->type;
+                d->lastpickup = e->type;
                 d->lastpickupmillis = lastmillis;
                 teleport(n, d);
                 break;
             }
 
             case RESPAWNPOINT:
-                if(d!=player1) break;
-                if(n==respawnent) break;
+                if(!m_classicsp || d!=player1 || n==respawnent) break;
                 respawnent = n;
                 conoutf(CON_GAMEINFO, "\f2respawn point set!");
                 playsound(S_V_RESPAWNPOINT);
@@ -317,11 +316,11 @@ namespace entities
 
             case JUMPPAD:
             {
-                if(d->lastpickup==ents[n]->type && lastmillis-d->lastpickupmillis<300) break;
-                d->lastpickup = ents[n]->type;
+                if(d->lastpickup==e->type && lastmillis-d->lastpickupmillis<300) break;
+                d->lastpickup = e->type;
                 d->lastpickupmillis = lastmillis;
                 jumppadeffects(d, n, true);
-                vec v((int)(char)ents[n]->attr3*10.0f, (int)(char)ents[n]->attr2*10.0f, ents[n]->attr1*12.5f);
+                vec v((int)(char)e->attr3*10.0f, (int)(char)e->attr2*10.0f, e->attr1*12.5f);
                 if(d->ai) d->ai->becareful = true;
 				d->falling = vec(0, 0, 0);
 				d->physstate = PHYS_FALL;
@@ -340,7 +339,7 @@ namespace entities
         {
             extentity &e = *ents[i];
             if(e.type==NOTUSED) continue;
-            if(!e.spawned() && e.type!=TELEPORT && e.type!=JUMPPAD && e.type!=RESPAWNPOINT) continue;
+            if((!e.spawned() || e.nopickup()) && e.type!=TELEPORT && e.type!=JUMPPAD && e.type!=RESPAWNPOINT) continue;
             float dist = e.o.dist(o);
             if(dist<(e.type==TELEPORT ? 16 : 12)) trypickup(i, d);
         }
@@ -351,8 +350,9 @@ namespace entities
         if(d->quadmillis && (d->quadmillis -= time)<=0)
         {
             d->quadmillis = 0;
-            playsound(S_PUPOUT, d==player1 ? NULL : &d->o);
-            if(d==player1) conoutf(CON_GAMEINFO, "\f2quad damage is over");
+            fpsent *h = followingplayer(player1);
+            playsound(S_PUPOUT, d==h ? NULL : &d->o);
+            if(d==h) conoutf(CON_GAMEINFO, "\f2quad damage is over");
         }
     }
 
@@ -367,18 +367,23 @@ namespace entities
         putint(p, -1);
     }
 
-    void resetspawns() { loopv(ents) ents[i]->clearspawned(); }
+    void resetspawns() { loopv(ents) { extentity *e = ents[i]; e->clearspawned(); e->clearnopickup(); } }
 
     void spawnitems(bool force)
     {
         if(m_noitems) return;
-        loopv(ents) if(ents[i]->type>=I_SHELLS && ents[i]->type<=I_QUAD && (!m_noammo || ents[i]->type<I_SHELLS || ents[i]->type>I_CARTRIDGES))
+        loopv(ents)
         {
-            ents[i]->setspawned(force || m_sp || !server::delayspawn(ents[i]->type));
+            extentity *e = ents[i];
+            if(e->type>=I_SHELLS && e->type<=I_QUAD && (!m_noammo || e->type<I_SHELLS || e->type>I_CARTRIDGES))
+            {
+                e->setspawned(force || m_sp || !server::delayspawn(e->type));
+                e->clearnopickup();
+            }
         }
     }
 
-    void setspawn(int i, bool on) { if(ents.inrange(i)) ents[i]->setspawned(on); }
+    void setspawn(int i, bool on) { if(ents.inrange(i)) { extentity *e = ents[i]; e->setspawned(on); e->clearnopickup(); } }
 
     extentity *newentity() { return new fpsentity(); }
     void deleteentity(extentity *e) { delete (fpsentity *)e; }
@@ -509,7 +514,7 @@ namespace entities
         if(identexists(aliasname))
         {
             triggerstate = state;
-            execute(aliasname);
+            execident(aliasname);
         }
     }
 
