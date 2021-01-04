@@ -1,3 +1,51 @@
+## 1.4.3 - 2020-08-06
+
+* On Windows, always call `CreateFileW` instead of `CreateFile`.
+  `CreateFile` could be mapped to `CreateFileA` and not work as expected.
+  Pull request by Sandu Liviu Catalin. GitHub #228.
+* Fixed use of uninitialized memory in `dump_entry_data_list()` that could
+  cause a heap buffer flow in `mmdblookup`. As part of this fix, most uses
+  of `malloc` were replaced with `calloc`. Reported by azhou. GitHub #236.
+
+
+## 1.4.2 - 2019-11-02
+
+* The 1.4.0 release introduced a change that increased the size of `MMDB_s`,
+  unintentionally causing an ABI break. This release reverts the relevant
+  commit.
+
+
+## 1.4.1 - 2019-11-01
+
+* The man page links for function calls were not generated correctly in
+  1.4.0. This has been corrected.
+
+
+## 1.4.0 - 2019-11-01
+
+* A negative array index may now be used with `MMDB_get_value`,
+  `MMDB_vget_value`, and `MMDB_aget_value`. This specifies the element
+  from the end of the array. For instance, `-1` would refer to the
+  last element of the array. PR by Kyle Box. GitHub #205.
+* On Windows, the file name passed to `MMDB_open` is now expected to be
+  UTF-8 encoded. This allows Unicode characters to be used in file names.
+  As part of this change, `mmdblookup` on Windows now converts its
+  arguments to UTF-8. PR by Gerald Combs. GitHub #189 & #191.
+* Fix a memory leak that occurred when freeing an `MMDB_s` where the
+  database had no languages defined in the metadata. If you are using an
+  official MaxMind database, this leak does not affect you. Pull request
+  by Kókai Péter. GitHub #180.
+* Add `--disable-binaries` option to `configure`. Pull request by Fabrice
+  Fontaine. GitHub #166.
+* Previous releases incorrectly included `*.Po` files in the `t` directory.
+  This has been corrected. Reported by Daniel Macks. GitHub #168.
+* The internal use of the `MMDB_s` now has the `const` modifier. Public
+  functions that accepted an `MMDB_s` as an argument now also declare it as
+  `const`. Pull request by Kurt Johnson. GitHub #199.
+* `mmdblookup` now displays the prefix length for the record when using
+  the verbose flag. GitHub #172.
+
+
 ## 1.3.2 - 2018-01-17
 
 * Allocate memory for `MMDB_entry_data_list_s` structs in separate chunks

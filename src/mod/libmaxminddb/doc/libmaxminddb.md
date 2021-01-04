@@ -254,7 +254,7 @@ The `data_size` member is only relevant for `utf8_string` and `bytes` data.
 `utf8_string` is not null terminated and `data_size` _must_ be used to
 determine its length.
 
-The `type` member can be compared to one of the `MMDB_DTYPE_*` macros.
+The `type` member can be compared to one of the `MMDB_DATA_TYPE_*` macros.
 
 ### 128-bit Integers
 
@@ -307,7 +307,7 @@ libmaxminddb code.
 
 The `utf8_string`, `bytes`, and (maybe) the `uint128` members of this structure
 are all pointers directly into the database's data section. This can either be
-a `malloc`'d or `mmap`'d block of memory. In either case, these pointers will
+a `calloc`'d or `mmap`'d block of memory. In either case, these pointers will
 become invalid after `MMDB_close()` is called.
 
 If you need to refer to this data after that time you should copy the data
@@ -383,13 +383,14 @@ status codes are:
   The database is probably damaged or was generated incorrectly.
 * `MMDB_INVALID_LOOKUP_PATH_ERROR` - The lookup path passed to
   `MMDB_get_value`, `MMDB_vget_value`, or `MMDB_aget_value` contains an array
-  offset that is negative integer or an integer larger than LONG_MAX.
+  offset that is larger than LONG_MAX or smaller than LONG_MIN.
 * `MMDB_LOOKUP_PATH_DOES_NOT_MATCH_DATA_ERROR` - The lookup path passed to
   `MMDB_get_value`,`MMDB_vget_value`, or `MMDB_aget_value` does not match the
   data structure for the entry. There are number of reasons this can
   happen. The lookup path could include a key not in a map. The lookup path
-  could include an array index larger than an array. It can also happen when
-  the path expects to find a map or array where none exist.
+  could include an array index larger than an array or smaller than the
+  minimum offset from the end of an array. It can also happen when the path
+  expects to find a map or array where none exist.
 
 All status codes should be treated as `int` values.
 
@@ -426,6 +427,8 @@ if (MMDB_SUCCESS != status) { ... }
 ...
 MMDB_close(&mmdb);
 ```
+
+`filename` must be encoded as UTF-8 on Windows.
 
 The `MMDB_s` structure you pass in can be on the stack or allocated from the
 heap. However, if the open is successful it will contain heap-allocated data,
@@ -555,9 +558,14 @@ nothing is found, then the `has_data` member of this structure will be false.
 If `has_data` is true then you can look at the `data_type` member.
 
 The final parameter is a lookup path. The path consists of a set of strings
-representing either map keys (e.g, "city") or array indexes (e.g., "0", "1")
-to use in the lookup. This allow you to navigate a complex data structure. For
-example, given this example:
+representing either map keys (e.g, "city") or array indexes (e.g., "0", "1",
+"-1") to use in the lookup.
+
+Negative array indexes will be treated as an offset from the end of the array.
+For instance, "-1" refers to the last element of the array.
+
+The lookup path allows you to navigate a complex data structure. For example,
+given this data:
 
 ```js
 {
