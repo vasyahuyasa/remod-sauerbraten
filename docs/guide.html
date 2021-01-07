@@ -2594,21 +2594,22 @@ If permission check fails, oncommandpermerror event is triggered</td>
 				
 				<tr class="even">
 					<td class="name">
-						<a name="cs-func-geocitydb"></a>
-						geocitydb
+						<a name="cs-func-geodb"></a>
+						geodb
 					</td>
 					<td>
 						<div class="arg">
 							<div class="argname">$arg1</div>
 							<div class="argtype">string</div>
-							<div class="argdescr">/path/to/geoipcity.db</div>
+							<div class="argdescr">/path/to/geoip.db</div>
 							<div class="clear"></div>
 						</div>
 					</td>
 					<td></td>
-					<td>Load geoip city database from specified path</td>
+					<td>Load geoip database from specified path<br/>
+Load geoip database from specified path. You alawys can find fresh database at url https://dev.maxmind.com/geoip/geoip2/geolite2/</td>
 					<td></td>
-					<td>mod/geoipmod2.cpp</td>
+					<td>mod/geoipmod.cpp</td>
 				</tr>
 				
 				<tr class="odd">
@@ -2626,48 +2627,9 @@ If permission check fails, oncommandpermerror event is triggered</td>
 					</td>
 					<td></td>
 					<td>Load geoip database from specified path<br/>
-Load geoip database from specified path</td>
+Load geoip database from specified path. You alawys can find fresh database at url https://dev.maxmind.com/geoip/geoip2/geolite2/</td>
 					<td></td>
 					<td>mod/geoipmod.cpp</td>
-				</tr>
-				
-				<tr class="even">
-					<td class="name">
-						<a name="cs-func-geodb"></a>
-						geodb
-					</td>
-					<td>
-						<div class="arg">
-							<div class="argname">$arg1</div>
-							<div class="argtype">string</div>
-							<div class="argdescr">/path/to/geoip.db</div>
-							<div class="clear"></div>
-						</div>
-					</td>
-					<td></td>
-					<td>Load geoip database from specified path<br/>
-Load geoip database from specified path</td>
-					<td></td>
-					<td>mod/geoipmod.cpp</td>
-				</tr>
-				
-				<tr class="odd">
-					<td class="name">
-						<a name="cs-func-getcity"></a>
-						getcity
-					</td>
-					<td>
-						<div class="arg">
-							<div class="argname">$arg1</div>
-							<div class="argtype">string</div>
-							<div class="argdescr">ip</div>
-							<div class="clear"></div>
-						</div>
-					</td>
-					<td>city</td>
-					<td>Return city for specified ip</td>
-					<td></td>
-					<td>mod/geoipmod2.cpp</td>
 				</tr>
 				
 				<tr class="even">
@@ -2685,7 +2647,7 @@ Load geoip database from specified path</td>
 					</td>
 					<td>country</td>
 					<td>Return country for specified ip<br/>
-Return country for specified ip</td>
+Return country for specified ip, if country can not be determinated return ip</td>
 					<td></td>
 					<td>mod/geoipmod.cpp</td>
 				</tr>
@@ -2705,7 +2667,7 @@ Return country for specified ip</td>
 					</td>
 					<td>country</td>
 					<td>Return country for specified ip<br/>
-Return country for specified ip</td>
+Return country for specified ip, if country can not be determinated return ip</td>
 					<td></td>
 					<td>mod/geoipmod.cpp</td>
 				</tr>
@@ -2919,14 +2881,15 @@ Return country for specified ip</td>
 				
 				<tr class="even">
 					<td class="name">
-						<a name="cs-func-isgeocity"></a>
-						isgeocity
+						<a name="cs-func-isgeoip"></a>
+						isgeoip
 					</td>
 					<td></td>
 					<td>1 if is ready, otherwise 0</td>
-					<td>Check if geoip city is ready to use</td>
+					<td>Check if geoip is ready to use<br/>
+Check if geoip is ready to use</td>
 					<td></td>
-					<td>mod/geoipmod2.cpp</td>
+					<td>mod/geoipmod.cpp</td>
 				</tr>
 				
 				<tr class="odd">
@@ -2943,19 +2906,6 @@ Check if geoip is ready to use</td>
 				</tr>
 				
 				<tr class="even">
-					<td class="name">
-						<a name="cs-func-isgeoip"></a>
-						isgeoip
-					</td>
-					<td></td>
-					<td>1 if is ready, otherwise 0</td>
-					<td>Check if geoip is ready to use<br/>
-Check if geoip is ready to use</td>
-					<td></td>
-					<td>mod/geoipmod.cpp</td>
-				</tr>
-				
-				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-jsonbanlist"></a>
 						jsonbanlist
@@ -2995,7 +2945,7 @@ Check if geoip is ready to use</td>
 					<td>mod/jsonbanlist.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-listadd"></a>
 						listadd
@@ -3021,7 +2971,7 @@ Check if geoip is ready to use</td>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-listat"></a>
 						listat
@@ -3061,7 +3011,7 @@ Check if geoip is ready to use</td>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-listconcat"></a>
 						listconcat
@@ -3080,7 +3030,7 @@ Check if geoip is ready to use</td>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-loadmap"></a>
 						loadmap
@@ -3099,7 +3049,7 @@ Check if geoip is ready to use</td>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-loopbans"></a>
 						loopbans
@@ -3153,7 +3103,7 @@ Check if geoip is ready to use</td>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-loopteams"></a>
 						loopteams
@@ -3179,7 +3129,7 @@ Check if geoip is ready to use</td>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-map"></a>
 						map
@@ -3198,7 +3148,7 @@ Check if geoip is ready to use</td>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-mapmode"></a>
 						mapmode
@@ -3224,7 +3174,7 @@ Check if geoip is ready to use</td>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-mastermode"></a>
 						mastermode
@@ -3243,7 +3193,7 @@ Check if geoip is ready to use</td>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-pm"></a>
 						pm
@@ -3269,7 +3219,7 @@ Check if geoip is ready to use</td>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-push"></a>
 						push
@@ -3319,7 +3269,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-reloadauth"></a>
 						reloadauth
@@ -3331,7 +3281,7 @@ id.stack = stack->next;<br/>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-reqauth"></a>
 						reqauth
@@ -3357,7 +3307,7 @@ id.stack = stack->next;<br/>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-resetteamkills"></a>
 						resetteamkills
@@ -3376,7 +3326,7 @@ id.stack = stack->next;<br/>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-savemap"></a>
 						savemap
@@ -3395,7 +3345,7 @@ id.stack = stack->next;<br/>
 					<td>engine/worldio.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-say"></a>
 						say
@@ -3414,7 +3364,7 @@ id.stack = stack->next;<br/>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-saytoadmin"></a>
 						saytoadmin
@@ -3433,7 +3383,7 @@ id.stack = stack->next;<br/>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-saytomaster"></a>
 						saytomaster
@@ -3452,7 +3402,7 @@ id.stack = stack->next;<br/>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-saytonormal"></a>
 						saytonormal
@@ -3471,7 +3421,7 @@ id.stack = stack->next;<br/>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-sendmap"></a>
 						sendmap
@@ -3490,7 +3440,7 @@ id.stack = stack->next;<br/>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-setlogfile"></a>
 						setlogfile
@@ -3509,7 +3459,7 @@ id.stack = stack->next;<br/>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-setpriv"></a>
 						setpriv
@@ -3535,7 +3485,7 @@ id.stack = stack->next;<br/>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-sorttwolists"></a>
 						sorttwolists
@@ -3561,7 +3511,7 @@ id.stack = stack->next;<br/>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-systimef"></a>
 						systimef
@@ -3580,7 +3530,7 @@ id.stack = stack->next;<br/>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-timef"></a>
 						timef
@@ -3606,7 +3556,7 @@ id.stack = stack->next;<br/>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-uptimef"></a>
 						uptimef
@@ -3625,7 +3575,7 @@ id.stack = stack->next;<br/>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-version"></a>
 						version
@@ -3637,7 +3587,7 @@ id.stack = stack->next;<br/>
 					<td>mod/serverctrl.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-writebans"></a>
 						writebans
@@ -3664,7 +3614,7 @@ id.stack = stack->next;<br/>
 				</tr>
 
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-!"></a>
 						!
@@ -3683,7 +3633,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-!="></a>
 						!=
@@ -3709,7 +3659,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-!=f"></a>
 						!=f
@@ -3735,7 +3685,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-!=s"></a>
 						!=s
@@ -3761,7 +3711,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-&"></a>
 						&
@@ -3787,7 +3737,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-&&"></a>
 						&&
@@ -3820,7 +3770,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-&~"></a>
 						&~
@@ -3846,7 +3796,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-*"></a>
 						*
@@ -3872,7 +3822,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-*f"></a>
 						*f
@@ -3898,7 +3848,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-+"></a>
 						+
@@ -3924,7 +3874,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-+f"></a>
 						+f
@@ -3950,7 +3900,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func--"></a>
 						-
@@ -3976,7 +3926,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func--f"></a>
 						-f
@@ -4002,7 +3952,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-<"></a>
 						<
@@ -4028,7 +3978,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-<<"></a>
 						<<
@@ -4054,7 +4004,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-<="></a>
 						<=
@@ -4080,7 +4030,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-<=f"></a>
 						<=f
@@ -4106,7 +4056,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-<=s"></a>
 						<=s
@@ -4132,7 +4082,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-<f"></a>
 						<f
@@ -4158,7 +4108,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-<s"></a>
 						<s
@@ -4184,7 +4134,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-="></a>
 						=
@@ -4210,7 +4160,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-=f"></a>
 						=f
@@ -4236,7 +4186,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-=s"></a>
 						=s
@@ -4262,7 +4212,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func->"></a>
 						>
@@ -4288,7 +4238,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func->="></a>
 						>=
@@ -4314,7 +4264,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func->=f"></a>
 						>=f
@@ -4340,7 +4290,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func->=s"></a>
 						>=s
@@ -4366,7 +4316,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func->>"></a>
 						>>
@@ -4392,7 +4342,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func->f"></a>
 						>f
@@ -4418,7 +4368,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func->s"></a>
 						>s
@@ -4444,7 +4394,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-?"></a>
 						?
@@ -4477,7 +4427,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-^"></a>
 						^
@@ -4503,7 +4453,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-^~"></a>
 						^~
@@ -4529,7 +4479,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-abs"></a>
 						abs
@@ -4548,7 +4498,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-absf"></a>
 						absf
@@ -4567,7 +4517,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-acos"></a>
 						acos
@@ -4586,7 +4536,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-adduser"></a>
 						adduser
@@ -4626,7 +4576,7 @@ id.stack = stack->next;<br/>
 					<td>fpsgame/server.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-alias"></a>
 						alias
@@ -4652,7 +4602,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-append"></a>
 						append
@@ -4723,7 +4673,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-at"></a>
 						at
@@ -4763,7 +4713,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-atan"></a>
 						atan
@@ -4782,7 +4732,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-atan2"></a>
 						atan2
@@ -4808,7 +4758,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-case"></a>
 						case
@@ -4827,7 +4777,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-casef"></a>
 						casef
@@ -4846,7 +4796,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-cases"></a>
 						cases
@@ -4865,7 +4815,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-ceil"></a>
 						ceil
@@ -4953,7 +4903,7 @@ id.stack = stack->next;<br/>
 					<td>fpsgame/server.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-codestr"></a>
 						codestr
@@ -4972,7 +4922,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-concat"></a>
 						concat
@@ -4991,7 +4941,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-concatword"></a>
 						concatword
@@ -5010,7 +4960,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-cond"></a>
 						cond
@@ -5050,7 +5000,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-cos"></a>
 						cos
@@ -5069,7 +5019,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-div"></a>
 						div
@@ -5095,7 +5045,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-divf"></a>
 						divf
@@ -5121,7 +5071,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-do"></a>
 						do
@@ -5140,7 +5090,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-dropflag"></a>
 						dropflag
@@ -5152,7 +5102,7 @@ id.stack = stack->next;<br/>
 					<td>fpsgame/ctf.h</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-echo"></a>
 						echo
@@ -5171,7 +5121,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-error"></a>
 						error
@@ -5190,7 +5140,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-escape"></a>
 						escape
@@ -5209,7 +5159,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-exec"></a>
 						exec
@@ -5235,7 +5185,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-exp"></a>
 						exp
@@ -5254,7 +5204,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-floor"></a>
 						floor
@@ -5527,7 +5477,7 @@ id.stack = stack->next;<br/>
 					<td>mod/irc.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-ircaddclient"></a>
 						ircaddclient
@@ -5581,7 +5531,7 @@ id.stack = stack->next;<br/>
 					<td>mod/irc.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-ircaddrelay"></a>
 						ircaddrelay
@@ -5635,7 +5585,7 @@ id.stack = stack->next;<br/>
 					<td>mod/irc.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-ircauth"></a>
 						ircauth
@@ -5668,7 +5618,7 @@ id.stack = stack->next;<br/>
 					<td>mod/irc.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-ircbind"></a>
 						ircbind
@@ -5694,7 +5644,7 @@ id.stack = stack->next;<br/>
 					<td>mod/irc.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-ircconnect"></a>
 						ircconnect
@@ -5713,7 +5663,7 @@ id.stack = stack->next;<br/>
 					<td>mod/irc.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-ircconns"></a>
 						ircconns
@@ -5725,7 +5675,7 @@ id.stack = stack->next;<br/>
 					<td>mod/irc.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-ircfriendlychan"></a>
 						ircfriendlychan
@@ -5758,7 +5708,7 @@ id.stack = stack->next;<br/>
 					<td>mod/irc.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-ircjoinchan"></a>
 						ircjoinchan
@@ -5805,7 +5755,7 @@ id.stack = stack->next;<br/>
 					<td>mod/irc.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-ircnick"></a>
 						ircnick
@@ -5831,7 +5781,7 @@ id.stack = stack->next;<br/>
 					<td>mod/irc.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-ircpass"></a>
 						ircpass
@@ -5857,7 +5807,7 @@ id.stack = stack->next;<br/>
 					<td>mod/irc.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-ircpasschan"></a>
 						ircpasschan
@@ -5890,7 +5840,7 @@ id.stack = stack->next;<br/>
 					<td>mod/irc.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-ircport"></a>
 						ircport
@@ -5916,7 +5866,7 @@ id.stack = stack->next;<br/>
 					<td>mod/irc.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-ircrelaychan"></a>
 						ircrelaychan
@@ -5949,7 +5899,7 @@ id.stack = stack->next;<br/>
 					<td>mod/irc.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-ircserv"></a>
 						ircserv
@@ -5975,7 +5925,7 @@ id.stack = stack->next;<br/>
 					<td>mod/irc.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-listdel"></a>
 						listdel
@@ -6001,7 +5951,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-listfilter"></a>
 						listfilter
@@ -6034,7 +5984,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-listfind"></a>
 						listfind
@@ -6067,7 +6017,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-listlen"></a>
 						listlen
@@ -6086,7 +6036,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-listsplice"></a>
 						listsplice
@@ -6126,7 +6076,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-log10"></a>
 						log10
@@ -6145,7 +6095,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-log2"></a>
 						log2
@@ -6164,7 +6114,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-loge"></a>
 						loge
@@ -6183,7 +6133,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-loop"></a>
 						loop
@@ -6216,7 +6166,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-loopconcat"></a>
 						loopconcat
@@ -6249,7 +6199,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-loopconcatword"></a>
 						loopconcatword
@@ -6282,7 +6232,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-loopfiles"></a>
 						loopfiles
@@ -6322,7 +6272,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-looplist"></a>
 						looplist
@@ -6355,7 +6305,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-looplistconcat"></a>
 						looplistconcat
@@ -6388,7 +6338,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-looplistconcatword"></a>
 						looplistconcatword
@@ -6421,7 +6371,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-loopsublist"></a>
 						loopsublist
@@ -6745,7 +6695,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-pow"></a>
 						pow
@@ -6771,7 +6721,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-func-prettylist"></a>
 						prettylist
@@ -6797,7 +6747,7 @@ id.stack = stack->next;<br/>
 					<td>engine/command.cpp</td>
 				</tr>
 				
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-func-printvar"></a>
 						printvar
@@ -9366,7 +9316,7 @@ id.stack = stack->next;<br/>
 				</tr>
 				
 
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-gamemillis"></a>
 						gamemillis
@@ -9382,7 +9332,7 @@ id.stack = stack->next;<br/>
 				</tr>
 				
 
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-imissiontime"></a>
 						imissiontime
@@ -9398,7 +9348,7 @@ id.stack = stack->next;<br/>
 				</tr>
 				
 
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-initcfg"></a>
 						initcfg
@@ -9414,7 +9364,7 @@ id.stack = stack->next;<br/>
 				</tr>
 				
 
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-ipbanmsg"></a>
 						ipbanmsg
@@ -9430,7 +9380,7 @@ id.stack = stack->next;<br/>
 				</tr>
 				
 
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-irccommandchar"></a>
 						irccommandchar
@@ -9446,7 +9396,7 @@ id.stack = stack->next;<br/>
 				</tr>
 				
 
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-ircfilter"></a>
 						ircfilter
@@ -9462,7 +9412,7 @@ id.stack = stack->next;<br/>
 				</tr>
 				
 
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-ircpingdelay"></a>
 						ircpingdelay
@@ -9478,7 +9428,7 @@ id.stack = stack->next;<br/>
 				</tr>
 				
 
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-lockmaprotation"></a>
 						lockmaprotation
@@ -9494,7 +9444,7 @@ id.stack = stack->next;<br/>
 				</tr>
 				
 
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-mapdir"></a>
 						mapdir
@@ -9510,7 +9460,7 @@ id.stack = stack->next;<br/>
 				</tr>
 				
 
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-mastername"></a>
 						mastername
@@ -9526,7 +9476,7 @@ id.stack = stack->next;<br/>
 				</tr>
 				
 
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-masterpass"></a>
 						masterpass
@@ -9542,7 +9492,7 @@ id.stack = stack->next;<br/>
 				</tr>
 				
 
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-masterport"></a>
 						masterport
@@ -9558,7 +9508,7 @@ id.stack = stack->next;<br/>
 				</tr>
 				
 
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-maxclients"></a>
 						maxclients
@@ -9574,7 +9524,7 @@ id.stack = stack->next;<br/>
 				</tr>
 				
 
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-maxdemos"></a>
 						maxdemos
@@ -9590,7 +9540,7 @@ id.stack = stack->next;<br/>
 				</tr>
 				
 
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-maxdemosize"></a>
 						maxdemosize
@@ -9606,7 +9556,7 @@ id.stack = stack->next;<br/>
 				</tr>
 				
 
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-maxdupclients"></a>
 						maxdupclients
@@ -9622,7 +9572,7 @@ id.stack = stack->next;<br/>
 				</tr>
 				
 
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-modifiedmapspectator"></a>
 						modifiedmapspectator
@@ -9638,7 +9588,7 @@ id.stack = stack->next;<br/>
 				</tr>
 				
 
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-mutemode"></a>
 						mutemode
@@ -9654,7 +9604,7 @@ id.stack = stack->next;<br/>
 				</tr>
 				
 
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-name"></a>
 						name
@@ -9691,7 +9641,7 @@ extern void setuplava(Texture *tex</td>
 				</tr>
 				
 
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-nodamage"></a>
 						nodamage
@@ -9707,7 +9657,7 @@ extern void setuplava(Texture *tex</td>
 				</tr>
 				
 
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-numargs"></a>
 						numargs
@@ -9723,7 +9673,7 @@ extern void setuplava(Texture *tex</td>
 				</tr>
 				
 
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-overtime"></a>
 						overtime
@@ -9739,7 +9689,7 @@ extern void setuplava(Texture *tex</td>
 				</tr>
 				
 
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-packetdelay"></a>
 						packetdelay
@@ -9755,7 +9705,7 @@ extern void setuplava(Texture *tex</td>
 				</tr>
 				
 
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-pause"></a>
 						pause
@@ -9771,7 +9721,7 @@ extern void setuplava(Texture *tex</td>
 				</tr>
 				
 
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-persistteams"></a>
 						persistteams
@@ -9787,7 +9737,7 @@ extern void setuplava(Texture *tex</td>
 				</tr>
 				
 
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-publicserver"></a>
 						publicserver
@@ -9803,7 +9753,7 @@ extern void setuplava(Texture *tex</td>
 				</tr>
 				
 
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-rconenable"></a>
 						rconenable
@@ -9819,7 +9769,7 @@ extern void setuplava(Texture *tex</td>
 				</tr>
 				
 
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-rconip"></a>
 						rconip
@@ -9835,7 +9785,7 @@ extern void setuplava(Texture *tex</td>
 				</tr>
 				
 
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-rconpass"></a>
 						rconpass
@@ -9851,7 +9801,7 @@ extern void setuplava(Texture *tex</td>
 				</tr>
 				
 
-				<tr class="even">
+				<tr class="odd">
 					<td class="name">
 						<a name="cs-var-rconport"></a>
 						rconport
@@ -9867,7 +9817,7 @@ extern void setuplava(Texture *tex</td>
 				</tr>
 				
 
-				<tr class="odd">
+				<tr class="even">
 					<td class="name">
 						<a name="cs-var-rconproto"></a>
 						rconproto

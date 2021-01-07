@@ -136,7 +136,7 @@ rconproto 0 // Rcon protocol 0 - udp, 1 - tcp
 // rconpass atata
 
 // GeoIp database
-geodb "GeoIP.dat"
+geodb "GeoLite2-Country.mmdb"
 
 // whether or not to enable server-side demo recording automatically for every match
 // when 1 will always record a server-side demo for every match

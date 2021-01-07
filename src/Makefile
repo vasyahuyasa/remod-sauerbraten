@@ -1,28 +1,26 @@
 ########### CONFIGURATION ############
 
 #Use geoip module?  true|false 
-USE_GEOIP=true
+USE_GEOIP?=true
 
 #Use irc bot? true|false
-USE_IRCBOT=true
+USE_IRCBOT?=true
 
 #Sqlite3 support? true|false
-USE_SQLITE3=true
-SQLITE3_USE_SYSTEM_LIBS=false
+USE_SQLITE3?=true
+SQLITE3_USE_SYSTEM_LIBS?=false
 
 #Mysql support? true|false
-USE_MYSQL=true
-MYSQL_USE_SYSTEM_LIBS=false
+USE_MYSQL?=true
+MYSQL_USE_SYSTEM_LIBS?=false
 
 #Use ssytem enet libraryie
-ENET_USE_SYSTEM_LIBS=false
+ENET_USE_SYSTEM_LIBS?=false
 ######################################
 
 ### Tools
-CXX=gcc
-MV=mv
-STRIP=strip
-
+MV?=mv
+STRIP?=strip
 
 PLATFORM=$(shell uname -s)
 
@@ -99,25 +97,20 @@ SERVER_OBJS= \
 	mod/cryptomod/polarssl/library/sha1-standalone.o \
 	mod/cryptomod/polarssl/library/sha2-standalone.o \
 	mod/cryptomod/polarssl/library/sha4-standalone.o \
-      	mod/banlist-standalone.o \
-	mod/jsonbanlist-standalone.o
+	mod/banlist-standalone.o
 
 
 ### Options checks
 
 
 
-#geoip
+# geoip
 ifeq ($(USE_GEOIP),true)
-override CXXFLAGS+= -DGEOIP -DGEOIPDATADIR -DPACKAGE_VERSION=\"1.6.9\"
-override INCLUDES+= -Imod/libGeoIP/
-override SERVER_OBJS+= \
-        mod/geoipmod2-standalone.o \
-	mod/libGeoIP/GeoIP-standalone.o \
-	mod/libGeoIP/GeoIPCity-standalone.o \
-        mod/libGeoIP/GeoIP_deprecated-standalone.o
+override INCLUDES+= -Imod/libmaxminddb/include -Imod/libGeoIP/libGeoIP
+override SERVER_LIBS+= -Lmod/libmaxminddb/src/.libs -Lmod/libGeoIP/libGeoIP/.libs -lmaxminddb -lGeoIP
+override SERVER_OBJS+= mod/geoipmod-standalone.o
 endif
-#end of geoip
+# end geoip
 
 #irc
 ifeq ($(USE_IRCBOT),true)
@@ -149,6 +142,7 @@ override SERVER_LIBS+= -lsqlite3
 else
 override CXXFLAGS+= -DSQLITE_THREADSAFE=1
 override INCLUDES+= -Imod/sqlite3
+
 #linux-only libs
 ifeq ($(PLATFORM),Linux)
 override SERVER_LIBS+= -ldl -lpthread
@@ -238,33 +232,39 @@ debug: debug-flags
 debug-flags: override CXXFLAGS+=-O0 -g -DDEBUG -DDEBUG_SQL
 debug-flags: build
 
-build: revision server
+build: libgeoip libmaxminddb server
 
-revision:
-SVNVERSION= $(shell svnversion -cn . 2>/dev/null | sed -e "s/.*://" -e "s/\([0-9]*\).*/\1/" | grep "[0-9]") 
-ifneq "$(SVNVERSION)" " "
-override CXXFLAGS+= -DREMOD_VERSION="\"SVN build rev: $(SVNVERSION)\""
-endif
-
-enet/Makefile:
-	cd enet; autoreconf -vfi; ./configure --enable-shared=no --enable-static=yes
-	
-libenet: enet/Makefile
+enet/libenet.a:
 	$(MAKE)	-C enet
 
-clean-enet: enet/Makefile
+libenet: enet/libenet.a
+
+clean-enet:
 	$(MAKE) -C enet clean
 
-geoip/Makefile:
-	cd mod/GeoIP; chmod +x configure; ./configure --enable-shared=no --enable-static=yes
+mod/libmaxminddb/Makefile:
+	cd mod/libmaxminddb; ./configure --disable-shared
 
-libgeoip: geoip/Makefile
-	$(MAKE)	-C mod/GeoIP/libGeoIP/ all
+mod/libmaxminddb/src/.libs/libmaxminddb.a: mod/libmaxminddb/Makefile
+	$(MAKE)	-C mod/libmaxminddb
 
-clean-geoip: geoip/Makefile
-	$(MAKE) -C mod/GeoIP/libGeoIP/ maintainer-clean
+libmaxminddb: mod/libmaxminddb/src/.libs/libmaxminddb.a
 
-clean: clean-enet
+clean-maxminddb: mod/libmaxminddb/Makefile
+	$(MAKE) -C mod/libmaxminddb clean
+
+mod/libGeoIP/Makefile:
+	cd mod/libGeoIP; ./configure --disable-shared
+
+mod/libGeoIP/libGeoIP/.libs/libGeoIP.a: mod/libGeoIP/Makefile
+	$(MAKE)	-C mod/libGeoIP
+
+libgeoip: mod/libGeoIP/libGeoIP/.libs/libGeoIP.a
+
+clean-libgeoip: mod/libGeoIP/Makefile
+	$(MAKE)	-C mod/libGeoIP/ clean
+
+clean: clean-libgeoip clean-maxminddb clean-enet
 	-$(RM) $(SERVER_OBJS) 
 
 %.h.gch: %.h
@@ -275,7 +275,7 @@ clean: clean-enet
 	$(CXX) $(CXXFLAGS) -c -o $@ $(subst -standalone.o,.cpp,$@) 
 
 %-standalone.o: %.c
-	$(CXX) $(CXXFLAGS) -c -o $@ $(subst -standalone.o,.c,$@)	
+	$(CC) $(CXXFLAGS) -c -o $@ $(subst -standalone.o,.c,$@)	
 
 
 $(SERVER_OBJS): CXXFLAGS += $(SERVER_INCLUDES)

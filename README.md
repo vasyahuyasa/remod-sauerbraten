@@ -25,9 +25,9 @@ make
 
  * Check our [wiki page](https://github.com/vasyahuyasa/remod-sauerbraten/wiki/Installation)
 
-## Update GeoIP database
+## GeoIP database
 
-Remod uses GeoLite2 Country database. Because of new policy of Maxmind 
+Remod support geoip2 and legacy geoip database format (geolite country). Instruction how to get fresh copy of databse https://dev.maxmind.com/geoip/geoipupdate/
 
 ## Implemented features
   * [x] server side cubescript

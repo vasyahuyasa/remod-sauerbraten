@@ -83,17 +83,14 @@ SERVER_OBJS= \
 
 ### Options checks
 
-#geoip
+# geoip maxminddb
 ifeq ($(USE_GEOIP),true)
-override CXXFLAGS+= -DGEOIPDATADIR -DGEOIP -DPACKAGE_VERSION=\"1.6.9\"
-override INCLUDES+= -Imod/libGeoIP/
-override SERVER_OBJS+= \
-    mod/geoipmod2-standalone.o \
-	mod/libGeoIP/GeoIP-standalone.o \
-	mod/libGeoIP/GeoIPCity-standalone.o \
-    mod/libGeoIP/GeoIP_deprecated-standalone.o
+override CXXFLAGS+= -DGEOIP
+override INCLUDES+= -Imod/libmaxminddb/include
+override SERVER_LIBS+= -Lmod/libmaxminddb/src/.libs -lmaxminddb -lws2_32
+override SERVER_OBJS+= mod/geoipmod2-standalone.o
 endif
-#end of geoip
+# end maxminddb
 
 #irc
 ifeq ($(USE_IRCBOT),true)
@@ -139,12 +136,11 @@ ifeq ($(USE_MYSQL),true)
 
 ifeq ($(MYSQL_USE_SYSTEM_LIBS),true)
 override INCLUDES += -I/usr/i686-w64-mingw32/include/mariadb
-override SERVER_LIBS += -lws2_32 -lmysql -lssl
+override SERVER_LIBS += -lmysql -lssl
 else
 override CXXFLAGS+= -DUSE_MYSQL -DDBUG_OFF
 override CXXFLAGS += -DNO_OLDNAMES
 override INCLUDES += -Imod/mysql/include -Imod/mysql/extlib/regex -Imod/mysql/mysys -Imod/mysql/vio
-override SERVER_LIBS += -lws2_32 
 
 MYSQL_STRINGS_DIR = strings
 MYSQL_STRINGS_OBJS = bchange-standalone.o bcmp-standalone.o bfill-standalone.o bmove512-standalone.o bmove_upp-standalone.o \
@@ -205,7 +201,7 @@ debug: debug-flags
 debug-flags: override CXXFLAGS+=-O0 -g -DDEBUG -DDEBUG_SQL
 debug-flags: build
 
-build: revision server
+build: revision libmaxminddb server
 
 revision:
 SVNVERSION= $(shell svnversion -cn . 2>/dev/null | sed -e "s/.*://" -e "s/\([0-9]*\).*/\1/" | grep "[0-9]") 
@@ -219,16 +215,16 @@ libenet: enet/libenet.a
 clean-enet: libenet
 	$(MAKE) -C enet clean
 
-geoip/Makefile:
-	cd mod/libGeoIP; chmod +x configure; ac_cv_func_malloc_0_nonnull=yes ac_cv_func_realloc_0_nonnull=yes ac_cv_func_pread=yes ./configure --enable-shared=no --enable-static=yes --host=i686-w64-mingw32
+maxminddb/Makefile:
+	cd mod/libmaxminddb; ./configure --enable-shared=no --enable-static=yes --host=i686-w64-mingw32
 
-libgeoip: geoip/Makefile
-	$(MAKE)	-C mod/GeoIP/libGeoIP/ all
+libmaxminddb: maxminddb/Makefile
+	$(MAKE)	-C mod/libmaxminddb/src all
 
-clean-geoip: geoip/Makefile
-	$(MAKE) -C mod/GeoIP/libGeoIP/ maintainer-clean
+clean-maxminddb: maxminddb/Makefile
+	$(MAKE) -C mod/libmaxminddb/ maintainer-clean
 
-clean: clean-enet
+clean: clean-enet clean-maxminddb
 	-$(RM) $(SERVER_OBJS)
 
 %.h.gch: %.h
