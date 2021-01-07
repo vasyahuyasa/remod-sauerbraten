@@ -23,6 +23,7 @@ MV?=mv
 STRIP?=strip
 
 PLATFORM=$(shell uname -s)
+HOST?=
 
 # Use clang on freebsd
 # Comment next lines if server not building or you want to use old GCC
@@ -243,7 +244,7 @@ clean-enet:
 	$(MAKE) -C enet clean
 
 mod/libmaxminddb/Makefile:
-	cd mod/libmaxminddb; autoreconf -f -i; ./configure --disable-shared
+	cd mod/libmaxminddb; autoreconf -f -i; ./configure --disable-shared --disable-binaries --disable-tests --host=$(HOST)
 
 mod/libmaxminddb/src/.libs/libmaxminddb.a: mod/libmaxminddb/Makefile
 	$(MAKE)	-C mod/libmaxminddb
@@ -254,7 +255,7 @@ clean-maxminddb: mod/libmaxminddb/Makefile
 	$(MAKE) -C mod/libmaxminddb clean
 
 mod/libGeoIP/Makefile:
-	cd mod/libGeoIP; autoreconf -f -i; ./configure --disable-shared
+	cd mod/libGeoIP; autoreconf -f -i; ./configure --disable-shared --host=$(HOST)
 
 mod/libGeoIP/libGeoIP/.libs/libGeoIP.a: mod/libGeoIP/Makefile
 	$(MAKE)	-C mod/libGeoIP
