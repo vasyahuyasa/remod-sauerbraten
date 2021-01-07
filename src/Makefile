@@ -243,7 +243,7 @@ clean-enet:
 	$(MAKE) -C enet clean
 
 mod/libmaxminddb/Makefile:
-	cd mod/libmaxminddb; ./configure --disable-shared
+	cd mod/libmaxminddb; autoreconf -f -i; ./configure --disable-shared
 
 mod/libmaxminddb/src/.libs/libmaxminddb.a: mod/libmaxminddb/Makefile
 	$(MAKE)	-C mod/libmaxminddb
@@ -254,7 +254,7 @@ clean-maxminddb: mod/libmaxminddb/Makefile
 	$(MAKE) -C mod/libmaxminddb clean
 
 mod/libGeoIP/Makefile:
-	cd mod/libGeoIP; ./configure --disable-shared
+	cd mod/libGeoIP; autoreconf -f -i; ./configure --disable-shared
 
 mod/libGeoIP/libGeoIP/.libs/libGeoIP.a: mod/libGeoIP/Makefile
 	$(MAKE)	-C mod/libGeoIP
