@@ -35,6 +35,11 @@ namespace remod
 
         void geodb(char *path)
         {
+            if (strlen(path) == 0) {
+                conoutf(CON_INFO, "Geoip: geoip is disabled because geodb = \"\"");
+                return;
+            }
+
             const char *fullpath = findfile(path, "r");
 
             geo = &geo2;
@@ -44,7 +49,7 @@ namespace remod
 
             if (geo->loaddb(fullpath))
             {
-                conoutf(CON_ERROR, "Geoip: use database \"%s\"", fullpath);
+                conoutf(CON_INFO, "Geoip: use database \"%s\"", fullpath);
                 return;
             }
 
