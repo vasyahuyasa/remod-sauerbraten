@@ -1,27 +1,27 @@
 ########### CONFIGURATION ############
 
 #Use geoip module?  true|false 
-USE_GEOIP=true
+USE_GEOIP ?= true
 
 #Use irc bot? true|false
-USE_IRCBOT=true
+USE_IRCBOT ?= true
 
 #Sqlite3 support? true|false
-USE_SQLITE3=true
-SQLITE3_USE_SYSTEM_LIBS=false
+USE_SQLITE3 ?= true
+SQLITE3_USE_SYSTEM_LIBS ?= false
 
 #Mysql support? true|false
-USE_MYSQL=true
-MYSQL_USE_SYSTEM_LIBS=false
+USE_MYSQL ?= true
+MYSQL_USE_SYSTEM_LIBS ?= false
 
 #Use ssytem enet libraryie
-ENET_USE_SYSTEM_LIBS=false
+ENET_USE_SYSTEM_LIBS ?= false
 ######################################
 
 ### Tools
-CXX=gcc
-MV=mv
-STRIP=strip
+CXX ?= gcc
+MV ?= mv
+STRIP ?= strip
 
 
 PLATFORM=$(shell uname -s)
@@ -98,23 +98,25 @@ SERVER_OBJS= \
 	mod/cryptomod/polarssl/library/md5-standalone.o \
 	mod/cryptomod/polarssl/library/sha1-standalone.o \
 	mod/cryptomod/polarssl/library/sha2-standalone.o \
-	mod/cryptomod/polarssl/library/sha4-standalone.o \
-      	mod/banlist-standalone.o \
-	mod/jsonbanlist-standalone.o
+	mod/cryptomod/polarssl/library/sha4-standalone.o
 
 
 ### Options checks
 
 
 
-# geoip maxminddb
+# geoip
 ifeq ($(USE_GEOIP),true)
-override CXXFLAGS+= -DGEOIP
-override INCLUDES+= -Imod/libmaxminddb/include
+override CXXFLAGS+= -DGEOIP -DGEOIPDATADIR -DPACKAGE_VERSION=\"1.6.9\"
+override INCLUDES+= -Imod/libmaxminddb/include -Imod/libGeoIP
 override SERVER_LIBS+= -Lmod/libmaxminddb/src/.libs -lmaxminddb
-override SERVER_OBJS+= mod/geoipmod2-standalone.o
+override SERVER_OBJS+= mod/geoipmod-standalone.o \
+	mod/libGeoIP/GeoIP-standalone.o \
+	mod/libGeoIP/GeoIPCity-standalone.o \
+    mod/libGeoIP/GeoIP_deprecated-standalone.o
+
 endif
-# end maxminddb
+# end geoip
 
 #irc
 ifeq ($(USE_IRCBOT),true)
@@ -246,18 +248,22 @@ endif
 
 enet/Makefile:
 	cd enet; autoreconf -vfi; ./configure --enable-shared=no --enable-static=yes
-	
-libenet: enet/Makefile
+
+enet/libenet.a: enet/Makefile
 	$(MAKE)	-C enet
 
-clean-enet: enet/Makefile
+libenet: enet/libenet.a
+
+clean-enet:
 	$(MAKE) -C enet clean
 
-maxminddb/Makefile:
-	cd mod/libmaxminddb; ./configure --enable-shared=no --enable-static=yes
+mod/libmaxminddb/Makefile:
+	cd mod/libmaxminddb; ./configure --disable-shared
 
-libmaxminddb: maxminddb/Makefile
+mod/libmaxminddb/src/.libs/libmaxminddb.a: mod/libmaxminddb/Makefile
 	$(MAKE)	-C mod/libmaxminddb/src all
+
+libmaxminddb: mod/libmaxminddb/src/.libs/libmaxminddb.a
 
 clean-maxminddb: maxminddb/Makefile
 	$(MAKE) -C mod/libmaxminddb/ maintainer-clean
