@@ -232,13 +232,7 @@ debug: debug-flags
 debug-flags: override CXXFLAGS+=-O0 -g -DDEBUG -DDEBUG_SQL
 debug-flags: build
 
-build: revision libgeoip libmaxminddb server
-
-revision:
-SVNVERSION= $(shell svnversion -cn . 2>/dev/null | sed -e "s/.*://" -e "s/\([0-9]*\).*/\1/" | grep "[0-9]") 
-ifneq "$(SVNVERSION)" " "
-override CXXFLAGS+= -DREMOD_VERSION="\"SVN build rev: $(SVNVERSION)\""
-endif
+build: libgeoip libmaxminddb server
 
 enet/libenet.a:
 	$(MAKE)	-C enet
