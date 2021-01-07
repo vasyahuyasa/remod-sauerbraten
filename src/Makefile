@@ -261,10 +261,10 @@ mod/libGeoIP/libGeoIP/.libs/libGeoIP.a: mod/libGeoIP/Makefile
 
 libgeoip: mod/libGeoIP/libGeoIP/.libs/libGeoIP.a
 
-libgeoip-clean: mod/libGeoIP/Makefile
-	$(MAKE)	-C mod/libGeoIP clean
+clean-libgeoip: mod/libGeoIP/Makefile
+	$(MAKE)	-C mod/libGeoIP/ clean
 
-clean: libgeoip-clean clean-maxminddb clean-enet
+clean: clean-libgeoip clean-maxminddb clean-enet
 	-$(RM) $(SERVER_OBJS) 
 
 %.h.gch: %.h
