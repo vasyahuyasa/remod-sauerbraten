@@ -20,10 +20,7 @@ namespace remod
         {
             GeoIP *gi;
 
-            geoiplegacy()
-            {
-                gi = NULL;
-            }
+            geoiplegacy() : gi(NULL) {}
 
             ~geoiplegacy()
             {
@@ -37,21 +34,19 @@ namespace remod
                 return gi != NULL;
             }
 
-            bool loaded()
+            bool isloaded()
             {
                 return gi != NULL;
             }
 
             const char *getcountry(const char *addr)
             {
-                if (!loaded())
+                if (!isloaded())
                 {
                     return NULL;
                 }
 
-                const char *name = GeoIP_country_name_by_addr(gi, addr);
-
-                return name;
+                return GeoIP_country_name_by_addr(gi, addr);
             }
         };
     } // namespace geoip

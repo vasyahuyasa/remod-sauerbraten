@@ -6,8 +6,9 @@
 * GEOIP staff
 */
 
-#include "geoipmod.h"
 #include "remod.h"
+#include "geoipmod_geoip2.h"
+#include "geoipmod_legacy.h"
 
 #define LEGACY_EXTENSION ".dat"
 #define LEGACY_EXTENSION_LEN 4

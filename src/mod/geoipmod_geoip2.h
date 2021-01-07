@@ -20,12 +20,9 @@ namespace remod
         struct geoip2 : geoip
         {
             MMDB_s mmdb;
-            bool isloaded;
+            bool loaded;
 
-            geoip2()
-            {
-                isloaded = false;
-            }
+            geoip2() : loaded(false) {}
 
             bool loaddb(const char *path)
             {
@@ -34,7 +31,7 @@ namespace remod
                 if (!fname)
                 {
                     conoutf(CON_ERROR, "Geoip: can not load %s", path);
-                    return;
+                    return false;
                 }
 
                 int status = MMDB_open(fname, MMDB_MODE_MMAP, &mmdb);
@@ -45,22 +42,24 @@ namespace remod
                     {
                         conoutf(CON_ERROR, "Geoip: IO error: %s", strerror(errno));
                     }
-                    return;
+                    return false;
                 }
 
-                isloaded = true;
+                loaded = true;
 
-                conoutf(CON_INFO, "Geoip: \"%s\" loaded", fname);
+                conoutf(CON_INFO, "Geoip: database \"%s\"", fname);
+
+                return true;
             }
 
             bool isloaded()
             {
-                return isloaded;
+                return loaded;
             }
 
             const char *getcountry(const char *addr)
             {
-                if (!isloaded)
+                if (!loaded)
                 {
                     return NULL;
                 }
