@@ -11,3 +11,5 @@ server-init.cfg
 
 # unnecessary
 .vscode
+.deps
+.libs
