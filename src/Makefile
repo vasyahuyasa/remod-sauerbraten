@@ -20,14 +20,8 @@ MYSQL_USE_SYSTEM_LIBS?=false
 MV?=mv
 STRIP?=strip
 
-PLATFORM=$(shell uname -s)
+PLATFORM?=$(shell uname -s)
 HOST?=
-
-# Use clang on freebsd
-# Comment next lines if server not building or you want to use old GCC
-ifneq (,$(findstring FreeBSD,$(PLATFORM)))
-CXX=clang
-endif
 
 #result file name
 PLATFORM_SUFFIX=
@@ -41,7 +35,7 @@ endif
 SERVER_PREFIX=remod
 SERVER_NAME=$(SERVER_PREFIX)
 ifneq (,$(findstring MINGW,$(PLATFORM)))
-SERVER_NAME=$(SERVER_NAME)$(PLATFORM_SUFFIX).exe
+SERVER_NAME=$(SERVER_PREFIX)$(PLATFORM_SUFFIX).exe
 endif
 ifneq (,$(findstring Linux,$(PLATFORM)))
 SERVER_NAME=$(SERVER_PREFIX)$(PLATFORM_SUFFIX)
