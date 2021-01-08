@@ -9,6 +9,7 @@
 #include "remod.h"
 #include "geoipmod_geoip2.h"
 #include "geoipmod_legacy.h"
+#include "libgen.h"
 
 #define LEGACY_EXTENSION ".dat"
 #define LEGACY_EXTENSION_LEN 4
@@ -25,7 +26,7 @@ namespace remod
 
         int islegacydatabase(const char *path)
         {
-            const char *filename = basename(path);
+            const char *filename = basename((char*)path);
 
             size_t namelen = strlen(filename);
 
