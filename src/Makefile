@@ -109,7 +109,7 @@ override CXXFLAGS+= -DSQLITE_THREADSAFE=1
 override INCLUDES+= -Imod/sqlite3
 
 #linux-only libs
-ifeq ($(PLATFORM),linux)
+ifneq (,$(findstring linux,$(PLATFORM)))
 override SERVER_LIBS+= -ldl -lpthread
 endif
 override SERVER_OBJS+= mod/sqlite3/sqlite3-standalone.o
