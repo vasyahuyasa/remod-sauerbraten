@@ -1,9 +1,9 @@
-default: discord.so
+default: libdiscord.a
 
 clean:
-	rm discord.so
+	rm -r libdiscord.a libdiscord.h
 
-discord: discord.so
+discord: libdiscord.a
 
-discord.so:
-	CGO_ENABLED=1 go build -buildmode=c-shared -o discord.so
+libdiscord.a:
+	CGO_ENABLED=1 go build -buildmode=c-archive -o libdiscord.a

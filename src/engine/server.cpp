@@ -7,6 +7,7 @@
 #include "rconmod.h"
 #include "remod.h"
 #include "commandev.h"
+#include "discordmod.h"
 
 #ifdef IRC
 #include "irc.h"
@@ -1151,6 +1152,7 @@ void initserver(bool listen, bool dedicated)
     // remod
     remod::rcon::init(rconport);
     remod::loadbans();
+    remod::discord::run();
 
     server::serverinit();
 

@@ -223,7 +223,22 @@ libgeoip: mod/libGeoIP/libGeoIP/.libs/libGeoIP.a
 clean-libgeoip: mod/libGeoIP/Makefile
 	$(MAKE)	-C mod/libGeoIP/ clean
 
-clean: clean-libgeoip clean-maxminddb clean-enet
+ifeq ($(USE_EXPEREMENTAL_DISCORD),true)
+DISCORD_TARGET=discord
+DISCORD_CLEAN_TARGET=discord-clean
+override SERVER_LIBS+= -Lmod/discord -ldiscord
+override SERVER_OBJS+= mod/discordmod-standalone.o
+
+discord: mod/discord/libdiscord.a
+
+mod/discord/libdiscord.a:
+	$(MAKE)	-C mod/discord
+
+discord-clean:
+	$(MAKE)	-C mod/discord clean
+endif
+
+clean: clean-libgeoip clean-maxminddb clean-enet $(DISCORD_CLEAN_TARGET)
 	-$(RM) $(SERVER_OBJS) 
 
 %-standalone.o: %.cpp
@@ -240,9 +255,9 @@ servericon: res/remod.res
 $(SERVER_OBJS): CXXFLAGS += $(SERVER_INCLUDES)
 
 ifneq (,$(findstring MINGW,$(PLATFORM)))
-server:	libenet libgeoip libmaxminddb servericon $(SERVER_OBJS)
+server:	libenet libgeoip libmaxminddb servericon $(DISCORD_TARGET) $(SERVER_OBJS)
 	$(CXX) $(CXXFLAGS) -o ../$(OUTPUT_FILE) res/remod.res $(SERVER_OBJS) $(SERVER_LIBS)
 else
-server:	libenet libgeoip libmaxminddb $(SERVER_OBJS)
+server:	libenet libgeoip libmaxminddb $(DISCORD_TARGET) $(SERVER_OBJS)
 	$(CXX) $(CXXFLAGS) -o ../$(OUTPUT_FILE) $(SERVER_OBJS) $(SERVER_LIBS)
 endif

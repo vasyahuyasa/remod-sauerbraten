@@ -9,20 +9,14 @@
 #ifndef __DISCORD_H__
 #define __DISCORD_H__
 
-#include "discord/discord_plugin.h"
+#include "discord/libdiscord.h"
 
 namespace remod
 {
     namespace discord
     {
-        struct pluginapi {
-            int (*version)();
-            int (*run)(messagecallback *msgcb, const char * token);
-            int (*sendmessage)(const char *channel,const char *text);
-            const char *(*lasterror)();
-        };
-
-        int initplugin(const char *path, pluginapi *api);
+        void run();
+        void onmessage(char *author_username, char *author_mentoin_string, char *channel_id, char *content);
     }
 } // namespace remod
 

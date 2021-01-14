@@ -21,13 +21,11 @@ typedef struct { const char *p; ptrdiff_t n; } _GoString_;
 
 #line 3 "discord.go"
 
-#include "discord_plugin.h"
+typedef void (*messagecallback)(char *author_username, char *author_mentoin_string, char *channel_id, char *content);
 
-
-
-static void onmessage(void *f, char *author_username, char *author_mentoin_id, char *channel_id, char *content)
+static void discord_onmessage(messagecallback f, char *author_username, char *author_mentoin_id, char *channel_id, char *content)
 {
-	(*(messagecallback)f)(author_username, author_mentoin_id, channel_id, content);
+	((messagecallback)f)(author_username, author_mentoin_id, channel_id, content);
 }
 
 #line 1 "cgo-generated-wrapper"
@@ -80,9 +78,9 @@ typedef struct { void *data; GoInt len; GoInt cap; } GoSlice;
 extern "C" {
 #endif
 
-extern int run(void* messageCallback, char* token);
-extern char* lasterror();
-extern int sendmessage(char* channel, char* text);
+extern int discord_run(messagecallback messageCallback, char* token);
+extern char* discord_lasterror();
+extern int discord_sendmessage(char* channel, char* text);
 
 #ifdef __cplusplus
 }

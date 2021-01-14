@@ -1,19 +1,16 @@
 package main
 
 /*
-#include "discord_plugin.h"
+typedef void (*messagecallback)(char *author_username, char *author_mentoin_string, char *channel_id, char *content);
 
-
-
-static void onmessage(void *f, char *author_username, char *author_mentoin_id, char *channel_id, char *content)
+static void discord_onmessage(messagecallback f, char *author_username, char *author_mentoin_id, char *channel_id, char *content)
 {
-	(*(messagecallback)f)(author_username, author_mentoin_id, channel_id, content);
+	((messagecallback)f)(author_username, author_mentoin_id, channel_id, content);
 }
 */
 import "C"
 import (
 	"log"
-	"unsafe"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -22,17 +19,12 @@ const apiVersion = 1
 
 var session *discordgo.Session
 var err error
-var msgCallback unsafe.Pointer
+var msgCallback C.messagecallback
 
 func main() {}
 
-// export version
-func version() C.int {
-	return C.int(apiVersion)
-}
-
-//export run
-func run(messageCallback unsafe.Pointer, token *C.char) C.int {
+//export discord_run
+func discord_run(messageCallback C.messagecallback, token *C.char) C.int {
 	msgCallback = messageCallback
 	botToken := C.GoString(token)
 
@@ -68,13 +60,13 @@ func run(messageCallback unsafe.Pointer, token *C.char) C.int {
 	return 0
 }
 
-//export lasterror
-func lasterror() *C.char {
+//export discord_lasterror
+func discord_lasterror() *C.char {
 	return C.CString(err.Error())
 }
 
-//export sendmessage
-func sendmessage(channel *C.char, text *C.char) C.int {
+//export discord_sendmessage
+func discord_sendmessage(channel *C.char, text *C.char) C.int {
 	channelID := C.GoString(channel)
 	content := C.GoString(text)
 
@@ -102,5 +94,5 @@ func onMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	channelID := C.CString(m.ChannelID)
 	content := C.CString(msgContent)
 
-	C.onmessage(msgCallback, username, mentoinString, channelID, content)
+	C.discord_onmessage(msgCallback, username, mentoinString, channelID, content)
 }
