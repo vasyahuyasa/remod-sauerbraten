@@ -13,7 +13,7 @@ RUN apk --no-cache add \
     libtool
 COPY src src/
 
-RUN cd src; make SQLITE3_USE_SYSTEM_LIBS=true MYSQL_USE_SYSTEM_LIBS=true
+RUN cd src; make SQLITE3_USE_SYSTEM_LIBS=true MYSQL_USE_SYSTEM_LIBS=true PLATFORM=x86_64-pc-linux-gnu
 
 FROM alpine:3.12.1
 
