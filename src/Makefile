@@ -1,65 +1,53 @@
-########### CONFIGURATION ############
+USE_GEOIP=true
+USE_IRCBOT=true
+USE_SQLITE3=true
+SQLITE3_USE_SYSTEM_LIBS=false
+USE_MYSQL=true
+MYSQL_USE_SYSTEM_LIBS=false
+USE_EXPEREMENTAL_DISCORD=true
 
-#Use geoip module?  true|false 
-USE_GEOIP?=true
+CXXFLAGS=-O3 -fomit-frame-pointer -DSTANDALONE
+override CXXFLAGS+= -Wall -fsigned-char -fno-exceptions -fno-rtti
 
-#Use irc bot? true|false
-USE_IRCBOT?=true
+INCLUDES= -Ienet/include -Ishared -Iengine -Ifpsgame -Imod -Imod/hashlib2plus/src -Imod/cryptomod/polarssl/include
 
-#Sqlite3 support? true|false
-USE_SQLITE3?=true
-SQLITE3_USE_SYSTEM_LIBS?=false
-
-#Mysql support? true|false
-USE_MYSQL?=true
-MYSQL_USE_SYSTEM_LIBS?=false
-
-######################################
-
-### Tools
-MV?=mv
 STRIP?=strip
 
 PLATFORM?=$(shell uname -s)
-HOST?=
+
+ifneq (,$(findstring MINGW,$(PLATFORM)))
+    ifneq (,$(findstring 64,$(PLATFORM)))
+        WINDRES=x86_64-w64-mingw32-windres
+        STRIP=x86_64-w64-mingw32-strip
+        WINLIB=lib64
+		override CXX+= -m64
+        override WINDRES+= -F pe-x86-64
+    else
+        WINDRES=i686-w64-mingw32-windres
+        STRIP=i686-w64-mingw32-strip
+        WINLIB=lib
+        override CXX+= -m32
+        override WINDRES+= -F pe-i386
+    endif
+    STD_LIBS=-static-libgcc -static-libstdc++
+endif
 
 #result file name
-PLATFORM_SUFFIX=
-ifneq (,$(findstring x86_64,$(shell uname -a)))
-PLATFORM_SUFFIX=64
+OUTPUT_FILE=remod
+ifneq (,$(findstring 64,$(shell uname -a)))
+OUTPUT_FILE=remod64
 endif
-ifneq (,$(findstring amd64,$(shell uname -a)))
-PLATFORM_SUFFIX=64
+ifneq (,$(findstring MINGW,$(PLATFORM)))
+OUTPUT_FILE+=.exe
 endif
 
-SERVER_PREFIX=remod
-SERVER_NAME=$(SERVER_PREFIX)
 ifneq (,$(findstring MINGW,$(PLATFORM)))
-SERVER_NAME=$(SERVER_PREFIX)$(PLATFORM_SUFFIX).exe
-endif
-ifneq (,$(findstring Linux,$(PLATFORM)))
-SERVER_NAME=$(SERVER_PREFIX)$(PLATFORM_SUFFIX)
-endif
-ifneq (,$(findstring FreeBSD,$(PLATFORM)))
-SERVER_NAME=$(SERVER_PREFIX)_freebsd$(PLATFORM_SUFFIX)
-endif
-
-### Directories, libraries, includes
-ifneq (,$(findstring MINGW,$(PLATFORM)))
-SERVER_INCLUDES+= -DSTANDALONE $(INCLUDES) -Iinclude
-SERVER_LIBS= -Lenet -Llib -lzdll -lenet -lws2_32 -lwinmm -lstdc++
+SERVER_INCLUDES= -DSTANDALONE $(INCLUDES) -Iinclude
+SERVER_LIBS= -mwindows $(STD_LIBS) -L$(WINBIN) -L$(WINLIB) -lzlib1 -lenet -lws2_32 -lwinmm
 else
-SERVER_INCLUDES+= -DSTANDALONE $(INCLUDES)
-SERVER_LIBS= -Lenet -L/usr/local/lib -lenet -lz -lstdc++ -lm
+SERVER_INCLUDES= -DSTANDALONE $(INCLUDES)
+SERVER_LIBS= -Lenet -lenet -lz
 endif
-
-ifeq ($(PLATFORM),SunOS)
-SERVER_LIBS+= -lsocket -lnsl
-endif
-
-CXXFLAGS=-O3 -fomit-frame-pointer -Wall -fsigned-char -fno-exceptions -fno-rtti -DSTANDALONE
-
-INCLUDES= -Ienet/include -Ishared -Iengine -Ifpsgame -Imod -Imod/hashlib2plus/src -Imod/cryptomod/polarssl/include
 
 SERVER_OBJS= \
 	shared/crypto-standalone.o \
@@ -85,11 +73,6 @@ SERVER_OBJS= \
 	mod/cryptomod/polarssl/library/sha4-standalone.o \
 	mod/banlist-standalone.o
 
-
-### Options checks
-
-
-
 # geoip
 ifeq ($(USE_GEOIP),true)
 override INCLUDES+= -Imod/libmaxminddb/include -Imod/libGeoIP/libGeoIP
@@ -105,8 +88,6 @@ override SERVER_OBJS+= mod/irc-standalone.o
 endif
 #end of irc
 
-
-
 #use db
 ifeq ($(USE_SQLITE3),true)
 override SERVER_OBJS+= mod/db-standalone.o
@@ -116,8 +97,6 @@ override SERVER_OBJS+= mod/db-standalone.o
 endif
 endif
 #end of use db
-
-
 
 #sqlite3
 ifeq ($(USE_SQLITE3),true)
@@ -138,10 +117,7 @@ endif
 
 override SERVER_OBJS+= mod/sqlite3-standalone.o
 endif
-
 #end of sqlite3
-
-
 
 #mysql
 ifeq ($(USE_MYSQL),true)
@@ -205,20 +181,17 @@ override SERVER_OBJS += mod/mysql-standalone.o
 endif
 #end of mysql
 
-
-
 default: release
 
 release: release-flags 
 release-flags: override CXXFLAGS+=-O2 -s
 release-flags: build
 
-
 debug: debug-flags 
 debug-flags: override CXXFLAGS+=-O0 -g -DDEBUG -DDEBUG_SQL
 debug-flags: build
 
-build: libgeoip libmaxminddb server
+build: server
 
 enet/libenet.a:
 	$(MAKE)	-C enet
@@ -229,7 +202,7 @@ clean-enet:
 	$(MAKE) -C enet clean
 
 mod/libmaxminddb/Makefile:
-	cd mod/libmaxminddb; autoreconf -f -i; ./configure --disable-shared --disable-binaries --disable-tests --host=$(HOST)
+	cd mod/libmaxminddb; autoreconf -f -i; ./configure --disable-shared --disable-binaries --disable-tests --host=$(PLATFORM)
 
 mod/libmaxminddb/src/.libs/libmaxminddb.a: mod/libmaxminddb/Makefile
 	$(MAKE)	-C mod/libmaxminddb
@@ -240,7 +213,7 @@ clean-maxminddb: mod/libmaxminddb/Makefile
 	$(MAKE) -C mod/libmaxminddb clean
 
 mod/libGeoIP/Makefile:
-	cd mod/libGeoIP; autoreconf -f -i; ./configure --disable-shared --host=$(HOST)
+	cd mod/libGeoIP; autoreconf -f -i; ./configure --disable-shared --host=$(PLATFORM)
 
 mod/libGeoIP/libGeoIP/.libs/libGeoIP.a: mod/libGeoIP/Makefile
 	$(MAKE)	-C mod/libGeoIP
@@ -253,19 +226,23 @@ clean-libgeoip: mod/libGeoIP/Makefile
 clean: clean-libgeoip clean-maxminddb clean-enet
 	-$(RM) $(SERVER_OBJS) 
 
-%.h.gch: %.h
-	$(CXX) $(CXXFLAGS) -o $@.tmp $(subst .h.gch,.h,$@)
-	$(MV) $@.tmp $@
-
 %-standalone.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $(subst -standalone.o,.cpp,$@) 
 
 %-standalone.o: %.c
 	$(CC) $(CXXFLAGS) -c -o $@ $(subst -standalone.o,.c,$@)	
 
+res/remod.res:
+	$(WINDRES) -I res -i res/mingw.rc -J rc -o res/remod.res -O coff
+
+servericon: res/remod.res
 
 $(SERVER_OBJS): CXXFLAGS += $(SERVER_INCLUDES)
 
-server:	libenet $(SERVER_OBJS)
-	$(CXX) $(CXXFLAGS) -o $(SERVER_NAME) $(SERVER_OBJS) $(SERVER_LIBS)  
-	$(MV) $(SERVER_NAME) ../$(SERVER_NAME)
+ifneq (,$(findstring MINGW,$(PLATFORM)))
+server:	libenet libgeoip libmaxminddb servericon $(SERVER_OBJS)
+	$(CXX) $(CXXFLAGS) -o ../$(OUTPUT_FILE) res/remod.res $(SERVER_OBJS) $(SERVER_LIBS)
+else
+server:	libenet libgeoip libmaxminddb $(SERVER_OBJS)
+	$(CXX) $(CXXFLAGS) -o ../$(OUTPUT_FILE) $(SERVER_OBJS) $(SERVER_LIBS)
+endif
