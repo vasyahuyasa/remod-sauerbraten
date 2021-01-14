@@ -13,7 +13,7 @@ INCLUDES= -Ienet/include -Ishared -Iengine -Ifpsgame -Imod -Imod/hashlib2plus/sr
 
 STRIP?=strip
 
-PLATFORM?=$(shell uname -s)
+PLATFORM?=x86_64-pc-linux-gnu
 
 ifneq (,$(findstring MINGW,$(PLATFORM)))
     ifneq (,$(findstring 64,$(PLATFORM)))
@@ -109,7 +109,7 @@ override CXXFLAGS+= -DSQLITE_THREADSAFE=1
 override INCLUDES+= -Imod/sqlite3
 
 #linux-only libs
-ifeq ($(PLATFORM),Linux)
+ifneq (,$(findstring linux,$(PLATFORM)))
 override SERVER_LIBS+= -ldl -lpthread
 endif
 override SERVER_OBJS+= mod/sqlite3/sqlite3-standalone.o
