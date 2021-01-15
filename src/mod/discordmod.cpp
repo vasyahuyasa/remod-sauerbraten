@@ -23,7 +23,7 @@ namespace remod
 
         void onmessage(char *author_username, char *author_mentoin_string, char *channel, char *content)
         {
-            printf("%s(%s) %s: %s\n", author_username, author_mentoin_string, channel,content);
+            remod::onevent(DISCORD_ONMSG, "ssss", author_username, author_mentoin_string, channel, content);
         }
 
         void discordsay(char *channel, char *msg) {
