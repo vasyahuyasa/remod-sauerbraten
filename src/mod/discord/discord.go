@@ -10,12 +10,8 @@ static void discord_onmessage(messagecallback f, char *author_username, char *au
 */
 import "C"
 import (
-	"log"
-
 	"github.com/bwmarrin/discordgo"
 )
-
-const apiVersion = 1
 
 var session *discordgo.Session
 var err error
@@ -36,21 +32,21 @@ func discord_run(messageCallback C.messagecallback, token *C.char) C.int {
 	session.AddHandler(onMessageCreate)
 	session.Identify.Intents = discordgo.MakeIntent(discordgo.IntentsGuildMessages)
 
-	var openErrChan chan error
+	openErrChan := make(chan error)
 
-	go func() {
+	go func(errChan chan<- error) {
 		openErr := session.Open()
 		if openErr != nil {
-			openErrChan <- openErr
+			errChan <- openErr
 			return
 		}
 
-		openErrChan <- nil
+		errChan <- nil
 
 		// wait forever
 		var wait chan struct{}
 		<-wait
-	}()
+	}(openErrChan)
 
 	err = <-openErrChan
 	if err != nil {
@@ -83,16 +79,10 @@ func onMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	msgContent, replaceErr := m.ContentWithMoreMentionsReplaced(s)
-	if replaceErr != nil {
-		log.Printf("can not parse message content: %v", replaceErr)
-		return
-	}
-
 	username := C.CString(m.Author.Username)
 	mentoinString := C.CString(m.Author.Mention())
 	channelID := C.CString(m.ChannelID)
-	content := C.CString(msgContent)
+	content := C.CString(m.ContentWithMentionsReplaced())
 
 	C.discord_onmessage(msgCallback, username, mentoinString, channelID, content)
 }

@@ -1,3 +1,4 @@
+#include "remod.h"
 #include "discordmod.h"
 #include "commandev.h"
 
@@ -9,11 +10,10 @@ namespace remod
 
         void run()
         {
+            printf("running discord with token \"%s\"\n", discordtoken);
             messagecallback cb = &onmessage;
 
-            int code = discord_run(cb, discordtoken);
-
-            if (code != 0) {
+            if (discord_run(cb, discordtoken) != 0) {
                 printf("can not start discord: %s\n", discord_lasterror());
                 return;
             }
@@ -21,9 +21,17 @@ namespace remod
             printf("discord started\n");
         }
 
-        void onmessage(char *author_username, char *author_mentoin_string, char *channel_id, char *content)
+        void onmessage(char *author_username, char *author_mentoin_string, char *channel, char *content)
         {
-            printf("%s: %s\n", author_mentoin_string, content);
+            printf("%s(%s) %s: %s\n", author_username, author_mentoin_string, channel,content);
         }
+
+        void discordsay(char *channel, char *msg) {
+            if (discord_sendmessage(channel, msg) != 0) {
+                printf("can not send message to discord: %s\n", discord_lasterror());
+            }
+        }
+
+        COMMAND(discordsay, "ss");
     } // namespace discord
 } // namespace remod
