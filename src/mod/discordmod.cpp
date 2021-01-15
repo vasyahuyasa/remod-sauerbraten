@@ -10,7 +10,15 @@ namespace remod
         void run()
         {
             messagecallback cb = &onmessage;
-            discord_run(cb, discordtoken);
+
+            int code = discord_run(cb, discordtoken);
+
+            if (code != 0) {
+                printf("can not start discord: %s\n", discord_lasterror());
+                return;
+            }
+
+            printf("discord started\n");
         }
 
         void onmessage(char *author_username, char *author_mentoin_string, char *channel_id, char *content)
