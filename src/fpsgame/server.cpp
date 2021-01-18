@@ -2417,6 +2417,9 @@ namespace server
                 formatstring(msg, "%s has modified map \"%s\"", colorname(ci), smapname);
                 sendf(req, 1, "ris", N_SERVMSG, msg);
                 if(req < 0) ci->warned = true;
+
+                // remod
+                remod::onevent(ONMODMAP, "i", ci->clientnum);
             }
         }
         if(req < 0 && modifiedmapspectator && (mcrc || modifiedmapspectator > 1)) loopv(clients)
