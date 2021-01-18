@@ -1,4 +1,6 @@
-language: cpp
+language: c
+git:
+  submodules: true
 sudo: required
 services: docker
 env:
@@ -15,12 +17,13 @@ compiler:
 script:
   - cd src && make && make clean
 
-docker_build:
+before_deploy:
   - docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD
   - cd ..
-  - docker build --pull --cache-from "${IMAGE_NAME}:latest" -t "${IMAGE_NAME}:latest" -t "${IMAGE_NAME}:${TRAVIS_TAG}" .
+  - docker build --pull --cache-from "$IMAGE_NAME:latest" --tag "${IMAGE_NAME}:${TRAVIS_TAG}" .
+  - docker tag "${IMAGE_NAME}:${TRAVIS_TAG}" "${IMAGE_NAME}:latest"
 
-docker_push_to_registry:
+deploy:
   provider: script
   script: docker push "${IMAGE_NAME}:latest" && docker push "${IMAGE_NAME}:${TRAVIS_TAG}"
   on:
