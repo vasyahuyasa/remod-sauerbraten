@@ -10,45 +10,21 @@ static void discord_onmessage(messagecallback f, char *author_username, char *au
 */
 import "C"
 import (
+	"errors"
+
 	"github.com/bwmarrin/discordgo"
 )
 
 var session *discordgo.Session
 var err error
-var msgCallback C.messagecallback
 
 func main() {}
 
 //export discord_run
 func discord_run(messageCallback C.messagecallback, token *C.char) C.int {
-	msgCallback = messageCallback
 	botToken := C.GoString(token)
 
-	session, err = discordgo.New("Bot " + botToken)
-	if err != nil {
-		return 1
-	}
-
-	session.AddHandler(onMessageCreate)
-	session.Identify.Intents = discordgo.MakeIntent(discordgo.IntentsGuildMessages)
-
-	openErrChan := make(chan error)
-
-	go func(errChan chan<- error) {
-		openErr := session.Open()
-		if openErr != nil {
-			errChan <- openErr
-			return
-		}
-
-		errChan <- nil
-
-		// wait forever
-		var wait chan struct{}
-		<-wait
-	}(openErrChan)
-
-	err = <-openErrChan
+	session, err = openSession(messageCallback, botToken)
 	if err != nil {
 		return 1
 	}
@@ -58,7 +34,7 @@ func discord_run(messageCallback C.messagecallback, token *C.char) C.int {
 
 //export discord_lasterror
 func discord_lasterror() *C.char {
-	return C.CString(err.Error())
+	return C.CString(lastErrorString())
 }
 
 //export discord_sendmessage
@@ -66,7 +42,7 @@ func discord_sendmessage(channel *C.char, text *C.char) C.int {
 	channelID := C.GoString(channel)
 	content := C.GoString(text)
 
-	_, err = session.ChannelMessageSend(channelID, content)
+	err = sendMessage(channelID, content)
 	if err != nil {
 		return 1
 	}
@@ -74,15 +50,53 @@ func discord_sendmessage(channel *C.char, text *C.char) C.int {
 	return 0
 }
 
-func onMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
-	if m.Author.ID == s.State.User.ID {
-		return
+func openSession(messageCallback C.messagecallback, token string) (*discordgo.Session, error) {
+	session, err = discordgo.New("Bot " + token)
+	if err != nil {
+		return nil, err
 	}
 
-	username := C.CString(m.Author.Username)
-	mentoinString := C.CString(m.Author.Mention())
-	channelID := C.CString(m.ChannelID)
-	content := C.CString(m.ContentWithMentionsReplaced())
+	session.Identify.Intents = discordgo.MakeIntent(discordgo.IntentsGuildMessages)
 
-	C.discord_onmessage(msgCallback, username, mentoinString, channelID, content)
+	session.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
+		if m.Author.ID == s.State.User.ID {
+			return
+		}
+
+		username := C.CString(m.Author.Username)
+		mentoinString := C.CString(m.Author.Mention())
+		channelID := C.CString(m.ChannelID)
+		content := C.CString(m.ContentWithMentionsReplaced())
+
+		C.discord_onmessage(messageCallback, username, mentoinString, channelID, content)
+	})
+
+	err = session.Open()
+	if err != nil {
+		return nil, err
+	}
+
+	// TODO: session.Client with timeout
+
+	return session, nil
+}
+
+func lastErrorString() string {
+	if err != nil {
+		return err.Error()
+	}
+
+	return ""
+}
+
+func sendMessage(channelID string, text string) error {
+	if session == nil {
+		return errors.New("discord does not running")
+	}
+
+	// TODO: use buffered channel for save latency because C -> Go call takes 1-5 ms/op
+
+	_, err = session.ChannelMessageSend(channelID, text)
+
+	return err
 }
