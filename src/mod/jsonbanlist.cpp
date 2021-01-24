@@ -70,7 +70,7 @@ namespace remod
         }
 
 /**
- * Create json banlist
+ * Create json banlist (not implemented)
  * @group server
  * @arg1 list name
  * @arg2 1 - get all bans, 0 - only permanent bans
