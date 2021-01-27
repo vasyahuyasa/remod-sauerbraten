@@ -1152,7 +1152,6 @@ void initserver(bool listen, bool dedicated)
     // remod
     remod::rcon::init(rconport);
     remod::loadbans();
-    remod::discord::run();
 
     server::serverinit();
 

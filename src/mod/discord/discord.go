@@ -10,7 +10,9 @@ static void discord_onmessage(messagecallback f, char *author_username, char *au
 */
 import "C"
 import (
+	"fmt"
 	"log"
+	"os"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -24,7 +26,7 @@ type discordSession struct {
 	err             error
 
 	channels []string
-	msgs     chan message
+	sendMsgs chan message
 }
 
 type message struct {
@@ -69,7 +71,7 @@ func newSession(messageCallback C.messagecallback, token string) *discordSession
 	return &discordSession{
 		token:           token,
 		messageCallback: messageCallback,
-		msgs:            make(chan message, maxPendingMsgs),
+		sendMsgs:        make(chan message, maxPendingMsgs),
 	}
 }
 
@@ -91,6 +93,8 @@ func (s *discordSession) open() error {
 		channelID := C.CString(m.ChannelID)
 		content := C.CString(m.ContentWithMentionsReplaced())
 
+		log.Printf("[discord.go] %s: %s", m.Author.Username, m.Content)
+
 		C.discord_onmessage(s.messageCallback, username, mentoinString, channelID, content)
 	})
 
@@ -106,28 +110,6 @@ func (s *discordSession) open() error {
 	return nil
 }
 
-func (s *discordSession) lookupChannels() error {
-	guilds, err := s.session.UserGuilds(0, "", "")
-	if err != nil {
-		return err
-	}
-
-	for _, guild := range guilds {
-		channels, err := s.session.GuildChannels(guild.ID)
-		if err != nil {
-			return err
-		}
-
-		for _, channel := range channels {
-			s.channels = append(s.channels, channel.ID)
-		}
-	}
-
-	log.Println(guilds)
-
-	return nil
-}
-
 func (s *discordSession) stringError() string {
 	if s.err != nil {
 		return s.err.Error()
@@ -137,14 +119,25 @@ func (s *discordSession) stringError() string {
 }
 
 func (s *discordSession) sendMessage(channelID string, text string) {
-	s.msgs <- message{
+	select {
+	case s.sendMsgs <- message{
 		channelID: channelID,
 		text:      text,
+	}:
+	default:
+		s.err = fmt.Errorf("can not send message because queue is full")
+		reportErrorf(s.err.Error())
 	}
+
 }
 
 func (s *discordSession) sendWorker() {
-	for msg := range s.msgs {
+	for msg := range s.sendMsgs {
 		_, s.err = s.session.ChannelMessageSend(msg.channelID, msg.text)
+		reportErrorf("can not send message %v", s.err)
 	}
+}
+
+func reportErrorf(format string, a ...interface{}) {
+	fmt.Fprintf(os.Stderr, "discord: "+format+"\n", a)
 }

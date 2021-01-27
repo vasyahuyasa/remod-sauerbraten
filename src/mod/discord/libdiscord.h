@@ -80,7 +80,7 @@ extern "C" {
 
 extern int discord_run(messagecallback messageCallback, char* token);
 extern char* discord_lasterror();
-extern int discord_sendmessage(char* channel, char* text);
+extern void discord_sendmessage(char* channel, char* text);
 
 #ifdef __cplusplus
 }
