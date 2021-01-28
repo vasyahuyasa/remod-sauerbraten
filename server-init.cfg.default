@@ -307,6 +307,9 @@ exec "scripts/modules/syncauth.cfg"
 // Execute module
 exec "scripts/modules/spy.cfg"
 
+//********* Discord ************
+// discordaddrelay <token> <channelid>
+// execdir "scripts/discord"
 
 // -------------------------------------
 // COMMANDS
