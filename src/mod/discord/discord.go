@@ -128,7 +128,9 @@ func (s *discordSession) sendMessage(channelID string, text string) {
 func (s *discordSession) sendWorker() {
 	for msg := range s.sendMsgs {
 		_, s.err = s.session.ChannelMessageSend(msg.channelID, msg.text)
-		reportErrorf("can not send message %v", s.err)
+		if s.err != nil {
+			reportErrorf("can not send message %v", s.err)
+		}
 	}
 }
 
