@@ -11,7 +11,6 @@ static void discord_onmessage(messagecallback f, char *author_username, char *au
 import "C"
 import (
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/bwmarrin/discordgo"
@@ -25,7 +24,6 @@ type discordSession struct {
 	messageCallback C.messagecallback
 	err             error
 
-	channels []string
 	sendMsgs chan message
 }
 
@@ -48,8 +46,6 @@ func discord_run(messageCallback C.messagecallback, token *C.char) C.int {
 	if err != nil {
 		return -1
 	}
-
-	log.Println(defaultSession.channels)
 
 	return 0
 }
@@ -92,8 +88,6 @@ func (s *discordSession) open() error {
 		mentoinString := C.CString(m.Author.Mention())
 		channelID := C.CString(m.ChannelID)
 		content := C.CString(m.ContentWithMentionsReplaced())
-
-		log.Printf("[discord.go] %s: %s", m.Author.Username, m.Content)
 
 		C.discord_onmessage(s.messageCallback, username, mentoinString, channelID, content)
 	})

@@ -34,8 +34,6 @@ namespace remod
         // TODO: call this function from go can be not thread safe
         void onmessage(char *author_username, char *author_mentoin_string, char *channel, char *content)
         {
-            printf("[discord.cpp] %s: %s\n", author_username, content);
-
             remod::onevent(DISCORD_ONMSG, "ssss", author_username, author_mentoin_string, channel, content);
         }
 
