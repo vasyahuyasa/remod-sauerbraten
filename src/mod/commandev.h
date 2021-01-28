@@ -29,7 +29,7 @@ static const char * const eventNames[] = {
                  "onswitchteam", "ontakeflag", "onteamkill", "ontext", "onmutetrigger", "onmutemodetrigger",
                  "irc_oncommand", "irc_oncommandpermerror", "irc_oncommandunknown",
                  "irc_oncommandusageerror", "irc_onmsg", "irc_onprivmsg", "onflood",
-                 "discord_onmsg"
+                 "discord_onmsg",
                  "custom event", "number of events" };
 
 namespace remod
