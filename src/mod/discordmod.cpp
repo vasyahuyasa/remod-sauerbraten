@@ -34,7 +34,20 @@ namespace remod
         // TODO: call this function from go can be not thread safe
         void onmessage(char *author_username, char *author_mentoin_string, char *channel, char *content)
         {
-            remod::onevent(DISCORD_ONMSG, "ssss", author_username, author_mentoin_string, channel, content);
+            size_t namelen = strlen(author_username);
+            uchar *cubename = (uchar *)malloc(namelen + 1);
+            size_t cubenamelen = decodeutf8(cubename, namelen, (uchar *)author_username, namelen, 0);
+            cubename[cubenamelen] = '\0';
+
+            size_t msglen = strlen(content);
+            uchar *cubemsg = (uchar *)malloc(msglen + 1);
+            size_t cubemsglen = decodeutf8(cubemsg, msglen, (uchar *)content, msglen, 0);
+            cubemsg[cubemsglen] = '\0';
+
+            remod::onevent(DISCORD_ONMSG, "ssss", cubename, author_mentoin_string, channel, cubemsg);
+            
+            free(cubename);
+            free(cubemsg);
         }
 
         void discordsay(char *msg)
