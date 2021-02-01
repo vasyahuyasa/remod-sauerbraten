@@ -322,3 +322,6 @@ execdir "scripts/commands"
 
 // Commands for IRC bot
 execdir "scripts/irccommands"
+
+// Custom user config and scripts
+execdir "scripts.d"
