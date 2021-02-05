@@ -21,7 +21,7 @@ namespace remod
 
             messagecallback cb = &onmessage;
 
-            if (discord_run(cb, token) != 0)
+            if (discord_run(cb, token, channelid) != 0)
             {
                 printf("discord: can not run for channel %s: %s\n", channelid, discord_lasterror());
                 return;
@@ -45,19 +45,31 @@ namespace remod
             cubemsg[cubemsglen] = '\0';
 
             remod::onevent(DISCORD_ONMSG, "ssss", cubename, author_mentoin_string, channel, cubemsg);
-            
+
             free(cubename);
             free(cubemsg);
         }
 
         void discordsay(char *msg)
         {
-            discord_sendmessage(channelid, msg);
-        }
+            if (!initialized)
+            {
+                return;
+            }
 
-        void discordsayto(char *channel, char *msg)
-        {
-            discord_sendmessage(channel, msg);
+            static uchar ubuf[1024 * 10];
+            size_t len = strlen(msg);
+            size_t carry = 0;
+            while (carry < len)
+            {
+                size_t numu = encodeutf8(ubuf, sizeof(ubuf) - 1, &((const uchar *)msg)[carry], len - carry, &carry);
+                if (carry >= len)
+                {
+                    ubuf[numu++] = '\0';
+                }
+            }
+
+            discord_sendmessage(channelid, (char *)ubuf);
         }
 
         /**
@@ -74,14 +86,5 @@ namespace remod
          * @arg1 message
          */
         COMMAND(discordsay, "s");
-
-        /**
-         * Send message to specified discord channel
-         * @group discord
-         * @arg1 channel id
-         * @arg2 message
-         */
-        COMMAND(discordsayto, "ss");
-
     } // namespace discord
 } // namespace remod

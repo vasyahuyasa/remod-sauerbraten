@@ -78,7 +78,7 @@ typedef struct { void *data; GoInt len; GoInt cap; } GoSlice;
 extern "C" {
 #endif
 
-extern int discord_run(messagecallback messageCallback, char* token);
+extern int discord_run(messagecallback messageCallback, char* token, char* channelID);
 extern char* discord_lasterror();
 extern void discord_sendmessage(char* channel, char* text);
 

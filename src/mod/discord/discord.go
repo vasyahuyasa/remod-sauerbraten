@@ -22,6 +22,7 @@ type discordSession struct {
 	token           string
 	session         *discordgo.Session
 	messageCallback C.messagecallback
+	channelID       string
 	err             error
 
 	sendMsgs chan message
@@ -37,10 +38,11 @@ var defaultSession *discordSession
 func main() {}
 
 //export discord_run
-func discord_run(messageCallback C.messagecallback, token *C.char) C.int {
+func discord_run(messageCallback C.messagecallback, token *C.char, channelID *C.char) C.int {
 	botToken := C.GoString(token)
+	channel := C.GoString(channelID)
 
-	defaultSession = newSession(messageCallback, botToken)
+	defaultSession = newSession(messageCallback, botToken, channel)
 
 	err := defaultSession.open()
 	if err != nil {
@@ -63,11 +65,12 @@ func discord_sendmessage(channel *C.char, text *C.char) {
 	defaultSession.sendMessage(channelID, content)
 }
 
-func newSession(messageCallback C.messagecallback, token string) *discordSession {
+func newSession(messageCallback C.messagecallback, token string, channelID string) *discordSession {
 	return &discordSession{
 		token:           token,
 		messageCallback: messageCallback,
 		sendMsgs:        make(chan message, maxPendingMsgs),
+		channelID:       channelID,
 	}
 }
 
@@ -80,7 +83,7 @@ func (s *discordSession) open() error {
 	s.session.Identify.Intents = discordgo.MakeIntent(discordgo.IntentsGuildMessages)
 
 	s.session.AddHandler(func(ses *discordgo.Session, m *discordgo.MessageCreate) {
-		if m.Author.ID == ses.State.User.ID {
+		if m.Author.ID == ses.State.User.ID || m.ChannelID != s.channelID {
 			return
 		}
 
