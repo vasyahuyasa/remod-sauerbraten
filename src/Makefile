@@ -71,7 +71,8 @@ SERVER_OBJS= \
 	mod/cryptomod/polarssl/library/sha1-standalone.o \
 	mod/cryptomod/polarssl/library/sha2-standalone.o \
 	mod/cryptomod/polarssl/library/sha4-standalone.o \
-	mod/banlist-standalone.o
+	mod/banlist-standalone.o \
+	mod/authservers-standalone.o
 
 # geoip
 ifeq ($(USE_GEOIP),true)
