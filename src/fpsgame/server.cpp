@@ -2606,11 +2606,11 @@ namespace server
     }
 
     // remod: "overriden" in authservers.cpp
-    // clientinfo *findauth(uint id)
-    // {
-    //     loopv(clients) if(clients[i]->authreq == id) return clients[i];
-    //     return NULL;
-    // }
+    clientinfo *findauth(uint id)
+    {
+        loopv(clients) if(clients[i]->authreq == id) return clients[i];
+        return NULL;
+    }
 
     void authfailed(clientinfo *ci)
     {
@@ -2620,100 +2620,104 @@ namespace server
     }
 
     // remod: "overriden" in authservers.cpp
-    // void authfailed(uint id)
-    // {
-    //     authfailed(findauth(id));
-    // }
-    //
-    // void authsucceeded(uint id)
-    // {
-    //     clientinfo *ci = findauth(id);
-    //     if(!ci) return;
-    //     ci->cleanauth(ci->connectauth!=0);
-    //     if(ci->connectauth) connected(ci);
-    //     if(ci->authkickvictim >= 0)
-    //     {
-    //         if(setmaster(ci, true, "", ci->authname, NULL, PRIV_AUTH, false, true))
-    //             trykick(ci, ci->authkickvictim, ci->authkickreason, ci->authname, NULL, PRIV_AUTH);
-    //         ci->cleanauthkick();
-    //     }
-    //     else setmaster(ci, true, "", ci->authname, NULL, PRIV_AUTH);
-    // }
-    //
-    // void authchallenged(uint id, const char *val, const char *desc = "")
-    // {
-    //     clientinfo *ci = findauth(id);
-    //     if(!ci) return;
-    //     sendf(ci->clientnum, 1, "risis", N_AUTHCHAL, desc, id, val);
-    // }
-    //
-    // uint nextauthreq = 0;
-    //
-    // bool tryauth(clientinfo *ci, const char *user, const char *desc)
-    // {
-    //     ci->cleanauth();
-    //     if(!nextauthreq) nextauthreq = 1;
-    //     ci->authreq = nextauthreq++;
-    //     filtertext(ci->authname, user, false, false, 100);
-    //     copystring(ci->authdesc, desc);
-    //     if(ci->authdesc[0])
-    //     {
-    //         userinfo *u = users.access(userkey(ci->authname, ci->authdesc));
-    //         if(u)
-    //         {
-    //             uint seed[3] = { ::hthash(serverauth) + detrnd(size_t(ci) + size_t(user) + size_t(desc), 0x10000), uint(totalmillis), randomMT() };
-    //             vector<char> buf;
-    //             ci->authchallenge = genchallenge(u->pubkey, seed, sizeof(seed), buf);
-    //             sendf(ci->clientnum, 1, "risis", N_AUTHCHAL, desc, ci->authreq, buf.getbuf());
-    //         }
-    //         else ci->cleanauth();
-    //     }
-    //     else if(!requestmasterf("reqauth %u %s\n", ci->authreq, ci->authname))
-    //     {
-    //         ci->cleanauth();
-    //         sendf(ci->clientnum, 1, "ris", N_SERVMSG, "not connected to authentication server");
-    //     }
-    //     if(ci->authreq) return true;
-    //     if(ci->connectauth) disconnect_client(ci->clientnum, ci->connectauth);
-    //     return false;
-    // }
-    //
-    // bool answerchallenge(clientinfo *ci, uint id, char *val, const char *desc)
-    // {
-    //     if(ci->authreq != id || strcmp(ci->authdesc, desc))
-    //     {
-    //         ci->cleanauth();
-    //         return !ci->connectauth;
-    //     }
-    //     for(char *s = val; *s; s++)
-    //     {
-    //         if(!isxdigit(*s)) { *s = '\0'; break; }
-    //     }
-    //     if(desc[0])
-    //     {
-    //         if(ci->authchallenge && checkchallenge(val, ci->authchallenge))
-    //         {
-    //             userinfo *u = users.access(userkey(ci->authname, ci->authdesc));
-    //             if(u)
-    //             {
-    //                 if(ci->connectauth) connected(ci);
-    //                 if(ci->authkickvictim >= 0)
-    //                 {
-    //                     if(setmaster(ci, true, "", ci->authname, ci->authdesc, u->privilege, false, true))
-    //                         trykick(ci, ci->authkickvictim, ci->authkickreason, ci->authname, ci->authdesc, u->privilege);
-    //                 }
-    //                 else setmaster(ci, true, "", ci->authname, ci->authdesc, u->privilege);
-    //             }
-    //         }
-    //         ci->cleanauth();
-    //     }
-    //     else if(!requestmasterf("confauth %u %s\n", id, val))
-    //     {
-    //         ci->cleanauth();
-    //         sendf(ci->clientnum, 1, "ris", N_SERVMSG, "not connected to authentication server");
-    //     }
-    //     return ci->authreq || !ci->connectauth;
-    // }
+    void authfailed(uint id)
+    {
+        authfailed(findauth(id));
+    }
+    
+    // remod: "overriden" in authservers.cpp
+    void authsucceeded(uint id)
+    {
+        clientinfo *ci = findauth(id);
+        if(!ci) return;
+        ci->cleanauth(ci->connectauth!=0);
+        if(ci->connectauth) connected(ci);
+        if(ci->authkickvictim >= 0)
+        {
+            if(setmaster(ci, true, "", ci->authname, NULL, PRIV_AUTH, false, true))
+                trykick(ci, ci->authkickvictim, ci->authkickreason, ci->authname, NULL, PRIV_AUTH);
+            ci->cleanauthkick();
+        }
+        else setmaster(ci, true, "", ci->authname, NULL, PRIV_AUTH);
+    }
+    
+    // remod: "overriden" in authservers.cpp
+    void authchallenged(uint id, const char *val, const char *desc = "")
+    {
+        clientinfo *ci = findauth(id);
+        if(!ci) return;
+        sendf(ci->clientnum, 1, "risis", N_AUTHCHAL, desc, id, val);
+    }
+    
+    uint nextauthreq = 0;
+    
+    // remod: "overriden" in authservers.cpp
+    bool tryauth(clientinfo *ci, const char *user, const char *desc)
+    {
+        ci->cleanauth();
+        if(!nextauthreq) nextauthreq = 1;
+        ci->authreq = nextauthreq++;
+        filtertext(ci->authname, user, false, false, 100);
+        copystring(ci->authdesc, desc);
+        if(ci->authdesc[0])
+        {
+            userinfo *u = users.access(userkey(ci->authname, ci->authdesc));
+            if(u)
+            {
+                uint seed[3] = { ::hthash(serverauth) + detrnd(size_t(ci) + size_t(user) + size_t(desc), 0x10000), uint(totalmillis), randomMT() };
+                vector<char> buf;
+                ci->authchallenge = genchallenge(u->pubkey, seed, sizeof(seed), buf);
+                sendf(ci->clientnum, 1, "risis", N_AUTHCHAL, desc, ci->authreq, buf.getbuf());
+            }
+            else ci->cleanauth();
+        }
+        else if(!requestmasterf("reqauth %u %s\n", ci->authreq, ci->authname))
+        {
+            ci->cleanauth();
+            sendf(ci->clientnum, 1, "ris", N_SERVMSG, "not connected to authentication server");
+        }
+        if(ci->authreq) return true;
+        if(ci->connectauth) disconnect_client(ci->clientnum, ci->connectauth);
+        return false;
+    }
+    
+    // remod: "overriden" in authservers.cpp
+    bool answerchallenge(clientinfo *ci, uint id, char *val, const char *desc)
+    {
+        if(ci->authreq != id || strcmp(ci->authdesc, desc))
+        {
+            ci->cleanauth();
+            return !ci->connectauth;
+        }
+        for(char *s = val; *s; s++)
+        {
+            if(!isxdigit(*s)) { *s = '\0'; break; }
+        }
+        if(desc[0])
+        {
+            if(ci->authchallenge && checkchallenge(val, ci->authchallenge))
+            {
+                userinfo *u = users.access(userkey(ci->authname, ci->authdesc));
+                if(u)
+                {
+                    if(ci->connectauth) connected(ci);
+                    if(ci->authkickvictim >= 0)
+                    {
+                        if(setmaster(ci, true, "", ci->authname, ci->authdesc, u->privilege, false, true))
+                            trykick(ci, ci->authkickvictim, ci->authkickreason, ci->authname, ci->authdesc, u->privilege);
+                    }
+                    else setmaster(ci, true, "", ci->authname, ci->authdesc, u->privilege);
+                }
+            }
+            ci->cleanauth();
+        }
+        else if(!requestmasterf("confauth %u %s\n", id, val))
+        {
+            ci->cleanauth();
+            sendf(ci->clientnum, 1, "ris", N_SERVMSG, "not connected to authentication server");
+        }
+        return ci->authreq || !ci->connectauth;
+    }
 
     void masterconnected()
     {
