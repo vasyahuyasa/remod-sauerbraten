@@ -14,6 +14,7 @@ INCLUDES= -Ienet/include -Ishared -Iengine -Ifpsgame -Imod -Imod/hashlib2plus/sr
 STRIP?=strip
 
 PLATFORM?=x86_64-pc-linux-gnu
+TARGETHOST=x86_64-pc-linux-gnu
 
 ifneq (,$(findstring MINGW,$(PLATFORM)))
     ifneq (,$(findstring 64,$(PLATFORM)))
@@ -34,16 +35,14 @@ endif
 
 #result file name
 OUTPUT_FILE=remod
-ifneq (,$(findstring 64,$(shell uname -a)))
-OUTPUT_FILE=remod64
-endif
 ifneq (,$(findstring MINGW,$(PLATFORM)))
-OUTPUT_FILE+=.exe
+OUTPUT_FILE=remod.exe
 endif
 
 ifneq (,$(findstring MINGW,$(PLATFORM)))
 SERVER_INCLUDES= -DSTANDALONE $(INCLUDES) -Iinclude
-SERVER_LIBS= -mwindows $(STD_LIBS) -L$(WINBIN) -L$(WINLIB) -lzlib1 -lenet -lws2_32 -lwinmm
+SERVER_LIBS= -mwindows $(STD_LIBS) -L$(WINLIB) -Lenet -lenet -lz -lwinmm
+SERVER_WIN_LIBS=-lws2_32 -lwsock32
 else
 SERVER_INCLUDES= -DSTANDALONE $(INCLUDES)
 SERVER_LIBS= -Lenet -lenet -lz
@@ -203,7 +202,7 @@ clean-enet:
 	$(MAKE) -C enet clean
 
 mod/libmaxminddb/Makefile:
-	cd mod/libmaxminddb; autoreconf -f -i; ./configure --disable-shared --disable-binaries --disable-tests --host=$(PLATFORM)
+	cd mod/libmaxminddb; autoreconf -f -i; ./configure --disable-shared --disable-binaries --disable-tests --host=$(TARGETHOST)
 
 mod/libmaxminddb/src/.libs/libmaxminddb.a: mod/libmaxminddb/Makefile
 	$(MAKE)	-C mod/libmaxminddb
@@ -214,7 +213,7 @@ clean-maxminddb: mod/libmaxminddb/Makefile
 	$(MAKE) -C mod/libmaxminddb clean
 
 mod/libGeoIP/Makefile:
-	cd mod/libGeoIP; autoreconf -f -i; ./configure --disable-shared --host=$(PLATFORM)
+	cd mod/libGeoIP; autoreconf -f -i; ./configure --disable-shared --host=$(TARGETHOST)
 
 mod/libGeoIP/libGeoIP/.libs/libGeoIP.a: mod/libGeoIP/Makefile
 	$(MAKE)	-C mod/libGeoIP
@@ -242,7 +241,7 @@ $(SERVER_OBJS): CXXFLAGS += $(SERVER_INCLUDES)
 
 ifneq (,$(findstring MINGW,$(PLATFORM)))
 server:	libenet libgeoip libmaxminddb servericon $(SERVER_OBJS)
-	$(CXX) $(CXXFLAGS) -o ../$(OUTPUT_FILE) res/remod.res $(SERVER_OBJS) $(SERVER_LIBS)
+	$(CXX) $(CXXFLAGS) -o ../$(OUTPUT_FILE) res/remod.res $(SERVER_OBJS) $(SERVER_LIBS) $(SERVER_WIN_LIBS)
 else
 server:	libenet libgeoip libmaxminddb $(SERVER_OBJS)
 	$(CXX) $(CXXFLAGS) -o ../$(OUTPUT_FILE) $(SERVER_OBJS) $(SERVER_LIBS)
