@@ -1,8 +1,9 @@
-FROM alpine:3.12.1 as builder
+FROM alpine:3.13.3 as builder
 
 RUN apk --no-cache add \
     gcc \
     g++ \
+    go \
     make\
     binutils \
     sqlite-dev \
@@ -15,7 +16,7 @@ COPY src src/
 
 RUN cd src; make SQLITE3_USE_SYSTEM_LIBS=true MYSQL_USE_SYSTEM_LIBS=true
 
-FROM alpine:3.12.1
+FROM alpine:3.13.3
 
 WORKDIR /remod
 
@@ -34,4 +35,4 @@ RUN apk --no-cache add \
     mariadb-connector-c \
     libgcc
 
-ENTRYPOINT ["/remod/remod64"]
+CMD ["/remod/remod64"]

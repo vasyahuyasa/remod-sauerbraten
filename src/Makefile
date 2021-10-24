@@ -30,7 +30,7 @@ ifneq (,$(findstring MINGW,$(PLATFORM)))
         override CXX+= -m32
         override WINDRES+= -F pe-i386
     endif
-    STD_LIBS=-static-libgcc -static-libstdc++
+    
 endif
 
 #result file name
@@ -39,13 +39,15 @@ ifneq (,$(findstring MINGW,$(PLATFORM)))
 OUTPUT_FILE=remod.exe
 endif
 
+STD_LIBS=-static-libgcc -static-libstdc++
+
 ifneq (,$(findstring MINGW,$(PLATFORM)))
 SERVER_INCLUDES= -DSTANDALONE $(INCLUDES) -Iinclude
 SERVER_LIBS= -mwindows $(STD_LIBS) -L$(WINLIB) -Lenet -lenet -lz -lwinmm
 SERVER_WIN_LIBS=-lws2_32 -lwsock32
 else
 SERVER_INCLUDES= -DSTANDALONE $(INCLUDES)
-SERVER_LIBS= -Lenet -lenet -lz
+SERVER_LIBS= -static $(STD_LIBS) -Lenet -lenet -lz
 endif
 
 SERVER_OBJS= \
