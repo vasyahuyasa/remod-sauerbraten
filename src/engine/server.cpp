@@ -8,6 +8,7 @@
 #include "remod.h"
 #include "commandev.h"
 #include "discordmod.h"
+#include "authservers.h"
 
 #ifdef IRC
 #include "irc.h"
@@ -554,6 +555,15 @@ void checkserversockets()        // reply all server info requests
         ENET_SOCKETSET_ADD(readset, mastersock);
         if(!masterconnected) ENET_SOCKETSET_ADD(writeset, mastersock);
     }
+    // remod: check auth servers sockets
+    enumerate(remod::auth::servers, remod::auth::authserver, a, {
+        if(a.sock != ENET_SOCKET_NULL)
+        {
+            maxsock = max(maxsock, a.sock);
+            ENET_SOCKETSET_ADD(readset, a.sock);
+            if(!a.connected) ENET_SOCKETSET_ADD(writeset, a.sock);
+        }
+    });
     if(lansock != ENET_SOCKET_NULL)
     {
         maxsock = max(maxsock, lansock);
@@ -599,6 +609,30 @@ void checkserversockets()        // reply all server info requests
         }
         if(mastersock != ENET_SOCKET_NULL && ENET_SOCKETSET_CHECK(readset, mastersock)) flushmasterinput();
     }
+    // remod
+    enumerate(remod::auth::servers, remod::auth::authserver, a, {
+        if(a.sock != ENET_SOCKET_NULL)
+        {
+            if(!a.connected)
+            {
+                if(ENET_SOCKETSET_CHECK(readset, a.sock) || ENET_SOCKETSET_CHECK(writeset, a.sock))
+                {
+                    int error = 0;
+                    if(enet_socket_get_option(a.sock, ENET_SOCKOPT_ERROR, &error) < 0 || error)
+                    {
+                        logoutf("could not connect to auth server, error: %d", error);
+                        a.disconnect();
+}
+                    else
+                    {
+                        a.connecting = 0;
+                        a.connected = totalmillis ? totalmillis : 1;
+                    }
+                }
+            }
+            if(a.sock != ENET_SOCKET_NULL && ENET_SOCKETSET_CHECK(readset, a.sock)) a.flushinput();
+        }
+    });
 }
 
 VAR(serveruprate, 0, 0, INT_MAX);
@@ -660,6 +694,8 @@ void serverslice(bool dedicated, uint timeout)   // main server update, called f
     server::serverupdate();
 
     flushmasteroutput();
+    // remod
+    enumerate(remod::auth::servers, remod::auth::authserver, a, { a.flushoutput(); });
     checkserversockets();
 
     if(!lastupdatemaster || totalmillis-lastupdatemaster>60*60*1000)       // send alive signal to masterserver every hour of uptime

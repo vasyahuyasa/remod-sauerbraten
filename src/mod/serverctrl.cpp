@@ -1309,7 +1309,7 @@ ICOMMAND(getmastermode, "", (), intret(mastermode));
 ICOMMAND(getmastermodename, "i", (int *mm), result(mastermodename((int)*mm, "unknown")));
 
 /**
- * Check if specified player is master
+ * Check if specified player has master or above privilege
  * @group player
  * @arg1 client number
  * @return 0 or 1
