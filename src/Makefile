@@ -4,7 +4,7 @@ USE_SQLITE3=true
 SQLITE3_USE_SYSTEM_LIBS=false
 USE_MYSQL=true
 MYSQL_USE_SYSTEM_LIBS=false
-USE_EXPEREMENTAL_DISCORD=true
+USE_EXPEREMENTAL_DISCORD=false
 
 CXXFLAGS=-O3 -fomit-frame-pointer -DSTANDALONE
 override CXXFLAGS+= -Wall -fsigned-char -fno-exceptions -fno-rtti
@@ -226,7 +226,7 @@ clean-libgeoip: mod/libGeoIP/Makefile
 ifeq ($(USE_EXPEREMENTAL_DISCORD),true)
 DISCORD_TARGET=discord
 DISCORD_CLEAN_TARGET=discord-clean
-override SERVER_LIBS+= -Lmod/discord -ldiscord
+override SERVER_LIBS+= -Lmod/discord -ldiscord -lpthread
 override SERVER_OBJS+= mod/discordmod-standalone.o
 
 discord: mod/discord/libdiscord.a
