@@ -41,6 +41,7 @@ Remod support geoip2 and legacy geoip database format (geolite country). Instruc
   * [x] save and load maps to local file system in coopedit mode
   * [x] database (sqlite3, mysql)
   * [x] docker
+  * [x] discord relay
 
 ## Work in progress   
   * [ ] docker-compose / documentation
