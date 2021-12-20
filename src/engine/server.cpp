@@ -7,6 +7,7 @@
 #include "rconmod.h"
 #include "remod.h"
 #include "commandev.h"
+#include "discordmod.h"
 #include "authservers.h"
 
 #ifdef IRC

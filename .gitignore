@@ -13,3 +13,4 @@ server-init.cfg
 .vscode
 .deps
 .libs
+src/mod/discord/discord.so

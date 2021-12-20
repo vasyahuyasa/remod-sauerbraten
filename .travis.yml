@@ -1,19 +1,19 @@
-language: c
-git:
-  submodules: true
-sudo: required
+language: cpp
+os: 
+  - linux
+compiler:
+  - gcc
+sudo: false
 services: docker
 env:
   global:
     - IMAGE_NAME=vasyahuyasa/remod
 
-before_install:
+install:
   - sudo apt-get update
   - sudo apt-get install -y automake build-essential zlib1g-dev
+  - eval "$(curl -sL https://raw.githubusercontent.com/travis-ci/gimme/master/gimme | GIMME_GO_VERSION=1.15 bash)"
  
-compiler:
-  - gcc
-
 script:
   - cd src && make && make clean
 
