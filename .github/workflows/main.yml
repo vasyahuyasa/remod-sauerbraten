@@ -1,0 +1,59 @@
+name: Build and publish
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: prepare build environment
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            gcc \
+            g++ \
+            make \
+            libsqlite3-dev \
+            libmariadb-dev-compat \
+            autoconf \
+            libtool \
+            golang \
+            ca-certificates
+        shell: bash
+      - name: build
+        run: make -C src USE_EXPEREMENTAL_DISCORD=true
+        shell: bash
+
+  docker_image_publish:
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v') 
+    steps:
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}}
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: |
+            vasyahuyasa/remod
+            ghcr.io/vasyahuyasa/remod
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
