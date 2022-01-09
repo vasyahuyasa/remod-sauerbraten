@@ -16,7 +16,30 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-const maxPendingMsgs = 100
+const (
+	maxPendingMsgs = 100
+
+	commandOptionTypeString commandOptionType = iota + 1
+	commandOptionTypeInteger
+	commandOptionTypeBool
+	commandOptionTypeDiscordUser
+)
+
+type commandOptionType int
+
+type commandOption struct {
+	name        string
+	description string
+	required    bool
+	optionType  commandOptionType
+	handler     func(s *discordgo.Session, i *discordgo.InteractionCreate)
+}
+
+type command struct {
+	name        string
+	description string
+	options     []commandOption
+}
 
 type discordSession struct {
 	token           string
@@ -24,6 +47,8 @@ type discordSession struct {
 	messageCallback C.messagecallback
 	channelID       string
 	err             error
+
+	commands []*discordgo.ApplicationCommand
 
 	sendMsgs chan message
 }
@@ -63,6 +88,10 @@ func discord_sendmessage(channel *C.char, text *C.char) {
 	content := C.GoString(text)
 
 	defaultSession.sendMessage(channelID, content)
+}
+
+func discord_register_command(name *C.char, description *C.char) {
+
 }
 
 func newSession(messageCallback C.messagecallback, token string, channelID string) *discordSession {
