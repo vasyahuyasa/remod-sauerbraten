@@ -10,13 +10,6 @@
 
 #include "fpsgame.h"
 
-/*
- * from command.engine/cpp
- */
-extern void aliasa(const char *name, char *action);
-extern void pushident(ident &id, char *val);
-extern void popident(ident &id);
-
 namespace remod
 {
 	/**
