@@ -30,6 +30,10 @@ namespace remod
     	char type;
     };
 
+    void common_registercommand(vector<cmd_handler*> &handlers, const char* cmd_name, const char* cmd_func, int *cmd_perm, const char* cmd_descr, const char* cmd_help);
+
+    void common_unregistercommand(vector<cmd_handler*> &handlers, const char* cmd_name);
+
     /**
      * called when command is triggered
      */

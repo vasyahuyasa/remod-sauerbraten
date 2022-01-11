@@ -21,12 +21,32 @@ typedef struct { const char *p; ptrdiff_t n; } _GoString_;
 
 #line 3 "discord.go"
 
+typedef enum option_type {
+	option_type_stirng = 's',
+	option_type_integer = 'i',
+	option_type_bool ='b'
+} option_type;
+
+typedef struct command_option {
+    char *name;
+	int required;
+	option_type option_type;
+} command_option;
+
 typedef void (*messagecallback)(char *author_username, char *author_mentoin_string, char *channel_id, char *content);
+
+typedef void (*commandhandler)(char *author_username, char *author_mentoin_string, char *channel_id, char *concated_input);
 
 static void discord_onmessage(messagecallback f, char *author_username, char *author_mentoin_id, char *channel_id, char *content)
 {
 	((messagecallback)f)(author_username, author_mentoin_id, channel_id, content);
 }
+
+static void discord_on_command(commandhandler h, char *author_username, char *author_mentoin_string, char *channel_id, char *concated_input)
+{
+	((commandhandler)h)(author_username, author_mentoin_string, channel_id, concated_input);
+}
+
 
 #line 1 "cgo-generated-wrapper"
 
@@ -81,6 +101,7 @@ extern "C" {
 extern int discord_run(messagecallback messageCallback, char* token, char* channelID);
 extern char* discord_lasterror();
 extern void discord_sendmessage(char* channel, char* text);
+extern void discord_register_command(char* name, char* description, GoSlice options, commandhandler handler);
 
 #ifdef __cplusplus
 }
