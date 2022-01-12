@@ -1,11 +1,11 @@
 /**
- * discord_commandhandler.cpp
+ * commandhandler_discord.cpp
  *
  *  Created on: Jan 10, 2022
  *      Author: degrave
  */
 
-#include "commandhandler.h"
+#include "commandhandler_common.h"
 #include "commandev.h"
 
 namespace remod

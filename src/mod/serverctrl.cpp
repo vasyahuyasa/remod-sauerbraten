@@ -8,7 +8,7 @@
 
 #include <time.h>
 #include "commandev.h"
-#include "commandhandler.h"
+#include "commandhandler_common.h"
 #include "fpsgame.h"
 #include "remod.h"
 #include "banlist.h"

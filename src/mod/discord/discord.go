@@ -1,16 +1,16 @@
 package main
 
 /*
-typedef enum option_type {
+typedef enum {
 	option_type_stirng = 's',
 	option_type_integer = 'i',
 	option_type_bool ='b'
 } option_type;
 
-typedef struct command_option {
+typedef struct {
     char *name;
 	int required;
-	option_type option_type;
+	option_type option_t;
 } command_option;
 
 typedef void (*messagecallback)(char *author_username, char *author_mentoin_string, char *channel_id, char *content);
@@ -118,7 +118,7 @@ func discord_register_command(name *C.char, description *C.char, options []C.com
 	var commandOptions []commandOption
 
 	for _, opt := range options {
-		convertedOption, err := newCommandOption(opt.name, opt.required, opt.option_type)
+		convertedOption, err := newCommandOption(opt.name, opt.required, opt.option_t)
 		if err != nil {
 			reportErrorf("%s", err.Error())
 			return

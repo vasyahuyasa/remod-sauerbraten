@@ -8,8 +8,12 @@
 
 
 #include "commandev.h"
-#include "commandhandler.h"
+#include "commandhandler_common.h"
 #include "remod.h"
+
+#ifdef IRC
+#include "commandhandler_irc.h"
+#endif
 
 extern char *strreplace(const char *s, const char *oldval, const char *newval);
 

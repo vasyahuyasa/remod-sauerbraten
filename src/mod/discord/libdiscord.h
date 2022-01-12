@@ -21,16 +21,16 @@ typedef struct { const char *p; ptrdiff_t n; } _GoString_;
 
 #line 3 "discord.go"
 
-typedef enum option_type {
+typedef enum {
 	option_type_stirng = 's',
 	option_type_integer = 'i',
 	option_type_bool ='b'
 } option_type;
 
-typedef struct command_option {
+typedef struct {
     char *name;
 	int required;
-	option_type option_type;
+	option_type option_t;
 } command_option;
 
 typedef void (*messagecallback)(char *author_username, char *author_mentoin_string, char *channel_id, char *content);
