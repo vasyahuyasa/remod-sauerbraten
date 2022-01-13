@@ -58,7 +58,7 @@ SERVER_OBJS= \
 	fpsgame/entities-standalone.o \
 	fpsgame/server-standalone.o \
 	mod/commandev-standalone.o \
-	mod/commandhandler-standalone.o \
+	mod/commandhandler_common-standalone.o \
 	mod/serverctrl-standalone.o \
 	mod/remod-standalone.o \
 	mod/rconmod-standalone.o \
@@ -84,7 +84,7 @@ endif
 #irc
 ifeq ($(USE_IRCBOT),true)
 override CXXFLAGS+= -DIRC
-override SERVER_OBJS+= mod/irc-standalone.o
+override SERVER_OBJS+= mod/irc-standalone.o mod/commandhandler_irc-standalone.o
 endif
 #end of irc
 
@@ -227,7 +227,7 @@ ifeq ($(USE_EXPEREMENTAL_DISCORD),true)
 DISCORD_TARGET=discord
 DISCORD_CLEAN_TARGET=discord-clean
 override SERVER_LIBS+= -Lmod/discord -ldiscord -lpthread
-override SERVER_OBJS+= mod/discordmod-standalone.o
+override SERVER_OBJS+= mod/commandhandler_discord-standalone.o
 
 discord: mod/discord/libdiscord.a
 

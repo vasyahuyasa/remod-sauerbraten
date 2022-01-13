@@ -41,12 +41,12 @@ import (
 const (
 	maxPendingMsgs = 100
 
-	commandOptionTypeStirng  = 's'
-	commandOptionTypeInteger = 'i'
-	commandOptionTypeBool    = 'b'
+	commandOptionTypeStirng  commandOptionType = 's'
+	commandOptionTypeInteger commandOptionType = 'i'
+	commandOptionTypeBool    commandOptionType = 'b'
 )
 
-type commandOptionType int
+type commandOptionType uint8
 
 type commandOption struct {
 	name       string
@@ -61,26 +61,15 @@ type command struct {
 	handler     func(s *discordgo.Session, i *discordgo.InteractionCreate)
 }
 
-type discordSession struct {
-	token           string
-	session         *discordgo.Session
-	messageCallback C.messagecallback
-	channelID       string
-	err             error
-
-	commands []*discordgo.ApplicationCommand
-
-	sendMsgs chan message
-}
-
 type message struct {
 	channelID string
 	text      string
 }
 
 var (
-	defaultSession *discordSession
-	commands       []*command
+	defaultSession        *discordSession
+	commands              []*command
+	commandHandlersByName = map[string]*command{}
 )
 
 func main() {}
@@ -90,12 +79,29 @@ func discord_run(messageCallback C.messagecallback, token *C.char, channelID *C.
 	botToken := C.GoString(token)
 	channel := C.GoString(channelID)
 
-	defaultSession = newSession(messageCallback, botToken, channel)
+	session := newSession(func(username string, mentoin string, channelID string, content string) {
+		cUsername := C.CString(username)
+		cMentoinString := C.CString(mentoin)
+		cChannelID := C.CString(channelID)
+		cContent := C.CString(content)
 
-	err := defaultSession.open()
+		C.discord_onmessage(messageCallback, cUsername, cMentoinString, cChannelID, cContent)
+	}, botToken, channel)
+	defaultSession = session
+
+	err := session.init()
 	if err != nil {
 		return -1
 	}
+
+	session.registerHandlers()
+
+	err = session.open()
+	if err != nil {
+		return -1
+	}
+
+	session.registerCommands()
 
 	return 0
 }
@@ -127,78 +133,11 @@ func discord_register_command(name *C.char, description *C.char, options []C.com
 		commandOptions = append(commandOptions, convertedOption)
 	}
 
-	newCommand(name, description, commandOptions, handler)
-}
+	command := newCommand(name, description, commandOptions, handler)
 
-func newSession(messageCallback C.messagecallback, token string, channelID string) *discordSession {
-	return &discordSession{
-		token:           token,
-		messageCallback: messageCallback,
-		sendMsgs:        make(chan message, maxPendingMsgs),
-		channelID:       channelID,
-	}
-}
+	fmt.Printf("%#v", command)
 
-func (s *discordSession) open() error {
-	s.session, s.err = discordgo.New("Bot " + s.token)
-	if s.err != nil {
-		return s.err
-	}
-
-	s.session.Identify.Intents = discordgo.MakeIntent(discordgo.IntentsGuildMessages)
-
-	s.session.AddHandler(func(ses *discordgo.Session, m *discordgo.MessageCreate) {
-		if m.Author.ID == ses.State.User.ID || m.ChannelID != s.channelID {
-			return
-		}
-
-		username := C.CString(m.Author.Username)
-		mentoinString := C.CString(m.Author.Mention())
-		channelID := C.CString(m.ChannelID)
-		content := C.CString(m.ContentWithMentionsReplaced())
-
-		C.discord_onmessage(s.messageCallback, username, mentoinString, channelID, content)
-	})
-
-	// TODO: session.Client with timeout
-
-	s.err = s.session.Open()
-	if s.err != nil {
-		return s.err
-	}
-
-	go s.sendWorker()
-
-	return nil
-}
-
-func (s *discordSession) stringError() string {
-	if s.err != nil {
-		return s.err.Error()
-	}
-
-	return ""
-}
-
-func (s *discordSession) sendMessage(channelID string, text string) {
-	select {
-	case s.sendMsgs <- message{
-		channelID: channelID,
-		text:      text,
-	}:
-	default:
-		s.err = fmt.Errorf("can not send message because queue is full")
-		reportErrorf(s.err.Error())
-	}
-}
-
-func (s *discordSession) sendWorker() {
-	for msg := range s.sendMsgs {
-		_, s.err = s.session.ChannelMessageSend(msg.channelID, msg.text)
-		if s.err != nil {
-			reportErrorf("can not send message %v", s.err)
-		}
-	}
+	addCommand(command)
 }
 
 func newCommandOption(name *C.char, required C.int, optitionType C.option_type) (commandOption, error) {
@@ -222,15 +161,19 @@ func newCommandOption(name *C.char, required C.int, optitionType C.option_type) 
 	}, nil
 }
 
-func newCommand(name *C.char, description *C.char, options []commandOption, handler C.commandhandler) command {
-	return command{
+func newCommand(name *C.char, description *C.char, options []commandOption, handler C.commandhandler) *command {
+	return &command{
 		name:        C.GoString(name),
 		description: C.GoString(description),
 		options:     options,
 		handler: func(s *discordgo.Session, i *discordgo.InteractionCreate) {
-			s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+			err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 				Type: discordgo.InteractionResponseDeferredChannelMessageWithSource,
 			})
+			if err != nil {
+				reportErrorf("cannot make response to discord interaction: %v", err)
+			}
+
 			C.discord_on_command(handler, C.CString("test"), C.CString("test"), C.CString("123"), commandDataToQuotedCString(options, i.ApplicationCommandData()))
 		},
 	}
@@ -238,12 +181,14 @@ func newCommand(name *C.char, description *C.char, options []commandOption, hand
 
 func addCommand(command *command) {
 	commands = append(commands, command)
+	commandHandlersByName[command.name] = command
 }
 
 func reportErrorf(format string, a ...interface{}) {
 	fmt.Fprintf(os.Stderr, "discord: "+format+"\n", a)
 }
 
+// commandDataToQuotedCString convert discord slash command arguments to single string with double quoted separated by space
 func commandDataToQuotedCString(options []commandOption, data discordgo.ApplicationCommandInteractionData) *C.char {
 	var quotedParams []string
 
@@ -268,4 +213,35 @@ func commandDataToQuotedCString(options []commandOption, data discordgo.Applicat
 	}
 
 	return C.CString(strings.Join(quotedParams, " "))
+}
+
+func internalCommandToDiscordCommand(command *command) *discordgo.ApplicationCommand {
+	var options []*discordgo.ApplicationCommandOption
+	for _, cmdOption := range command.options {
+		options = append(options, &discordgo.ApplicationCommandOption{
+			Type:     internalToDiscordOptionType(cmdOption.optionType),
+			Name:     cmdOption.name,
+			Required: cmdOption.required,
+		})
+	}
+
+	return &discordgo.ApplicationCommand{
+		Name:        command.name,
+		Description: command.description,
+		Options:     options,
+	}
+}
+
+func internalToDiscordOptionType(optionType commandOptionType) discordgo.ApplicationCommandOptionType {
+	switch optionType {
+	case commandOptionTypeStirng:
+		return discordgo.ApplicationCommandOptionString
+	case commandOptionTypeInteger:
+		return discordgo.ApplicationCommandOptionInteger
+	case commandOptionTypeBool:
+		return discordgo.ApplicationCommandOptionBoolean
+	default:
+		reportErrorf("unknown option type %v", optionType)
+		panic("unknown option type")
+	}
 }
