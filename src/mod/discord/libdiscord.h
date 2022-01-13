@@ -35,16 +35,16 @@ typedef struct {
 
 typedef void (*messagecallback)(char *author_username, char *author_mentoin_string, char *channel_id, char *content);
 
-typedef void (*commandhandler)(char *author_username, char *author_mentoin_string, char *channel_id, char *concated_input);
+typedef void (*commandhandler)(char *author_username, char *author_mentoin_string, char *channel_id, char *cmd_name, char *concated_input);
 
 static void discord_onmessage(messagecallback f, char *author_username, char *author_mentoin_id, char *channel_id, char *content)
 {
 	((messagecallback)f)(author_username, author_mentoin_id, channel_id, content);
 }
 
-static void discord_on_command(commandhandler h, char *author_username, char *author_mentoin_string, char *channel_id, char *concated_input)
+static void discord_on_command(commandhandler h, char *author_username, char *author_mentoin_string, char *channel_id,  char *cmd_name, char *concated_input)
 {
-	((commandhandler)h)(author_username, author_mentoin_string, channel_id, concated_input);
+	((commandhandler)h)(author_username, author_mentoin_string, channel_id, cmd_name, concated_input);
 }
 
 

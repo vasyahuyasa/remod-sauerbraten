@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -47,6 +48,10 @@ func (s *discordSession) registerHandlers() {
 		s.messageCallback(m.Author.Username, m.Author.Mention(), m.ChannelID, m.ContentWithMentionsReplaced())
 	})
 
+	s.session.AddHandler(func(s *discordgo.Session, r *discordgo.Ready) {
+		log.Println("Bot is up!")
+	})
+
 	for _, command := range commands {
 		s.session.AddHandler(func(s *discordgo.Session, i *discordgo.InteractionCreate) {
 			if cmd, ok := commandHandlersByName[command.name]; ok {
@@ -61,9 +66,9 @@ func (s *discordSession) registerCommands() {
 		discordCommand := internalCommandToDiscordCommand(command)
 		_, err := s.session.ApplicationCommandCreate(s.session.State.User.ID, "", discordCommand)
 		if err != nil {
-			reportErrorf("cannot register '%v' command: %v\n%#v", command.name, err, discordCommand)
+			reportErrorf("cannot register '%s' command: %v", command.name, err)
 		} else {
-			reportErrorf("'%v' command registerd", command)
+			reportErrorf("command '%s' registerd", command.name)
 		}
 	}
 }

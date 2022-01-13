@@ -1,5 +1,5 @@
 /*
- * commandhandler.h
+ * commandhandler_common.h
  *
  *  Created on: Dec 1, 2010
  *      Author: stormchild

@@ -93,46 +93,71 @@ namespace remod
             return user_permission_level(discord_user) >= perm;
         }
 
-        void slashcommand_handler(char *author_username, char *author_mentoin_string, char *channel_id, char *concated_input)
+        void slashcommand_handler(char *author_username, char *author_mentoin_string, char *channel_id, char *cmd_name, char *concated_input)
         {
-            conoutf("author_username = %s author_mentoin_string = %s channel_id = %s concated_input = %s", author_username, author_mentoin_string, channel_id, concated_input);
+            conoutf("author_username = %s author_mentoin_string = %s channel_id = %s cmd_name = %s concated_input = %s", author_username, author_mentoin_string, channel_id, cmd_name, concated_input);
+
+            int cmd_index = find_command_handler(cmd_name, discord_cmd_handlers);
+
+            if (cmd_index == -1)
+            {
+                conoutf("command %s not found", cmd_name);
+                //unknown command
+                //remod::onevent(ONCOMMANDUNKNOWN, "is", cn, cmd_name);
+                return;
+            }
+
+            cmd_handler *handler = discord_cmd_handlers[cmd_index];
+
+            int ret = execute_command(handler, author_username, concated_input);
+
+            if (ret == -1)
+            {
+                conoutf("command %s usage error", cmd_name);
+                //usage error - cannot parse cmd_params in accordance with cmd_descr
+                //remod::onevent(ONCOMMANDUSAGEERROR, "is", cn, cmd_name);
+            }
+            else if (ret == -2)
+            {
+                conoutf("command %s permission error", cmd_name);
+                //permission error
+                //remod::onevent(ONCOMMANDPERMERROR, "is", cn, cmd_name);
+            }
         }
 
         void register_slashcommand(char *cmd_name, char *cmd_func, int *cmd_perm, char *cmd_descr, char *cmd_help)
         {
-            conoutf("registering '%s' command", cmd_name);
+            conoutf("register_slashcommand name=%s func=%s perm=%d, descr=%s help=%s", cmd_name, cmd_func, *cmd_perm, cmd_descr, cmd_help);
 
             common_registercommand(discord_cmd_handlers, cmd_name, cmd_func, cmd_perm, cmd_descr, cmd_help);
 
             command_option options[] = {
                 {
-                    .name = "name",
+                    .name = newstring("name"),
                     .required = 1,
                     .option_t = option_type_stirng,
                 },
-                {
-                    .name = "cn",
-                    .required = 1,
-                    .option_t = option_type_integer,
-                },
-                {
-                    .name = "flag",
-                    .required = 0,
-                    .option_t = option_type_bool,
-                },
+                // {
+                //     .name = "cn",
+                //     .required = 1,
+                //     .option_t = option_type_integer,
+                // },
+                // {
+                //     .name = "flag",
+                //     .required = 1,
+                //     .option_t = option_type_bool,
+                // },
             };
 
             GoSlice go_options = {
                 .data = options,
-                .len = 3,
-                .cap = 3,
+                .len = 1,
+                .cap = 1,
             };
 
             commandhandler handler = &slashcommand_handler;
 
-            discord_register_command(cmd_name, cmd_help, go_options, handler);
-
-            conoutf("registered '%s' command", cmd_name);
+            discord_register_command(newstring(cmd_name), newstring(cmd_help), go_options, handler);
         }
 
         void discord_unregister_slashcommand(const char *cmd_name)

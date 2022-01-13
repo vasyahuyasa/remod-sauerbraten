@@ -15,16 +15,16 @@ typedef struct {
 
 typedef void (*messagecallback)(char *author_username, char *author_mentoin_string, char *channel_id, char *content);
 
-typedef void (*commandhandler)(char *author_username, char *author_mentoin_string, char *channel_id, char *concated_input);
+typedef void (*commandhandler)(char *author_username, char *author_mentoin_string, char *channel_id, char *cmd_name, char *concated_input);
 
 static void discord_onmessage(messagecallback f, char *author_username, char *author_mentoin_id, char *channel_id, char *content)
 {
 	((messagecallback)f)(author_username, author_mentoin_id, channel_id, content);
 }
 
-static void discord_on_command(commandhandler h, char *author_username, char *author_mentoin_string, char *channel_id, char *concated_input)
+static void discord_on_command(commandhandler h, char *author_username, char *author_mentoin_string, char *channel_id,  char *cmd_name, char *concated_input)
 {
-	((commandhandler)h)(author_username, author_mentoin_string, channel_id, concated_input);
+	((commandhandler)h)(author_username, author_mentoin_string, channel_id, cmd_name, concated_input);
 }
 
 */
@@ -34,6 +34,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -101,6 +102,8 @@ func discord_run(messageCallback C.messagecallback, token *C.char, channelID *C.
 		return -1
 	}
 
+	time.Sleep(time.Second * 2)
+
 	session.registerCommands()
 
 	return 0
@@ -167,14 +170,29 @@ func newCommand(name *C.char, description *C.char, options []commandOption, hand
 		description: C.GoString(description),
 		options:     options,
 		handler: func(s *discordgo.Session, i *discordgo.InteractionCreate) {
+
 			err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-				Type: discordgo.InteractionResponseDeferredChannelMessageWithSource,
+				Type: discordgo.InteractionResponseChannelMessageWithSource,
+				Data: &discordgo.InteractionResponseData{
+					Content: commandWithParamsEcho(C.GoString(name), i.ApplicationCommandData()),
+				},
 			})
 			if err != nil {
 				reportErrorf("cannot make response to discord interaction: %v", err)
 			}
 
-			C.discord_on_command(handler, C.CString("test"), C.CString("test"), C.CString("123"), commandDataToQuotedCString(options, i.ApplicationCommandData()))
+			author := ""
+			mentoin := ""
+
+			if i.User != nil {
+				author = i.User.Username
+				mentoin = i.User.Mention()
+			} else {
+				author = i.Member.User.Username
+				mentoin = i.Member.User.Mention()
+			}
+
+			C.discord_on_command(handler, C.CString(author), C.CString(mentoin), C.CString(i.ChannelID), name, commandDataToQuotedCString(options, i.ApplicationCommandData()))
 		},
 	}
 }
@@ -217,11 +235,13 @@ func commandDataToQuotedCString(options []commandOption, data discordgo.Applicat
 
 func internalCommandToDiscordCommand(command *command) *discordgo.ApplicationCommand {
 	var options []*discordgo.ApplicationCommandOption
+
 	for _, cmdOption := range command.options {
 		options = append(options, &discordgo.ApplicationCommandOption{
-			Type:     internalToDiscordOptionType(cmdOption.optionType),
-			Name:     cmdOption.name,
-			Required: cmdOption.required,
+			Type:        internalToDiscordOptionType(cmdOption.optionType),
+			Name:        cmdOption.name,
+			Description: cmdOption.name,
+			Required:    cmdOption.required,
 		})
 	}
 
@@ -244,4 +264,14 @@ func internalToDiscordOptionType(optionType commandOptionType) discordgo.Applica
 		reportErrorf("unknown option type %v", optionType)
 		panic("unknown option type")
 	}
+}
+
+func commandWithParamsEcho(cmd string, data discordgo.ApplicationCommandInteractionData) string {
+	commandWithParams := cmd
+
+	for _, v := range data.Options {
+		commandWithParams += fmt.Sprintf(" %v", v.Value)
+	}
+
+	return commandWithParams
 }
