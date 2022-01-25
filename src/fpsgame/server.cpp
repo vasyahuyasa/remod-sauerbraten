@@ -3742,6 +3742,12 @@ namespace server
 
             case N_SERVCMD:
                 getstring(text, p);
+                
+                // remod
+                if(!remod::checkflood(ci, type)) {
+                    remod::onevent(ONCOMMAND, "is", sender, text);
+                }               
+
                 break;
                      
             #define PARSEMESSAGES 1
